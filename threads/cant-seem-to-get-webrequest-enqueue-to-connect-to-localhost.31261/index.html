@@ -1,4 +1,4 @@
----
+﻿---
 layout: forums
 title: 'Fixed - Can&#039;t seem to get webrequest.Enqueue to connect to localhost'
 breadcrumbs:
@@ -39,7 +39,7 @@ breadcrumbs:
                             {% raw %}<pre>ConnectFailure (The requested address is not valid in its context.
 )</pre>{% endraw %}
                         </div>If I replace localhost with say google.com, it works fine. But if I use <a href="http://localhost/blah" target="_blank" class="externalLink  rel="
-                            nofollow">http://localhost/blah</a> or <a href="http://127.0.0.1/blah" target="_blank" class="externalLink  rel=" nofollow">http://127.0.0.1/blah</a> I get this error.
+                            nofollow">http://localhost/blah</a> or <a href="http://127.0.0.1/blah" target="_blank" class="externalLink" rel="nofollow">http://127.0.0.1/blah</a> I get this error.
                         Trying to make calls to a local API I am developing. Any hints?<br />
                         <br /> Thanks in advance! <div class="messageTextEndMarker">&nbsp;</div>
                     </blockquote>
@@ -141,14 +141,14 @@ breadcrumbs:
                             {% raw %}<pre>webrequest.Enqueue(&quot;http://localhost:9090/&quot;, null, (code, response) =&gt;
                 {
                     Puts($&quot;{code} {response}&quot;);                }, this, RequestMethod.GET, null, 100f);</pre>{% endraw %}
-                        </div>Using &quot;<a href="http://google.com:9090/" target="_blank" class="externalLink  rel=" nofollow">http://google.com:9090/</a>&quot; &quot;works&quot; in that it gives a
+                        </div>Using &quot;<a href="http://google.com:9090/" target="_blank" class="externalLink" rel="nofollow">http://google.com:9090/</a>&quot; &quot;works&quot; in that it gives a
                         failure to connect, rather than a failure to resolve, with the following:<br />
                         <div class="bbCodeBlock bbCodeCode">
                             <div class="type">Code:</div>
                             {% raw %}<pre>ConnectFailure (A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.
 )</pre>{% endraw %}
-                        </div>Using &quot;<a href="http://google.com/" target="_blank" class="externalLink  rel=" nofollow">h</a>ttp://google.com/&quot; works and returns the body.<br /> Using
-                        &quot;<a href="http://127.0.0.1/" target="_blank" class="externalLink  rel=" nofollow">http://127.0.0.1/</a>&quot; fails with the &quot;context&quot; error above.<br />
+                        </div>Using &quot;<a href="http://google.com/" target="_blank" class="externalLink" rel="nofollow">h</a>ttp://google.com/&quot; works and returns the body.<br /> Using
+                        &quot;<a href="http://127.0.0.1/" target="_blank" class="externalLink" rel="nofollow">http://127.0.0.1/</a>&quot; fails with the &quot;context&quot; error above.<br />
                         <br /> I can use the local hostname (machine name), but that&#039;s a work-around that I don&#039;t know if it will work on my Linux servers. Tried adding an entry into
                         System32/etc/hosts that points to 127.0.0.1 and that fails.<br />
                         <br /> All the localhost/127.0.0.1/127.0.1.1/etc work perfectly fine in web browsers / curl.<br />
@@ -280,7 +280,7 @@ breadcrumbs:
                                 </div>
                                 <blockquote class="quoteContainer">
                                     <div class="quote"><a href="https://github.com/OxideMod/Oxide.Core/blob/762ffe968dd170f1e1df47d909e3c6e1a27d134c/src/Libraries/WebRequests.cs#L118" target="_blank"
-                                            class="externalLink  rel=" nofollow">OxideMod/Oxide.Core</a><br />
+                                            class="externalLink" rel="nofollow">OxideMod/Oxide.Core</a><br />
                                         <br /> As you can in the link above, the WebRequests library in Oxide simply uses the underlying HttpWebRequest class provided as part of .NET in System.Net.
                                         Whether or not a particular endpoint is valid has to do with the native networking of your OS and the ability (or lack thereof) of .NET to integrate with said
                                         networking. It has very little to do with Oxide itself and as such there isn&#039;t much, if anything, we can do about it, sorry.</div>
@@ -288,7 +288,7 @@ breadcrumbs:
                                 </blockquote>
                             </aside>
                         </div>Aah I suspect the problem is here: <a href="https://github.com/OxideMod/Oxide.Core/blob/762ffe968dd170f1e1df47d909e3c6e1a27d134c/src/Libraries/WebRequests.cs#L132"
-                            target="_blank" class="externalLink  rel=" nofollow">OxideMod/Oxide.Core</a><br />
+                            target="_blank" class="externalLink" rel="nofollow">OxideMod/Oxide.Core</a><br />
                         <br /> It&#039;s binding the client to an IP, which cannot get to localhost. Perhaps making an option Enqueue that doesn&#039;t do this would be useful for anyone working on
                         anything that isn&#039;t a public facing IP or on the same network as the IP the server is bound to?<br />
                         <br /> I understand the usefulness of this, allowing you to specify the IP the client is coming from more multi-tenant systems. But it would be nice to be able to override it

@@ -1,4 +1,4 @@
----
+﻿---
 layout: forums
 title: 'MongoDB Extension Dependency Issues'
 breadcrumbs:
@@ -33,13 +33,13 @@ breadcrumbs:
                 <article>
                     <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi I&#039;ve been working on a library similar to the MySQL library oxide provides. I have all of the framework
                         written, but I&#039;m having an issue with getting the library to run. The server.log gives me this error <a href="https://hastebin.com/uxabarigen.pas" target="_blank"
-                            class="externalLink  rel=" nofollow">hastebin</a>. There seems to be some kind of issue with the System.Runtime.InteropServices.RuntimeInformation.dll dependency which I
+                            class="externalLink" rel="nofollow">hastebin</a>. There seems to be some kind of issue with the System.Runtime.InteropServices.RuntimeInformation.dll dependency which I
                         have in my RustDedicated_Data/Managed/ folder.<br />
                         <br /> A quick google search online shows that this a pretty common issue when working with MongoDB, but none of their solutions have helped. The library compiles successfully
                         and I have put the Oxide.MongoDB.dll in the RustDedicated_Data/Managed/ folder as well as MongoDB.Bson.dll, MongoDB.Driver.dll and MongoDB.Driver.Core.dll.
                         MongoDB.Driver.Core.dll depends on System.Runtime.InteropServices.RuntimeInformation so I have put that dll in the folder as well.<br />
                         <br /> According to the error it is looking for version 4.0.0.0, but I have tried using both of these versions. <a href="https://i.imgur.com/kkNdxDk.png" target="_blank"
-                            class="externalLink  rel=" nofollow">https://i.imgur.com/kkNdxDk.png</a>. I can&#039;t figure out why the server is unable to load
+                            class="externalLink" rel="nofollow">https://i.imgur.com/kkNdxDk.png</a>. I can&#039;t figure out why the server is unable to load
                         System.Runtime.InteropServices.RuntimeInformation.<br />
                         <br /> People have suggested online that you need to add this to your app.config, but it didn&#039;t make a difference.<br />
                         <div class="bbCodeBlock bbCodeCode">
@@ -199,11 +199,11 @@ breadcrumbs:
             <div class="messageContent">
                 <article>
                     <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
-                        <a href="https://hastebin.com/uxabarigen.pas" target="_blank" class="externalLink  rel=" nofollow">The error I am still getting if anyone hasn&#039;t seen it.</a><br />
+                        <a href="https://hastebin.com/uxabarigen.pas" target="_blank" class="externalLink" rel="nofollow">The error I am still getting if anyone hasn&#039;t seen it.</a><br />
                         <br /> I think I may have found this issue, however, I&#039;m not 100% sure how .Net Framework compatibility works. All of the system dlls in the Managed directory are compiled
                         against .Net Framework v4.0. Mongo was compiled against .Net Framework v4.5 and is not compatible with with the project if I target v4.0 I also saw from Microsoft(<a
                             href="https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.runtimeinformation%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank"
-                            class="externalLink  rel=" nofollow">link</a>) that System.Runtime.InteropServices.RuntimeInformation was introduced in .Net Framework v4.7.1. What I don&#039;t understand
+                            class="externalLink" rel="nofollow">link</a>) that System.Runtime.InteropServices.RuntimeInformation was introduced in .Net Framework v4.7.1. What I don&#039;t understand
                         is why it said in the Dev Blog &quot;Upgraded to .NET 4.x&quot;. Shouldn&#039;t that mean any library targeted against .Net Framework v4.x should work? I&#039;ve actually
                         compiled an extension against 4.7.2 and it worked just fine just without Mongo referenced in the project. I think Upgraded to .Net 4.x means that we can use the new language
                         features, but anything added recently such as System.Runtime.InteropServices.RuntimeInformation won&#039;t work because it needs a newer version of the system dlls.<br />
@@ -217,7 +217,7 @@ breadcrumbs:
                         <br /> I&#039;ve been trying to research how .Net Framework compatibility works, but this case seems very specific and it&#039;s hard to find information to help.<br />
                         <br /> It seems that all of the System dlls in the Managed directory where compiled against .Net Framework v4.0 not against 4.5 or higher. According to <a
                             href="https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.runtimeinformation%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank"
-                            class="externalLink  rel=" nofollow">Microsoft</a> System.Runtime.InteropServices.RuntimeInformation has only been available since version 4.7.1 and version 4.0.0.0 of
+                            class="externalLink" rel="nofollow">Microsoft</a> System.Runtime.InteropServices.RuntimeInformation has only been available since version 4.7.1 and version 4.0.0.0 of
                         System.Runtime.InteropServices.RuntimeInformation is targeted against .Net Framework v4.7.2. It&#039;s very unclear how compatibility in .Net works because in the dev blog said
                         they upgraded to &quot;Upgraded to .NET 4.x&quot; which means that MongoDB which was targeted against 4.5 and not compatible with .Net 4.0 should be compatible, but I
                         don&#039;t think it is because updating the System dlls to anything newer causes errors.<br />
@@ -262,12 +262,12 @@ breadcrumbs:
             <div class="messageContent">
                 <article>
                     <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
-                        <a href="https://github.com/mongodb/mongo-csharp-driver" target="_blank" class="externalLink  rel=" nofollow">I finally decided to clone the mongo-csharp-driver repository and
+                        <a href="https://github.com/mongodb/mongo-csharp-driver" target="_blank" class="externalLink" rel="nofollow">I finally decided to clone the mongo-csharp-driver repository and
                             tried to fix it.</a> I only had to remove the reference to System.Runtime.InteropServices.RuntimeInformation.dll and fix a couple of errors. It build no problem and now my
                         extension is working! I wish I would have tried to do this earlier, it was such a simple fix. .net 4.0 already has methods to do the same thing as the code RuntimeInformation
                         does. If anyone needs a download to the driver let me know!<br />
                         <br /> I know this isn&#039;t a perfect solution because I still don&#039;t understand why the RuntimeInformation dll wouldn&#039;t load, but it&#039;s working and I&#039;ve
-                        spent far too long working on this. <a href="https://answers.unity.com/questions/618708/unity-and-mongodb-saas.html" target="_blank" class="externalLink  rel=" nofollow">For
+                        spent far too long working on this. <a href="https://answers.unity.com/questions/618708/unity-and-mongodb-saas.html" target="_blank" class="externalLink" rel="nofollow">For
                             anyone curious this post isn&#039;t exactly relevant to my issue, but it motivated me to try and fix the driver myself.</a>
                         <div class="messageTextEndMarker">&nbsp;</div>
                     </blockquote>
