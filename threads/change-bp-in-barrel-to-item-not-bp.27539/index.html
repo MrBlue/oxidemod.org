@@ -1,0 +1,475 @@
+---
+layout: forums
+title: 'Solved - Change bp in barrel to item, not bp'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/' | prepend: site.baseurl }}">Change bp in barrel to item, not bp</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">ToppDogg420</a>, <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 14, 2017 at 2:48 PM">Oct 14,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-356632" class="message" data-author="ToppDogg420">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ToppDogg420" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ToppDogg420</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;ve been looking through Assembly dll since Thursdays update to change blueprint drops back to items.<br />
+                        <br /> So far i&#039;ve found IsBlueprint() and spawnAsBlueprint(), but not managed to get it to work.<br /> I&#039;ve also looked at attempting to change the blueprint back to
+                        an item. I have seen servers that have managed this, can someone help?<br /> This is what i&#039;ve tried so far. and no luck.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntitySpawn(){
+spawnAsBlueprint = false;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (spawnAsBlueprints == null) {
+    var items = new Dictionary &lt; string,
+     object &gt; ();
+    foreach(var item in ItemManager.GetItemDefinitions()) {
+     if (item.Blueprint != null) items.Add(item.shortname, item.spawnAsBlueprint);
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach(var item in ItemManager.GetItemDefinitions()) {
+     if (item.Blueprint != null &amp;&amp; !(spawnAsBlueprints as Dictionary &lt; string, object &gt; ).ContainsKey(item.shortname)) {
+      spawnAsBlueprint.Add(item.shortname, item.spawnAsBlueprint);
+      changed = true;
+     }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1507986706][/DOUBLEPOST]I don&#039;t want to remove it compeletly, just change bp.item back to a normal item.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnEntitySpawned(BaseNetworkable entity)
+        {
+            var lootContainer = entity as LootContainer;
+            if (lootContainer?.inventory?.bpList == null)
+                return;            foreach (var item in lootContainer.inventory.bpList.ToList())
+            {
+                item.RemoveFromWorld();
+                item.RemoveFromContainer();
+            }
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1507987366][/DOUBLEPOST]Somehow i managed to change ALL items into blueprints but not the other way around?? <br />
+                        <br />
+                        <a href="https://i.imgur.com/VEkpk3c.png" target="_blank" class="externalLink  rel=" nofollow">https://i.imgur.com/VEkpk3c.png</a><br />
+                        [DOUBLEPOST=1507987647][/DOUBLEPOST]Recently managed to turn Scrap into blueprints but still can&#039;t revert it.<br />
+                        <br />
+                        <a href="https://i.imgur.com/Q93WCxh.png" target="_blank" class="externalLink  rel=" nofollow">https://i.imgur.com/Q93WCxh.png</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ToppDogg420</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 2:48 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/356632/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356637" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You need to get the blueprint target ID and then create an item using it and replace it. I can see you&#039;ve
+                        looked at Simple Loot from that code, so use a similar method to remove the item and replace it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356637' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:25 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356637' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356637/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356639" class="message" data-author="ToppDogg420">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ToppDogg420" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ToppDogg420</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yeah i&#039;ve looked at quite alot todo with the blueprints to figure it out, but so far it&#039;s taken 12 hours
+                        of my day since Thursday, my head hurts but i&#039;ll keep trying until i get it working.<br /> [DOUBLEPOST=1507991546][/DOUBLEPOST]Would it be this? <br />
+                        <a href="https://i.imgur.com/UBkvDSg.png" target="_blank" class="externalLink  rel=" nofollow">https://i.imgur.com/UBkvDSg.png</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ToppDogg420</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356639' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:28 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356639' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356639/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356641" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void OnEntitySpawned(BaseNetworkable entity)
+        {
+            var lootContainer = entity as LootContainer;
+            if (lootContainer?.inventory?.itemList == null)
+                return;            foreach (var item in lootContainer.inventory.itemList.ToList())
+            {
+                item.RemoveFromWorld();
+                item.RemoveFromContainer();
+            }            lootContainer.PopulateLoot();
+            foreach (var blueprint in lootContainer.inventory.itemList.Where(x =&gt; x.IsBlueprint()))
+            {
+                var item = ItemManager.CreateByItemID(blueprint.blueprintTarget);
+                var slot = blueprint.position;
+                blueprint.RemoveFromWorld();
+                blueprint.RemoveFromContainer();
+                item.MoveToContainer(lootContainer.inventory, slot);
+            }
+        }</pre>{% endraw %}
+                        </div>That should work, though I haven&#039;t tested it. Not sure why you&#039;re even doing this though (blueprints don&#039;t drop by default), unless you&#039;re trying to
+                        only target specific containers. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356641' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:33 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356641' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356641/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356642" class="message" data-author="ToppDogg420">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ToppDogg420" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ToppDogg420</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yeah they made items that cause clutter, like table, chair, stone barricade spawn as a Blueprint and not an item
+                        as of Thursday. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ToppDogg420</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356642' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:35 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356642' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356642/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356643" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ToppDogg420">
+                            <aside>
+                                <div class="attribution type">ToppDogg420 said: <a href="#post-356642" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah they made items that cause clutter, like table, chair, stone barricade spawn as a Blueprint and not an item as of Thursday.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I see, my bad. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356643' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:35 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356643' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356643/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356644" class="message" data-author="ToppDogg420">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ToppDogg420" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ToppDogg420</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-356643" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I see, my bad.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hey that worked, but causes this in console. <a href="https://i.imgur.com/3lhRgK8.png" target="_blank" class="externalLink  rel="
+                            nofollow">https://i.imgur.com/3lhRgK8.png</a><br />
+                        <br /> Then i get kicked for packet flooding : s <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 14, 2017 at 3:55 PM">Oct 14, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ToppDogg420</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356644' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 3:39 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356644' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356644/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356651" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ToppDogg420">
+                            <aside>
+                                <div class="attribution type">ToppDogg420 said: <a href="#post-356644" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hey that worked, but causes this in console. <a href="https://i.imgur.com/3lhRgK8.png" target="_blank" class="externalLink  rel="
+                                            nofollow">https://i.imgur.com/3lhRgK8.png</a><br />
+                                        <br /> Then i get kicked for packet flooding : s</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oops.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>           foreach(var blueprint in lootContainer.inventory.itemList.Where(x =&gt; x.IsBlueprint()).ToList())
+           {
+               var item = ItemManager.CreateByItemID(blueprint.blueprintTarget);
+               var slot = blueprint.position;
+                blueprint.RemoveFromWorld();
+                blueprint.RemoveFromContainer();
+                item.MoveToContainer(lootContainer.inventory, slot);
+           }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356651' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 4:02 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356651' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356651/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-356652" class="message" data-author="ToppDogg420">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ToppDogg420" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ToppDogg420</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-356651" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Oops.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>           foreach(var blueprint in lootContainer.inventory.itemList.Where(x =&gt; x.IsBlueprint()).ToList())
+           {
+               var item = ItemManager.CreateByItemID(blueprint.blueprintTarget);
+               var slot = blueprint.position;
+                blueprint.RemoveFromWorld();
+                blueprint.RemoveFromContainer();
+                item.MoveToContainer(lootContainer.inventory, slot);
+           }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That fixed it, Thanks.<br /> rep+ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ToppDogg420</a>,</span>
+                        <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356652' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2017 at 4:13 PM">Oct 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-bp-in-barrel-to-item-not-bp.27539/#post-356652' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/356652/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

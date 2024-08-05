@@ -1,0 +1,287 @@
+---
+layout: forums
+title: 'Solved - Calling my core plugin? (C#)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/calling-my-core-plugin-c.8648/' | prepend: site.baseurl }}">Calling my core plugin? (C#)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">TDC |
+            Insnee</a>, <a href="{{ '/threads/calling-my-core-plugin-c.8648/' | prepend: site.baseurl }}"><span class="DateTime" title="May 20, 2015 at 11:38 PM">May 20, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-90746" class="message" data-author="TDC | Insnee">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TDC | Insnee" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TDC | Insnee</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What I&#039;m doing wrong? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System;
+using System.Reflection;
+using System.Text;
+using UnityEngine;
+using Oxide.Core;namespace Oxide.Plugins {
+    [Info(&quot;TDCCore&quot;, &quot;Insane&quot;, &quot;0.0.1&quot;, ResourceId = 851)]    class TDCCore: RustPlugin    { 
+            
+      [HookMethod(&quot;testm&quot;)]
+      public String testm() {
+            return &quot;WORKING HOOK&quot;;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using System;
+using System.Reflection;
+using System.Text;
+using UnityEngine;using Oxide.Core;
+using Oxide.Core.Configuration;
+using Oxide.Core.Plugins;namespace Oxide.Plugins {
+    [Info(&quot;InfoPlugin&quot;, &quot;Insane&quot;, &quot;0.0.1&quot;, ResourceId = 851)]    class InfoPlugin: RustPlugin    {
+        [PluginReference(&quot;TDCCore&quot;)]
+        private Plugin TDCCore;        [ChatCommand(&quot;help&quot;)]
+        void help(BasePlayer player, string command, string[] args) {
+            // ... .... .... /
+            try {
+                player.ChatMessage(TDCCore.CallHook(&quot;testm&quot;, null).ToString());
+            } catch (Exception ex) {
+                Puts(ex.ToString());
+            }
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 12:44 AM [Info] System.NullReferenceException: Object reference not set to an instance of an object  at Oxide.Plugins.InfoPlugin.help (.BasePlayer player, System.String command, System.String[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div><br /> Solution:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[PluginReference(&quot;TDC_Core&quot;)] Plugin PTDCCore;
+...
+PTDCCore.Call(&quot;method&quot;, arg1, arg2, arg3);
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 21, 2015 at 6:18 PM">May 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TDC | Insnee</a>,</span>
+                        <a href="{{ '/threads/calling-my-core-plugin-c.8648/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 20, 2015 at 11:38 PM">May 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-my-core-plugin-c.8648/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90746/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-90750" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Check if tddcore is null also make your hook method private. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90750' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 21, 2015 at 12:01 AM">May 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90750' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90750/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-90759" class="message" data-author="TDC | Insnee">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TDC | Insnee" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TDC | Insnee</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">tdccore is null<br /> How can I fix this? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 21, 2015 at 1:17 AM">May 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TDC | Insnee</a>,</span>
+                        <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90759' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 21, 2015 at 12:29 AM">May 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90759' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90759/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-90833" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TDC | Insnee">
+                            <aside>
+                                <div class="attribution type">TDC | Insnee said: <a href="#post-90759" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">tdccore is null<br /> How can I fix this?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The plugin reference only needs a value if you can&#039;t use the class (or filename when referencing a Lua/Py/JS plugin) of the plugin as the variable so in most cases
+                        something like this will be sufficient to create a reference to the plugin MyPlugin.cs with the class MyPlugin:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference] Plugin MyPlugin;</pre>{% endraw %}
+                        </div>If you would try to reference to the teleportation plugin m-Teleportation.lua you would have to use a value:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference(&quot;m-Teleportation&quot;)] Plugin Teleporter;</pre>{% endraw %}
+                        </div>This should create the plugin reference if both plugins are loaded. To actually call a method in the referenced plugin you use the method Call(method, args[])<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool running = MyPlugin?.Call(&quot;IsRunning&quot;);
+string msg = MyPlugin?.Call(&quot;GetMessage&quot;, &quot;WelcomeMessage&quot;);</pre>{% endraw %}
+                        </div>Something you always need to be aware of is that the call will only work for private methods. If you want some more examples you could have a look at the plugin overview
+                        of the DeadPlayersList where I&#039;ve added examples how to call the methods of DeadPlayersList from another plugin. (<a
+                            href="http://oxidemod.org/plugins/deadplayerslist.696/" class="internalLink">http://oxidemod.org/plugins/deadplayerslist.696/</a>) <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90833' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 21, 2015 at 7:22 AM">May 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90833' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90833/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-90861" class="message" data-author="TDC | Insnee">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TDC | Insnee" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TDC | Insnee</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thank you so far.<br /> Another question:<br /> To send arguments, the normal way should be sth. like<br />
+                        .Call(&quot;method&quot;, new Object[]{&quot;string&quot;,12})<br /> How can I do this with Oxide Plugin System?<br />
+                        <br />
+                        <br /> Edit: K, simply add arg to arg with commas <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 21, 2015 at 11:15 AM">May 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TDC | Insnee</a>,</span>
+                        <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90861' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 21, 2015 at 10:57 AM">May 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-my-core-plugin-c.8648/#post-90861' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90861/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,177 @@
+---
+layout: forums
+title: 'Solved - Calling another plugin&#039;s hooks fail'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/' | prepend: site.baseurl }}">Calling another plugin&#039;s hooks fail</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">theconezone</a>, <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 16, 2015 at 9:09 PM">Nov 16,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-144277" class="message" data-author="theconezone">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="theconezone" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">theconezone</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I am attempting to use RustIO FriendlyFire&#039;s EnableBypass and DisableBypass methods. Below is the code I am
+                        using:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference]
+Plugin FriendlyFire;[ChatCommand(&quot;test&quot;)]
+void Test(BasePlayer player, string command, string[] args) {
+   //check if friendlyfire plugin was loaded
+   if (FriendlyFire != null) {
+     //call FriendlyFire.EnabeBypass(player.userID)
+     object result = FriendlyFire.Call(&quot;EnableBypass&quot;, player.userID);     //Check if the hook was found and called successfully
+     if (result is bool) {
+       //output result
+       SendReply(player, &quot;FriendlyFire bypassed? {0}&quot;, (bool) result);
+     } else {
+       //FriendlyFire isn't loaded.
+       SendReply(player, &quot;FriendlyFire plugin is not loaded anymore.&quot;);
+     }
+   } else {
+     //FriendlyFire isn't loaded.
+     SendReply(player, &quot;FriendlyFire plugin is not loaded.&quot;);
+   }
+}</pre>{% endraw %}
+                        </div>The definition for RustIO&#039;s EnableBypass and DisableBypass are below:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[LibraryFunction(&quot;EnableBypass&quot;)]
+public bool EnableBypass(object playerId) { ... }
+[LibraryFunction(&quot;DisableBypass&quot;)]
+public bool DisableBypass(object playerId) { ... }</pre>{% endraw %}
+                        </div>The call to FriendlyFire.Call is returning null (as I tested with FriendlyFire.Call&lt;bool&gt; before), but I do not understand why. Both plugins are correctly
+                        loaded:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] Listing 44 plugins:
+01 &quot;Rust:IO for Oxide&quot; (2.7.0) by playrust.io / dcode (5.59s)
+...
+27 &quot;FriendlyFire&quot; (1.5.1) by playrust.io / dcode (0.33s)
+...
+36 &quot;Test&quot; (0.1.0) by cone (0.00s)</pre>{% endraw %}
+                        </div>The calls should be working, but are not. I would appreciate any help in understanding what is going on here.<br />
+                        <br /> Obviously, friendly fire is not being bypassed. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">theconezone</a>,</span>
+                        <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 16, 2015 at 9:09 PM">Nov 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144277/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144278" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I believe the methods/hooks you are calling would need to be private, not public. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/#post-144278' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 16, 2015 at 9:16 PM">Nov 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/#post-144278' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/144278/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144280" class="message" data-author="theconezone">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="theconezone" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">theconezone</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-144278" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I believe the methods/hooks you are calling would need to be private, not public.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yup. That was the fix. I&#039;ll post a bug in the FriendlyFire thread.<br />
+                        <br /> Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">theconezone</a>,</span>
+                        <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/#post-144280' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 16, 2015 at 9:23 PM">Nov 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-another-plugins-hooks-fail.12822/#post-144280' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/144280/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

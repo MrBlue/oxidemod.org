@@ -1,0 +1,219 @@
+---
+layout: forums
+title: 'Unable to call hook directly warning with custom extension'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/' | prepend: site.baseurl }}">Unable to call hook directly warning with custom extension</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Jackjan</a>, <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 28, 2016 at 2:01 AM">Jul 28, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-236076" class="message" data-author="Jackjan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Jackjan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Jackjan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello guys,<br />
+                        <br />
+                        <br /> i&#039;m creating an extension to do advanced stuff outside the sandbox (mostly IO) but whenever my methods, which are hooked onto server events, are called, the console
+                        prints the warning in the title.<br />
+                        <br /> Here are my basic classes:<br />
+                        <br /> Extension:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using Oxide.Core;
+using Oxide.Core.Extensions;
+using System;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using Oxide.Ext.Hive.Plugins;namespace Oxide.Ext.Hive.HiveExtension
+{
+    public class HiveExtension : Extension
+    {        public override string Name
+        {
+            get
+            {
+                return &quot;Hive&quot;;
+            }
+        }        public override string Author
+        {
+            get
+            {
+                return &quot;Maverick Applications&quot;;
+            }
+        }        public override VersionNumber Version
+        {
+            get
+            {
+                return new VersionNumber(0, 1, 4);
+            }
+        }        public HiveExtension(ExtensionManager manager) : base(manager)
+        {
+        }        public override void Load()
+        {
+            Manager.RegisterPluginLoader(new HivePluginLoader());
+        }
+    }
+}</pre>{% endraw %}
+                        </div><br /> PluginLoader:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using Oxide.Core.Plugins;namespace Oxide.Ext.Hive.Plugins
+{
+    public class HivePluginLoader : PluginLoader
+    {
+        public HivePluginLoader()
+        {
+        }        public override Type[] CorePlugins
+        {
+            get
+            {
+                return new Type[] { typeof(HiveCore) };
+            }
+        }        public override Plugin Load(string directory, string name)
+        {
+            HiveCore plug = new HiveCore();
+            LoadedPlugins.Add(name, plug);
+            return plug;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Core plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using Oxide.Core.Plugins;
+using Oxide.Plugins;namespace Oxide.Ext.Hive
+{
+    public class HiveCore : RustPlugin
+    {
+        public HiveCore()
+        {
+          
+        }        [HookMethod(&quot;OnServerSave&quot;)]
+        void OnServerSave()
+        {
+            Puts(&quot;OnServerSave works!&quot;);
+        }        [HookMethod(&quot;Init&quot;)]
+        void Init()
+        {
+            Puts(&quot;Hello!&quot;);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>I hope you can help me <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Greetings,<br /> Jackjan <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Jackjan</a>,</span>
+                        <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 28, 2016 at 2:01 AM">Jul 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236076/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-236082" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Extension plugins should be using CSPlugin, not RustPlugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/#post-236082' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 28, 2016 at 2:16 AM">Jul 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/#post-236082' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236082/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-236246" class="message" data-author="Jackjan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Jackjan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Jackjan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Oh wow, so easy <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /> Thank you very much <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Jackjan</a>,</span>
+                        <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/#post-236246' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 28, 2016 at 3:25 PM">Jul 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-call-hook-directly-warning-with-custom-extension.19950/#post-236246' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236246/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

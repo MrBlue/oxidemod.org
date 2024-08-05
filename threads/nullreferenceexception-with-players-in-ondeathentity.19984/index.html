@@ -1,0 +1,275 @@
+---
+layout: forums
+title: 'Solved - NullReferenceException with players in OnDeathEntity'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/' | prepend: site.baseurl }}">NullReferenceException with
+            players in OnDeathEntity</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kuhulin</a>, <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 29, 2016 at 11:52 PM">Jul 29, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-236731" class="message" data-author="Kuhulin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuhulin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuhulin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ohh..Please help me.<br /> I try do Rank System, but have error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(01:30:24) | [Oxide] 01:30 [Error] Failed to call hook 'OnEntityDeath' on plugin 'drank v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+(01:30:24) | [Oxide] 01:30 [Debug]   at Oxide.Plugins.Drank.OnEntityDeath (.BaseCombatEntity entity, .HitInfo info) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Drank.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>My code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+        {
+            if(entity.ToPlayer())
+            {
+                BasePlayer player = BasePlayer.FindByID(entity.ToPlayer().userID);
+                if(info.Initiator == player)
+                {
+                    UpSuicide(player);
+                    return;
+                }
+                if (!info.Initiator.ToPlayer())
+                {
+                    UpDeath(player);
+                    return;
+                }
+                else
+                {
+                    BasePlayer killer = BasePlayer.FindByID(info.Initiator.ToPlayer().userID);
+                    UpDeath(player);
+                    UpKill(killer);
+                    return;
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>If you death by player or suicide - normal. but if you die by Fall/bear/wolf - error... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuhulin</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 29, 2016 at 11:52 PM">Jul 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236731/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-236732" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Don&#039;t assume that the entity is a player, it can be something else too. Set player variables and check if
+                        they are null before trying to use them. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 29, 2016 at 11:55 PM">Jul 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236732' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236732/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-236738" class="message" data-author="Kuhulin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuhulin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuhulin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-236732" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Don&#039;t assume that the entity is a player, it can be something else too. Set player variables and check if they are null before trying to use
+                                        them.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>But i check &quot;if(entity.ToPlayer())&quot; or don&#039;t it? I can&#039;t understend where i must check...<br /> [DOUBLEPOST=1469836299][/DOUBLEPOST] <div
+                            class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+        {
+            if(entity != null &amp;&amp; entity is BasePlayer)
+            {
+                var player = entity as BasePlayer;
+                var killer = info.Initiator as BasePlayer;
+                if (killer == player)
+                {
+                    UpSuicide(player);
+                    return;
+                }
+                if (killer == null)
+                {
+                    UpDeath(player);
+                    return;
+                }
+                else
+                {
+                    UpDeath(player);
+                    UpKill(killer);
+                    return;
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>I don&#039;t know how i did it. It&#039;s magic for me but it work. Solved. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuhulin</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236738' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 30, 2016 at 12:27 AM">Jul 30, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236738' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236738/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-236752" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kuhulin">
+                            <aside>
+                                <div class="attribution type">Kuhulin said: <a href="#post-236738" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">But i check &quot;if(entity.ToPlayer())&quot; or don&#039;t it? I can&#039;t understend where i must check...<br />
+                                        [DOUBLEPOST=1469836299][/DOUBLEPOST] <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+        {
+            if(entity != null &amp;&amp; entity is BasePlayer)
+            {
+                var player = entity as BasePlayer;
+                var killer = info.Initiator as BasePlayer;
+                if (killer == player)
+                {
+                    UpSuicide(player);
+                    return;
+                }
+                if (killer == null)
+                {
+                    UpDeath(player);
+                    return;
+                }
+                else
+                {
+                    UpDeath(player);
+                    UpKill(killer);
+                    return;
+                }
+            }
+        }</pre>{% endraw %}
+                                        </div>I don&#039;t know how i did it. It&#039;s magic for me but it work. Solved.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The NRE was with your FindByID, as you were assuming that that the player would be there, but it wasn&#039;t and was erroring on the userID as not all entities have a
+                        userID. You fixed it by doing away with that and casting to BasePlayer instead, which is fine, or you can keep ToPlayer() and then get the userID from that later if needed, but
+                        you don&#039;t seem to need it and you didn&#039;t need FindByID before either really. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236752' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 30, 2016 at 12:58 AM">Jul 30, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-with-players-in-ondeathentity.19984/#post-236752' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/236752/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

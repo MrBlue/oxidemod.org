@@ -1,0 +1,1020 @@
+---
+layout: forums
+title: 'Function compatible with both BasePlayer and IPlayer?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/' | prepend: site.baseurl }}">Function compatible with both BasePlayer and IPlayer?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Shytoos</a>, <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Nov 10, 2016 at 1:56 PM">Nov 10, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-267279" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Greetings,<br />
+                        <br />
+                        <br /> I made a small plugin to be able to use my automated VIP WebPanel on Rust, so people can buy the VIP rank for a limited time.<br />
+                        <br /> The problem is that, it&#039;s using the user&#039;s SteamID to identify him, so I can get the SteamID from a BasePlayer object, but not from IPlayer.<br />
+                        <br /> Here is the interesting part from my Plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private bool IsPlayerVip(object player) {
+    if (player == null)
+        throw new ArgumentException(&quot;player&quot;);    if (player is ulong)
+        return playerVip[((ulong)player).ToString()];
+    else if (player is BasePlayer)
+        return playerVip[(player as BasePlayer).userID.ToString()];
+    
+    return false;
+}</pre>{% endraw %}
+                        </div>Is there any way to make it compatible with IPlayer ?<br /> For example, it will work with:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Example(BasePlayer player)
+{
+    var example = 1.0;    if ((bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player) == true)
+        example = 1.5;    //[...]
+}</pre>{% endraw %}
+                        </div>but not with something like<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void Example(IPlayer player)
+{
+    var example = 1.0;    if ((bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player) == true)
+        example = 1.5;    //[...]
+}</pre>{% endraw %}
+                        </div><br /> Could anyone help me?<br />
+                        <br /> Thanks for reading. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2016 at 1:56 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267279/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267280" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Pass something generic like a string or ulong, not the entire object. Return true or false based on if they are
+                        VIP or not. There&#039;s no need to pass the entire object for a method like that.<br />
+                        <br />
+                        <b>Example of usage:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool IsPlayerVip(string id) =&gt; playerVip.Contains(id)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267280' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 1:57 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267280' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267280/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267283" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok, but how can I get the SteamID from IPlayer, if I use something like:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private bool IsPlayerVip(string playerID) {
+    return playerVip[playerID];
+}</pre>{% endraw %}
+                        </div>Because the bool is actually stocked in, for example, playerVip[76561190000000000]<br />
+                        <br /> So if I call it this way:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>VipManager?.Call(&quot;IsPlayerVip&quot;, entity.userID.ToString())</pre>{% endraw %}
+                        </div>I will still have the same problem, I wouldn&#039;t be able to do that with IPlayer since there is no userID inside.<br />
+                        <br />
+                        <br /> Thanks for your fast answer by the way!<br />
+                        <br /> EDIT:<br />
+                        <br /> That may help, it&#039;s how the variable is defined according to the MySQL result:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var sql = Sql.Builder.Append(&quot;SELECT * FROM vip_users WHERE steamid = @0 AND vip_date &gt; @1&quot;, player.userID, DateTime.UtcNow);_mySql.Query(sql, _mySqlConnection, list =&gt;
+{
+    if (list.Count &gt; 0) {
+        playerVip[player.userID.ToString()] = true;
+    } else {
+        playerVip[player.userID.ToString()] = false;
+    }
+});</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267283' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:04 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267283' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267283/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267285" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-267283" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, but how can I get the SteamID from IPlayer, if I use something like:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private bool IsPlayerVip(string playerID) {
+    return playerVip[playerID];
+}</pre>{% endraw %}
+                                        </div>Because the bool is actually stocked in, for example, playerVip[76561190000000000]<br />
+                                        <br /> So if I call it this way:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>VipManager?.Call(&quot;IsPlayerVip&quot;, entity.userID.ToString())</pre>{% endraw %}
+                                        </div>I will still have the same problem, I wouldn&#039;t be able to do that with IPlayer since there is no userID inside.<br />
+                                        <br />
+                                        <br /> Thanks for your fast answer by the way!
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>IPlayer contains the steamid (as a string) in the `<i>Id</i>` field so taking your IPlayer example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Example(IPlayer player)
+{
+    var example = 1.0;
+    //------------------------------------------------v
+    if ((bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id) == true)
+        example = 1.5;    //[...]
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267285' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:08 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267285' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267285/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267288" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok thank you for that, so now my function looks like that:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private bool IsPlayerVip(string playerID) {
+    return playerVip[playerID];
+}</pre>{% endraw %}
+                        </div>So I tried to call it from another plugin using IPlayer :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id)</pre>{% endraw %}
+                        </div>And I get this error :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Cannot cast from source type to destination type.</pre>{% endraw %}
+                        </div><br /> EDIT:<br />
+                        <br /> By the way, it&#039;s still working fine with BasePlayer using:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.userID.ToString()</pre>{% endraw %}
+                        </div>And with IPlayer I tried both :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id)
+(bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id.ToString())</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267288' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:18 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267288' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267288/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267290" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-267288" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok thank you for that, so now my function looks like that:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private bool IsPlayerVip(string playerID) {
+    return playerVip[playerID];
+}</pre>{% endraw %}
+                                        </div>So I tried to call it from another plugin using IPlayer :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>(bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id)</pre>{% endraw %}
+                                        </div>And I get this error :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Cannot cast from source type to destination type.</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Firstly, I&#039;d check if the playerVip.Contains it before trying to return a bool, otherwise you&#039;ll run into NREs. I&#039;d also check if VipManager is null before
+                        trying to cast to bool, else you&#039;ll also get NREs if someone doesn&#039;t have it installed. Could you post the full error as well along with the full code snippet you are
+                        using the call in? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267290' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:20 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267290' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267290/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267291" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Sure, I&#039;m getting this error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 15:21 [Error] Failed to call hook 'IsPlayerVip' on plugin 'VipManager v1.0.0' (InvalidCastException: Cannot cast from source type to destination type.)
+[Oxide] 15:21 [Debug]   at Oxide.Plugins.VipManager.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 15:21 [Error] Failed to call hook 'Unload' on plugin 'PlaytimeTracker v0.1.31' (NullReferenceException: Object reference not set to an instance of an object)
+[Oxide] 15:21 [Debug]   at Oxide.Plugins.PlaytimeTracker.GetRewardMultiplier (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.AddPoints (IPlayer player, Int32 amount) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.CheckForReward (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.AddTime (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.OnUserDisconnected (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.Unload () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>And I&#039;m trying to call it from the PlaytimeTracker plugin :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object GetRewardMultiplier(IPlayer player)
+{
+    if ((bool)VipManager?.Call(&quot;IsPlayerVip&quot;, ulong.Parse(player.Id).ToString()) == true)
+        return 2f;    foreach (var perm in permData.permissions)
+        if (permission.UserHasPermission(player.Id, perm.Key))
+            return perm.Value;
+    return null;
+}</pre>{% endraw %}
+                        </div>I&#039;m going to add the verifications, but I thought using a question mark after &quot;VipManager?&quot; was something like &quot;Only if declared&quot;.<br />
+                        <br />
+                        <br /> EDIT:<br />
+                        <br /> And yeah, I also tried ulong.Parse(player.Id).ToString() as you can see ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267291' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:25 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267291' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267291/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267293" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-267291" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sure, I&#039;m getting this error:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Oxide] 15:21 [Error] Failed to call hook 'IsPlayerVip' on plugin 'VipManager v1.0.0' (InvalidCastException: Cannot cast from source type to destination type.)
+[Oxide] 15:21 [Debug]   at Oxide.Plugins.VipManager.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 15:21 [Error] Failed to call hook 'Unload' on plugin 'PlaytimeTracker v0.1.31' (NullReferenceException: Object reference not set to an instance of an object)
+[Oxide] 15:21 [Debug]   at Oxide.Plugins.PlaytimeTracker.GetRewardMultiplier (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.AddPoints (IPlayer player, Int32 amount) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.CheckForReward (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.AddTime (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.OnUserDisconnected (IPlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.Unload () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.PlaytimeTracker.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                                        </div>And I&#039;m trying to call it from the PlaytimeTracker plugin :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>object GetRewardMultiplier(IPlayer player)
+{
+    if ((bool)VipManager?.Call(&quot;IsPlayerVip&quot;, ulong.Parse(player.Id).ToString()) == true)
+        return 2f;    foreach (var perm in permData.permissions)
+        if (permission.UserHasPermission(player.Id, perm.Key))
+            return perm.Value;
+    return null;
+}</pre>{% endraw %}
+                                        </div>I&#039;m going to add the verifications, but I thought using a question mark after &quot;VipManager?&quot; was something like &quot;Only if
+                                        declared&quot;.<br />
+                                        <br />
+                                        <br /> EDIT:<br />
+                                        <br /> And yeah, I also tried ulong.Parse(player.Id).ToString() as you can see ^^
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Why would you try converting a string to a ulong and back to a string? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /><br />
+                        <br /> Could I see the code for your IsPlayerVip? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267293' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:32 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267293' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267293/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267295" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> There are the parts you may want to see:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private List&lt;string&gt; playerVip = new List&lt;string&gt;();public void refreshUser(BasePlayer player)
+{
+    var sql = Sql.Builder.Append(&quot;SELECT * FROM vip_users WHERE steamid = @0 AND vip_date &gt; @1&quot;, player.userID, DateTime.UtcNow);    _mySql.Query(sql, _mySqlConnection, list =&gt;
+    {
+        var playerID = player.userID.ToString();
+        if (list.Count &gt; 0 &amp;&amp; !playerVip.Contains(playerID)) {
+            playerVip.Add(playerID);
+        } else if (list.Count == 0 &amp;&amp; playerVip.Contains(playerID)) {
+            playerVip.Remove(playerID);
+        }
+    });
+}[HookMethod(&quot;IsPlayerVip&quot;)]
+private bool IsPlayerVip(string playerID) {
+    return (bool)playerVip.Contains(playerID);
+}</pre>{% endraw %}
+                        </div>Everything around is just related to the Database connection which is working fine <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> It&#039;s working great with this function from GatherManager:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnCollectiblePickup(Item item, BasePlayer player)
+{
+    var vipMult = 1.0;    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.userID.ToString()) == true)
+        vipMult = 1.5;
+              
+    if (PickupResourceModifiers.ContainsKey(item.info.displayName.english))
+        item.amount = (int)(item.amount * PickupResourceModifiers[item.info.displayName.english] * vipMult);
+    else if (PickupResourceModifiers.ContainsKey(&quot;*&quot;))
+        item.amount = (int)(item.amount * PickupResourceModifiers[&quot;*&quot;] * vipMult);
+}</pre>{% endraw %}
+                        </div>but not with this one, so I don&#039;t really understand ^^<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object GetRewardMultiplier(IPlayer player)
+{
+    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id) == true)
+        return 2.0f;    foreach (var perm in permData.permissions)
+        if (permission.UserHasPermission(player.Id, perm.Key))
+            return perm.Value;
+    return null;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267295' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 10, 2016 at 2:41 PM">Nov 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267295' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267295/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267662" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>, Bump, I think you forgot about my thread ^^ <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267662' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 11, 2016 at 6:25 PM">Nov 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267662' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267662/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267666" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-267295" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">There are the parts you may want to see:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private List&lt;string&gt; playerVip = new List&lt;string&gt;();public void refreshUser(BasePlayer player)
+{
+    var sql = Sql.Builder.Append(&quot;SELECT * FROM vip_users WHERE steamid = @0 AND vip_date &gt; @1&quot;, player.userID, DateTime.UtcNow);    _mySql.Query(sql, _mySqlConnection, list =&gt;
+    {
+        var playerID = player.userID.ToString();
+        if (list.Count &gt; 0 &amp;&amp; !playerVip.Contains(playerID)) {
+            playerVip.Add(playerID);
+        } else if (list.Count == 0 &amp;&amp; playerVip.Contains(playerID)) {
+            playerVip.Remove(playerID);
+        }
+    });
+}[HookMethod(&quot;IsPlayerVip&quot;)]
+private bool IsPlayerVip(string playerID) {
+    return (bool)playerVip.Contains(playerID);
+}</pre>{% endraw %}
+                                        </div>Everything around is just related to the Database connection which is working fine <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                                        <br /> It&#039;s working great with this function from GatherManager:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private void OnCollectiblePickup(Item item, BasePlayer player)
+{
+    var vipMult = 1.0;    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.userID.ToString()) == true)
+        vipMult = 1.5;
+            
+    if (PickupResourceModifiers.ContainsKey(item.info.displayName.english))
+        item.amount = (int)(item.amount * PickupResourceModifiers[item.info.displayName.english] * vipMult);
+    else if (PickupResourceModifiers.ContainsKey(&quot;*&quot;))
+        item.amount = (int)(item.amount * PickupResourceModifiers[&quot;*&quot;] * vipMult);
+}</pre>{% endraw %}
+                                        </div>but not with this one, so I don&#039;t really understand ^^<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>object GetRewardMultiplier(IPlayer player)
+{
+    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id) == true)
+        return 2.0f;    foreach (var perm in permData.permissions)
+        if (permission.UserHasPermission(player.Id, perm.Key))
+            return perm.Value;
+    return null;
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Rust has player.UserIDString by the way, I&#039;d use that over ToString(). You also do not need [HookMethod(&quot;IsPlayerVip&quot;)].<br />
+                        <br /> Is player.Id showing as a string in Visual Studio? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267666' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 11, 2016 at 6:27 PM">Nov 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267666' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267666/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267667" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-267666" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Rust has player.UserIDString by the way, I&#039;d use that over ToString(). You also do not need [HookMethod(&quot;IsPlayerVip&quot;)].</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s okay thank you, I removed the HookMethod and I turned userID.ToString() into UserIDString, and it&#039;s working fine.<br />
+                        <br /> But that still doesn&#039;t fix the problem with the IPlayer function from PlaytimeTracker, how can I see if it&#039;s showing up as a string? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267667' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 11, 2016 at 6:34 PM">Nov 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267667' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267667/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-267668" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-267667" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s okay thank you, I removed the HookMethod and I turned userID.ToString() into UserIDString, and it&#039;s working fine.<br />
+                                        <br /> But that still doesn&#039;t fix the problem with the IPlayer function from PlaytimeTracker, how can I see if it&#039;s showing up as a string?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Visual Studio should show you, otherwise try printing ToString() and see if it makes a difference. The player.Id from IPlayer should be a string though. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267668' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 11, 2016 at 6:37 PM">Nov 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-267668' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/267668/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-268745" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Sorry for the late answer, I&#039;ve been really busy these days.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-267668" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Visual Studio should show you, otherwise try printing ToString() and see if it makes a difference. The player.Id from IPlayer should be a string
+                                        though.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh hum.. I&#039;m not using Visual Studio, but I really don&#039;t understand, I don&#039;t have any error anymore, but it still doesn&#039;t work, and we all get the
+                        default amount of RP every X minutes.<br />
+                        <br /> Here&#039;s what the function looks like:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void AddPoints(IPlayer player, int amount)
+{
+    object multiplier = GetRewardMultiplier(player);
+    if (multiplier == null) multiplier = 1f;
+    var vipMult = 1f;
+    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id) == true)
+        vipMult = 2f;
+    amount = Convert.ToInt32(Math.Floor(amount * (float)multiplier) * (float)vipMult);
+    #if RUST
+    if (ServerRewards &amp;&amp; configData.RewardSystem.RewardPlugins.Rust.ServerRewards)
+        ServerRewards?.Call(&quot;AddPoints&quot;, ulong.Parse(player.Id), amount);    if (Economics &amp;&amp; configData.RewardSystem.RewardPlugins.Rust.Economics)
+        Economics?.Call(&quot;Deposit&quot;, ulong.Parse(player.Id), (double)amount);
+    #endif    #if HURTWORLD
+    if (Economy &amp;&amp; configData.RewardSystem.RewardPlugins.Hurtworld.Economy)
+        Economy?.Call(&quot;AddMoney&quot;, player.Object as PlayerSession, (double)amount);
+    #endif
+    if (UEconomics &amp;&amp; configData.RewardSystem.RewardPlugins.Universal.UEconomics)         
+        UEconomics?.Call(&quot;Deposit&quot;, player.Id, amount);         
+}</pre>{% endraw %}
+                        </div>amount is equal to &quot;500&quot;, multiplier is null, so set to &quot;1f&quot;, and vipMult should be set to 2f if the Call returns true (called function can be seen
+                        above), and it is called the same way as it is called in the Gather plugin, and it works in it.<br />
+                        <br /> By the way, I edited BetterChat to show a star symbol in front of the VIP players name, and it&#039;s working great, even if it is calling the function with as an arg
+                        player.Id, so why it&#039;s not working with PlaytimeTracker, I&#039;m confused :S <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-268745' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 15, 2016 at 6:45 PM">Nov 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-268745' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/268745/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-271829" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-268745" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sorry for the late answer, I&#039;ve been really busy these days.<br />
+                                        <br />
+                                        <br />
+                                        <br /> Oh hum.. I&#039;m not using Visual Studio, but I really don&#039;t understand, I don&#039;t have any error anymore, but it still doesn&#039;t work, and
+                                        we all get the default amount of RP every X minutes.<br />
+                                        <br /> Here&#039;s what the function looks like:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void AddPoints(IPlayer player, int amount)
+{
+    object multiplier = GetRewardMultiplier(player);
+    if (multiplier == null) multiplier = 1f;
+    var vipMult = 1f;
+    if (VipManager &amp;&amp; (bool)VipManager?.Call(&quot;IsPlayerVip&quot;, player.Id) == true)
+        vipMult = 2f;
+    amount = Convert.ToInt32(Math.Floor(amount * (float)multiplier) * (float)vipMult);
+    #if RUST
+    if (ServerRewards &amp;&amp; configData.RewardSystem.RewardPlugins.Rust.ServerRewards)
+        ServerRewards?.Call(&quot;AddPoints&quot;, ulong.Parse(player.Id), amount);    if (Economics &amp;&amp; configData.RewardSystem.RewardPlugins.Rust.Economics)
+        Economics?.Call(&quot;Deposit&quot;, ulong.Parse(player.Id), (double)amount);
+    #endif    #if HURTWORLD
+    if (Economy &amp;&amp; configData.RewardSystem.RewardPlugins.Hurtworld.Economy)
+        Economy?.Call(&quot;AddMoney&quot;, player.Object as PlayerSession, (double)amount);
+    #endif
+    if (UEconomics &amp;&amp; configData.RewardSystem.RewardPlugins.Universal.UEconomics)        
+        UEconomics?.Call(&quot;Deposit&quot;, player.Id, amount);        
+}</pre>{% endraw %}
+                                        </div>amount is equal to &quot;500&quot;, multiplier is null, so set to &quot;1f&quot;, and vipMult should be set to 2f if the Call returns true (called
+                                        function can be seen above), and it is called the same way as it is called in the Gather plugin, and it works in it.<br />
+                                        <br /> By the way, I edited BetterChat to show a star symbol in front of the VIP players name, and it&#039;s working great, even if it is calling the function
+                                        with as an arg player.Id, so why it&#039;s not working with PlaytimeTracker, I&#039;m confused :S
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>All I can suggest is to add some debug output to see what the Call returns, what vipMult ends up being, etc. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-271829' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2016 at 6:56 PM">Nov 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/function-compatible-with-both-baseplayer-and-iplayer.21885/#post-271829' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/271829/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

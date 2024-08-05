@@ -1,0 +1,748 @@
+---
+layout: forums
+title: '[TUTORIAL] Execute Actions from WebRequest [LUA/PHP]'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/' | prepend: site.baseurl }}">[TUTORIAL] Execute Actions from WebRequest [LUA/PHP]</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Norn</a>, <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 14, 2015 at 10:22 PM">Jul
+                14, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-108181" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b>What exactly does this mean?<br />
+                        </b><br /> I&#039;m going to teach you how you can create simple php scripts and plugins that allow you to do some pretty cool stuff.<br />
+                        <br />
+                        <b>What&#039;s useful about that?<br />
+                        </b><br /> Well for example you can do stuff like give players items, teleport them, do whatever essentially directly from your website which doesn&#039;t need to be hosted on
+                        the same server as your gameserver.<br />
+                        <br />
+                        <b>What am I going to achieve? </b>This.<br />
+                        <br />
+                        <img src="proxy.php?image=http%3A%2F%2Fi.imgur.com%2FXHQ6ods.png&amp;hash=772ecd51e016db869b5681d0fe2fbca2" class="bbCodeImage LbImage" alt="[&#x200B;IMG]"
+                            data-url="http://i.imgur.com/XHQ6ods.png" />
+                        <img src="proxy.php?image=http%3A%2F%2Fi.imgur.com%2FlipEsEK.png&amp;hash=c291ecd6a434edbebab9fb4395c43b1a" class="bbCodeImage LbImage" alt="[&#x200B;IMG]"
+                            data-url="http://i.imgur.com/lipEsEK.png" /><br />
+                        <br />
+                        <br />
+                        <b>Difficulty Level: </b>**<br />
+                        <br /> The example I will be using in this tutorial will be a MOTD (message of the day) that you can edit via your web page and load directly in game. It pulls a string from
+                        the web page and then saves it in the motd configuration file until the timer is called and updates the string again. Players will be able to access the motd by typing
+                        &quot;/motd&quot;.<br />
+                        <br /> I will show you the process I used to create this plugin &amp; php script but I&#039;m not going to get in depth about PHP as it&#039;s irrelevant. PHP is heavily
+                        documented.<br />
+                        <br /> I started with a basic plugin:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+PLUGIN.Title = &quot;MOTD&quot;
+PLUGIN.Description = &quot;Message of the day using web requests tutorial.&quot;
+PLUGIN.Author = &quot;Norn&quot;
+PLUGIN.Version = V(1, 0, 0)
+</pre>{% endraw %}
+                        </div>I then created a bunch of variables:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+local response_string = nil -- This is the string that the response (MOTD) will be stored in.
+local receiveinterval = 10800 -- Timer interval, currently 3 hours.
+local default_motd = &quot;MOTD hasn't been loaded to webserver.&quot; -- Default motd on plugin load.
+local url = &quot;http://127.0.0.1/index/rd.php&quot; -- URL which gets requested.
+local rtimer = nil -- Used for identifying timer for destruction.
+</pre>{% endraw %}
+                        </div>Init:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:Init()
+    self:LoadDefaultConfig()
+    command.AddChatCommand(&quot;motd&quot;, self.Plugin, &quot;cmdMOTD&quot;)
+end
+</pre>{% endraw %}
+                        </div>Simply loading/generating configuration and adding the command &quot;/motd&quot;<br />
+                        <br /> Now for the configuration:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:LoadDefaultConfig()
+    self.Config.FirstUse = self.Config.FirstUse    or &quot;true&quot;
+    self.Config.MOTD = self.Config.MOTD    or default_motd
+    if(self.Config.FirstUse == &quot;true&quot;) then
+        self.Config.FirstUse = &quot;false&quot;
+        self:SaveConfig()
+    end
+end
+</pre>{% endraw %}
+                        </div>The configuration I used was just a quick simple example, essentially there are two variables. MOTD and FirstUse. FirstUse is just set to default (true) when the plugin
+                        creates the configuration file.<br />
+                        <br /> MOTD command:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:cmdMOTD(player, cmd, args)
+    rust.SendChatMessage(player, &quot;[&quot; .. self.Title.. &quot;] &quot; .. self.Config.MOTD)
+end
+</pre>{% endraw %}
+                        </div>Now for the actual web request:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:CallMOTD()
+    if(self.Config.FirstUse == &quot;false&quot;) then
+        rtimer = timer.Repeat(receiveinterval, 0, function()
+            webrequests.EnqueueGet(url, function(code, response)
+                if response == nil or code ~= 200 then
+                    print(&quot;Could not retrieve MOTD from webserver.&quot;)
+                    return
+                end
+                response_string = tostring(response)
+                print(&quot;MOTD has been loaded from web server: &quot;..response_string)
+                self.Config.MOTD = response_string
+                self:SaveConfig()
+            end, self.Plugin)
+        end, self.Plugin)
+    end
+end
+</pre>{% endraw %}
+                        </div>This function gets called once the entire script as when it&#039;s called a timer is started (at the receiveinterval), it checks FirstUse, if not then run timer. This is
+                        just an extra precaution.<br />
+                        <br /> After the request calls successfully, it stores the data in response_string. It then updates the MOTD config variable with said string before saving configuration.<br />
+                        <br /> Call timer on ServerInit (not plugin load, just incase plugin is loaded at startup)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:OnServerInitialized()
+    self:CallMOTD()
+endfunction PLUGIN:OnPluginUnloaded() -- Destroy timer
+    if rtimer then
+        rtimer:Destroy()
+    end
+end
+</pre>{% endraw %}
+                        </div><b>Now for the web side of things:<br />
+                            <br /> rd.php</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+&lt;?php
+    $file_name = &quot;rust.motd&quot;;
+    if (file_exists($file_name)) {
+        echo(file_get_contents($file_name, true));
+    }
+?&gt;
+</pre>{% endraw %}
+                        </div>Probably the easiest part, literally it does is open the file I store the message of the day in (rust.motd) and outputs it. This is what will be read by the plugin.<br />
+                        <br /> Editing the motd from webpage (<b>index.php)<br />
+                        </b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+&lt;?php
+    $file_name = &quot;rust.motd&quot;;
+    if(isset($_POST['btnSubmit'])) {
+        if(strlen($_POST['txtMOTD']) &gt;= 1) {
+            $username = $_POST['txtMOTD'];
+            $file = fopen($file_name,&quot;w&quot;);
+            fwrite($file, &quot;[&quot;.date(&quot;Y-m-d&quot;).&quot;] &quot;.$_POST['txtMOTD']);
+            fclose($file);
+        }
+    }
+    if(!file_exists($file_name)) { // Default Configuration
+        $file = fopen($file_name,&quot;w&quot;);
+        fwrite($file,&quot;MOTD has not been set.&quot;);
+        fclose($file);
+    }
+    else {
+        $motd = file_get_contents($file_name, true);
+    }
+?&gt;&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
+     &lt;input id=&quot;txtMOTD&quot; name=&quot;txtMOTD&quot; class=&quot;_input&quot; type=&quot;text&quot;&gt;
+     &lt;button id=&quot;btnSubmit&quot; name=&quot;btnSubmit&quot; class=&quot;_button&quot;&gt;Edit MOTD&lt;/button&gt;
+  &lt;/form&gt;
+</pre>{% endraw %}
+                        </div>What this does is checks if &quot;btnSubmit&quot; is clicked, if so it then checks if the textbox (txtMOTD) is not empty. If it&#039;s not empty then write the contents
+                        of txtMOTD to our &quot;rust.motd&quot; file. I also have a check to see if the &quot;rust.motd&quot; file exists upon loading of &quot;index.php&quot; if not, create it.<br />
+                        <br /> That&#039;s it, very simple yet very effective. If you get into a habit of using this sort of method you can create some pretty interesting stuff. I have scripts where I
+                        can give items/bps to people that are currently ingame and online, set hostname etc. Possibilities are endless.<br />
+                        <br /> I hope some of you find this interesting, if interest ensues I&#039;ll maybe post a more in depth tutorial. Perhaps interacting with live players using requests.<br />
+                        <br /> I&#039;ve also attached my full plugin including the web script below <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="web_side.zip">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/web_side-zip.10720/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/web_side-zip.10720/" target="_blank">web_side.zip</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>245.2 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>50</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="attachment" title="motd.lua">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/motd-lua.10721/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/motd-lua.10721/" target="_blank">motd.lua</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>1.7 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>74</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 13, 2015 at 6:22 AM">Aug 13, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2015 at 10:22 PM">Jul 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/108181/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123189" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Could you give me an example about running a console command ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123189' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 6:42 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123189' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123189/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123197" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-123189" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Could you give me an example about running a console command ?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If I could remember the actual way to send a console command in LUA I could give you a quick example yeah, I can&#039;t quite recall it atm haha. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123197' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 6:57 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123197' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123197/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123198" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Norn">
+                            <aside>
+                                <div class="attribution type">Norn said: <a href="#post-123197" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If I could remember the actual way to send a console command in LUA I could give you a quick example yeah, I can&#039;t quite recall it atm haha.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What i need is just send a command once someone presses a button on the website. Like once he presses &quot;I Agree&quot; then website will send the command
+                        &quot;whitelist.add &lt;playerName&gt;&quot; and then i handle the other stuff. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123198' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 7:02 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123198' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123198/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123203" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-123198" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What i need is just send a command once someone presses a button on the website. Like once he presses &quot;I Agree&quot; then website will send
+                                        the command &quot;whitelist.add &lt;playerName&gt;&quot; and then i handle the other stuff.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I see I see, I can think of several concepts in my head. The question is really what way do you want to generate the data dynamically in php and which way you want to
+                        read the dynamically generated data in your lua plugin. That&#039;s personal preference really, if I was going to do something like that I would make two timers, one for
+                        reading and one for writing. Sending a string back and forth that you parse in the plugin/php script.<br />
+                        <br /> That&#039;s pretty vague I know, I can maybe try a small example when I get on my pc later.<br />
+                        <br /> EDIT:<br />
+                        <br /> Or it can be done on one timer, just need to remove the old playername from whatever the php is echoing.<br />
+                        <br /> The goal here would be to make the php script do as much work as possible, to take strain off the gameserver. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123203' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 7:10 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123203' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123203/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123230" class="message" data-author="Hirsty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hirsty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hirsty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Norn.....why not just use pear scripts....im sure php has an ftp script and there are several RCON classes
+                        available - this could be done total;ly web side aapart from maybe getting the list of plugins <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hirsty</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123230' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 9:32 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123230' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123230/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123243" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hirsty">
+                            <aside>
+                                <div class="attribution type">Hirsty said: <a href="#post-123230" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Norn.....why not just use pear scripts....im sure php has an ftp script and there are several RCON classes available - this could be done
+                                        total;ly web side aapart from maybe getting the list of plugins</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Depends on preference and scale of the project I guess. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123243' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 10:06 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123243' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123243/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123251" class="message" data-author="Hirsty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hirsty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hirsty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> im sure if you are wanting to offload from the game server, youd be better using requests from the webserver
+                        rather than the game server <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hirsty</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123251' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 10:26 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123251' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123251/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123254" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hirsty">
+                            <aside>
+                                <div class="attribution type">Hirsty said: <a href="#post-123251" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">im sure if you are wanting to offload from the game server, youd be better using requests from the webserver rather than the game server</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh of course, but I&#039;m referring to my example as it&#039;s just for a simple script<br />
+                        <br /> Also the idea is to work on any free web host that allows php, a lot of them have stuff like that disabled. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123254' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 24, 2015 at 10:34 PM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-123254' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123254/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203701" class="message" data-author="lukmussulin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="lukmussulin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">lukmussulin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I had a problem in the installation when I run the script. someone can give a tip?<br />
+                        <br />
+                        <b>Warning</b>: date(): It is not safe to rely on the system&#039;s timezone settings. You are *required* to use the date.timezone setting or the date_default_timezone_set()
+                        function. In case you used any of those methods and you are still getting this warning, you most likely misspelled the timezone identifier. We selected the timezone
+                        &#039;UTC&#039; for now, but please set date.timezone to select your timezone. in <b>C:\xampp\htdocs\index\index.php</b> on line <b>7</b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">lukmussulin</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-203701' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 7, 2016 at 4:56 AM">May 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-203701' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/203701/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203743" class="message" data-author="Troubled">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Troubled" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Troubled</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="lukmussulin">
+                            <aside>
+                                <div class="attribution type">lukmussulin said: <a href="#post-203701" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I had a problem in the installation when I run the script. someone can give a tip?<br />
+                                        <br />
+                                        <b>Warning</b>: date(): It is not safe to rely on the system&#039;s timezone settings. You are *required* to use the date.timezone setting or the
+                                        date_default_timezone_set() function. In case you used any of those methods and you are still getting this warning, you most likely misspelled the timezone
+                                        identifier. We selected the timezone &#039;UTC&#039; for now, but please set date.timezone to select your timezone. in <b>C:\xampp\htdocs\index\index.php</b> on
+                                        line <b>7</b></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This is only a warning not an error. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Troubled</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-203743' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 7, 2016 at 9:44 AM">May 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-203743' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/203743/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204191" class="message" data-author="lukmussulin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="lukmussulin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">lukmussulin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I configured with Zend Server and seems to work right, but that does not send messages in the chat. may be you
+                        need to install something else on windows? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment image" title="motd.PNG">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/motd-png.21483/" target="_blank" class="LbTrigger" data-href="misc/lightbox"><img
+                                            src="data/attachments/21/21484-3f4f82309d60a028b8d574a41b832a96.jpg" alt="motd.PNG" class="LbImage" /></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/motd-png.21483/" target="_blank">motd.PNG</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>1.1 MB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>66</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">lukmussulin</a>,</span>
+                        <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-204191' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 8, 2016 at 1:58 PM">May 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/tutorial-execute-actions-from-webrequest-lua-php.10209/#post-204191' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204191/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

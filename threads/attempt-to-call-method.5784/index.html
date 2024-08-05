@@ -1,0 +1,281 @@
+---
+layout: forums
+title: 'Solved - Attempt to call method'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/attempt-to-call-method.5784/' | prepend: site.baseurl }}">Attempt to call method</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Taffy</a>, <a href="{{ '/threads/attempt-to-call-method.5784/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 17, 2014 at 8:02 PM">Oct 17, 2014</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-52597" class="message" data-author="Taffy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Taffy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Taffy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi,<br />
+                        <br /> Looking at changing the welcome message on my oxide 2 plugin so that it only appears when the wakeup button is pressed. <b>Mughisi </b>suggested that I look at the
+                        wakeup console command as it can be intercepted with the OnRunCommand which is a good shout.<br />
+                        <br /> So I copied the code I was using from the OnPlayerSpawn function and get the following error on the server when the user clicks the &quot;wakeup&quot; button - <br />
+                        [Oxide] 7:56 PM [Error] usernotification: [string &quot;usernotification.lua&quot;]:42: at<br /> tempt to call method &#039;ChatMessage&#039; (a string value)<br />
+                        <br /> Any ideas?<br />
+                        <br /> The code from the OnPlayerSpawn function:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnPlayerSpawn( ply,connection )
+    if(self.Config.ShowConnected) then
+        tmpuser= ( connection.username )
+            -- Send UserMessage
+            usermsg = (self.Config.UserMessage)
+            usermsg = usermsg:gsub(&quot;USERNAME&quot;,tmpuser)
+            ply:ChatMessage(usermsg)  -- sends the message to the connecting player
+                --Send AllUserMessage
+                allusermsg = (self.Config.AllUserMessage)
+                allusermsg = allusermsg:gsub(&quot;USERNAME&quot;,tmpuser)
+                global.ConsoleSystem.Broadcast(&quot;chat.add \&quot;&quot; .. self.Config.ChatName .. &quot;\&quot; \&quot;&quot; .. allusermsg .. &quot;\&quot;&quot;)
+    end
+end
+</pre>{% endraw %}
+                        </div>That was working fine but the welcome message would make more sense when the wakeup button is pressed. The below code is from the OnRunCommand function which is producing
+                        the error when the wake up button is pressed.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnRunCommand( ply )
+    usermsg = (self.Config.UserMessage)
+    usermsg = usermsg:gsub(&quot;USERNAME&quot;,tmpuser)
+    if (ply.wakeup) then
+        ply:ChatMessage(usermsg)  -- sends the message to the connecting player
+        print (usermsg)
+    end
+end</pre>{% endraw %}
+                        </div>The print(usermsg) command does produce the desired results to the console.<br />
+                        <br /> Cheers<br /> Dave <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Taffy</a>,</span>
+                        <a href="{{ '/threads/attempt-to-call-method.5784/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 17, 2014 at 8:02 PM">Oct 17, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/attempt-to-call-method.5784/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/52597/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-52599" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">from wulf command block:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnRunCommand(arg, wantsfeedback)
+    -- Sanity checks
+    if (not arg) then return end
+    if (not arg.connection) then return end
+    if (not arg.connection.player) then return end
+    if (not arg.cmd) then return end
+    if (not arg.cmd.name) then return end    -- Create friendly variables
+    local player = arg.connection.player
+    local command = arg.cmd.name
+    local blocked = false    -- Loop through blocked commands
+    for key, setting in pairs(self.Config.Settings.Commands) do
+        -- Check against list of blocked commands
+        if (string.match(setting, &quot;^(&quot; .. command .. &quot;)$&quot;)) then
+            blocked = true
+        end        -- Check if blocked command was found
+        if (blocked) then
+            -- Check if sent from user
+            if (player) then
+                -- Send command blocked message to user via chat
+                player:SendConsoleCommand(&quot;chat.add \&quot;&quot; .. self.Config.Settings.ChatName .. &quot;\&quot; \&quot;&quot; .. self.Config.Messages.CommandBlocked .. &quot;\&quot;&quot;)
+                -- Send command blocked message to user via F1 console
+                player:SendConsoleCommand(&quot;echo &quot; .. self.Config.Messages.CommandBlocked)
+            end            -- Debug messages
+            if (debug) then
+                print(&quot;[&quot; .. self.Title .. &quot;] Player tried to run console command \&quot;&quot; .. arg.cmd.name .. &quot;\&quot; but was blocked by configuration&quot;)
+            end            return false -- Disable the command
+        end
+    end
+end
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/attempt-to-call-method.5784/#post-52599' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 17, 2014 at 9:02 PM">Oct 17, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/attempt-to-call-method.5784/#post-52599' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/52599/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-52600" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">ply:ChatMessage should still work fine still. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/attempt-to-call-method.5784/#post-52600' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 17, 2014 at 9:14 PM">Oct 17, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/attempt-to-call-method.5784/#post-52600' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/52600/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-52604" class="message" data-author="Taffy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Taffy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Taffy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yeah not quiet sure why its not tbh. Replaced with player:SendConsoleCommand and added some of the sanity checks
+                        which seems to work. Suddenly dawned on me this might not be a good idea. Everytime the user dies and click wake up button they are going to get the welcome message. Looking to
+                        see if I can establish how long the user has been connected with a view to not run the send if connection &gt; say 1 minute. Still looking <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Taffy</a>,</span>
+                        <a href="{{ '/threads/attempt-to-call-method.5784/#post-52604' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 17, 2014 at 9:59 PM">Oct 17, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/attempt-to-call-method.5784/#post-52604' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/52604/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-52606" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Taffy">
+                            <aside>
+                                <div class="attribution type">Taffy said: <a href="#post-52604" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah not quiet sure why its not tbh. Replaced with player:SendConsoleCommand and added some of the sanity checks which seems to work. Suddenly
+                                        dawned on me this might not be a good idea. Everytime the user dies and click wake up button they are going to get the welcome message. Looking to see if I can
+                                        establish how long the user has been connected with a view to not run the send if connection &gt; say 1 minute. Still looking <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You could store a boolean for each user when recieved the welcome message and check for the bool before sending again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/attempt-to-call-method.5784/#post-52606' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 17, 2014 at 10:14 PM">Oct 17, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/attempt-to-call-method.5784/#post-52606' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/52606/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

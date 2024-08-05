@@ -1,0 +1,165 @@
+---
+layout: forums
+title: 'Solved - Calling player.anything() causes NullReferenceException, what have I missing ?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/' | prepend: site.baseurl }}">Calling
+            player.anything() causes NullReferenceException, what have I missing ?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">-=Skate=-</a>, <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 21, 2017 at 12:43 AM">Apr 21, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-317054" class="message" data-author="-=Skate=-">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="-=Skate=-" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">-=Skate=-</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I have this method and any usage of player data functions return null reference exception, I know i&#039;m calling
+                        it wrong, but how do I call it right ? Also, any way to use the &quot;var userid&quot; to direct the functions to the right caller ?<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void OnEntityBuilt(Planner plan, GameObject ent, BasePlayer player)
+        {
+            var cupboard = ent.GetComponent&lt;BuildingPrivlidge&gt;();
+            if (cupboard)
+            {
+                var hits = Physics.OverlapSphere(cupboard.transform.position, radius);
+                int i = 0;
+                var userid = plan.GetOwnerPlayer().userID;
+                Authorize(cupboard, userid);
+                foreach (var ents in hits)
+                {
+                   
+                    var privs = ents.GetComponentInParent&lt;BuildingPrivlidge&gt;();
+                    if (ents.ToString() == &quot;assets/prefabs/deployable/tool cupboard/cupboard.tool.deployed.prefab (UnityEngine.BoxCollider)&quot;)
+                    {
+                      i++;
+                    }
+                   
+                    if (i &gt;= 6)
+                    {
+                        DoRemove(cupboard, removeGibsAdmin);
+                        SendReply(player, &quot;Max cupboards limit in area reached (5)&quot;);            //NullReferenceException: Object reference not set to an instance of an object
+                        player.inventory.GiveItem(ItemManager.CreateByItemID(1257201758, 1));   //NullReferenceException: Object reference not set to an instance of an object
+                        break;
+                    }
+                }
+                UpdateAllPlayersMethod.Invoke(cupboard, null);
+                cupboard.SendNetworkUpdate();
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">-=Skate=-</a>,</span>
+                        <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Apr 21, 2017 at 12:43 AM">Apr 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/317054/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-317059" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">OnEntityBuilt does not pass a BasePlayer: <a href="http://docs.oxidemod.org/rust/#onentitybuilt" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide API for Rust</a> <br /> You should grab the player from the Planner object (plan.GetOwnerPlayer() if I remember correctly). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/#post-317059' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Apr 21, 2017 at 12:50 AM">Apr 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/#post-317059' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/317059/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-317064" class="message" data-author="-=Skate=-">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="-=Skate=-" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">-=Skate=-</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thats what I thought -_-&#039;. And yeah, that worked, cheers ! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">-=Skate=-</a>,</span>
+                        <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/#post-317064' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Apr 21, 2017 at 1:07 AM">Apr 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-player-anything-causes-nullreferenceexception-what-have-i-missing.25063/#post-317064' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/317064/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

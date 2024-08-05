@@ -1,0 +1,215 @@
+---
+layout: forums
+title: 'Changing type of ammunition a weapon holds/accepts?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/' | prepend: site.baseurl }}">Changing type of ammunition a weapon holds/accepts?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Tuntenfisch</a>, <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Sep 29, 2015 at 10:38 PM">Sep 29, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-132032" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;ve been trying to change the type of ammunition a weapon holds/accepts and so far I&#039;m able to spawn in
+                        weapons that can hold non-vanilla-compatible types of ammunition. Here&#039;s the problem, though.<br />
+                        <br /> Assume the following scenario:<br />
+                        <br /> Instead of 24 bullets of <i>&quot;5.56 Rifle Ammo&quot;</i> my <i>&quot;Assault Rifle&quot;</i> holds 24 bullets of <i>&quot;Pistol Bullets&quot;</i> when crafted.<br />
+                        <br /> I can use those 24 bullets of <i>&quot;Pistol Bullets&quot;</i> just fine, but when I run out of bullets I cannot reload the weapon unless I meet the following 2
+                        requirements:<br />
+                        <ul>
+                            <li>I have at least 1 vanilla-compatible type (<i>&quot;5.56 Rifle Ammo&quot;/<i>&quot;Incendiary 5.56 Rifle Ammo&quot;/<i>&quot;Explosive 5.56 Rifle
+                                            Ammo&quot;)</i></i></i> of ammunition inside my inventory.</li>
+                            <li>I have at least 1 <i>&quot;Pistol Bullet&quot;</i> inside my inventory.</li>
+                        </ul>If I fail to meet the first requirement, but meet the second one, my weapon will not reload at all.<br /> If I fail to meet the second requirement, but meet the first one,
+                        my weapon will show a reload animation, but no ammunition gets actually added to my weapon&#039;s magazine.<br />
+                        <br /> So reloading is somewhat possible...switching between my non-vanilla-compatible types of ammunition is not possible, at all.<br />
+                        <br /> Here is the relevant code-snippet of my plugin:<br />
+                        <i>(1# Note: I attached the whole plugin, as well.) <br /> (2# Note: I hard-coded some of the values for testing purposes.)</i><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Rust;namespace Oxide.Plugins
+{
+    [Info(&quot;Test&quot;, &quot;Tuntenfisch&quot;, 0.1)]
+    [Description(&quot;Test&quot;)]
+    public class Test : RustPlugin
+    {
+        Item GetItem(string shortname, int amount)
+        {
+            var item = ItemManager.CreateByName(shortname, amount);            if (item == null) return null;            if (item.GetHeldEntity() is BaseProjectile)
+            {
+                var heldEntity = item.GetHeldEntity() as BaseProjectile;                heldEntity.primaryMagazine.ammoType = ItemManager.CreateByName(&quot;ammo.pistol&quot;, 1).info;                AmmoTypes ammoTypes = 0;
+                heldEntity.primaryMagazine.definition.ammoTypes = ammoTypes;
+                SetFlag(heldEntity.primaryMagazine, AmmoTypes.PISTOL_9MM, true);
+                ItemModProjectile component =               heldEntity.primaryMagazine.ammoType.GetComponent&lt;ItemModProjectile&gt;();
+                if (component != null)
+                {
+                    component.ammoType = ammoTypes;
+                }
+            }            return item;
+        }        public void SetFlag(BaseProjectile.Magazine m, AmmoTypes f, bool b)
+        {
+            if (!b)
+            {
+                BaseProjectile.Magazine mag = m;
+                mag.definition.ammoTypes = mag.definition.ammoTypes &amp; ~f;
+            }
+            else
+            {
+                BaseProjectile.Magazine mag1 = m;
+                mag1.definition.ammoTypes = mag1.definition.ammoTypes | f;
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>My question is, is it possible to change the type of ammunition a weapon holds/accepts with a plugin or are some parts of the weapon-reload-mechanic handled by the
+                        client, hence inaccessible?<br />
+                        <br /> Thanks for your help! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        [DOUBLEPOST=1443562731,1443480810][/DOUBLEPOST]Bump <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="Test.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/test-cs.13042/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/test-cs.13042/" target="_blank">Test.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>3.9 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>23</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 29, 2015 at 10:38 PM">Sep 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/132032/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-132347" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m going to venture a guess, without having tested your code, that this is like many other things that very
+                        creative people such as yourself have run into.<br />
+                        <br /> It is not possible at the moment. Sorry.<br />
+                        <br /> Why?<br />
+                        <br /> Well, a good majority of the code that you are messing with server-side <i>also</i> exists client-side. Meaning that, unless the client accepts and updates client-side
+                        values from the server - changing said values server-side will either a) have no effect or b) creating confusing results (such as those you are experiencing). So, your only
+                        course of action (assuming the above is true) is to wait patiently for Facepunch to improve the parity between client and server-side variables. There is no guarantee that they
+                        will do this particular thing, however you may want to keep testing this bi-weekly, with maybe the slim chance that a patch will fix this issue. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/#post-132347' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 30, 2015 at 4:41 PM">Sep 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/#post-132347' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/132347/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-132348" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Like Calytic said, the biggest issue with Rust modding right now is that it isn&#039;t officially supported. Oxide
+                        and other modding platforms are pretty much hacking the server files to get their job done, patching and modifying DLL&#039;s from the game. A proper modding platform would
+                        have client and server side support so that modders can control both sides, but if Oxide were to start hacking files client side we&#039;d run into problems with EAC/VAC before
+                        too long, not counting all the drama from people not wanting their client modified for privacy/paranoia reasons, etc.<br />
+                        <br /> Hopefully Garry and the team will eventually work on proper modding support, but we aren&#039;t there yet. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/#post-132348' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 30, 2015 at 4:57 PM">Sep 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-type-of-ammunition-a-weapon-holds-accepts.11979/#post-132348' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/132348/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

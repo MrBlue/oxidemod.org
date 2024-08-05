@@ -1,0 +1,520 @@
+---
+layout: forums
+title: 'Solved - Detecting if a player is hitting a resource node?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/' | prepend: site.baseurl }}">Detecting if a player is hitting a
+            resource node?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Uncle
+            One D.</a>, <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 23, 2016 at 3:05 AM">Feb 23,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-180174" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello there, I am starting to make plugins for Rust, I&#039;ve got some experience in coding, but, not enough I
+                        would say.<br />
+                        <br /> How could I detect if the player is hitting a resource node? I though about using<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnEntityTakeDamage(entity, info)</pre>{% endraw %}
+                        </div>I&#039;ve also got an idea on how to do it, but I would mostly need to get some examples just to be sure about what I am doing.<br />
+                        <br /> I would also need a list of functions/methods which can be used in plugin-development, using LUA, if someone can get me one, I would appreciate it.<br />
+                        <br /> OBS: Already checked the documentation, aint what I am looking for. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 23, 2016 at 3:05 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180174/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180215" class="message" data-author="FunNFriendly">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FunNFriendly" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FunNFriendly</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;ve found most people who ask for a list of classes and their methods are asked to download a disassembler
+                        for the Rust, Unity and Oxide libraries. Since you&#039;re using LUA and not C# I&#039;d recommend <i>IL Disassembler</i>, which is free.<br />
+                        <br /> Although this is C# I think you&#039;re looking along the lines of this, say if you wanted to detect whether a stone rock was hit:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
+{
+      if (entity.LookupPrefabName() == &quot;assets/prefabs/resource/stone/stone.worldmodel.prefab&quot;)
+      {
+          // Stone resource was hit
+      }
+}</pre>{% endraw %}
+                        </div>Although as someone has pointed out before in a similar thread this event is going to be played a lot. If you&#039;re not looking for a specific resource then I suppose
+                        you could add conditions for tree and stone rock.<br />
+                        <br />
+                        <b>UPDATE</b>: Actually, hitting a stone rock doesn&#039;t seem to trigger the OnEntityTakeDamage hook so I&#039;m not sure how this would be achieved. The idea seems simple
+                        enough...<br />
+                        <br /> Using OnDispenserGather might be way to go. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 23, 2016 at 7:32 AM">Feb 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FunNFriendly</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180215' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 6:50 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180215' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180215/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180216" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Mmh, I guess C# is better for scripting plugins for Oxide/Rust, aint it? I think I will just move to C# as it is
+                        similar to PAWN which is the language I am used to scripting.<br />
+                        <br /> Also, what do you mean with add conditions for tree and stones? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180216' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 7:02 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180216' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180216/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180217" class="message" data-author="FunNFriendly">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FunNFriendly" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FunNFriendly</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I mean add if statements to allow you to check if any resource type was hit, not just a rock. C# is nice and
+                        convenient when using visual studio but apart from that there&#039;s not much difference, apart from the small overhead other languages would have over the native C#.<br />
+                        <br /> What is it that you want to achieve by the way? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 23, 2016 at 8:17 AM">Feb 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FunNFriendly</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180217' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 7:18 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180217' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180217/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180242" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Nothing much, just trying to make a basic skill-script, basically to train with oxide/rust.<br />
+                        <br /> ATM downloading VS2015 to start scripting in C#. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180242' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 9:57 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180242' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180242/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180256" class="message" data-author="FunNFriendly">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FunNFriendly" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FunNFriendly</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ok cool. When you have VS installed add the library references and then you can view all the classes and methods
+                        in the object explorer. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FunNFriendly</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180256' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 11:06 AM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180256' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180256/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180465" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What would I need to do to use<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SendReply(player, &quot;You hit a stone&quot;);</pre>{% endraw %}
+                        </div>In this? As there aint a player defined, how could I define who was the one player to hit the stone?<br />
+                        <br /> I&#039;ve tried adding //BasePlayer player// to the void, won&#039;t get me any error messages on the console but wont also send the player a message.<br />
+                        <br /> My actual piece of code, mostly by FunNFriendly:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info, BasePlayer player)
+        {
+            if (entity.LookupPrefabName() == &quot;assets/prefabs/resource/stone/stone.worldmodel.prefab&quot;)
+            {
+                SendReply(player, &quot;You hit a stone&quot;);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 23, 2016 at 11:28 PM">Feb 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180465' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 11:20 PM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180465' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180465/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180471" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I thought gathering rocks was in<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnDispenserGather(ResourceDispenser dispenser, BaseEntity entity, Item item)
+{
+    Puts(&quot;OnDispenserGather works!&quot;);
+}</pre>{% endraw %}
+                        </div>You would be able to pull the player out of there somewhere, I would look for you but I&#039;m not home<br />
+                        <br /> Also adding parameters to existing hooks won&#039;t work, in the case of OnEntityTakeDamage entity is the player/object taking damage and the attacker is info.initiator.
+                        But that is unrelated to what you are doing anyway<br />
+                        <br /> Try the above piece of code directly and see if it prints that message when you hit a rock <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180471' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 11:48 PM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180471' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180471/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180474" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">mmh, yes! It does print, and I guess this void is better for me to use.<br />
+                        <br /> But still, how would I send a message to the player which is hitting the rock and only him, not to everyone/console? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180474' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 23, 2016 at 11:56 PM">Feb 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180474' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180474/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180513" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Like what you had before (SendReply) but you will have to find where the player information is stored in the
+                        available parameters. It should be easy enough to find if you are using VS. If you haven&#039;t found a solution by the time I get home I will have a look for you <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180513' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 24, 2016 at 1:43 AM">Feb 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180513' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180513/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-180525" class="message" data-author="Uncle One D.">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Uncle One D." /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Uncle One D.</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yeah that would be great, I am still trying to find a way to check who is the player, but I am still pretty lost
+                        with Oxide.<br />
+                        <br /> Edit: I got it from ZLevels, the way to get the playerID is:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            BasePlayer player = entity as BasePlayer;
+            if (player == null) return;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 24, 2016 at 2:09 AM">Feb 24, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Uncle One D.</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180525' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 24, 2016 at 1:59 AM">Feb 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-180525' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/180525/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-181846" class="message" data-author="FunNFriendly">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FunNFriendly" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FunNFriendly</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can also use the BaseEntity.ToPlayer method as well, which might be safer as if the entity is not a player
+                        object it will throw an exception. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FunNFriendly</a>,</span>
+                        <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-181846' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 27, 2016 at 6:47 AM">Feb 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-if-a-player-is-hitting-a-resource-node.16049/#post-181846' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/181846/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

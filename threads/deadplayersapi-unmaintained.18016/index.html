@@ -1,0 +1,135 @@
+---
+layout: forums
+title: 'DeadPlayersAPI [Unmaintained]'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/deadplayersapi-unmaintained.18016/' | prepend: site.baseurl }}">DeadPlayersAPI [Unmaintained]</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-support.31/' | prepend: site.baseurl }}">Plugin Support</a>' started by <a class="username"
+            dir="auto">PreFiX</a>, <a href="{{ '/threads/deadplayersapi-unmaintained.18016/' | prepend: site.baseurl }}"><span class="DateTime" title="May 14, 2016 at 6:33 AM">May 14, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-205794" class="message" data-author="PreFiX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PreFiX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PreFiX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">PreFiX submitted a new resource:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/deadplayersapi.1907/" class="internalLink">DeadPlayersAPI</a> - Developers usage only to check if player is currently dead<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Example usage with Teleportation Requests plugin to prevent teleport while dead:<br />
+                                        <br /> Currently only one function for developers: bool IsDead(NetUser netuser)<br />
+                                        <br />
+                                        <b>Example:</b><br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+using System;
+using Oxide.Core;
+using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;DeadPlayerPreventTP&quot;, &quot;Prefix&quot;, &quot;0.1.0&quot;)]
+    class DeadPlayerPreventTP : RustLegacyPlugin
+    {
+        [PluginReference]
+        Plugin DeadPlayersAPI;        object canTeleport(NetUser netuser)
+        {...</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://oxidemod.org/plugins/deadplayersapi.1907/" class="internalLink">Read more about this resource...</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PreFiX</a>,</span>
+                        <a href="{{ '/threads/deadplayersapi-unmaintained.18016/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 14, 2016 at 6:33 AM">May 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/deadplayersapi-unmaintained.18016/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205794/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205796" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just a tip: All of the using statements excluding Oxide.Core.Plugins in your example can be removed, as can the
+                        first null check, as you&#039;re already checking for null in the line right after it via null propagation.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;DeadPlayerPreventTP&quot;, &quot;Prefix&quot;, &quot;0.1.0&quot;)]
+    class DeadPlayerPreventTP : RustLegacyPlugin
+    {
+        [PluginReference] Plugin DeadPlayersAPI;        object CanTeleport(NetUser netuser)
+        {
+            var isdead = DeadPlayersAPI?.Call(&quot;IsDead&quot;, netuser);
+            if (isdead != null &amp;&amp; (bool)isdead) return false;
+            return null;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/deadplayersapi-unmaintained.18016/#post-205796' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 14, 2016 at 6:33 AM">May 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/deadplayersapi-unmaintained.18016/#post-205796' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205796/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

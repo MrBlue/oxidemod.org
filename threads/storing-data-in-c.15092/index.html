@@ -1,0 +1,266 @@
+---
+layout: forums
+title: 'Storing data in C#'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/storing-data-in-c.15092/' | prepend: site.baseurl }}">Storing data in C#</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheMechanical97</a>, <a href="{{ '/threads/storing-data-in-c.15092/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 25, 2016 at 7:20 PM">Jan 25,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-168667" class="message" data-author="TheMechanical97">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheMechanical97" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheMechanical97</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Make sure you have at the begining this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using Oxide.Core;</pre>{% endraw %}
+                        </div>DATA STORAGE:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+    class StoredData
+    {
+        //add a variable named &quot;playervariable&quot; to the StoredData Class (F.E: Kills)
+        public Dictionary&lt;ulong, double&gt; playervariable = new Dictionary&lt;ulong, double&gt;();
+    }        StoredData storedData;
+</pre>{% endraw %}
+                        </div>SET THE DATA ON PLUGIN LOAD:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void Loaded()
+    {
+        //set storedData so it can be read or modified
+        storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;DATAFILENAME&quot;);
+    }
+</pre>{% endraw %}
+                        </div>READ THE DATA:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+...
+double _playervariable; //THE VARIABLE THAT WILL GET THE VALUE OF STORED VARIABLE (OUT _PLAYERVARIABLE)
+if (storedData.playervariable.TryGetValue(playerID, out _playervariable))//SEE IF DATA IS NULL (EXISTS)
+    {
+        //if the data exists do something with it
+        storedData.playervariable[playerID] = _playervariable + 1; //INCREASE THE VARIABLE BY 1;
+        Interface.Oxide.DataFileSystem.WriteObject(&quot;DATAFILENAME&quot;, storedData); //SAVE THE VARIABLE(s) TO DATAFILE NAMED DATAFILENAME
+        return;
+    }
+        //IF DATA IS NULL; (PLAYER HAS NO VALUE FOR A VARIABLE)
+        storedData.playervariable[playerID] = 0; //SETS THE VARIABLE TO 0
+        Interface.Oxide.DataFileSystem.WriteObject(&quot;DATAFILENAME&quot;, storedData); //SAVE THE VARIABLE TO DATAFILE NAMED DATAFILENAME
+        return;
+</pre>{% endraw %}
+                        </div>You can make a variable to be 0 by default by using this code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnPlayerInit(BasePlayer player)
+{
+double _playervariable; //THE VARIABLE THAT WILL GET THE VALUE OF STORED VARIABLE (OUT _PLAYERVARIABLE)
+if (storedData.playervariable.TryGetValue(playerID, out _playervariable)) return;//SEE IF DATA IS NULL (EXISTS)
+storedData.playervariable[playerID] = 0; //SETS THE VARIABLE TO 0
+Interface.Oxide.DataFileSystem.WriteObject(&quot;DATAFILENAME&quot;, storedData); //save it
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheMechanical97</a>,</span>
+                        <a href="{{ '/threads/storing-data-in-c.15092/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2016 at 7:20 PM">Jan 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-data-in-c.15092/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/168667/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-168668" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The <a href="http://docs.oxidemod.org/rust/#storing-data" target="_blank" class="externalLink">Docs
+                        </a>already has. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-data-in-c.15092/#post-168668' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2016 at 7:28 PM">Jan 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-data-in-c.15092/#post-168668' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/168668/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-168670" class="message" data-author="TheMechanical97">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheMechanical97" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheMechanical97</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well, Docs are not the same <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8"
+                            alt=":D" title="Big Grin    :D" /> I learned this code from other plugins ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheMechanical97</a>,</span>
+                        <a href="{{ '/threads/storing-data-in-c.15092/#post-168670' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2016 at 7:29 PM">Jan 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-data-in-c.15092/#post-168670' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/168670/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-168672" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheMechanical97">
+                            <aside>
+                                <div class="attribution type">TheMechanical97 said: <a href="#post-168670" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well, Docs are not the same <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                                        I learned this code from other plugins ^^</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The basics are the same. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-data-in-c.15092/#post-168672' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2016 at 7:30 PM">Jan 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-data-in-c.15092/#post-168672' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/168672/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-168674" class="message" data-author="TheMechanical97">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheMechanical97" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheMechanical97</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> yeah <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" /> But hope it helps someone <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheMechanical97</a>,</span>
+                        <a href="{{ '/threads/storing-data-in-c.15092/#post-168674' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2016 at 7:32 PM">Jan 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-data-in-c.15092/#post-168674' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/168674/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

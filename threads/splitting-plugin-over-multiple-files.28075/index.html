@@ -1,0 +1,456 @@
+---
+layout: forums
+title: 'Solved - Splitting plugin over multiple files'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/' | prepend: site.baseurl }}">Splitting plugin over multiple files</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">black
+            flame</a>, <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 10, 2017 at 10:23 PM">Nov 10, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-365637" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am building quite a complex and large plugin, so i love to split the plugin files like this:<br />
+                        <br /> File A.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: B
+// Requires: Cnamespace Oxide.Plugins
+{
+    [Info(&quot;A&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class A : RustPlugin
+    {
+        B b = new B();
+        C c = new C();
+      
+        void Init()
+        {
+            b.Setup(this);
+            c.Setup(this);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>File B.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;B&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class B : RustPlugin
+    {
+        A a;
+      
+        public void Setup(A a)
+        {
+            this.a = a;
+        }
+      
+        void Foo()
+        {
+            Puts(&quot;Foo&quot;);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>File C.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;C&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class C : RustPlugin
+    {
+        A a;
+      
+        public void Setup(A a)
+        {
+            this.a = a;
+          
+            this.a.b.Foo();
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>I tried adding <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: A</pre>{% endraw %}
+                        </div> to both files C and B, but then it gets stuck because it has to wait on each other. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:23 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/365637/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365639" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If referencing other plugins using // Requires, those methods would need to be public, not private. All dependent
+                        plugins will load after their parent has been loaded. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365639' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:24 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365639' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365639/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365642" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365639" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If referencing other plugins using // Requires, those methods would need to be public, not private. All dependent plugins will load after their
+                                        parent has been loaded.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ve changed my startpost, making those methods public, however, how can i pass the instance of the parent to its requiring child? <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365642' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:27 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365642' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365642/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365644" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="black flame">
+                            <aside>
+                                <div class="attribution type">black flame said: <a href="#post-365642" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;ve changed my startpost, making those methods public, however, how can i pass the instance of the parent to its requiring child?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You just call the methods you want from it based on the namespace used. Basically would use them as you would any other C# reference. If these are actual plugins (you
+                        have plugin headers), then they&#039;d need to be in the plugins folder, not include. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365644' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:28 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365644' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365644/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365645" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365644" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You just call the methods you want from it based on the namespace used. Basically would use them as you would any other C# reference. If these
+                                        are actual plugins (you have plugin headers), then they&#039;d need to be in the plugins folder, not include.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I am a bit confused, do you have an example? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365645' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:35 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365645' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365645/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365649" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="black flame">
+                            <aside>
+                                <div class="attribution type">black flame said: <a href="#post-365645" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I am a bit confused, do you have an example?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you&#039;re calling from B to A, then you&#039;d use A.Init() (assuming Init() is public, not in your example). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365649' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:44 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365649' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365649/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365653" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365649" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you&#039;re calling from B to A, then you&#039;d use A.Init() (assuming Init() is public, not in your example).</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ahhh, i see... Got it working now <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Foo.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: Bar
+// Requires: Yaynamespace Oxide.Plugins
+{
+    [Info(&quot;Foo&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class Foo : RustPlugin
+    {       
+        public string x = &quot;Hello World!&quot;;
+       
+        public Bar bar = new Bar();
+        public Yay yay = new Yay();
+   
+        void Init()
+        {
+            bar.Setup(this);
+            yay.Setup(this);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Bar.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Bar&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class Bar : RustPlugin
+    {   
+        private Foo foo = null;
+   
+        public void Setup(Foo foo)
+        {
+            this.foo = foo;
+        }
+       
+        public void DoStuff()
+        {
+            Puts(&quot;Thanks wulf :)&quot;);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Yay.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Yay&quot;, &quot;Test&quot;, &quot;1.0.0&quot;)]    public class Yay : RustPlugin
+    {   
+        private Foo foo = null;
+   
+        public void Setup(Foo foo)
+        {
+            this.foo = foo;
+           
+            this.foo.bar.DoStuff();
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Results in<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Foo plugin is waiting for requirements to be loaded: Bar and Yay
+Loaded plugin Yay v1.0.0 by Test
+Foo plugin is waiting for requirements to be loaded: Bar
+Loaded plugin Bar v1.0.0 by Test
+[Bar] Thanks wulf :)
+Loaded plugin Foo v1.0.0 by Test</pre>{% endraw %}
+                        </div>Thanks!<br />
+                        <br /> ---<br />
+                        <br /> Then one small other thing, to load plugin requirements i should use <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: Yay</pre>{% endraw %}
+                        </div> and when i want plain C# classes i should use <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Require: Yay</pre>{% endraw %}
+                        </div> ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365653' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 10, 2017 at 10:56 PM">Nov 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/splitting-plugin-over-multiple-files.28075/#post-365653' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365653/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

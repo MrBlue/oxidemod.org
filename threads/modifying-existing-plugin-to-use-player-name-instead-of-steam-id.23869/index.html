@@ -1,0 +1,345 @@
+---
+layout: forums
+title: 'Solved - Modifying existing plugin to use player name instead of Steam ID'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/' | prepend: site.baseurl }}">Modifying existing
+            plugin to use player name instead of Steam ID</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">GST
+            Kapper</a>, <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Feb 17, 2017 at 1:43 PM">Feb 17, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-298607" class="message" data-author="GST Kapper">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GST Kapper" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GST Kapper</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Trying to alter Npctp slightly to add the ability to call commands on players by their name OR SteamID.<br />
+                        Thinking others would benefit from this, it would allow use with plugins that use commands referring to name instead of SteamID. I set up chat commands to create the new option
+                        in the cfg, and to initialize with the new option set to false when creating an npc. I have never developed plugins for oxide before, so please if I&#039;ve made simple
+                        mistakes refer me to some documentation and I will be glad to read it myself.<br />
+                        <br /> Heres the error I&#039;m getting:<br /> `Oxide.Game.Rust.Libraries.Server&#039; does not contain a definition for `GetPlayerByID&#039;<br />
+                        <br /> Its being thrown at:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            if (UseCommand == true &amp;&amp; CommandOnPlayerName == true)
+            {
+                pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                SaveData();                if (CommandOnPlayerName) // Check if this is command on player NAME
+                {
+                    var playerName = Server.GetPlayerByID(player.userID).Name;
+                    rust.RunServerCommand($&quot;{Command} {playerName} {Arrangements}&quot;);
+                    SendReply(player, string.Format(lang.GetMessage(NpcName, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                }
+                else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem            }</pre>{% endraw %}
+                        </div>Any suggestions? I literally modified it from the base plugin Npctp, attached is the entire modified .cs file I&#039;ve altered.<br />
+                        <br /> Seems pretty simple to do what I&#039;m trying to do, I just think my inexperience cripples me here.<br />
+                        <br /> Props to the plugin creator &#039;Ts3hosting&#039;<br /> Original Plugin:<br />
+                        <a href="http://oxidemod.org/plugins/npctp.2229/" class="internalLink">Npctp for Rust | Oxide</a><br />
+                        <br /> -Hope I haven&#039;t overstepped any boundaries modifying another person&#039;s plugin. If that&#039;s the case I will remove this post and stop what I&#039;m doing,
+                        just inbox me. Just seems to be a pretty open source deal here. ^.^<br /> Thanks in advance <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 17, 2017 at 1:55 PM">Feb 17, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GST Kapper</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 17, 2017 at 1:43 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298607/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298620" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Where did you pull Server.GetPlayerByID from? That doesn&#039;t exist in anything Rust or Oxide.
+                        BasePlayer.FindByID(player.userID) should work, or one of the methods offered by Oxide. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298620' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 1:53 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298620' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298620/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298636" class="message" data-author="GST Kapper">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GST Kapper" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GST Kapper</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="http://oxidemod.org/threads/getting-the-name-from-player-id.13340/" class="internalLink">Solved - Getting the name from player.Id | Oxide</a><br /> ^Reign of Kings
+                        LOL<br />
+                        <br /> Is there a place I can look these things up?<br /> Or is it in <a href="http://docs.oxidemod.org/" target="_blank" class="externalLink  rel=" nofollow">Oxide API
+                            Reference</a> and I just missed it?<br /> I looked there for a good hour before asking anyone - maybe I&#039;m blind <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GST Kapper</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298636' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 2:08 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298636' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298636/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298640" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="GST Kapper">
+                            <aside>
+                                <div class="attribution type">GST Kapper said: <a href="#post-298636" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="http://oxidemod.org/threads/getting-the-name-from-player-id.13340/" class="internalLink">Solved - Getting the name from player.Id |
+                                            Oxide</a><br /> ^Reign of Kings LOL<br />
+                                        <br /> Is there a place I can look these things up?<br /> Or is it in <a href="http://docs.oxidemod.org/" target="_blank" class="externalLink">Oxide API
+                                            Reference</a> and I just missed it?<br /> I looked there for a good hour before asking anyone - maybe I&#039;m blind <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Rust&#039;s methods are found in Rust&#039;s Assembly-CSharp.dll by using a decompiler. Oxide&#039;s helpers and such are in the Docs and found on our forums and GitHub.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298640' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 2:11 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298640' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298640/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298682" class="message" data-author="GST Kapper">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GST Kapper" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GST Kapper</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    var playerName = IPlayerManager.FindPlayerById(player.userID.ToString());
+                    rust.RunServerCommand($&quot;{Command} {playerName} {Arrangements}&quot;);
+</pre>{% endraw %}
+                        </div>Does anyone see any problem with this? I need the SteamID as a string, not a ulong. <br />
+                        <br /> Keep getting this error:<br /> Error while compiling Npctp.cs(903,53): error CS0120: An object reference is required to access non-static member
+                        `Oxide.Core.Libraries.Covalence.IPlayerManager.FindPlayerById(string)&#039; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GST Kapper</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298682' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 4:54 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298682' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298682/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298685" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="GST Kapper">
+                            <aside>
+                                <div class="attribution type">GST Kapper said: <a href="#post-298682" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>                    var playerName = IPlayerManager.FindPlayerById(player.userID.ToString());
+                    rust.RunServerCommand($&quot;{Command} {playerName} {Arrangements}&quot;);
+</pre>{% endraw %}
+                                        </div>Does anyone see any problem with this? I need the SteamID as a string, not a ulong.<br />
+                                        <br /> Keep getting this error:<br /> Error while compiling Npctp.cs(903,53): error CS0120: An object reference is required to access non-static member
+                                        `Oxide.Core.Libraries.Covalence.IPlayerManager.FindPlayerById(string)&#039;
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>IPlayerManager does not have FindPlayerById and is not meant for what you are doing, use BasePlayer.FindByID(player.userID). <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298685' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 5:08 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298685' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298685/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298687" class="message" data-author="GST Kapper">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GST Kapper" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GST Kapper</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Nice!<br /> Sorry for the simple questions, I&#039;m still learning.<br /> Thanks for your help, I was able to
+                        get it working. I&#039;ve attached the edited Npctp.cs here and will post it on the help &amp; support thread for anyone else browsing wanting the same thing.<br /> I tested it
+                        with Jail, works nicely. I hope I didn&#039;t hack anything up, first time ever getting into Oxide or Plugins.<br /> Haven&#039;t noticed any issues yet, does what I need it
+                        to. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GST Kapper</a>,</span>
+                        <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298687' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2017 at 5:38 PM">Feb 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-existing-plugin-to-use-player-name-instead-of-steam-id.23869/#post-298687' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298687/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

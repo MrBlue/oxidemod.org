@@ -1,0 +1,136 @@
+---
+layout: forums
+title: 'NRE with my plugin, unsure how to debug'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/' | prepend: site.baseurl }}">NRE with my plugin, unsure how to debug</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Reynostrum</a>, <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 23, 2015 at 6:37 AM">Nov 23,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-145450" class="message" data-author="Reynostrum">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reynostrum" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reynostrum</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I searched in forum but nothing help me solving this.<br />
+                        <br /> Well, i dont have much to say. This is my code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnItemCraft' on plugin 'TestSkin v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Linq;namespace Oxide.Plugins
+{
+    [Info(&quot;TestSkin&quot;, &quot;testing&quot;, 1.0)]
+    [Description(&quot;teeeeeeest&quot;)]
+    class TestSkin : RustPlugin
+    {
+        private void Loaded()
+        {
+            LoadDefaultConfig();
+            permission.RegisterPermission(&quot;test.testing&quot;, this);
+        }
+           
+            private void OnItemCraft(ItemCraftTask task, BasePlayer crafter, BasePlayer player)
+            {
+                 if (!HasPermission(player, &quot;test.testing&quot;)) //I THINK THIS IS THE PROBLEM
+                {
+                    SendReply(player, &quot;Normal Cloth&quot;);
+                    return;
+                }
+                var skins = ItemSkinDirectory.ForItem(task.blueprint.targetItem);
+                if (skins.Count() &lt; 2) return;
+                task.skinID = skins.GetRandom().id;
+            }
+ 
+            private void OnItemCraftFinished(ItemCraftTask task, Item item)
+            {
+                if (task.amount == 0) return;
+                var skins = ItemSkinDirectory.ForItem(task.blueprint.targetItem);
+                if (skins.Count() &lt; 2) return;
+                task.skinID = skins.GetRandom().id;
+            }
+    bool HasPermission(BasePlayer player, string perm) =&gt; permission.UserHasPermission(player.UserIDString, perm);
+    }
+}
+</pre>{% endraw %}
+                        </div><b>Thank you!!!</b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reynostrum</a>,</span>
+                        <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 23, 2015 at 6:37 AM">Nov 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/145450/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-145453" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Your full error stack in your console/log should show what part is erroring. I would recommend getting familiar
+                        with the code you are using instead of copy/pasting code from other plugins. A proper setup in Visual Studio 2015 should also help you with development, debugging, and
+                        formatting. From what I can tell, you&#039;re trying to call a few things that don&#039;t exist in your code above. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/#post-145453' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 23, 2015 at 7:00 AM">Nov 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nre-with-my-plugin-unsure-how-to-debug.12899/#post-145453' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/145453/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

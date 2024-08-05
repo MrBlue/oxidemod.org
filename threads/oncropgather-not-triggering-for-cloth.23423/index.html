@@ -1,0 +1,220 @@
+---
+layout: forums
+title: 'Fixed - OnCropGather not triggering for cloth'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixLightGreen">Fixed</span> <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/' | prepend: site.baseurl }}">OnCropGather not triggering for cloth</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Dubz</a>, <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 30, 2017 at 10:11 PM">Jan 30,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-290663" class="message" data-author="Dubz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dubz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dubz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> When picking cloth planted by a cutting, in a planter box, it would not trigger the OnCropGather hook. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dubz</a>,</span>
+                        <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 30, 2017 at 10:11 PM">Jan 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/290663/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-290743" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thats weird. It still seems to have the same code as before to execute OnCropGather:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  [BaseEntity.RPC_Server]
+  [BaseEntity.RPC_Server.MaxDistance(3f)]
+  public void RPC_PickFruit(BaseEntity.RPCMessage msg)
+  {
+    if (!this.CanPick())
+      return;
+    ++this.harvests;
+    int iAmount = Mathf.RoundToInt((this.currentStage.resources + this.YieldBonusScale() * (float) this.plantProperty.waterYieldBonus) * (float) this.plantProperty.pickupAmount);
+    this.ResetSeason();
+    if (this.plantProperty.pickupItem.condition.enabled)
+    {
+      for (int index = 0; index &lt; iAmount; ++index)
+      {
+        Item obj = ItemManager.Create(this.plantProperty.pickupItem, 1, 0UL);
+        obj.conditionNormalized = this.plantProperty.fruitCurve.Evaluate(this.ageFraction);
+        Interface.CallHook(&quot;OnCropGather&quot;, (object) this, (object) obj, (object) msg.player);
+        msg.player.GiveItem(obj, BaseEntity.GiveItemReason.PickedUp);
+      }
+    }
+    else
+    {
+      Item obj = ItemManager.Create(this.plantProperty.pickupItem, iAmount, 0UL);
+      msg.player.GiveItem(obj, BaseEntity.GiveItemReason.PickedUp);
+    }
+    if (this.plantProperty.pickEffect.isValid)
+      Effect.server.Run(this.plantProperty.pickEffect.resourcePath, this.GetEstimatedWorldPosition(), Vector3.up, (Connection) null, false);
+    if (this.harvests &gt;= this.plantProperty.maxHarvests)
+    {
+      if (this.plantProperty.disappearAfterHarvest)
+        this.Die((HitInfo) null);
+      else
+        this.BecomeState(PlantProperties.State.Dying, true);
+    }
+    else
+      this.BecomeState(PlantProperties.State.Mature, true);
+  }</pre>{% endraw %}
+                        </div>Was it working with crops not planted in the planter? I checked the PlanterBox class as well, nothing in that interferes with PlantEntity is any way.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Decompiled with JetBrains decompiler
+// Type: PlanterBox
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: C6C8FF52-32E3-43DB-9C16-FFEA5A992959
+// Assembly location: C:\TheBreach\RustDedicated_Data\Managed\Assembly-CSharp.dllusing UnityEngine;public class PlanterBox : BaseCombatEntity, ISplashable
+{
+  public int soilSaturationMax = 8000;
+  public int soilSaturation;
+  public MeshRenderer soilRenderer;  public float soilSaturationFraction
+  {
+    get
+    {
+      return (float) this.soilSaturation / (float) this.soilSaturationMax;
+    }
+  }  public override void Save(BaseNetworkable.SaveInfo info)
+  {
+    base.Save(info);
+    info.msg.resource = Facepunch.Pool.Get&lt;ProtoBuf.BaseResource&gt;();
+    info.msg.resource.stage = this.soilSaturation;
+  }  public override void Load(BaseNetworkable.LoadInfo info)
+  {
+    base.Load(info);
+    if (info.msg.resource == null)
+      return;
+    this.soilSaturation = info.msg.resource.stage;
+  }  public int UseWater(int amount)
+  {
+    int num = Mathf.Min(amount, this.soilSaturation);
+    this.soilSaturation -= num;
+    this.SendNetworkUpdate(BasePlayer.NetworkQueue.Update);
+    return num;
+  }  public bool wantsSplash(ItemDefinition splashType, int amount)
+  {
+    if (!(splashType.shortname == &quot;water.salt&quot;))
+      return this.soilSaturation &lt; this.soilSaturationMax;
+    return true;
+  }  public int DoSplash(ItemDefinition splashType, int amount)
+  {
+    if (splashType.shortname == &quot;water.salt&quot;)
+    {
+      this.soilSaturation = 0;
+      this.SendNetworkUpdate(BasePlayer.NetworkQueue.Update);
+      return amount;
+    }
+    int num = Mathf.Min(this.soilSaturationMax - this.soilSaturation, Mathf.Min(amount, 500));
+    this.soilSaturation += num;
+    this.SendNetworkUpdate(BasePlayer.NetworkQueue.Update);
+    return num;
+  }
+}
+</pre>{% endraw %}
+                        </div>Any idea&#039;s? <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/#post-290743' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 31, 2017 at 1:30 AM">Jan 31, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/#post-290743' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/290743/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-291384" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have made some local changes that should resolve this issue. The fix for this should normally be included in
+                        tomorrows update. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/#post-291384' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2017 at 1:42 AM">Feb 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/oncropgather-not-triggering-for-cloth.23423/#post-291384' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/291384/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

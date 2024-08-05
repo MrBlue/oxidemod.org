@@ -1,0 +1,960 @@
+---
+layout: forums
+title: 'UiPlus | Page 5'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="resourceInfo">
+    <div class="resourceImage">
+        <img src="data/resource_icons/2/2088.jpg?1471701430" alt="" class="resourceIcon" />
+    </div>
+    <div class="resourceDesc">
+        <h1><a href="{{ '/threads/uiplus.20433/' | prepend: site.baseurl }}">UiPlus</a></h1>
+        <p class="tagLine muted">Adds various custom elements to the user interface</p>
+        <p class="downloadCount">Total Downloads: 14,032 - First Release: <span class="DateTime" title="Aug 20, 2016 at 12:17 AM">Aug 20, 2016</span> - Last Update: <span class="DateTime"
+                title="Sep 3, 2017 at 8:21 AM">Sep 3, 2017</span>
+        </p>
+        <div class="rating">
+            <div class="rating">
+                <dl>
+                    <dt class="prompt muted"></dt>
+                    <dd>
+                        <span class="ratings">
+                            <span class="star"></span>
+                        </span>
+                        <span class="RatingValue"><span class="Number" itemprop="average">5</span>/<span itemprop="best">5</span>,</span>
+                        <span class="Hint">39 likes</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="resourceTabs">
+    <ul class="tabs">
+        <li class="resourceTabDescription ">
+            <a href="plugins/uiplus.2088/">Overview</a>
+        </li>
+        <li class="resourceTabUpdates ">
+            <a href="plugins/uiplus.2088/updates">Updates (4)</a>
+        </li>
+        <li class="resourceTabHistory ">
+            <a href="plugins/uiplus.2088/history">Version History</a>
+        </li>
+    </ul>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="5" data-range="2" data-start="3" data-end="7" data-last="11" data-sentinel="{{sentinel}}" data-baseurl="threads/uiplus.20433/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/uiplus.20433/page-4' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/uiplus.20433/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/uiplus.20433/page-3' | prepend: site.baseurl }}" class="">3</a>
+                    <a href="{{ '/threads/uiplus.20433/page-4' | prepend: site.baseurl }}" class="">4</a>
+                    <a href="{{ '/threads/uiplus.20433/page-5' | prepend: site.baseurl }}" class="currentPage ">5</a>
+                    <a href="{{ '/threads/uiplus.20433/page-6' | prepend: site.baseurl }}" class="">6</a>
+                    <a href="{{ '/threads/uiplus.20433/page-7' | prepend: site.baseurl }}" class="">7</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/uiplus.20433/page-11' | prepend: site.baseurl }}" class="">11</a>
+            <a href="{{ '/threads/uiplus.20433/page-6' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-249340" class="message" data-author="0utbr34k">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="0utbr34k" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">0utbr34k</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m not sure if anyone else is having this issue, but I noticed the player count is not updating correctly
+                        when someone disconnects. I don&#039;t know the plugin well, but this is what I did to workaround the issue. I believe the problem is when OnPlayerDisconnected is called, the
+                        player count is not updated yet. I just replaced &quot;UpdateField&quot; with &quot;UpdateFieldDisconnect&quot; inside of &quot;OnPlayerDisconnected&quot; and created this
+                        function:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void UpdateFieldDisconnect(BasePlayer player, PanelTypes panelType) {
+            List&lt;StringPlus.ReplacementData&gt; replacements = new List&lt;StringPlus.ReplacementData&gt;();
+            switch (panelType) {
+                case PanelTypes.Active:            
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersActive.ToString().ToUpper() + replacementSufix, (activePlayerFill) ? (BasePlayer.activePlayerList.Count-1).ToString().PadLeft(ConVar.Server.maxplayers.ToString().Length, '0') : BasePlayer.activePlayerList.Count.ToString()));
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayerMax.ToString().ToUpper() + replacementSufix, ConVar.Server.maxplayers.ToString()));
+                    break;
+                case PanelTypes.Sleeping:            
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersSleeping.ToString().ToUpper() + replacementSufix, (BasePlayer.sleepingPlayerList.Count+1).ToString()));
+                    break;
+                case PanelTypes.Clock:
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.Time.ToString().ToUpper() + replacementSufix, TIME));
+                    break;
+            }
+            UpdateField(player, panelsData[(int)panelType], replacements.ToArray());
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">0utbr34k</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-249340' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 6, 2016 at 4:25 PM">Sep 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-249340' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/249340/permalink">#81</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250528" class="message" data-author="Dj-Ratman">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dj-Ratman" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dj-Ratman</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="0utbr34k">
+                            <aside>
+                                <div class="attribution type">0utbr34k said: <a href="#post-249340" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not sure if anyone else is having this issue, but I noticed the player count is not updating correctly when someone disconnects. I
+                                        don&#039;t know the plugin well, but this is what I did to workaround the issue. I believe the problem is when OnPlayerDisconnected is called, the player count
+                                        is not updated yet. I just replaced &quot;UpdateField&quot; with &quot;UpdateFieldDisconnect&quot; inside of &quot;OnPlayerDisconnected&quot; and created this
+                                        function:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private void UpdateFieldDisconnect(BasePlayer player, PanelTypes panelType) {
+            List&lt;StringPlus.ReplacementData&gt; replacements = new List&lt;StringPlus.ReplacementData&gt;();
+            switch (panelType) {
+                case PanelTypes.Active:           
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersActive.ToString().ToUpper() + replacementSufix, (activePlayerFill) ? (BasePlayer.activePlayerList.Count-1).ToString().PadLeft(ConVar.Server.maxplayers.ToString().Length, '0') : BasePlayer.activePlayerList.Count.ToString()));
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayerMax.ToString().ToUpper() + replacementSufix, ConVar.Server.maxplayers.ToString()));
+                    break;
+                case PanelTypes.Sleeping:           
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersSleeping.ToString().ToUpper() + replacementSufix, (BasePlayer.sleepingPlayerList.Count+1).ToString()));
+                    break;
+                case PanelTypes.Clock:
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.Time.ToString().ToUpper() + replacementSufix, TIME));
+                    break;
+            }
+            UpdateField(player, panelsData[(int)panelType], replacements.ToArray());
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That made my plugin stop working <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dj-Ratman</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-250528' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 1:27 PM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-250528' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/250528/permalink">#82</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250590" class="message" data-author="ClapStorm">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ClapStorm" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ClapStorm</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi am i alone to have this problem?<br /> It say we are 3 on server, and in real we are 2, i think the plugin not
+                        working good <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ClapStorm</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-250590' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 5:53 PM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-250590' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/250590/permalink">#83</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250606" class="message" data-author="q1LLa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="q1LLa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">q1LLa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ClapStorm">
+                            <aside>
+                                <div class="attribution type">ClapStorm said: <a href="#post-250590" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hi am i alone to have this problem?<br /> It say we are 3 on server, and in real we are 2, i think the plugin not working good</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have the same problem. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">q1LLa</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-250606' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 6:31 PM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-250606' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/250606/permalink">#84</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250667" class="message" data-author="Shinra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shinra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shinra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="0utbr34k">
+                            <aside>
+                                <div class="attribution type">0utbr34k said: <a href="#post-249340" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not sure if anyone else is having this issue, but I noticed the player count is not updating correctly when someone disconnects. I
+                                        don&#039;t know the plugin well, but this is what I did to workaround the issue. I believe the problem is when OnPlayerDisconnected is called, the player count
+                                        is not updated yet. I just replaced &quot;UpdateField&quot; with &quot;UpdateFieldDisconnect&quot; inside of &quot;OnPlayerDisconnected&quot; and created this
+                                        function:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private void UpdateFieldDisconnect(BasePlayer player, PanelTypes panelType) {
+            List&lt;StringPlus.ReplacementData&gt; replacements = new List&lt;StringPlus.ReplacementData&gt;();
+            switch (panelType) {
+                case PanelTypes.Active:           
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersActive.ToString().ToUpper() + replacementSufix, (activePlayerFill) ? (BasePlayer.activePlayerList.Count-1).ToString().PadLeft(ConVar.Server.maxplayers.ToString().Length, '0') : BasePlayer.activePlayerList.Count.ToString()));
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayerMax.ToString().ToUpper() + replacementSufix, ConVar.Server.maxplayers.ToString()));
+                    break;
+                case PanelTypes.Sleeping:           
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.PlayersSleeping.ToString().ToUpper() + replacementSufix, (BasePlayer.sleepingPlayerList.Count+1).ToString()));
+                    break;
+                case PanelTypes.Clock:
+                    replacements.Add(new StringPlus.ReplacementData(replacementPrefix + FieldTypes.Time.ToString().ToUpper() + replacementSufix, TIME));
+                    break;
+            }
+            UpdateField(player, panelsData[(int)panelType], replacements.ToArray());
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks man, this solved the problem, now the amount of online players update as intended. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shinra</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-250667' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 10:31 PM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-250667' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/250667/permalink">#85</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-251187" class="message" data-author="q1LLa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="q1LLa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">q1LLa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> probably because of the plugin uiplus see a white stripe in the plug-in kill feed<br />
+                        <a href="http://oxidemod.org/threads/kill-feed.12692/page-23#post-250219" class="internalLink">Kill Feed | Page 23 | Oxide</a><br /> [DOUBLEPOST=1473687298][/DOUBLEPOST]<iframe
+                            width="500" height="300" src="https://www.youtube.com/embed/9S1Ji89k8S4?wmode=opaque" frameborder="0" allowfullscreen></iframe>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">q1LLa</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-251187' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 12, 2016 at 2:16 PM">Sep 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-251187' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/251187/permalink">#86</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-252427" class="message" data-author="albator4242">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="albator4242" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">albator4242</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The plugin does not update online players. Even disconnect the number of players remains the same. If you are 30
+                        and 29 is deconncete still have 30 players display. Please update <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">albator4242</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-252427' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 16, 2016 at 9:02 AM">Sep 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-252427' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/252427/permalink">#87</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-252550" class="message" data-author="ClapStorm">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ClapStorm" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ClapStorm</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shinra">
+                            <aside>
+                                <div class="attribution type">Shinra said: <a href="#post-250667" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks man, this solved the problem, now the amount of online players update as intended.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>this solution not working for me, error on compilation <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ClapStorm</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-252550' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 16, 2016 at 8:42 PM">Sep 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-252550' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/252550/permalink">#88</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-252632" class="message" data-author="Mightylaz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mightylaz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mightylaz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Any update on whether the panel becoming white will be fixed?<br /> I&#039;m finding it gets to the point where
+                        you can&#039;t even see the numbers at all <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mightylaz</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-252632' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 17, 2016 at 4:08 AM">Sep 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-252632' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/252632/permalink">#89</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-253191" class="message" data-author="Savage ✔">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Savage ✔" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Savage ✔</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> People getting kicked when connecting to server while i run UIPlus since rust update, Disconnected Error : adduri
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Savage ✔</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-253191' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 19, 2016 at 3:27 PM">Sep 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-253191' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/253191/permalink">#90</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254378" class="message" data-author="inFeeLTe">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="inFeeLTe" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">inFeeLTe</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Plsss, help-me, Disconnected Error : adduri, fix thiss <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />(, i love this plugin <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">inFeeLTe</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-254378' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 24, 2016 at 10:55 AM">Sep 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-254378' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254378/permalink">#91</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254385" class="message" data-author="Savage ✔">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Savage ✔" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Savage ✔</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> its to do with some letters in peoples names, plugin has stopped handling them correctly, like <br />
+                        <span style="font-size: 15px"><b><a href="http://oxidemod.org/members/savage.167246/" class="internalLink"> ✔</a> disconnects people with it in name</b></span>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Savage ✔</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-254385' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 24, 2016 at 12:47 PM">Sep 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-254385' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254385/permalink">#92</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254561" class="message" data-author="Syberpro">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Syberpro" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Syberpro</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> When performing updates you might want change version number:<br />
+                        <br />
+                        <a href="http://prntscr.com/cm84zx" target="_blank" class="externalLink  rel=" nofollow">Screenshot</a><br />
+                        <br /> Awesome app love the UI. Keep it up! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 25, 2016 at 6:41 PM">Sep 25, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Syberpro</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-254561' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 25, 2016 at 3:11 AM">Sep 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-254561' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254561/permalink">#93</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-255516" class="message" data-author="ErUnix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ErUnix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ErUnix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How I can fix this ? <br />
+                        <br />
+                        <a href="https://gyazo.com/bf5813749c0d0f5824a79573a86bcbc6" target="_blank" class="externalLink  rel=" nofollow">Gyazo - bf5813749c0d0f5824a79573a86bcbc6.png</a><br />
+                        <br /> I need to restart some times the plugin to get the icon. Its annoying <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ErUnix</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-255516' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 29, 2016 at 7:09 PM">Sep 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-255516' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/255516/permalink">#94</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-255874" class="message" data-author="NightShaman">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="NightShaman" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">NightShaman</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good plugin! Keep it up! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">NightShaman</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-255874' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 1, 2016 at 6:53 PM">Oct 1, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-255874' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/255874/permalink">#95</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-256195" class="message" data-author="MaBo2016">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MaBo2016" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MaBo2016</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Counter Online is not working very will, often, if Gamer leave, it shows ... <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MaBo2016</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-256195' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 3, 2016 at 2:49 PM">Oct 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-256195' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/256195/permalink">#96</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-256274" class="message" data-author="NightShaman">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="NightShaman" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">NightShaman</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="MaBo2016">
+                            <aside>
+                                <div class="attribution type">MaBo2016 said: <a href="#post-256195" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Counter Online is not working very will, often, if Gamer leave, it shows ...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>+1! It work with some delay. Like 5-10 minutes after player disconnect... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">NightShaman</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-256274' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 3, 2016 at 7:27 PM">Oct 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-256274' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/256274/permalink">#97</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-256752" class="message" data-author="NelSoNJRR23">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="NelSoNJRR23" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">NelSoNJRR23</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Bug when are 2 online and 1 disconnect. The counter stay online. need reconnect to refresh. Fix IT <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">NelSoNJRR23</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-256752' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 5, 2016 at 3:47 PM">Oct 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-256752' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/256752/permalink">#98</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-257393" class="message" data-author="NightShaman">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="NightShaman" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">NightShaman</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good plugin, beauty interface, but fix this plz!!!<br />
+                        <br />
+                        <a href="http://piccy.info/view3/10366233/c9aae528cc27db824f531c90ba6564d0/" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fi9%2Fa8026bb0f5814fe7ed73daeb036f018b%2F1475829006%2F4028%2F1077229%2Fui_240.jpg&amp;hash=e8756a215a5de3b38731d42ead409859"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/i9/a8026bb0f5814fe7ed73daeb036f018b/1475829006/4028/1077229/ui_240.jpg" /></a><a
+                            href="http://i.piccy.info/a3c/2016-10-07-08-30/i9-10366233/240x62-r" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fa3%2F2016-10-07-08-30%2Fi9-10366233%2F240x62-r%2Fi.gif&amp;hash=e308588a5156d61220dc4b3be1ecf39d"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/a3/2016-10-07-08-30/i9-10366233/240x62-r/i.gif" /></a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">NightShaman</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-257393' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 7, 2016 at 9:31 AM">Oct 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-257393' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/257393/permalink">#99</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-257814" class="message" data-author="NightShaman">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="NightShaman" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">NightShaman</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi! Can anybody explane me how to fix that?<br />
+                        <br />
+                        <a href="http://piccy.info/view3/10373251/c4926d196904fe2b074caec179bed0d6/" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fi9%2Fed29c7dbcb4e690f00b670040f39da9f%2F1475996143%2F3529%2F1077229%2F12_240.jpg&amp;hash=f28be6309dffd6b638ab93abfaa0115b"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/i9/ed29c7dbcb4e690f00b670040f39da9f/1475996143/3529/1077229/12_240.jpg" /></a><a
+                            href="http://i.piccy.info/a3c/2016-10-09-07-00/i9-10373251/240x101-r" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fa3%2F2016-10-09-07-00%2Fi9-10373251%2F240x101-r%2Fi.gif&amp;hash=feb52dfc663fce44d781af2ac1f55d05"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/a3/2016-10-09-07-00/i9-10373251/240x101-r/i.gif" /></a><br />
+                        <br /> Thanks in advance!<br />
+                        <br /> --------------UPDATE--------------<br /> No problem! All fixed by self! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" /><br />
+                        <br />
+                        <a href="http://piccy.info/view3/10373341/4fc8b290edf596b2166b54ad31c5fc4f/" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fi9%2Fe7023e4763068f2a5002edfd2abfc40d%2F1475998569%2F5374%2F1077229%2F13_240.jpg&amp;hash=a4077a88ac43b546814097e3de41e1e0"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/i9/e7023e4763068f2a5002edfd2abfc40d/1475998569/5374/1077229/13_240.jpg" /></a><a
+                            href="http://i.piccy.info/a3c/2016-10-09-07-36/i9-10373341/240x114-r" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fa3%2F2016-10-09-07-36%2Fi9-10373341%2F240x114-r%2Fi.gif&amp;hash=05678d4193e1ed3963876f8aea9e5fd1"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/a3/2016-10-09-07-36/i9-10373341/240x114-r/i.gif" /></a> <a
+                            href="http://piccy.info/view3/10373342/afabddc82872dd670a7c871c1b2c712c/" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fi9%2F6df501a0bdc89f309f4e6074b2e21d1d%2F1475998574%2F5492%2F1077229%2F14_240.jpg&amp;hash=dc15489e02cc5e4737cb8eed8c1f16fe"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/i9/6df501a0bdc89f309f4e6074b2e21d1d/1475998574/5492/1077229/14_240.jpg" /></a><a
+                            href="http://i.piccy.info/a3c/2016-10-09-07-37/i9-10373342/240x114-r" target="_blank" class="externalLink  rel=" nofollow"><img
+                                src="proxy.php?image=http%3A%2F%2Fi.piccy.info%2Fa3%2F2016-10-09-07-37%2Fi9-10373342%2F240x114-r%2Fi.gif&amp;hash=a8bcaff3f09e3fca02657c721ff7eced"
+                                class="bbCodeImage LbImage" alt="[&#x200B;IMG]" data-url="http://i.piccy.info/a3/2016-10-09-07-37/i9-10373342/240x114-r/i.gif" /></a><br />
+                        <br /> There is usefully parameter in config file - _Active player counter fill.<br /> Very usefull!!! Thanks!<br /> But trouble with actual online/offline players is still
+                        here... ((( <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Oct 9, 2016 at 8:39 AM">Oct 9, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">NightShaman</a>,</span>
+                        <a href="{{ '/threads/uiplus.20433/page-5#post-257814' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2016 at 8:01 AM">Oct 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/uiplus.20433/page-5#post-257814' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/257814/permalink">#100</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="5" data-range="2" data-start="3" data-end="7" data-last="11" data-sentinel="{{sentinel}}" data-baseurl="threads/uiplus.20433/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/uiplus.20433/page-4' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/uiplus.20433/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/uiplus.20433/page-3' | prepend: site.baseurl }}" class="">3</a>
+                    <a href="{{ '/threads/uiplus.20433/page-4' | prepend: site.baseurl }}" class="">4</a>
+                    <a href="{{ '/threads/uiplus.20433/page-5' | prepend: site.baseurl }}" class="currentPage ">5</a>
+                    <a href="{{ '/threads/uiplus.20433/page-6' | prepend: site.baseurl }}" class="">6</a>
+                    <a href="{{ '/threads/uiplus.20433/page-7' | prepend: site.baseurl }}" class="">7</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/uiplus.20433/page-11' | prepend: site.baseurl }}" class="">11</a>
+            <a href="{{ '/threads/uiplus.20433/page-6' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

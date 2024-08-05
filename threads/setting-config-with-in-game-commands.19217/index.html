@@ -1,0 +1,373 @@
+---
+layout: forums
+title: 'Setting config with in-game commands'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/' | prepend: site.baseurl }}">Setting config with in-game commands</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kappasaurus</a>, <a href="{{ '/threads/setting-config-with-in-game-commands.19217/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 5, 2016 at 7:52 PM">Jul 5,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-222713" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This is the plugin in the current state, very simple<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using Oxide.Core.Plugins;
+namespace Oxide.Plugins
+{
+    [Info(&quot;RespawnMessages&quot;, &quot;Kappasaurus&quot;, 0.2)]
+    [Description(&quot;Make customized notes players view on respawn!&quot;)]    class RespawnMessages : RustPlugin
+    {
+        [PluginReference]
+        Plugin PopupNotifications;
+        void LoadDefaultConfig()
+        {
+            Config.Clear();
+            Config[&quot;RespawnMessage&quot;] = &quot;Hey, try not to die this time!&quot;;
+            Config[&quot;PopupEnabled&quot;] = false;
+            Config[&quot;ChatEnabled&quot;] = true;
+            Config.Save();
+        }        void OnPlayerRespawn(BasePlayer player)
+        {
+            if ((bool)Config[&quot;PopupEnabled&quot;] == true)
+            {
+                PopupNotifications?.Call(&quot;CreatePopupNotification&quot;, Config[&quot;RespawnMessage&quot;].ToString());
+            }
+            if ((bool)Config[&quot;ChatEnabled&quot;] == true)
+            {
+                SendReply(player, Config[&quot;RespawnMessage&quot;].ToString());
+            }
+        }
+        [ChatCommand(&quot;rmessage&quot;)]
+        void TestCommand(BasePlayer player, string command, string[] args)
+        {
+            SendReply(player, &quot;&lt;size=22&gt;&lt;color=#cd422b&gt;Respawn Messages v0.1&lt;/color&gt;&lt;/size&gt;&quot;);
+            SendReply(player, &quot;&lt;size=12&gt;Created by &lt;/size&gt;&lt;size=14&gt;Kappasaurus&lt;/size&gt;&lt;size=12&gt; with the help of &lt;/size&gt;&lt;size=14&gt;DylanSMR&lt;/size&gt;&quot;);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>I know how to setup a chat command, so I plan to do something like &quot;/rmessage ChatEnabled&quot; true, but how do I set it so the true (or what ever value there is)
+                        writes to the config? Mainly I just need to know how to change it with a command, I don&#039;t need to know how to create a new command. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 7:52 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/222713/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222721" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [ConsoleCommand(&quot;test&quot;)]
+        void test(ConsoleSystem.Arg arg)
+        {
+            Config[&quot;StarterMultiplyer&quot;] = arg.Args[0];
+            Config.Save();
+        }</pre>{% endraw %}
+                        </div>That is a example of how you can do it. So say I did &quot;test 30.0&quot; it would set it like:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;RateOnLevel&quot;: 0.1,
+  &quot;StarterMultiplyer&quot;: &quot;30.0&quot;
+}</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1467746979][/DOUBLEPOST]Of course mine is a float so 30.0 works with it. Otherwise you could do 5, &quot;Or a string&quot; <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222721' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 8:29 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222721' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222721/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222743" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> well /rm will give credit, how do I make it so I could do /rm set &lt;message&gt; would set the message? because
+                        if I make the chat command &quot;rm set&quot;, it just triggers /rm<br />
+                        <a href="https://oxidemod.org/members/53846/" class="username" data-user="53846, @DylanSMR">@DylanSMR</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222743' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 9:00 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222743' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222743/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222759" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> For that you would do a switch(args[0]) . You can look in my IGather plugin for a example. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222759' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 10:10 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-222759' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222759/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250060" class="message" data-author="OfficerJAKE">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="OfficerJAKE" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">OfficerJAKE</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-222743" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">well /rm will give credit, how do I make it so I could do /rm set &lt;message&gt; would set the message? because if I make the chat command
+                                        &quot;rm set&quot;, it just triggers /rm<br />
+                                        <a href="https://oxidemod.org/members/53846/" class="username" data-user="53846, @DylanSMR">@DylanSMR</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hey kappa. Just call it as /rmset or /rm_set<br /> It&#039;s always the easiest solution as we can&#039;t really send the &quot;&quot; to allow for the spaces.. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">OfficerJAKE</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250060' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 9, 2016 at 4:35 AM">Sep 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250060' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/250060/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250430" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="OfficerJAKE">
+                            <aside>
+                                <div class="attribution type">OfficerJAKE said: <a href="#post-250060" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hey kappa. Just call it as /rmset or /rm_set<br /> It&#039;s always the easiest solution as we can&#039;t really send the &quot;&quot; to allow
+                                        for the spaces..</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well there is a way, using classes.<br /> Look at LaserHydra&#039;s code, he uses a method for BetterChat, for example /group set blabla <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250430' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 3:32 AM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250430' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/250430/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-250437" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="OfficerJAKE">
+                            <aside>
+                                <div class="attribution type">OfficerJAKE said: <a href="#post-250060" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hey kappa. Just call it as /rmset or /rm_set<br /> It&#039;s always the easiest solution as we can&#039;t really send the &quot;&quot; to allow
+                                        for the spaces..</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-250430" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well there is a way, using classes.<br /> Look at LaserHydra&#039;s code, he uses a method for BetterChat, for example /group set blabla</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That space offsets the second part, the second part becomes an argument just like the blabla is. There are numerous plugins that do this. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250437' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 10, 2016 at 4:23 AM">Sep 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/setting-config-with-in-game-commands.19217/#post-250437' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/250437/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

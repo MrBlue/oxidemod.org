@@ -1,0 +1,540 @@
+---
+layout: forums
+title: 'Getting player info on connection?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-player-info-on-connection.29305/' | prepend: site.baseurl }}">Getting player info on connection?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Madeindreams</a>, <a href="{{ '/threads/getting-player-info-on-connection.29305/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 3, 2018 at 6:37 AM">Feb 3,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-383741" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have started a very basic plugin that handle kits.<br /> It needs a lot of improvement but I have to start
+                        somewhere.<br />
+                        <br /> This code is very simple.<br />
+                        <br /> when a player type in /kits I display the kits and add an item to the player inventory<br />
+                        <br /> I have commented the code. Im looking to retreive the player name and anounce it in chat when he connect.<br /> I would also like to know how to set default player
+                        inventory (on spawn)<br />
+                        <br /> This is my plugin so far.<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using Oxide.Core;
+using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;kits&quot;, &quot;Madeindreams&quot;, 1.0)]
+    [Description(&quot;Kits plugin&quot;)]    class kits : RustPlugin
+    {
+      void Init()
+  {
+      Puts(&quot;Init works!&quot;);
+  }  void Loaded()
+{
+    Puts(&quot;Loaded works!&quot;);
+}void OnPluginLoaded(Plugin name)
+{
+    Puts($&quot;Plugin '{name}' has been loaded&quot;);
+}void OnPlayerConnected(Network.Message packet,BasePlayer player)
+{
+ PrintWarning(&quot;user connecting&quot;);
+// hOW CAN I ANNOUCE PLAYERS?
+// How do i set deafult inventory ?
+}[ChatCommand(&quot;kits&quot;)]
+private void kitsCmd(BasePlayer player, string command, string[] args)
+{
+//Magic goes here
+Puts(&quot;command works!&quot;);
+string message = &quot;&lt;color=#0000ffff&gt;Available Kits&lt;/color&gt;\n Assault,...&quot;;
+SendReply(player, message);  // giving something to the player
+Item item = ItemManager.CreateByName(&quot;rifle.ak&quot;, 1);
+item.position = 1; // needs to be empty
+item.contents.itemList.Add(ItemManager.CreateByName(&quot;weapon.mod.silencer&quot;, 1)); // add mod to weapon
+player.inventory.GiveItem(item);
+}    }
+}</pre>{% endraw %}
+                        </div>Can anyone help? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 6:37 AM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383741/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383773" class="message" data-author="Lomarine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Lomarine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Lomarine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> // hOW CAN I ANNOUCE PLAYERS?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.Chatmessage($&quot;Hello {player.displayName}, here you are!&quot;);</pre>{% endraw %}
+                        </div>// How do i set deafult inventory ?<br /> if you mean clear it =&gt;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.Strip()</pre>{% endraw %}
+                        </div>if you mean chage it - clear it and then add items like<br /> player.inventory.GiveItem(ItemManager.CreateByItemID(108061910));<br />
+                        player.inventory.GiveItem(ItemManager.CreateByItemID(108061910));<br /> player.inventory.GiveItem(ItemManager.CreateByItemID(108061910)); <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 3, 2018 at 9:27 AM">Feb 3, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Lomarine</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383773' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 9:13 AM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383773' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383773/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383820" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Lomarine">
+                            <aside>
+                                <div class="attribution type">Lomarine said: <a href="#post-383773" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">// hOW CAN I ANNOUCE PLAYERS?<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>player.Chatmessage($&quot;Hello {player.displayName}, here you are!&quot;);</pre>{% endraw %}
+                                        </div>// How do i set deafult inventory ?<br /> if you mean clear it =&gt;<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>player.inventory.Strip()</pre>{% endraw %}
+                                        </div>if you mean chage it - clear it and then add items like<br /> player.inventory.GiveItem(ItemManager.CreateByItemID(108061910));<br />
+                                        player.inventory.GiveItem(ItemManager.CreateByItemID(108061910));<br /> player.inventory.GiveItem(ItemManager.CreateByItemID(108061910));
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><br /> the player.Chatmessage will be sent to the player alone I presume. How do I say it in general chat for every one to see.<br />
+                        <br /> And this chat command isnt working for me.<br />
+                        <br /> player.ChatMessage($&quot;Hello &#039;{player.displayName}&#039;, here you are!&quot;);<br />
+                        <br /> will trow an error<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnPlayerConnected' on plugin 'kits v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.kits.OnPlayerConnected (Network.Message packet, .BasePlayer player, System.String[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.kits.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div><br /> Now the other thing about clearing the inventory. This is not the behavior im expecting. A player could log in with stuff on him. I dont want to clear the
+                        enventory when a player connects but when he spawn. How can I do this on spawn^<br />
+                        <br /> Thak you very much for your repliy. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 3, 2018 at 3:06 PM">Feb 3, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383820' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 2:36 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383820' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383820/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383833" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I got the player connection message working by using onPlayerSleepEnded. For some reason it is not working
+                        OnPlayerConnected. Is there anything in between? can I annouce the player connection before he end sleep and after he connected? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383833' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 3:29 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383833' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383833/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383839" class="message" data-author="Mr_Jeff">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mr_Jeff" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mr_Jeff</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Madeindreams">
+                            <aside>
+                                <div class="attribution type">Madeindreams said: <a href="#post-383833" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I got the player connection message working by using onPlayerSleepEnded. For some reason it is not working OnPlayerConnected. Is there anything
+                                        in between? can I annouce the player connection before he end sleep and after he connected?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Have you looked at <a href="https://oxidemod.org/plugins/connectmessages.2178/" class="internalLink"><b>ConnectMessages</b></a>? Its a CovalencePlugin so some hooks might
+                        not work with RustPlugin but can give you ideas.<br /> For sending a message to everyone in game you can either use BroadcastChat or PrintToChat. more info on messages &gt;<a
+                            href="{{ '/threads/sendchatmessage-and-broadcast-usage.27892/#post-363017' | prepend: site.baseurl }}" class="internalLink">here</a>&lt; <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mr_Jeff</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383839' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 3:50 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383839' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383839/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383841" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you very much guys. Its all working now im starting to get it.<br />
+                        <br /> So I have found the inbetween I was looking for.<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerInit(BasePlayer player)
+{
+   //PrintToChat ($&quot;{player.displayName} connected (PTC)&quot;);
+   rust.BroadcastChat(null, $&quot;{player.displayName} connected (BC)&quot;);
+   Puts($&quot;{player.displayName} connected (Puts)&quot;);
+}</pre>{% endraw %}
+                        </div>It totaly make sence to refer to the player when it is initiated. I guess that connection itself is more for the network information.<br />
+                        <br /> So there are 2 ways to print out in general chat.<br />
+                        <br /> Is there any advantage using BroadcastChat rather then PrintToChat?<br />
+                        <br /> Is Puts considered a console output? I can see these outputs in Rcon. My code is actualy live in Rcon and the server. Thats totaly awesome. No need to restart anything.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383841' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 4:16 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383841' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383841/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383842" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Madeindreams">
+                            <aside>
+                                <div class="attribution type">Madeindreams said: <a href="#post-383833" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I got the player connection message working by using onPlayerSleepEnded. For some reason it is not working OnPlayerConnected. Is there anything
+                                        in between? can I annouce the player connection before he end sleep and after he connected?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You’d have to get the player from the packet, it doesn’t have the player directly available as a hook arg. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383842' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 4:17 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383842' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383842/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383845" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Wulf how do I refer to the packet.playeName? in here lets say :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerConnected(Network.Message packet)
+{
+    Puts(&quot;OnPlayerConnected works!&quot;);
+    Puts(&quot;packet player name?&quot;);
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383845' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 4:31 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383845' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383845/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383847" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Madeindreams">
+                            <aside>
+                                <div class="attribution type">Madeindreams said: <a href="#post-383845" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Wulf how do I refer to the packet.playeName? in here lets say :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnPlayerConnected(Network.Message packet)
+{
+    Puts(&quot;OnPlayerConnected works!&quot;);
+    Puts(&quot;packet player name?&quot;);
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Packet wouldn’t have a player name, you’d have to get the player from the packet first. If you setup Visual Studio with IntelliSense, you can find the information you’re
+                        looking for. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383847' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 4:35 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383847' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383847/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383852" class="message" data-author="Madeindreams">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Madeindreams" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Madeindreams</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Intellisence for CS is already installed. I not sure how to import or link librarys to my plugin. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 3, 2018 at 5:13 PM">Feb 3, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Madeindreams</a>,</span>
+                        <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383852' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 3, 2018 at 4:48 PM">Feb 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-info-on-connection.29305/#post-383852' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383852/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

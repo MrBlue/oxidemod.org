@@ -1,0 +1,244 @@
+---
+layout: forums
+title: 'Using classes from another plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/using-classes-from-another-plugin.12079/' | prepend: site.baseurl }}">Using classes from another plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">[wRECK]
+            Enth</a>, <a href="{{ '/threads/using-classes-from-another-plugin.12079/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 3, 2015 at 10:28 PM">Oct 3, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-133740" class="message" data-author="[wRECK] Enth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="[wRECK] Enth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">[wRECK] Enth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey,<br />
+                        <br /> I have Player class which is currently inline in my main plugin, however, I would like to use this class in several plugins. How can I achieve this? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">[wRECK] Enth</a>,</span>
+                        <a href="{{ '/threads/using-classes-from-another-plugin.12079/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 3, 2015 at 10:28 PM">Oct 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-classes-from-another-plugin.12079/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133740/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134023" class="message" data-author="Zhahaman2001">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zhahaman2001" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zhahaman2001</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> something like this?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Plugins;
+namespace Oxide.Plugins
+{
+    [Info(&quot;Main Plugin&quot;, &quot;Zhahaman2001&quot;, 1.0, ResourceId = 0)]
+    class MainPlugin : RustPlugin
+    {
+        [PluginReference]
+        Plugin OtherPlugin;
+        string GetStringFromOtherPlugin(string PassThis)
+        {
+            string ReturnString = OtherPlugin?.Call(&quot;SendHelloMessage&quot;, PassThis) as string;
+            return ReturnString;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Other Plugin&quot;, &quot;Zhahaman2001&quot;, 1.0, ResourceId = 0)]
+    class OtherPlugin : RustPlugin
+    {
+        string SendHelloMessage(string PassThis)
+        {
+            return &quot;Hello world - &quot; + PassThis;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zhahaman2001</a>,</span>
+                        <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134023' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 11:19 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134023' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134023/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134031" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can actually have an include file, but that wouldn&#039;t be recommended for public plugins right now. The
+                        plugin would also have to be packaged as a zip and manually unpacked, which users would then need to manually unpack.<br />
+                        <br /> There are also some other limitations currently, include files aren&#039;t preparsed yet, so they can&#039;t have requirements, references or &#039;using&#039;
+                        statements.<br />
+                        <br />
+                        <a href="https://oxidemod.org/members/15663/" class="username" data-user="15663, @bawNg">@bawNg</a> would know more about it though. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134031' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 11:53 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134031' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134031/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134107" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well at the moment You can try to parse the class in a dictionary to be called by another plugin And then unparse
+                        it to the class.<br /> It&#039; s a huge workaround, but at the moment there is no other way.<br /> You could also save it as a class inside a file And load it from the other
+                        plugin, but that&#039;s worse as it Will use a lot of resource to save And load a filé especially if it&#039;s big <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134107' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 5, 2015 at 9:54 AM">Oct 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134107' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134107/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134111" class="message" data-author="Nick Holmes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nick Holmes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nick Holmes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The nice thing about shipping a single .cs file is that its really easy for people use - and this is really
+                        important. For this reason, I also dislike dependencies between mods - you&#039;re just making it more complex for people to use your mod.<br />
+                        <br /> The down side is that does indeed put some handcuffs on us as developers. For more complex plug-ins, I really want don&#039;t everything in a single class, I don&#039;t
+                        much care for nested classes, and having to work in a single 700 (and growing) line file is cumbersome. (It also makes unit testing hard).<br />
+                        <br /> So, I choose to view the final .cs file as just the delivery package. I&#039;ve split my work across multiple files, and so I can work as I like. Then I use a small
+                        script (written in PowerShell), to assemble all the parts back into a single file. My little script is very specific to the mod I&#039;m working on, but I&#039;m certain it
+                        could be generalized for more cases - I&#039;d probably look at using .Net T4 templates for doing this.<br />
+                        <br /> For smaller mods, just stick with a single .cs file, and cut and paste your library code around.<br />
+                        <br /> Just my 2c. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nick Holmes</a>,</span>
+                        <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134111' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 5, 2015 at 10:09 AM">Oct 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-classes-from-another-plugin.12079/#post-134111' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134111/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

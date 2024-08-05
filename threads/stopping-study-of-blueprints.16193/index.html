@@ -1,0 +1,257 @@
+---
+layout: forums
+title: 'Solved - Stopping study of blueprints?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/stopping-study-of-blueprints.16193/' | prepend: site.baseurl }}">Stopping study of blueprints?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Antirelax</a>, <a href="{{ '/threads/stopping-study-of-blueprints.16193/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 27, 2016 at 6:20 PM">Feb 27,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-182000" class="message" data-author="Antirelax">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Antirelax" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Antirelax</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi all! I&#039;m trying to close the study of blueprints.<br />
+                        <br /> Please tell me the following code will work correctly?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    void OnConsumableUse(Item item)
+    {
+        if (item.IsBlueprint() &amp;&amp; item.info.itemid != null)
+        {
+            BasePlayer player = item.GetOwnerPlayer();
+            if (player.userID != null)
+            {
+                var playerInfo = SingletonComponent&lt;ServerMgr&gt;.Instance.persistance.GetPlayerInfo(player.userID);
+                if (playerInfo != null)
+                {
+                    playerInfo.blueprints.complete.Remove(item.info.itemid);
+                    SingletonComponent&lt;ServerMgr&gt;.Instance.persistance.SetPlayerInfo(player.userID, playerInfo);
+                    player.SendNetworkUpdateImmediate();
+                    //SendReply(player, &quot;...&quot;)
+                    //player.inventory.GiveItem(ItemManager.CreateByItemID(item.info.itemid, 1, true));
+                }
+            }
+        }
+    }</pre>{% endraw %}
+                        </div>Maybe there is an easier way? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Antirelax</a>,</span>
+                        <a href="{{ '/threads/stopping-study-of-blueprints.16193/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 27, 2016 at 6:20 PM">Feb 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-study-of-blueprints.16193/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/182000/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-182134" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I added you on steam, if I didnt add the right person here is my account : <a
+                            href="http://steamcommunity.com/profiles/76561198167856311/" target="_blank" class="externalLink  rel=" nofollow">Steam Community :: DylanSMR</a><br />
+                        [DOUBLEPOST=1456615648][/DOUBLEPOST]I fixed it up a bit | If you want help add me via steam ^^^^^<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;Consume&quot;, &quot;DylanSMR&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;test&quot;)]    class Consume : RustPlugin
+    {
+        void OnConsumableUse(Item item)
+        {
+            if (item.HasFlag(Item.Flag.Blueprint))
+            {
+                BasePlayer player = item.GetOwnerPlayer();
+                Erase(player);
+                SendReply(player, &quot;BPS erased&quot;);
+            }
+        }
+       
+        void Erase(BasePlayer player)
+        {
+            var targetPlayer = player;
+       
+            var data = ServerMgr.Instance.persistance.GetPlayerInfo(targetPlayer.userID);
+            data.blueprints = null;
+            PlayerBlueprints.InitializePersistance(data);
+            ServerMgr.Instance.persistance.SetPlayerInfo(targetPlayer.userID, data);
+            targetPlayer.SendFullSnapshot();
+            SendReply(player, &quot;BPS erased&quot;);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 27, 2016 at 11:22 PM">Feb 27, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182134' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 27, 2016 at 10:40 PM">Feb 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182134' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/182134/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-182190" class="message" data-author="Antirelax">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Antirelax" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Antirelax</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Your code perfectly clears the blueprints(all) of player, but I&#039;m trying stopping the study of particular
+                        blueprint.<br />
+                        <br /> My code it&#039;s doing, but I&#039;m not sure that 100% correct. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Antirelax</a>,</span>
+                        <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182190' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 28, 2016 at 2:56 AM">Feb 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182190' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/182190/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-182191" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Consume&quot;, &quot;DylanSMR&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;test&quot;)]    class Consume : RustPlugin
+    {
+        void OnConsumableUse(Item item)
+        {
+            BasePlayer player = item.GetOwnerPlayer();   
+            var playerInfo = SingletonComponent&lt;ServerMgr&gt;.Instance.persistance.GetPlayerInfo(player.userID);
+            if (player.userID != null)
+            {
+                if (item.HasFlag(Item.Flag.Blueprint))
+                {
+                    playerInfo.blueprints.complete.Remove(item.info.itemid);
+                    SingletonComponent&lt;ServerMgr&gt;.Instance.persistance.SetPlayerInfo(player.userID, playerInfo);
+                    player.SendNetworkUpdateImmediate();
+                }
+                else
+                {
+                    return;
+                }
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1456630102][/DOUBLEPOST]The code I just posted will stop any item from being researched, as then making a plugin that gives a player blueprints wont be hard.
+                        Or just use the current plugins available. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 28, 2016 at 3:21 AM">Feb 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182191' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 28, 2016 at 3:00 AM">Feb 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-study-of-blueprints.16193/#post-182191' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/182191/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,179 @@
+---
+layout: forums
+title: 'Solved - Error CS0234: The type or namespace name &#039;Tasks&#039; does not exosit in the namespace &#039;System.Threading&#039;'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a
+            href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/' | prepend: site.baseurl }}">Error CS0234: The type or namespace
+            name &#039;Tasks&#039; does not exosit in the namespace &#039;System.Threading&#039;</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Tann3r</a>, <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/' | prepend: site.baseurl }}"><span
+                class="DateTime" title="Jun 21, 2017 at 5:59 PM">Jun 21, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-332788" class="message" data-author="Tann3r">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tann3r" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tann3r</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Getting my feet wet with Rust plugin development, and getting this error. Not sure what reference I&#039;m
+                        missing. I have<br /> Assembly-CSharp<br /> Facepunch.Network<br /> Facepunch.System<br /> Facepunch.UnityEngine<br /> Oxide.Core<br /> Oxide.Core.CSharp<br />
+                        Oxide.Game.Rust<br /> UnityEngine<br /> UnityEngine.UI<br />
+                        <br /> Error while compiling: RustyRockets.cs(6,24): error CS0234: The type or namespace name `Tasks&#039; does not exist in the namespace `System.Threading&#039;. Are you
+                        missing an assembly reference?<br />
+                        <br /> Here is a bit of my code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Reflection;
+using Oxide.Core;
+using Oxide.Core.CSharp;
+using Oxide.Core.Plugins;
+using Oxide.Game.Rust.Libraries;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;RustyRockets&quot;, &quot;Tanner&quot;, 0.1)]
+    [Description(&quot;Gives Rockets and C4 to everyone on the server at the time you want!&quot;)]    class RustyRockets : RustPlugin
+    {
+        void Loaded()
+        {
+            Puts(&quot;[RustyRockets] Loaded.&quot;);
+        }        void UnLoaded()
+        {
+            Puts(&quot;[RustyRockets] Unloaded.&quot;);
+        }        [ChatCommand(&quot;RustyRockets&quot;)]
+        void pofpl(BasePlayer player, string command, string[] args)
+        {
+            player.inventory.GiveItem(ItemManager.CreateByItemID(1578894260, 100)); //Rockets
+            player.inventory.GiveItem(ItemManager.CreateByItemID(498591726, 100)); //C4
+        }
+    }}</pre>{% endraw %}
+                        </div>Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tann3r</a>,</span>
+                        <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 21, 2017 at 5:59 PM">Jun 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332788/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332791" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Remove all of the using statements in your plugin, you pretty much aren&#039;t using any of them. Also, UnLoaded
+                        is not a valid hook, it should be Unload. You also do not need to print when your plugin is loaded and unloaded, that is already done by Oxide. Also, keep in mind that commands
+                        are case-insensitive, so SpellingItOutLikeThis will not make a difference. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/#post-332791' | prepend: site.baseurl }}"
+                            title="Permalink" class="datePermalink"><span class="DateTime" title="Jun 21, 2017 at 6:06 PM">Jun 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/#post-332791' | prepend: site.baseurl }}"
+                        title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332791/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332792" class="message" data-author="Tann3r">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tann3r" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tann3r</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-332791" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Remove all of the using statements in your plugin, you pretty much aren&#039;t using any of them. Also, UnLoaded is not a valid hook, it should
+                                        be Unload. You also do not need to print when your plugin is loaded and unloaded, that is already done by Oxide. Also, keep in mind that commands are
+                                        case-insensitive, so SpellingItOutLikeThis will not make a difference.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Right, I meant to change that to Unload, also didn&#039;t know that they automatically did it, thanks. Removing the using statements fixed it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tann3r</a>,</span>
+                        <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/#post-332792' | prepend: site.baseurl }}"
+                            title="Permalink" class="datePermalink"><span class="DateTime" title="Jun 21, 2017 at 6:12 PM">Jun 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-cs0234-the-type-or-namespace-name-tasks-does-not-exosit-in-the-namespace-system-threading.26020/#post-332792' | prepend: site.baseurl }}"
+                        title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332792/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,221 @@
+---
+layout: forums
+title: 'How to deploy a code lock?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/' | prepend: site.baseurl }}">How to deploy a code lock?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">carny666</a>, <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 20, 2017 at 5:10 AM">Nov 20, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-368022" class="message" data-author="carny666">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="carny666" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">carny666</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Here is what I got, it makes a 1x1 with a door, I am trying to get the lock to stick on and work.<br />
+                        <br />
+                        <i>Sorry for the wordy code.. </i><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void Spawn1x1(Vector3 position, Quaternion rotation, BasePlayer player)
+        {            BuildingGrade.Enum type = BuildingGrade.Enum.Wood;
+            int strength = 1;            SpawnStructure(&quot;assets/prefabs/building core/foundation/foundation.prefab&quot;,
+                           position,
+                           Quaternion.AngleAxis(0, new Vector3(0, 1, 0)),
+                           type,strength);
+            SpawnStructure(&quot;assets/prefabs/building core/wall/wall.prefab&quot;,
+                           position + new Vector3(-1.5f,0,0),
+                           Quaternion.AngleAxis(180, new Vector3(0, 1, 0)),
+                           type, strength);
+            SpawnStructure(&quot;assets/prefabs/building core/wall/wall.prefab&quot;,
+                           position + new Vector3(1.5f, 0, 0),
+                           Quaternion.AngleAxis(0, new Vector3(0, 1, 0)),
+                           type, strength);
+            SpawnStructure(&quot;assets/prefabs/building core/wall/wall.prefab&quot;,
+                           position + new Vector3(0, 0, 1.5f),
+                           Quaternion.AngleAxis(-90, new Vector3(0, 1, 0)),
+                           type, strength);
+            SpawnStructure(&quot;assets/prefabs/building core/floor/floor.prefab&quot;,
+                           position + new Vector3(0, 3, 0),
+                           Quaternion.AngleAxis(0, new Vector3(0, 1, 0)),
+                           type, strength);
+                       
+            SpawnStructure(&quot;assets/prefabs/building core/wall.doorway/wall.doorway.prefab&quot;,      
+                            position + new Vector3(0, 0, -1.5f),
+                           Quaternion.AngleAxis(90, new Vector3(0, 1, 0)),
+                           type, strength);            var door = SpawnDeployable(&quot;door.hinged.metal&quot;,
+                            position + new Vector3(0, 0, -1.5f),
+                           Quaternion.AngleAxis(90, new Vector3(0, 1, 0)),
+                           player) as Door;            var doorLock = SpawnDeployable(&quot;lock.code&quot;,
+                           position + new Vector3(0, 1.5f, -1.5f),
+                           Quaternion.AngleAxis(90, new Vector3(0, 1, 0)),
+                           player) as CodeLock;            door.SetSlot(BaseEntity.Slot.Lock, doorLock);
+        }
+</pre>{% endraw %}
+                        </div>entity spawn code, taken from Build.cs, thanks Reneb &amp; NoGrod<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private BuildingBlock SpawnStructure(string prefabname, Vector3 pos, Quaternion angles, BuildingGrade.Enum grade, float health)
+        {
+            GameObject prefab = GameManager.server.CreatePrefab(prefabname, pos, angles, true);
+            if (prefab == null)
+            {
+                PrintToChat($&quot;SpawnStructure: {prefab} no worky.&quot;);
+                return null;
+            }
+            BuildingBlock block = prefab.GetComponent&lt;BuildingBlock&gt;();
+            if (block == null) return null;
+            block.transform.position = pos;
+            block.transform.rotation = angles;
+            block.gameObject.SetActive(true);
+            block.blockDefinition = PrefabAttribute.server.Find&lt;Construction&gt;(block.prefabID);
+            block.Spawn();
+            block.SetGrade(grade);
+            if (health &lt;= 0f)
+                block.health = block.MaxHealth();
+            else
+                block.health = health;            block.SendNetworkUpdate(BasePlayer.NetworkQueue.Update);
+            spawnedBuildingBlocks.Add(block);
+            return block;
+        }        private BaseEntity SpawnDeployable(string prefab, Vector3 pos, Quaternion angles, BasePlayer player)
+        {
+            //Item newItem = ItemManager.CreateByName(prefab, 1);
+            Item newItem = makeItem(prefab, 1);            if (newItem?.info.GetComponent&lt;ItemModDeployable&gt;() == null)
+            {
+                PrintToChat(player, $&quot;SpawnDeployable: {prefab} no worky.&quot;);             
+                return null;
+            }
+            var deployable = newItem.info.GetComponent&lt;ItemModDeployable&gt;().entityPrefab.resourcePath;
+            if (deployable == null)
+            {
+                return null;
+            }
+            var newBaseEntity = GameManager.server.CreateEntity(deployable, pos, angles, true);
+            if (newBaseEntity == null)
+            {
+                return null;
+            }
+            newBaseEntity.SendMessage(&quot;SetDeployedBy&quot;, player, UnityEngine.SendMessageOptions.DontRequireReceiver);
+            newBaseEntity.SendMessage(&quot;InitializeItem&quot;, newItem, UnityEngine.SendMessageOptions.DontRequireReceiver);
+            newBaseEntity.Spawn();            spawnedEntities.Add(newBaseEntity);
+            return newBaseEntity;
+        }
+</pre>{% endraw %}
+                        </div>if you remove:<br />
+                        <br /> door.SetSlot(BaseEntity.Slot.Lock, doorLock);<br />
+                        <br /> The lock just sits there in mid air..<br />
+                        <br /> otherwise it just sits the in the center of the door way.<br />
+                        <br />
+                        <br /> Plase halp.. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">carny666</a>,</span>
+                        <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 20, 2017 at 5:10 AM">Nov 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368022/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-368072" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Copy-Paste should help you<br />
+                        <span style="text-decoration: underline"><a href="http://oxidemod.org/plugins/copy-paste.716/" class="internalLink">Copy Paste for Rust | Oxide</a></span>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/#post-368072' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 20, 2017 at 1:06 PM">Nov 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/#post-368072' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368072/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-368141" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You may need to send a network update after you&#039;ve set the lock on the door -
+                        <i>doorLock.SendNetworkUpdate();</i> This will refresh the entity on your client. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/#post-368141' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 20, 2017 at 8:27 PM">Nov 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/how-to-deploy-a-code-lock.28243/#post-368141' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368141/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,193 @@
+---
+layout: forums
+title: 'ItemAmountRanged.GetAmount() chances of drop'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/' | prepend: site.baseurl }}">ItemAmountRanged.GetAmount() chances of drop</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">MujoGT</a>, <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 26, 2017 at 1:57 AM">Jan 26,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-288965" class="message" data-author="MujoGT">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MujoGT" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MujoGT</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i was looking at LootConfig json and cs files and was trying to understand why it never gets MaxAmount value on
+                        drops, when i looked to this code on compiled oxide files and i think i found why:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public class ItemAmountRanged : ItemAmount
+{
+    [...]
+    public override float GetAmount()
+    {
+        if ((this.maxAmount &gt; 0f) &amp;&amp; (this.maxAmount &gt; base.amount))
+        {
+            return Random.Range(base.amount, this.maxAmount); &lt;--- here
+        }
+        return base.amount;
+    }
+    [...]
+}public class LootSpawn : ScriptableObject
+{
+    [...]
+    // Methods
+    public void SpawnIntoContainer(ItemContainer container)
+    {
+        if ((this.subSpawn != null) &amp;&amp; (this.subSpawn.Length &gt; 0))
+        {
+            this.SubCategoryIntoContainer(container);
+        }
+        else if (this.items != null)
+        {
+            foreach (ItemAmountRanged ranged in this.items)
+            {
+                if (ranged != null)
+                {
+                    Item item = ItemManager.CreateByItemID(ranged.itemid, (int) ranged.GetAmount(), 0L); &lt;--- here
+                    if ((item != null) &amp;&amp; !item.MoveToContainer(container, -1, true))
+                    {
+                        item.Remove(0f);
+                    }
+                }
+            }
+        }
+    }    public Item SpawnRandomItem()
+    {
+        if ((this.subSpawn != null) &amp;&amp; (this.subSpawn.Length &gt; 0))
+        {
+            return this.SpawnSubCategory();
+        }
+        if (this.items != null)
+        {
+            foreach (ItemAmountRanged ranged in this.items)
+            {
+                if (ranged != null)
+                {
+                    return ItemManager.CreateByItemID(ranged.itemid, (int) ranged.GetAmount(), 0L); &lt;--- here
+                }
+            }
+        }
+        return null;
+    }
+    [...]
+}
+</pre>{% endraw %}
+                        </div>everytime method GetAmount is called, the return will be converted to int as you can see in LootSpawn methods.<br /> in c# if you try convert 0.9999999 into int, the
+                        result will be 0 (zero).<br /> what that means? if an item have amount value of 1 and maxAmount value of 2, the code will randomize between 1f and 2f, and there will be only a
+                        1/10000000 chance to get 2.<br />
+                        <br /> in my opinion, chances should be 50%/50% in that case.<br /> to make work that way, and i don&#039;t know if this will affect other stuff and should be checked before,
+                        the values of min and max on GetAmount could be converted to int before the use of UnityEngine.Random.Range and maxAmount should be passed as maxAmount + 1. that&#039;s because
+                        UnityEngine.Random.Range max is inclusive for float, but exclusive for int.<br />
+                        <br /> what do you think? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MujoGT</a>,</span>
+                        <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 26, 2017 at 1:57 AM">Jan 26, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/288965/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-288967" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> That would be Rust&#039;s code, not Oxide&#039;s code. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/#post-288967' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 26, 2017 at 2:00 AM">Jan 26, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/#post-288967' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/288967/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-288972" class="message" data-author="MujoGT">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MujoGT" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MujoGT</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> thanks! i didn&#039;t knew that!<br /> i will report to then and see what they think about it. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MujoGT</a>,</span>
+                        <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/#post-288972' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 26, 2017 at 2:17 AM">Jan 26, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/itemamountranged-getamount-chances-of-drop.23285/#post-288972' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/288972/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,172 @@
+---
+layout: forums
+title: 'Fixed - Invalid IL error when hooking method'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixLightGreen">Fixed</span> <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/' | prepend: site.baseurl }}">Invalid IL error when hooking method</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">VVoid</a>, <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 5, 2015 at 9:21 PM">Mar 5,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-71218" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Some history:<br /> I decided to hook method TOD_Time.FixedUpdate and pass the local variable (l1) to hooks.
+                        <br /> I took a look at the IL and found suitable injection index (5), after i applied the settings i have looked at result code. <br /> The code were.. gibberish? But i
+                        decided to start server. <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>protected void FixedUpdate()
+{
+    float num = 1440f / this.DayLengthInMinutes;
+    string arg_27_0 = &quot;OnTimeFixedUpdate&quot;;
+    object[] args = new object[2];
+    args[0] = this;
+    args[(float)1] = num;
+    object returnvar = Interface.CallHook(arg_27_0, args);
+    if (returnvar is float)
+    {
+        num = (float)returnvar;
+    }
+    this.AddSeconds(Time.deltaTime * num, true);
+}
+</pre>{% endraw %}
+                        </div> As expected, it didn&#039;t worked. The console was flooded with this<br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">InvalidProgramException: Invalid IL code in TOD_Time:FixedUpdate (): IL_001f: box 0x0100003d</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I began to study the produced code and i, probably found the problem:<br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">IL_001d: ldloc.2 // args Object[]<br /> IL_001e: ldc.i4.1 // Array index<br />
+                                        <span style="color: #ff4d4d"><b>IL_001f: box System.Single</b></span><br />
+                                        <span style="color: #ff0000"><b>IL_0024: ldloc.1</b></span><br /> IL_0025: stelem.ref<br /> IL_0026: ldloc.2 // args Object[]<br /> IL_0027: call System.Object
+                                        Oxide.Core.Interface::CallHook(System.String,System.Object[])</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>In my opinion, Box&#039;ing occurs too early. The value of a local variable is being placed in the stack <i><b>after</b></i> box&#039;ing. That seems to be definitely
+                        wrong.<br />
+                        <br /> I&#039;ve tried to fix this by simply moving Ldloc backward, and seems that worked well:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    else if (arg[0] == 'l' || arg[0] == 'v')
+                    {
+                        int index;
+                        if (int.TryParse(arg.Substring(1), out index))
+                        {
+                            VariableDefinition vdef = weaver.Variables[index];
+                            weaver.Ldloc(vdef); // &lt;= Here                            if (vdef.VariableType.IsByReference)
+                            {
+                                weaver.Add(Instruction.Create(OpCodes.Ldobj, vdef.VariableType));
+                                weaver.Add(Instruction.Create(OpCodes.Box, vdef.VariableType));
+                            }
+                            else if (vdef.VariableType.IsValueType)
+                                weaver.Add(Instruction.Create(OpCodes.Box, vdef.VariableType));                            //weaver.Ldloc(vdef);
+                        }
+                        else
+                            weaver.Add(Instruction.Create(OpCodes.Ldnull));
+                    }</pre>{% endraw %}
+                        </div>
+                        <br /> After that the code became valid, and my hook now working flawlessly.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>protected void FixedUpdate()
+{
+    float num = 1440f / this.DayLengthInMinutes;
+    object returnvar = Interface.CallHook(&quot;OnTimeFixedUpdate&quot;, new object[]
+    {
+        this,
+        num
+    });
+    if (returnvar is float)
+    {
+        num = (float)returnvar;
+    }
+    this.AddSeconds(Time.deltaTime * num, true);
+}
+</pre>{% endraw %}
+                        </div>
+                        <br /> Correct me if i am did something wrong <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 5, 2015 at 9:21 PM">Mar 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/71218/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-71401" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good catch! This should be fixed in the latest Oxide Patcher snapshot. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/#post-71401' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 6, 2015 at 4:17 PM">Mar 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalid-il-error-when-hooking-method.7164/#post-71401' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/71401/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

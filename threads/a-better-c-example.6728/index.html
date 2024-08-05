@@ -1,0 +1,503 @@
+---
+layout: forums
+title: 'Solved - A better C# example?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/a-better-c-example.6728/' | prepend: site.baseurl }}">A better C# example?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">UnrulyMyth</a>, <a href="{{ '/threads/a-better-c-example.6728/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 7, 2015 at 9:08 AM">Feb 7, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-64719" class="message" data-author="UnrulyMyth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnrulyMyth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnrulyMyth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I was wondering if I could get a more detailed C# example. I find myself having trouble with a few of the hooks,
+                        namely OnPlayerChat. If I could just get a quick example with a few hooks and how to save and load to/from the config file that&#039;d be fantastic. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnrulyMyth</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Feb 7, 2015 at 9:08 AM">Feb 7,
+                                2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64719/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64720" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">look into my plugins, Die wilde betty worked with me on making those config. and it works pretty well.<br />
+                        <br /> i can give a fast exemple here, give me couple mins.<br /> [DOUBLEPOST=1423300819][/DOUBLEPOST] <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+// Reference: Oxide.Ext.Rustusing System.Collections.Generic;
+using System;
+using System.Reflection;
+using System.Data;
+using UnityEngine;
+using Oxide.Core;
+namespace Oxide.Plugins
+{
+    [Info(&quot;RemoverTool&quot;, &quot;Reneb&quot;, 2.0)]
+    class RemoverTool : RustPlugin
+    {
+// Here you need to initiate all your variables that you will use in your config, with the correct format that you want them in C#
+        private bool Changed;        private int removeAuth;
+        private int removeAdmin;
+        private int removeAll;
+        private int removeTarget;
+        private double deactivateTimer;
+        private double deactivateMaxTimer;
+        private bool refundAllowed;
+        private float refundRate;
+        private bool useToolCupboard;
+        private string noAccess;
+        private string cantRemove;
+        private string tooFar;//Loaded = Init, it's when the plugin is first launched
+        void Loaded()
+        {
+            LoadVariables();
+        }
+// Get Config here you can use it as it is
+// it will let you have 1 sub category for your config, in lua it would look like:
+// self.Config.Messages = {}
+// self.Config.Messages.Welcome = &quot;Welcome message&quot;
+// but you wont be able to do: self.Config.Messages.Test = {}
+// Only 1 sub category
+        object GetConfig(string menu, string datavalue, object defaultValue)
+        {
+            var data = Config[menu] as Dictionary&lt;string, object&gt;;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[menu] = data;
+                Changed = true;
+            }
+            object value;
+            if (!data.TryGetValue(datavalue, out value))
+            {
+                value = defaultValue;
+                data[datavalue] = value;
+                Changed = true;
+            }
+            return value;
+        }        void LoadVariables()
+        {
+// So you need: GetConfig(&quot;SUBCATEGORY&quot;,&quot;VARIABLE&quot;,&quot;DEFAULT VALUE&quot;)
+// then you need to convert it in the type you went them in your plugin.
+// Here it would look like this in the config file:
+// {
+// &quot;Remove&quot;:{
+// &quot;target&quot;:1,
+// &quot;basic&quot;:1,
+// &quot;admin&quot;:2,
+// &quot;all&quot;:2,
+// },
+// &quot;RemoveTimer&quot;:{
+// &quot;default&quot;:30,
+// &quot;max&quot;:600
+// },
+// &quot;Refund&quot;:{
+// &quot;activated&quot;:true,
+// &quot;rate&quot;:0.5
+// },
+// &quot;ToolCupboard&quot;:{
+// &quot;activated&quot;:true
+// }
+// Only problem with this method it that you cant make a config without sub categories, but it doesn't really matter.
+            removeTarget = Convert.ToInt32(GetConfig(&quot;Remove&quot;, &quot;target&quot;, 1));
+            removeAuth = Convert.ToInt32(GetConfig(&quot;Remove&quot;, &quot;basic&quot;, 0));
+            removeAdmin = Convert.ToInt32(GetConfig(&quot;Remove&quot;, &quot;admin&quot;, 2));
+            removeAll = Convert.ToInt32(GetConfig(&quot;Remove&quot;, &quot;all&quot;, 2));
+            deactivateTimer = Convert.ToDouble(GetConfig(&quot;RemoveTimer&quot;, &quot;default&quot;, 30));
+            deactivateMaxTimer = Convert.ToDouble(GetConfig(&quot;RemoveTimer&quot;, &quot;max&quot;, 600));
+            refundAllowed = Convert.ToBoolean(GetConfig(&quot;Refund&quot;, &quot;activated&quot;, true));
+            refundRate = Convert.ToSingle(GetConfig(&quot;Refund&quot;, &quot;rate&quot;, 0.5));
+            useToolCupboard = Convert.ToBoolean(GetConfig(&quot;ToolCupboard&quot;, &quot;activated&quot;, true));            noAccess = Convert.ToString(GetConfig(&quot;Messages&quot;, &quot;NoAccess&quot;, &quot;You don't have the permissions to use this command&quot;));
+            cantRemove = Convert.ToString(GetConfig(&quot;Messages&quot;, &quot;cantRemove&quot;, &quot;You are not allowed to remove this&quot;));
+            tooFar = Convert.ToString(GetConfig(&quot;Messages&quot;, &quot;tooFar&quot;, &quot;You must get closer to remove this&quot;));            if (Changed)
+            {
+// SaveConfig() is an Oxide function, so it's normal that it points at nothing in the plugin
+                SaveConfig();
+                Changed = false;
+            }
+        }
+// LoadDefaultConfig is only called on first execution of the plugin or if someone deletes the config file.
+        void LoadDefaultConfig()
+        {
+            Puts(&quot;RemoverTool: Creating a new config file&quot;);
+            Config.Clear(); // force clean new config
+            LoadVariables();
+        }
+}
+</pre>{% endraw %}
+                        </div>Awesome thing about this way is that it is dynamic, so you don&#039;t need to force players to change there config file every update, if something is missing it will just
+                        add it to the config file.<br /> [DOUBLEPOST=1423300946][/DOUBLEPOST]and welcome in the C# plugin world <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 7, 2015 at 9:22 AM">Feb 7, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64720' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 9:10 AM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64720' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64720/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64723" class="message" data-author="UnrulyMyth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnrulyMyth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnrulyMyth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Awesome, thanks a lot! So my other problem is I can&#039;t get OnPlayerChat to work correctly. It complains about
+                        the chat.say? Could I get an example with that. Being a bit needy but I tried everything I could think of to get it to work and could not. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnrulyMyth</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64723' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 9:27 AM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64723' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64723/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64726" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">show us your code, i didn&#039;t code anything with this hook so i dont have any examples with me. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64726' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 9:55 AM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64726' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64726/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64926" class="message" data-author="UnrulyMyth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnrulyMyth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnrulyMyth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well I think I am basically asking what the parameters are for it. The hooks says that it&#039;s chat.say? But I
+                        get an just trying to call the hook with that parameter and nothing else. Maybe I&#039;m not using the correct library or something...? I was also wondering how to set up a
+                        timer, if that&#039;s doable. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 7, 2015 at 7:34 PM">Feb 7, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnrulyMyth</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64926' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 6:52 PM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64926' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64926/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64970" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">== OnPlayerChat(Assembly-CSharp/chat.say arg)<br /> - Called from Assembly-CSharp/chat.say<br /> - Returning a
+                        non-null value overrides default behaviour of chat, not commands <br />
+                        <br /> Its pretty clear knowing that arg is actually ConsoleSystem.Arg so you just need a method that matches those parameters.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+object OnPlayerChat(ConsoleSystem.Arg arg)
+        {
+            BasePlayer basePlayer = arg.Player();
+            string str = arg.GetString(0, &quot;text&quot;).Trim();
+            if (!basePlayer || str.StartsWith(&quot;/&quot;) || str.StartsWith(&quot;\\&quot;) || str.Length &lt;= 0)
+            {
+                return &quot;Handled&quot;;
+            }
+            if (str.Length &gt; 128)
+            {
+                str = str.Substring(0, 128);
+            }
+            string chatColor = &quot;#fa5&quot;;
+            string displayName = basePlayer.displayName;
+            string message = string.Format(&quot;&lt;color={2}&gt;{0}&lt;/color&gt;  {1}&quot;, displayName.Replace('&lt;', ' ').Replace('&gt;', ' '), str.Replace('&lt;', ' ').Replace('&gt;', ' '), chatColor);
+            ConsoleSystem.Broadcast(&quot;chat.add&quot;, new object[] { basePlayer.userID, message, 1f });
+            return &quot;Handled&quot;;
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64970' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 8:02 PM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64970' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64970/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64972" class="message" data-author="UnrulyMyth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnrulyMyth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnrulyMyth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Haha, clear to those that know what they are doing. I do not though. I did wind up figuring it out myself but I
+                        thought I was doing it wrong. Thanks for the clarification though! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnrulyMyth</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64972' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 8:06 PM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64972' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64972/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64973" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="UnrulyMyth">
+                            <aside>
+                                <div class="attribution type">UnrulyMyth said: <a href="#post-64972" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Haha, clear to those that know what they are doing. I do not though. I did wind up figuring it out myself but I thought I was doing it wrong.
+                                        Thanks for the clarification though!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;re still ahead of me with C#. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64973' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 8:07 PM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64973' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64973/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-64987" class="message" data-author="UnrulyMyth">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnrulyMyth" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnrulyMyth</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-64973" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;re still ahead of me with C#. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                                            title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Lol, thanks for the positivity! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnrulyMyth</a>,</span>
+                        <a href="{{ '/threads/a-better-c-example.6728/#post-64987' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2015 at 8:34 PM">Feb 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/a-better-c-example.6728/#post-64987' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/64987/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

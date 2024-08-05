@@ -1,0 +1,638 @@
+---
+layout: forums
+title: 'Solved - PHP web rcon'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/php-web-rcon.22894/' | prepend: site.baseurl }}">PHP web rcon</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Nathan
+            3</a>, <a href="{{ '/threads/php-web-rcon.22894/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 8, 2017 at 4:12 PM">Jan 8, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-282832" class="message" data-author="Nathan 3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathan 3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathan 3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> Has anyone manage to get a PHP script to work with the web RCON?<br />
+                        <br /> I have found the following -<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&lt;?php
+class RustRcon {
+        protected $socket;
+        protected $packetId = 0;
+        public static $timeout = 1;
+        public static $blockingMode = 0;
+        const PACKET_TYPE_CMD = 2;
+        const PACKET_TYPE_AUTH = 3;
+        const PACKET_TYPE_CMD_RESPONSE = 0;
+        const PACKET_TYPE_MESSAGE = 4;
+        public function __construct($server, $port, $password)
+        {
+                $this-&gt;connect($server, $port, $password);
+        }
+        protected function connect($server, $port, $password)
+        {
+                $this-&gt;socket = @fsockopen(&quot;tcp://&quot; . $server, $port, $error, $errorstring);
+                if ($error !== 0 || !empty($errorstring)) {
+                        throw new Exception(&quot;Connection failed (&quot; . $error . &quot;): &quot; . $errorstring);
+                }
+                stream_set_timeout($this-&gt;socket, static::$timeout);
+                stream_set_blocking($this-&gt;socket, static::$blockingMode ? 1 : 0);
+                $this-&gt;send($password, self::PACKET_TYPE_AUTH);
+        }
+        public function disconnect()
+        {
+                fclose($this-&gt;socket);
+        }
+        public function send($message, $type = self::PACKET_TYPE_CMD)
+        {
+                $id = ++$this-&gt;packetId;
+                $request = pack('VV', $id, $type) . $message . &quot;\x00\x00&quot;;
+                $request = pack('V', strlen($request)) . $request;
+                fwrite($this-&gt;socket, $request);
+                return $id;
+        }
+        /**
+         * @return null|string Null if no or empty response received, a string if a response was received.
+         * @throws Exception when the socket terminates or something goes wrong.
+         */
+        public function read()
+        {
+                if (feof($this-&gt;socket)) {
+                        throw new Exception('Reached unexpected end of socket.');
+                }
+                // Let's do this
+                $size = fread($this-&gt;socket, 4);
+                if (strlen($size) !== 4) {
+                        return null;
+                }
+                $size = unpack('V', $size);
+                $id = unpack('V', fread($this-&gt;socket, 4))[1];
+                $type = unpack('V', fread($this-&gt;socket, 4))[1];
+                $remaining = $size[1] - 8;
+                $body = '';
+                while ($remaining &gt; 0) {
+                        $response = fread($this-&gt;socket, $remaining);
+                        $size = strlen($response);
+                        if ($size === 0) {
+                                throw new Exception('Received 0 byte response, expected: ' . $remaining);
+                        }
+                        $body .= $response;
+                        $remaining = $remaining - strlen($body);
+                }
+                $body = trim($body);
+                if (empty($body)) {
+                        return null;
+                }
+                if ($type === self::PACKET_TYPE_CMD_RESPONSE) {
+                        // We don't want responses as we will receive these anyway through the normal stream.
+                        return null;
+                }
+                return $body;
+        }
+}
+$ip = 'xxx.xxx.xxx.xxx';
+$port = 28020;
+$password = 'xxxxxxxx';
+respond('Connecting to ' . $ip . ':' . $port . '...');
+$rcon = new RustRcon($ip, $port, $password);
+respond('Connected!');$rcon-&gt;disconnect();
+function respond($str)
+{
+        echo date('Y-m-d H:i:s') . substr((string)microtime(), 1, 4) . ': ' . $str . PHP_EOL;
+}</pre>{% endraw %}
+                        </div>We are trying to figure out how to send basic console commands but getting the following error... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment image" title="31695f55628c8a774054e3ee1bc19485.png">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/31695f55628c8a774054e3ee1bc19485-png.31775/" target="_blank" class="LbTrigger" data-href="misc/lightbox"><img
+                                            src="data/attachments/31/31776-31695f55628c8a774054e3ee1bc19485.jpg" alt="31695f55628c8a774054e3ee1bc19485.png" class="LbImage" /></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/31695f55628c8a774054e3ee1bc19485-png.31775/" target="_blank">31695f55628c8a774054e3ee1bc19485.png</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>40.7 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>144</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathan 3</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Jan 8, 2017 at 4:12 PM">Jan 8,
+                                2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/282832/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-282852" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> this is to use rcon.web 0<br /> not rcon.web 1 <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-282852' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2017 at 5:07 PM">Jan 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-282852' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/282852/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-282853" class="message" data-author="Nathan 3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathan 3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathan 3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Reneb">
+                            <aside>
+                                <div class="attribution type">Reneb said: <a href="#post-282852" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">this is to use rcon.web 0<br /> not rcon.web 1</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh... derp, Is there a PHP method available for web.rcon because I read standard RCON will be removed soon. I have the web rcon js client but I need it to automate
+                        purchases. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathan 3</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-282853' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2017 at 5:09 PM">Jan 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-282853' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/282853/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-282945" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> dunno, search for websocket for php, but it is way easier with js indeed <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-282945' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2017 at 9:24 PM">Jan 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-282945' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/282945/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-283423" class="message" data-author="Russo-turisto">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Russo-turisto" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Russo-turisto</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I use this lib:<br />
+                        <a href="https://github.com/Textalk/websocket-php" target="_blank" class="externalLink  rel=" nofollow">GitHub - Textalk/websocket-php: WebSocket client and server in
+                            PHP</a><br /> My code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&lt;?php
+header('Content-Type: text/plain; charset=utf-8');require_once __DIR__ . '/lib/Base.php';
+require_once __DIR__ . '/lib/Exception.php';
+require_once __DIR__ . '/lib/BadOpcodeException.php';
+require_once __DIR__ . '/lib/BadUriException.php';
+require_once __DIR__ . '/lib/ConnectionException.php';
+require_once __DIR__ . '/lib/Server.php';
+require_once __DIR__ . '/lib/Client.php';use WebSocket\Client;$ip = &quot;1.2.4.5&quot;; // server IP-address
+$rcon_port = &quot;28016&quot;; // server RCON-port
+$rcon_pass = &quot;123456&quot;; // server RCON-password$client = new Client(&quot;ws://{$ip}:{$rcon_port}/{$rcon_pass}&quot;);
+$data = array(
+    'Identifier' =&gt; 0,
+    'Message' =&gt; 'status', // command
+    'Stacktrace' =&gt; '',
+    'Type' =&gt; 3
+);$client-&gt;send(json_encode($data));
+$result = json_decode($client-&gt;receive());echo $result-&gt;Message;</pre>{% endraw %}
+                        </div>That if enable rcon.web <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Russo-turisto</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-283423' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 10, 2017 at 1:16 PM">Jan 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-283423' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/283423/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-283427" class="message" data-author="Nathan 3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathan 3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathan 3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Russo-turisto">
+                            <aside>
+                                <div class="attribution type">Russo-turisto said: <a href="#post-283423" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I use this lib:<br />
+                                        <a href="https://github.com/Textalk/websocket-php" target="_blank" class="externalLink  rel=" nofollow">GitHub - Textalk/websocket-php: WebSocket client and
+                                            server in PHP</a><br /> My code:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>&lt;?php
+header('Content-Type: text/plain; charset=utf-8');require_once __DIR__ . '/lib/Base.php';
+require_once __DIR__ . '/lib/Exception.php';
+require_once __DIR__ . '/lib/BadOpcodeException.php';
+require_once __DIR__ . '/lib/BadUriException.php';
+require_once __DIR__ . '/lib/ConnectionException.php';
+require_once __DIR__ . '/lib/Server.php';
+require_once __DIR__ . '/lib/Client.php';use WebSocket\Client;$ip = &quot;1.2.4.5&quot;; // server IP-address
+$rcon_port = &quot;28016&quot;; // server RCON-port
+$rcon_pass = &quot;123456&quot;; // server RCON-password$client = new Client(&quot;ws://{$ip}:{$rcon_port}/{$rcon_pass}&quot;);
+$data = array(
+    'Identifier' =&gt; 0,
+    'Message' =&gt; 'status', // command
+    'Stacktrace' =&gt; '',
+    'Type' =&gt; 3
+);$client-&gt;send(json_encode($data));
+$result = json_decode($client-&gt;receive());echo $result-&gt;Message;</pre>{% endraw %}
+                                        </div>That if enable rcon.web
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Awesome I will try and hack it together &lt;3 <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathan 3</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-283427' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 10, 2017 at 1:36 PM">Jan 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-283427' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/283427/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-330577" class="message" data-author="Bl4d3z">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bl4d3z" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bl4d3z</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> does this method still work? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bl4d3z</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-330577' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 10, 2017 at 9:43 PM">Jun 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-330577' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/330577/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-330589" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Bl4d3z">
+                            <aside>
+                                <div class="attribution type">Bl4d3z said: <a href="#post-330577" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">does this method still work?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Not sure, but this may be helpful. <a href="https://github.com/Facepunch/webrcon" target="_blank" class="externalLink  rel=" nofollow">GitHub - Facepunch/webrcon: Game
+                            server rcon, using websockets</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-330589' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 10, 2017 at 10:35 PM">Jun 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-330589' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/330589/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-330594" class="message" data-author="Bl4d3z">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bl4d3z" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bl4d3z</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I had an idea of making a PHP handler that piggy backs off of this. (trying to make it work with my web store and
+                        remote ban system again - SFPortal) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bl4d3z</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-330594' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 10, 2017 at 10:43 PM">Jun 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-330594' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/330594/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-331574" class="message" data-author="Maestro">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maestro" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maestro</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am working on the one from facepunch <a href="https://github.com/maestroi/Simpel-rcon" target="_blank"
+                            class="externalLink  rel=" nofollow">GitHub - maestroi/Simpel-rcon: Webrcon</a> to make it with more features, i could make it with server site and proxy all commands to
+                        make it a bit more secure. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maestro</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-331574' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 16, 2017 at 1:49 PM">Jun 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-331574' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/331574/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-387774" class="message" data-author="InsomniaSimplyFrag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="InsomniaSimplyFrag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">InsomniaSimplyFrag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> We could really use a serverside version of this for security when using web applications else you can parse the
+                        rcon password on command execution <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /> - if used in a management
+                        system. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">InsomniaSimplyFrag</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-387774' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 22, 2018 at 8:53 PM">Feb 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-387774' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/387774/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400102" class="message" data-author="iDeath">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iDeath" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iDeath</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/56689/" class="username" data-user="56689, @Russo-turisto">@Russo-turisto</a> Oof I&#039;ve been looking so long for that project, thanks!
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iDeath</a>,</span>
+                        <a href="{{ '/threads/php-web-rcon.22894/#post-400102' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2018 at 5:35 AM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/php-web-rcon.22894/#post-400102' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400102/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

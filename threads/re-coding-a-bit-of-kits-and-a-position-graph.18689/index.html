@@ -1,0 +1,123 @@
+---
+layout: forums
+title: 'Re-coding a bit of kits, and a position graph'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/' | prepend: site.baseurl }}">Re-coding a bit of kits, and a position graph</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kappasaurus</a>, <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 11, 2016 at 10:44 PM">Jun 11, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-215004" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have gone about the task of making minor differences to the Kits plugin, and I&#039;m trying to make a menu for
+                        the help for both players and admins, as opposing the normal menu, for example:<br /> A player types /kit, and they are greeted with a menu like this, <br /> You may use /kits
+                        VIP to view any donator kits, the permissions to use this kits may be obtained at rustysurvival.net.<br /> For all other kits, or kits you&#039;re authorized to use, please
+                        type /kit. <br /> I also intend to do something similar with the help command. If anyone could show me how to code the menus that would be helpful, also if there is a position
+                        diagram or someone could explain to me where it stops and starts that would be very helpful, so the furthest and lowest x and y. <br /> Thanks, <br /> Kappasaurus <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 11, 2016 at 10:44 PM">Jun 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/215004/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-215016" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        [ChatCommand(&quot;kit&quot;)]
+                    SendReply(player, &quot;Use the command /kits to view all kits you have access to, for all VIP kits you may use the command /kitsvip which may                       be obtained at rustysurvival.net.&quot;)
+        },
+        [ChatCommand(&quot;kitsvip&quot;)]
+       {
+I have no idea how to show kits that a player doesn't have the permission for...
+       },
+        [ChatCommand(&quot;kits&quot;)]
+        void cmdChatKit(BasePlayer player, string command, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                if (GUIKits.ContainsKey(0))
+                    NewKitPanel(player, 0);
+                else
+                {
+                    string reason = string.Empty;
+                    foreach (var pair in storedData.Kits)
+                    {
+                        var cansee = CanSeeKit(player, pair.Key, false, out reason);
+                        if (!cansee &amp;&amp; string.IsNullOrEmpty(reason)) continue;
+                        SendReply(player, $&quot;{pair.Value.name} - {pair.Value.description} {reason}&quot;);
+                    }
+                }
+</pre>{% endraw %}
+                        </div><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> do you have any idea? Obviously the text isn&#039;t polished, but I think
+                        I&#039;m somewhat close. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/#post-215016' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 11, 2016 at 11:18 PM">Jun 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/re-coding-a-bit-of-kits-and-a-position-graph.18689/#post-215016' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/215016/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

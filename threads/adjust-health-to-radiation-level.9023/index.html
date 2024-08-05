@@ -1,0 +1,217 @@
+---
+layout: forums
+title: 'Solved - Adjust health to radiation level'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/adjust-health-to-radiation-level.9023/' | prepend: site.baseurl }}">Adjust health to radiation level</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DroneFW</a>, <a href="{{ '/threads/adjust-health-to-radiation-level.9023/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 3, 2015 at 11:51 AM">Jun 3,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-94878" class="message" data-author="DroneFW">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DroneFW" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DroneFW</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi, I want players to only take damage above 500 radiation. So far I&#039;ve got this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnRunPlayerMetabolism(PlayerMetabolism metabolism)
+        {
+            BasePlayer player = (BasePlayer) metabolism.GetComponent(&quot;BasePlayer&quot;);            if (metabolism.radiation_poison.value &lt; 500 &amp;&amp; metabolism.radiation_poison.value &gt; 1)
+            {                player.health = player.health;
+            }
+        }</pre>{% endraw %}
+                        </div>The damage you take form radiation starts beforehand therefore player.health = player.health doesn&#039;t work seem to work. Anyone has any suggestions what could work
+                        instead of this line?<br />
+                        <br /> I&#039;ve also tried looking at OnEntityTakeDamage. Managed to check which if a player got damaged and tried to determine the damagetype but this doesn&#039;t seem to
+                        work either. The DamageType always seems to be &quot;Generic&quot;. Perhaps anyone has a solution to this?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseEntity entity, HitInfo info)
+        {            if (entity.name == &quot;player/player&quot;)
+            {                foreach (DamageType dt in info.damageTypes.types)
+                {
+                    if (dt == DamageType.RadiationExposure)
+                    {
+                        ConsoleSystem.Broadcast(&quot;chat.add&quot;, 0, &quot;Radiation Damage&quot;);
+                    }
+                }
+            }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1433328694,1433167347][/DOUBLEPOST]Fixed it! Found <a href="http://oxidemod.org/plugins/realistic-fall-damage.855/"
+                            class="internalLink">http://oxidemod.org/plugins/realistic-fall-damage.855/</a> as example code. Works great!<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseEntity entity, HitInfo info)
+        {
+            BasePlayer player = entity.GetComponent&lt;BasePlayer&gt;();
+            if (player == null)
+            {
+                return;
+            }
+           
+            if(info.damageTypes.Total() &lt;= 0)
+            {
+                return;
+            }            DamageType majorDamagetype = info.damageTypes.GetMajorityDamageType();
+            if (majorDamagetype == DamageType.Radiation)
+            {
+                float newDamage;
+                if (player.metabolism.radiation_poison.value &gt;= 40)
+                {
+                    newDamage = 0.05f;
+                }
+                else
+                {
+                    newDamage = 0;
+                }
+                info.damageTypes.Set(majorDamagetype, newDamage);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DroneFW</a>,</span>
+                        <a href="{{ '/threads/adjust-health-to-radiation-level.9023/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 3, 2015 at 11:51 AM">Jun 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adjust-health-to-radiation-level.9023/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/94878/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-96491" class="message" data-author="Nark0t1k">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nark0t1k" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nark0t1k</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Can you make standalone plugins for this ? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nark0t1k</a>,</span>
+                        <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96491' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 7, 2015 at 3:46 AM">Jun 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96491' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/96491/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-96623" class="message" data-author="DroneFW">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DroneFW" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DroneFW</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yea, you can. It&#039;s pretty easy actually! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DroneFW</a>,</span>
+                        <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96623' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 7, 2015 at 2:06 PM">Jun 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96623' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/96623/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-96666" class="message" data-author="Nark0t1k">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nark0t1k" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nark0t1k</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">starting to looking for plugins ^^ will see that ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nark0t1k</a>,</span>
+                        <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96666' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 7, 2015 at 5:02 PM">Jun 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adjust-health-to-radiation-level.9023/#post-96666' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/96666/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

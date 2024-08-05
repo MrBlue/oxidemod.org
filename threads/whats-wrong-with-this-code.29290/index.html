@@ -1,0 +1,156 @@
+---
+layout: forums
+title: 'Solved - Whats wrong with this code?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/whats-wrong-with-this-code.29290/' | prepend: site.baseurl }}">Whats wrong with this code?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ZyKron</a>, <a href="{{ '/threads/whats-wrong-with-this-code.29290/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 2, 2018 at 2:39 PM">Feb 2, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-383563" class="message" data-author="ZyKron">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ZyKron" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ZyKron</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I know this is weird, i&#039;m making a VIP code activation thingy. When i save it, a message pops up in red on
+                        the console saying &quot;Error while compiling: test.cs(36,33): error CS1503: Argument `#1&#039; cannot convert `string&#039; expression to type `int&#039;&quot; I don&#039;t
+                        know how to fix this.<br /> &quot;<br /> This is the part of code i&#039;m getting errors at,<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;activate&quot;)]
+        private void Activate(BasePlayer plr, string command, string[] args)
+        {            SendReply(plr, &quot;Trying to activate...&quot;);
+           ---&gt; string secondargs = args[0].ToString();
+            if (!Codes.Contains(secondargs))
+                {
+                SendReply(plr, &quot;That code is invalid! Please try again.&quot;);
+            }
+            else
+            {
+                rust.RunServerCommand(&quot;oxide.usergroup add &quot; + plr.displayName + &quot; vip&quot;);
+                rust.BroadcastChat(&quot;Welcome &quot; + plr.displayName + &quot; to the VIP crew!&quot;);
+                SendReply(plr, &quot;Success! Remember, you get a vip kit which you can redeem via /kit vip.&quot;);
+            }
+        }</pre>{% endraw %}
+                        </div>Also, i&#039;m new to all of this, so i don&#039;t know what methods to use. Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ZyKron</a>,</span>
+                        <a href="{{ '/threads/whats-wrong-with-this-code.29290/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 2:39 PM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/whats-wrong-with-this-code.29290/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383563/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383564" class="message" data-author="Slydelix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slydelix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slydelix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I assume the Codes is List&lt;int&gt;, in which case you have to convert the string secondargs to int by using
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>int num = int.Parse(secondargs);</pre>{% endraw %}
+                        </div> but since the player is expected to input a number he probably wont do that so I suggest using this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>int num;
+if (!int.TryParse(secondargs, out num))
+{
+      SendReply(plr, &quot;Invalid number &quot; + secondargs);
+      return;
+}</pre>{% endraw %}
+                        </div>Edit: This applies just in case the Codes is int list <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slydelix</a>,</span>
+                        <a href="{{ '/threads/whats-wrong-with-this-code.29290/#post-383564' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 2:49 PM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/whats-wrong-with-this-code.29290/#post-383564' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383564/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383565" class="message" data-author="ZyKron">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ZyKron" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ZyKron</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks so much! I know where i messed up at, i forgot that it was an integer list. Lol, thanks! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ZyKron</a>,</span>
+                        <a href="{{ '/threads/whats-wrong-with-this-code.29290/#post-383565' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 2:54 PM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/whats-wrong-with-this-code.29290/#post-383565' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383565/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

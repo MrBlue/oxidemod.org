@@ -1,0 +1,124 @@
+---
+layout: forums
+title: 'Having issues with my new plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/' | prepend: site.baseurl }}">Having issues with my new plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vypr</a>, <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 4, 2015 at 8:26 PM">Oct 4,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-133739" class="message" data-author="Vypr">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vypr" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vypr</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So I made this plugin called <a href="http://oxidemod.org/plugins/safe-homes.1367/" class="internalLink">Safe
+                            Homes</a> for my creative server. It makes it so you need building access in order to damage buildings. If you have building access or there is no cupboard present you can
+                        damage buildings. <br />
+                        <br /> The problem I am running into is when someone uses a rocket and shoots in from outside the permission zone, he still does damage. I cannot find a way to make it so even
+                        if they do this if the person doesn&#039;t have access at that location it doesn&#039;t deal the damage. Hopefully that makes sense.<br />
+                        <br /> Here is a link to my plugin: <a href="http://oxidemod.org/plugins/safe-homes.1367/" class="internalLink">http://oxidemod.org/plugins/safe-homes.1367/</a><br />
+                        [DOUBLEPOST=1443986802,1443907401][/DOUBLEPOST]player.CanBuild() shows if someone can build if they either have permission or if no cupboard is present. Is there a way to
+                        determine if they can build because there is no cupboard available or if there is one? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vypr</a>,</span>
+                        <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 8:26 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133739/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134002" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Use player flags. HasBuildingPrivilege or InBuildingPrivilege should be suitable.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    [Flags]
+    public enum PlayerFlags
+    {
+        InBuildingPrivilege = 1,
+        HasBuildingPrivilege = 2,
+        IsAdmin = 4,
+        ReceivingSnapshot = 8,
+        Sleeping = 16,
+        Spectating = 32,
+        Wounded = 64,
+        IsDeveloper = 128,
+        Connected = 256,
+        VoiceMuted = 512,
+        ThirdPersonViewmode = 1024,
+        EyesViewmode = 2048,
+        ChatMute = 4096
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>   public bool HasPlayerFlag(BasePlayer.PlayerFlags f)
+    {
+        return (this.playerFlags &amp; f) == f;
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/#post-134002' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 9:53 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/having-issues-with-my-new-plugin.12078/#post-134002' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134002/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

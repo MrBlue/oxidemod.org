@@ -1,0 +1,438 @@
+---
+layout: forums
+title: 'Linux update Oxide automatically sh script'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/' | prepend: site.baseurl }}">Linux update Oxide automatically sh script</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username" dir="auto">EviL
+            iNsiDe</a>, <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 5, 2017 at 4:08 PM">Jul 5,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-335836" class="message" data-author="EviL iNsiDe">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EviL iNsiDe" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EviL iNsiDe</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Few days ago I just search for a linux script which can automatically update oxide if an update is released
+                        .<br /> Since not found any resource I decide to create one and share it with the community . <br />
+                        <br /> This script was build using LGSM scripts and will check for oxide updates based on cURL header hash value and perform following actions (if no oxide updates are detected
+                        the script will exit without taking any actions):<br />
+                        <br />
+                        <ul>
+                            <li>stop rust server</li>
+                            <li>update rust server (if available)</li>
+                            <li>update oxide mod for rust</li>
+                            <li>start rust server</li>
+                        </ul>The script can be found attached to this topic and on <a href="https://git.xsh.ro/evil/pub-script/src/master/sh/rust" target="_blank" class="externalLink  rel="
+                            nofollow">GIT</a><br />
+                        <br /> You will have only to change WDIR var according to location of LGSM rustserver script .<br /> I have crontabed this script to run hourly at 2 and 32 minutes (in order to
+                        avoid interaction with /srv/rust/rustserver monitor)<br />
+                        <br /> crontab content <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>*/15 * * * *    /srv/rust/rustserver monitor
+2,32 * * * *   /srv/rust/bin/rust_oxide_update.sh
+0 0 * * 0       /srv/rust/rustserver update-functions
+*/30 * * * *    /bin/ocomposer update
+</pre>{% endraw %}
+                        </div>rust_oxide_update.sh content<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>#!/bin/sh
+# v0.1@20140705 catalin.m
+# Rust oxide mod update script
+## VARWDIR=&quot;/srv/rust&quot;
+OFILE=&quot;https://dl.bintray.com/oxidemod/builds/Oxide-Rust.zip&quot;# Functionsfunction oxide_get_local_hash
+{
+        [ -e &quot;${WDIR}/.rust_oxide_hash&quot; ] || touch &quot;${WDIR}/.rust_oxide_hash&quot;
+        LHASH=$(cat ${WDIR}/.rust_oxide_hash)
+        echo Local Oxide hash : ${LHASH}
+}
+function oxide_get_remote_hash
+{
+        RHASH=$(curl -sI ${OFILE} | grep -i X-Checksum-Sha1 | awk -v RS='\n' '{print $2}')
+        echo Remote Oxide hash : ${RHASH}
+}function oxide_compare_hash
+{
+        oxide_get_local_hash
+        oxide_get_remote_hash
+        if test ${LHASH} == ${RHASH}
+        then
+        return 0
+        else
+        return 1
+        fi
+}function oxide_update
+{
+        if oxide_compare_hash;
+        then
+        echo no updates!
+        exit 0
+        else
+        echo new updates
+        oxide_perform_update
+        fi
+}function oxide_perform_update
+{
+        ${WDIR}/rustserver stop ; ${WDIR}/rustserver update ; ${WDIR}/rustserver mods-update ; ${WDIR}/rustserver start ; echo ${RHASH} &gt; ${WDIR}/.rust_oxide_hash
+}# Execute script stepsoxide_update
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EviL iNsiDe</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2017 at 4:08 PM">Jul 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/335836/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-339244" class="message" data-author="EviL iNsiDe">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EviL iNsiDe" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EviL iNsiDe</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>#!/bin/sh
+# v0.2@20170722 catalin.m
+# Rust oxide mod update script
+## VARWDIR=&quot;/srv/rust&quot;
+OFILE=&quot;https://dl.bintray.com/oxidemod/builds/Oxide-Rust.zip&quot;# Functionsfunction oxide_get_local_hash
+{
+        [ -e &quot;${WDIR}/.rust_oxide_hash&quot; ] || touch &quot;${WDIR}/.rust_oxide_hash&quot;
+        LHASH=$(cat ${WDIR}/.rust_oxide_hash)
+        echo Local Oxide eTAG : ${LHASH}
+}
+function oxide_get_remote_hash
+{
+        RHASH=$(curl -sLI ${OFILE} | grep -i Etag: | awk -v RS='\n' '{print $2}')
+        echo Remote Oxide eTAG : ${RHASH}
+}function oxide_compare_hash
+{
+        oxide_get_local_hash
+        oxide_get_remote_hash
+        if test ${LHASH} == ${RHASH}
+        then
+        return 0
+        else
+        return 1
+        fi
+}function oxide_update
+{
+        if oxide_compare_hash;
+        then
+        echo no updates!
+        exit 0
+        else
+        echo new updates
+        oxide_perform_update
+        fi
+}function oxide_perform_update
+{
+        ${WDIR}/rustserver stop ; ${WDIR}/rustserver update ; ${WDIR}/rustserver mods-update ; ${WDIR}/rustserver start ; echo ${RHASH} &gt; ${WDIR}/.rust_oxide_hash
+}# Execute script stepsoxide_update</pre>{% endraw %}
+                        </div>ChangeLog<br />
+                        <br /> - updated to version 0.2<br /> - change detection of new version from sha1 header to etag since bintray seems to use akamai and no more sha1 info can be found in header
+                        .<br /> - git version also updated <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EviL iNsiDe</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339244' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 22, 2017 at 12:44 PM">Jul 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339244' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/339244/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-339435" class="message" data-author="Scu|ptor">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Scu|ptor" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Scu|ptor</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> 1) Need sudo or root for install, realy? <br /> 2) after install php and install ocomposer, errors and errors and
+                        errors... May be I need to use it as sudoer or root too? No, thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="EviL iNsiDe">
+                            <aside>
+                                <div class="attribution type">EviL iNsiDe said: <a href="#post-339244" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>#!/bin/shChangeLog- updated to version 0.2
+- change detection of new version from sha1 header to etag since bintray seems to use akamai and no more sha1 info can be found in header .
+- git version also updated[/QUOTE]</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Scu|ptor</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339435' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 23, 2017 at 11:59 AM">Jul 23, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339435' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/339435/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-339637" class="message" data-author="EviL iNsiDe">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EviL iNsiDe" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EviL iNsiDe</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Scu|ptor">
+                            <aside>
+                                <div class="attribution type">Scu|ptor said: <a href="#post-339435" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">1) Need sudo or root for install, realy?<br /> 2) after install php and install ocomposer, errors and errors and errors... May be I need to use
+                                        it as sudoer or root too? No, thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>ocomposer is not needed by this script , also no sudo or root is required , my rust server uses a dedicate &quot;rust&quot; user under which this script runs . <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EviL iNsiDe</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339637' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2017 at 8:41 AM">Jul 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339637' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/339637/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-339638" class="message" data-author="Scu|ptor">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Scu|ptor" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Scu|ptor</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="EviL iNsiDe">
+                            <aside>
+                                <div class="attribution type">EviL iNsiDe said: <a href="#post-339637" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">ocomposer is not needed by this script , also no sudo or root is required , my rust server uses a dedicate &quot;rust&quot; user under which this
+                                        script runs .</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ye, now I understand. Thanks, will try. Made script, change path to WDIR, but:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>rustserver@gameserver:~/scripts$ ./checkupd_rust
+./checkupd_rust: 13: ./checkupd_rust: function: not found
+Local Oxide eTAG :
+./checkupd_rust: 19: ./checkupd_rust: function: not found
+Remote Oxide eTAG : &quot;3141971a4aed147dcd635e583f0b3803:1500848419.253408&quot;
+./checkupd_rust: 25: ./checkupd_rust: function: not found
+./checkupd_rust: 27: ./checkupd_rust: oxide_get_local_hash: not found
+./checkupd_rust: 28: ./checkupd_rust: oxide_get_remote_hash: not found
+./checkupd_rust: 29: test: ==: unexpected operator</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Scu|ptor</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339638' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2017 at 8:59 AM">Jul 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-339638' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/339638/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-350872" class="message" data-author="RFC1920">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RFC1920" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RFC1920</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am not sure what shell he is using but I had to make a couple of changes for bash on CentOS 7. Specifically,
+                        function was removed in favor of functionname (). Also changed how the comparision is done (f [ &quot;${LHASH}&quot; = &quot;${RHASH}&quot; ]; then). Otherwise, thanks because
+                        I was looking for the right way to do this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+#!/bin/sh
+# v0.2@20170722 catalin.m
+# Rust oxide mod update script
+## VARWDIR=&quot;/home/steam&quot;
+OFILE=&quot;https://dl.bintray.com/oxidemod/builds/Oxide-Rust.zip&quot;# Functionsoxide_get_local_hash ()
+{
+        [ -e &quot;${WDIR}/.rust_oxide_hash&quot; ] || touch &quot;${WDIR}/.rust_oxide_hash&quot;
+        LHASH=$(cat ${WDIR}/.rust_oxide_hash)
+        echo Local Oxide eTAG : ${LHASH}
+}
+oxide_get_remote_hash ()
+{
+        RHASH=$(curl -sLI ${OFILE} | grep -i Etag: | awk -v RS='\n' '{print $2}')
+        echo Remote Oxide eTAG : ${RHASH}
+}oxide_compare_hash ()
+{
+        oxide_get_local_hash
+        oxide_get_remote_hash
+        if [ &quot;${LHASH}&quot; = &quot;${RHASH}&quot; ]; then
+                return 0
+        else
+                return 1
+        fi
+}oxide_update ()
+{
+        if oxide_compare_hash; then
+                echo no updates!
+                exit 0
+        else
+                echo new updates
+                oxide_perform_update
+        fi
+}oxide_perform_update ()
+{
+        ${WDIR}/rustserver stop ; ${WDIR}/rustserver update ; ${WDIR}/rustserver mods-update ; ${WDIR}/rustserver start ; echo ${RHASH} &gt; ${WDIR}/.rust_oxide_hash
+}# Execute script stepsoxide_update</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RFC1920</a>,</span>
+                        <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-350872' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 15, 2017 at 3:21 PM">Sep 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-update-oxide-automatically-sh-script.26221/#post-350872' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/350872/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

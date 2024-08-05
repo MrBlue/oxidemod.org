@@ -1,0 +1,378 @@
+---
+layout: forums
+title: 'Creating dictionary from data file?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/' | prepend: site.baseurl }}">Creating dictionary from data file?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Crushed</a>, <a href="{{ '/threads/creating-dictionary-from-data-file.29704/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 28, 2018 at 8:46 PM">Feb 28,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-388827" class="message" data-author="Crushed">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Crushed" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Crushed</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well im kinda stuck even cause im still struggling with things like Arrays, Lists or dictionaries.<br /> Even tho,
+                        what im trying seems kinda relatively simple : <br />
+                        <br /> I would just need a dictionary &lt;ulong,string&gt; to use for some verification stuff.<br /> I did already wrote the code and use it, but having every code and value
+                        within the method itself looks just messy and is inconvenient for everyone thats using it.<br />
+                        <br /> And as i , so far, wrote all the time all the code within the plugin, and never really setup configs for my stuff, im stuck on it ... <br />
+                        <br /> What it somehow should look like and what i got so far : <br />
+                        <br />
+                        <br /> --Example--<br /> Json<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;Entries&quot;: [
+    123456789987654 :    &quot;127.0.0.1&quot;
+]
+}
+</pre>{% endraw %}
+                        </div>C#<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+class StoredData
+        {
+            public Dictionary&lt;ulong, string&gt; Entries = new Dictionary&lt;ulong, string&gt;();            public StoredData()
+            {
+            }
+        }
+        StoredData storedData;        void Loaded()
+        {
+            storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;PluginName&quot;);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Crushed</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 28, 2018 at 8:46 PM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/388827/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388828" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// System.Collections.Generic and Oxide.Core, written without an IDE, but should work correctly.
+// If it's data that doesn't necessarily change very quickly, set this to true when you change data, otherwise omit the variable.
+private Dictionary&lt;ulong, string&gt; _playerData = new Dictionary&lt;ulong, string&gt;();private bool _dataChanged;private void SaveData()
+{
+    if (!_dataChanged)
+    {
+        return;
+    }    Interface.Oxide.DataFileSystem.WriteObject($&quot;{Name}Data&quot;, _playerData);
+    _dataChanged = false;
+}private void Init() =&gt; _playerData = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;ulong, string&gt;&gt;($&quot;{Name}Data&quot;);private void OnServerSave() =&gt; SaveData();private void Unload() =&gt; SaveData();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388828' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 28, 2018 at 9:10 PM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388828' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388828/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388830" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-388828" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>// System.Collections.Generic and Oxide.Core, written without an IDE, but should work correctly.
+// If it's data that doesn't necessarily change very quickly, set this to true when you change data, otherwise omit the variable.
+private Dictionary&lt;ulong, string&gt; _playerData = new Dictionary&lt;ulong, string&gt;();private bool _dataChanged;private void SaveData()
+{
+    if (!_dataChanged)
+    {
+        return;
+    }    Interface.Oxide.DataFileSystem.WriteObject($&quot;{Name}Data&quot;, _playerData);
+    _dataChanged = false;
+}private void Init() =&gt; _playerData = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;ulong, string&gt;&gt;($&quot;{Name}Data&quot;);private void OnServerSave() =&gt; SaveData();private void Unload() =&gt; SaveData();</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;d suggest using Name, not $&quot;{Name}Data&quot; as adding the Data is redundant. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388830' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 28, 2018 at 9:17 PM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388830' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388830/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388858" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-388830" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;d suggest using Name, not $&quot;{Name}Data&quot; as adding</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I disagree, I still think the file should contain Data, as it describes the contents. Personal preference, it&#039;s just like prefixing variables with &quot;this&quot;
+                        for clarification. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388858' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2018 at 12:00 AM">Mar 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388858' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388858/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388859" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-388858" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I disagree, I still think the file should contain Data, as it describes the contents. Personal preference, it&#039;s just like prefixing
+                                        variables with &quot;this&quot; for clarification.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Perhaps, just thought that being under oxide/data made it clarified enough; though I understand your point. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388859' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2018 at 12:06 AM">Mar 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388859' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388859/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388886" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-388859" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Perhaps, just thought that being under oxide/data made it clarified enough; though I understand your point.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d think it would be clear enough, but the same people who post a thread every time there&#039;s a Rust update and Oxide is broken are the ones who are going to
+                        be confusing the data and config files, even in obviously different directories. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388886' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2018 at 4:22 AM">Mar 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388886' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388886/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388954" class="message" data-author="Crushed">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Crushed" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Crushed</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">In general true. Speaking of my question here, that what i want to build is only for me anyway.<br /> I was
+                        cleaning up some own code stuff in plugins for the wipe and thought it would just be nice to have it use the datafiles instead of a messy, code-filled plugin. Not only for the
+                        sake of being nice and clean, but also to even learn it a bit more to use it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /><br />
+                        <br /> Edit :<br />
+                        <br /> I finished writing that now, works nice.<br /> And a question came to mind.<br /> I never saw that, on a plugin, but is it possible to use like a &quot;live&quot; data
+                        version?<br /> I mean, so that you can edit and save the datafile and it gets used without reloading.<br /> The only thing that i could think of would be a webrequest.... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 1, 2018 at 6:15 PM">Mar 1, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Crushed</a>,</span>
+                        <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388954' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2018 at 5:02 PM">Mar 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-dictionary-from-data-file.29704/#post-388954' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388954/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

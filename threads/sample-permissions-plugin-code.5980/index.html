@@ -1,0 +1,237 @@
+---
+layout: forums
+title: 'Sample Permissions plugin code'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/sample-permissions-plugin-code.5980/' | prepend: site.baseurl }}">Sample Permissions plugin code</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Bombardir</a>, <a href="{{ '/threads/sample-permissions-plugin-code.5980/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 9, 2014 at 5:39 PM">Nov 9,
+                2014</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-55288" class="message" data-author="Bombardir">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bombardir" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bombardir</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi everyone!<br /> Some time ago I wrote a small plugin &#039;Permissions&#039; just for me and for the
+                        tests.<br /> But soon this plugin would be useless (oxide has its own system)...<br /> So I decided to put a plug here, maybe it will help someone.<br />
+                        <ul>
+                            <li>perm.give &lt;steamid\name&gt; &lt;permission&gt;</li>
+                            <li>perm.take &lt;steamid\name&gt; &lt;permission&gt;</li>
+                            <li>perm.list &lt;steamid&gt;</li>
+                            <li>perm.list</li>
+                        </ul>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>-- Get API func
+local API = GetPermissionsAPI() -- it's global function-- Get UserData
+local userdata = API.GetUserDataFromPlayer(player) -- if userdata not found it will return nil
+local userdata = API.GetUserDataFromPlayer(player, true) -- if userdata not found it will create new and return new userdata
+local userdata = API.GetUserData(steamid, do_create_new)-- userdata func
+userdata:GivePerm(permission) -- give permission (if given -&gt; return true, if already have -&gt; return nil)
+userdata:TakePerm(permission) -- take permission(if taken -&gt; return true, if have not -&gt; return nil)
+userdata:HasPerm(permission)  -- check permission(if found -&gt; return Position, else nil)-- Get all permissions
+for i=1, #userdata do
+       print(userdata[i])
+end</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Name = &quot;Permissions&quot;
+PLUGIN.Title = &quot;Permissions&quot;
+PLUGIN.Version = V(1, 0, 0)
+PLUGIN.Description = &quot;Adds Permissions System.&quot;
+PLUGIN.Author = &quot;Bombardir&quot;
+PLUGIN.HasConfig   = truelocal USERS = {}
+-- ********** API ********** --
+local API = {}
+local base_userdata = {}function GetPermissionsAPI()
+    return API
+endfunction base_userdata:GivePerm(perm)
+    if not self:HasPerm(perm) then
+        table.insert(self, perm)
+        datafile.SaveDataTable( &quot;Permissions&quot; )
+        return true
+    end
+endfunction base_userdata:TakePerm(perm)
+    local pos = self:HasPerm(perm)
+    if pos then
+        table.remove(self, pos)
+        datafile.SaveDataTable( &quot;Permissions&quot; )
+        return true
+    end
+endfunction base_userdata:HasPerm(perm)
+    for i=1, #self do
+        if self[i] == perm then
+            return i
+        end
+    end
+endfunction API.GetUserDataFromPlayer(player, do_create_new)
+    return API.GetUserData(rust.UserIDFromPlayer( player ), do_create_new)
+endfunction API.GetUserData(steamid, do_create_new)
+    local data = USERS[steamid]
+    if not data then
+        if do_create_new then
+            data = {}
+            setmetatable(data, {__index = base_userdata})
+            USERS[steamid] = data
+        else
+            return nil
+        end
+    end
+    return data
+end-- ********** API ********** --function PLUGIN:Init()
+    USERS = datafile.GetDataTable( &quot;Permissions&quot; ) or {}
+    for k, v in pairs(USERS) do
+        if v[1] then
+            setmetatable(USERS[k], {__index = base_userdata})
+        else
+            USERS[k] = nil
+        end
+        datafile.SaveDataTable( &quot;Permissions&quot; )
+    end
+    command.AddConsoleCommand( &quot;perm.give&quot;, self.Object, &quot;CC_Perm_Give&quot; )
+    command.AddConsoleCommand( &quot;perm.take&quot;, self.Object, &quot;CC_Perm_Take&quot; )
+    command.AddConsoleCommand( &quot;perm.list&quot;, self.Object, &quot;CC_Perm_List&quot; )
+    self.Config.ChatName = self.Config.ChatName or &quot;[Permissions]&quot;
+    self.Config.No_Permission_Message = self.Config.No_Permission_Message or &quot;You don't have permission for this command!&quot;
+    self:SaveConfig()
+endlocal function Check_Perm(arg, permission)
+    local player
+    if arg.connection then
+        player = arg.connection.player
+    end
+    if player then
+        local data = API.GetUserData(rust.UserIDFromPlayer( player ))
+        if (data and data:HasPerm(permission)) or player:GetComponent(&quot;BaseNetworkable&quot;).net.connection.authLevel &gt;= 2 then
+            return true
+        else
+            player:SendConsoleCommand( &quot;chat.add \&quot;&quot; .. self.Config.ChatName .. &quot;\&quot;&quot;  .. self.Config.No_Permission_Message )
+        end
+    else
+        return true
+    end
+endfunction PLUGIN:CC_Perm_Give(arg)
+    local reply = &quot;&quot;
+    if Check_Perm(arg, &quot;Perm_Give&quot;) then
+        local steam = arg:GetString( 0, false )
+        local perm = arg:GetString( 1, false )
+        if steam and perm then
+            local target   = global.BasePlayer.Find(steam)
+            local userdata
+            if target then
+                userdata = API.GetUserDataFromPlayer( target, true)
+                steam = target.displayName
+            else
+                userdata = API.GetUserData(steam, true)
+            end
+            if userdata:GivePerm(perm) then
+                reply = &quot;Permission &quot; .. perm .. &quot; given to '&quot; .. steam .. &quot;' !&quot;
+            else
+                reply =  &quot;'&quot; .. steam .. &quot;' already have this permission!&quot;
+            end
+        else
+            reply = &quot;Syntax Error! (perm.give &lt;steam&gt; &lt;permission&gt;)&quot;
+        end
+    else
+        reply = &quot;No permission!&quot;
+    end
+    arg:ReplyWith(reply)
+    return true
+endfunction PLUGIN:CC_Perm_Take(arg)
+    local reply = &quot;&quot;
+    if Check_Perm(arg, &quot;Perm_Take&quot;) then
+        local steam = arg:GetString( 0, false )
+        local perm = arg:GetString( 1, false )
+        if steam and perm then
+            local target   = global.BasePlayer.Find(steam)
+            local userdata
+            if target then
+                userdata = API.GetUserDataFromPlayer( target )
+                steam = target.displayName
+            else
+                userdata = API.GetUserData(steam)
+            end
+            if userdata then
+                if userdata:TakePerm(perm) then
+                    reply = &quot;Permission &quot; .. perm .. &quot; was taken from '&quot; .. steam .. &quot;' !&quot;
+                else
+                    reply =  &quot;'&quot; .. steam .. &quot;' haven't this permission! (&quot; .. perm .. &quot;)&quot;
+                end
+            else
+                reply =  &quot;'&quot; .. steam .. &quot;' haven't permissions!&quot;
+            end
+        else
+            reply = &quot;Syntax Error! (perm.take &lt;steam&gt; &lt;permission&gt;)&quot;
+        end
+    else
+        reply = &quot;No permission!&quot;
+    end
+    arg:ReplyWith(reply)
+    return true
+endfunction PLUGIN:CC_Perm_List(arg)
+    local reply = &quot;&quot;
+    if Check_Perm(arg, &quot;Perm_List&quot;) then
+        local steam = arg:GetString( 0, &quot;all&quot; )
+        if steam == &quot;all&quot; then
+            reply = reply .. &quot;------------- PERMISSIONS LIST -------------\n&quot;
+            for steam, data in pairs(USERS) do
+                reply = reply .. steam .. &quot;: &quot; .. table.concat(data, &quot;, &quot;) .. &quot;\n&quot;
+            end
+            reply = reply .. &quot;--------------------------------------------&quot;
+        else
+            local data = USERS[steam]
+            if data then
+                reply = reply .. steam .. &quot;: &quot; .. table.concat(data, &quot;, &quot;)
+            else
+                reply = &quot;No user with steam: '&quot; .. steam .. &quot;' !&quot;
+            end
+        end
+    else
+        reply = &quot;No permission!&quot;
+    end
+    arg:ReplyWith(reply)
+    return true
+end
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Nov 9, 2014 at 6:05 PM">Nov 9, 2014</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bombardir</a>,</span>
+                        <a href="{{ '/threads/sample-permissions-plugin-code.5980/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 9, 2014 at 5:39 PM">Nov 9, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sample-permissions-plugin-code.5980/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/55288/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

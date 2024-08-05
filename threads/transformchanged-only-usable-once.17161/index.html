@@ -1,0 +1,87 @@
+---
+layout: forums
+title: 'TransformChanged only usable once?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/transformchanged-only-usable-once.17161/' | prepend: site.baseurl }}">TransformChanged only usable once?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ツンデレラ</a>, <a href="{{ '/threads/transformchanged-only-usable-once.17161/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 6, 2016 at 6:27 AM">Apr 6,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-193660" class="message" data-author="ツンデレラ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ツンデレラ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ツンデレラ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So can &quot;TransformChanged()&quot; only be used once? This only works once then it turns off i was just
+                        mucking around, but was wondering if there is a way to update the position more than just once to i&#039;mguessing the clinent<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [ChatCommand(&quot;test&quot;)]
+        void cmdTest(BasePlayer player, string cmd, string[] args)
+        {
+            Vector3 pos=player.transform.position;
+            Quaternion angles = new Quaternion (0,0,0,0);
+           
+           
+            var createdPrefab = GameManager.server.CreateEntity(&quot;assets/prefabs/deployable/floor spikes/spikes.floor.prefab&quot;, pos, angles, true);
+            BaseEntity entity = createdPrefab?.GetComponent&lt;BaseEntity&gt;();
+            entity?.Spawn(true);
+            entity.transform.position = pos;
+            Effect.server.Run(&quot;assets/bundled/prefabs/fx/smoke_signal_full.prefab&quot;, entity, 0, Vector3.zero, Vector3.zero, null, true);   
+            Move(entity,player,pos);        }        void Move(BaseEntity entity,BasePlayer player, Vector3 pos)
+        {
+            if(entity==null)return;
+            entity.transform.position = pos+new Vector3(0,1,0);
+            Vector3 pos2=pos+new Vector3(0,1,0);
+            entity.TransformChanged();
+            timer.Once(1f, () =&gt;
+            {
+                entity.TransformChanged();
+                Move(entity,player,pos2);
+            });
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1459920471,1459913173][/DOUBLEPOST]Found it ;w; <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SendNetworkUpdate(BasePlayer.NetworkQueue.UpdateDistance);</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1459922713][/DOUBLEPOST]It seems to only update every so often is it possible to get smooth movement when doing something along these lines <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ツンデレラ</a>,</span>
+                        <a href="{{ '/threads/transformchanged-only-usable-once.17161/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 6, 2016 at 6:27 AM">Apr 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/transformchanged-only-usable-once.17161/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/193660/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

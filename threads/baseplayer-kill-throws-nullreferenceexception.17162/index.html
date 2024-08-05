@@ -1,0 +1,425 @@
+---
+layout: forums
+title: 'Solved - BasePlayer.Kill() throws NullReferenceException'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/' | prepend: site.baseurl }}">BasePlayer.Kill() throws
+            NullReferenceException</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Murky</a>, <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 6, 2016 at 9:25 AM">Apr 6,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-193689" class="message" data-author="Murky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Murky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Murky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi,<br />
+                        <br /> In one case i would need to kill a player by script, and i thought this was an easy task. Here is what i have: <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ConsoleCommand(&quot;RB.Kill&quot;)]
+        void RBKill(ConsoleSystem.Arg arg)
+        {
+            if (arg.connection == null)
+            {
+                var args = arg.HasArgs() ? arg.Args : null;
+                if (args != null &amp;&amp; args.Length == 1)
+                {
+                    ulong _userId;
+                    ulong.TryParse(args[0], out _userId);
+                    if (Players.ContainsKey(_userId))
+                    {
+                        var player = BasePlayer.activePlayerList.FirstOrDefault(x =&gt; x.userID == _userId);
+                        if (player != null)
+                        {
+                            player.Kill(BaseNetworkable.DestroyMode)
+                        }
+                    }
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>disconnecting: Exception: NullReferenceException: Object reference not set to an instance of an object<br />
+                        <br /> The player isnt null and the only variable to pass a long the Kill method is a BaseNetworkable.DestroyMode, and it doesnt seem to make a difference what one of the two
+                        enumerator options i use.<br /> What am i missing out?<br /> [DOUBLEPOST=1459931178][/DOUBLEPOST]Oh, and why i have arg.connection == null is because this never will be used in
+                        console ingame.<br /> [DOUBLEPOST=1459931575][/DOUBLEPOST]player.ChangeHealth(-101); solved it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Murky</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 6, 2016 at 9:25 AM">Apr 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/193689/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193690" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You don&#039;t kill players like you would with entities.<br />
+                        <br /> player.Die(); <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193690' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 6, 2016 at 9:34 AM">Apr 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193690' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193690/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193691" class="message" data-author="Murky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Murky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Murky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I guess it was time for my coffey break. I knew this already from Unity.. Cheers <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Murky</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193691' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 6, 2016 at 9:56 AM">Apr 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193691' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193691/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193994" class="message" data-author="FrcFaust">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FrcFaust" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FrcFaust</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/55424/" class="username" data-user="55424, @Murky">@Murky</a> is your plugin now works as it should be? And is it possible to kill player
+                        by his steam-id with console command? If answer is yes, then please share it with me.<br /> Thank you! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FrcFaust</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193994' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 7, 2016 at 3:58 PM">Apr 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-193994' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193994/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194024" class="message" data-author="Murky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Murky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Murky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Its merely a little fracture of a server utility that works only over RCON, but if you want to have a look at it
+                        here is the extracted part needed to kill a player based on id:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using MurkysRustBoot;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;namespace Oxide.Plugins
+{    [Info(&quot;Murkys Core&quot;, &quot;Murky&quot;, 0.1)]
+    [Description(&quot;Core plugin used in combination of RustBoot&quot;)]
+    class MurkysCore : RustPlugin
+    {        Dictionary&lt;ulong, BasePlayer&gt; Players;        void Init()
+        {
+            Players = new Dictionary&lt;ulong, BasePlayer&gt;();
+            foreach (var player in BasePlayer.activePlayerList)
+            {
+                Players.Add(player.userID, player);
+            }
+            RustBootConsoleMsg(&quot;RustBootPluginInit&quot;);
+        }        [ConsoleCommand(&quot;server.kill&quot;)]
+        void RustBootAdminKill(ConsoleSystem.Arg steamID)
+        {
+            // Only for RCON connections
+            if (steamID.connection == null)
+            {
+                var args = steamID.HasArgs() ? steamID.Args : null;
+                if (args != null &amp;&amp; args.Length == 1)
+                {
+                    ulong _userId;
+                    ulong.TryParse(args[0], out _userId);
+                    if (Players.ContainsKey(_userId))
+                    {
+                        var player = Players.FirstOrDefault(x =&gt; x.Value.userID == _userId);
+                        if (player.Value != null)
+                        {
+                            player.Value.Die();
+                        }
+                    }
+                }
+            }
+        }        void OnPlayerInit(BasePlayer player)
+        {
+            if (!Players.ContainsKey(player.userID))
+            {
+                Players.Add(player.userID, player);
+            }
+        }        void OnPlayerDisconnected(BasePlayer player, string reason)
+        {
+            if (Players.ContainsKey(player.userID))
+            {
+                Players.Remove(player.userID);
+            }
+        }    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 7, 2016 at 6:56 PM">Apr 7, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Murky</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194024' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 7, 2016 at 6:37 PM">Apr 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194024' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194024/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194125" class="message" data-author="Alphawar">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alphawar" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alphawar</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Murky">
+                            <aside>
+                                <div class="attribution type">Murky said: <a href="#post-194024" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Its merely a little fracture of a server utility that works only over RCON, but if you want to have a look at it here is the extracted part
+                                        needed to kill a player based on id:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>            // Only for RCON connections
+            if (steamID.connection == null)
+           </pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Since I dont know what your mod is for I just wanted to ask, did you think about making it check if a player typing it in console has a permision or isadmin? that way you
+                        dont have to give rcon access to all admins? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alphawar</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194125' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 8, 2016 at 1:49 AM">Apr 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194125' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194125/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194135" class="message" data-author="Murky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Murky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Murky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">The RCON connection is solely used by a application. I have tried to get input/output of RustDedicated.exe to read
+                        and send input directly but as of now i have not found a way to do this. I have read Unity documentation and googled for hours, so i gave in and chose a combination of parsing
+                        logs in realtime and using RCON for input. The plugin parses the input from the application.<br />
+                        <br /> I am referring to the <a href="https://msdn.microsoft.com/en-us/library/system.diagnostics.processstartinfo.redirectstandardinput(v=vs.110).aspx" target="_blank"
+                            class="externalLink  rel=" nofollow">ProcessStartInfo.RedirectStandardInput</a> and <a
+                            href="https://msdn.microsoft.com/en-us/library/system.diagnostics.processstartinfo.redirectstandardoutput(v=vs.110).aspx" target="_blank" class="externalLink  rel="
+                            nofollow">RedirectStandardOutput</a> and <a href="https://msdn.microsoft.com/en-us/library/system.diagnostics.processstartinfo.redirectstandarderror(v=vs.110).aspx"
+                            target="_blank" class="externalLink  rel=" nofollow">RedirectStandardError</a> Properties in the <a href="https://www.microsoft.com/net/default.aspx" target="_blank"
+                            class="externalLink  rel=" nofollow">.NET framework</a>, which none of them seems to work with RustDedicated.exe.<br />
+                        <br /> If you know a way to redirect the output/input i would LOVE you, since the &quot;unsolvable&quot; task have given me some hard time and costed me alot of hours. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 8, 2016 at 2:33 AM">Apr 8, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Murky</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194135' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 8, 2016 at 2:19 AM">Apr 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194135' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194135/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194144" class="message" data-author="Alphawar">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alphawar" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alphawar</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">ah that makes sense. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alphawar</a>,</span>
+                        <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194144' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 8, 2016 at 3:08 AM">Apr 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/baseplayer-kill-throws-nullreferenceexception.17162/#post-194144' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194144/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

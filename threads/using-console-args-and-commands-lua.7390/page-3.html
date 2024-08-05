@@ -1,0 +1,275 @@
+---
+layout: forums
+title: 'Solved - Using console args and commands? (Lua) | Page 3'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/using-console-args-and-commands-lua.7390/' | prepend: site.baseurl }}">Using console args and commands? (Lua)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">LaserHydra</a>, <a href="{{ '/threads/using-console-args-and-commands-lua.7390/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 24, 2015 at 6:19 PM">Mar 24,
+                2015</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="3" data-range="2" data-start="2" data-end="2" data-last="3" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/using-console-args-and-commands-lua.7390/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-2' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3' | prepend: site.baseurl }}" class="currentPage ">3</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-76084" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The args parameter in your function is a userdata that contains of everything written after the initial
+                        command.<br /> So if someone writes &quot;/cmd hello world this is domestos&quot; the command is /cmd and args contains &quot;hello world this is domestos&quot; where every
+                        word is a different element is the userdata.<br /> So the first element is args[0] which would be &quot;hello&quot;, the second element is args[1] which would be
+                        &quot;world&quot; and so on.<br /> And because in c# the index is starting with 0 and not 1 the total number of elements is length - 1. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76084' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2015 at 3:52 PM">Mar 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76084' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/76084/permalink">#41</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-76093" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> kk<br /> [DOUBLEPOST=1427658673,1427643756][/DOUBLEPOST]I think I just got it right, but well it seems like I
+                        dont.<br /> There is the problem that whatever I am writing im always getting the Syntax Error.<br /> I tried it with an example of message sending with a custom prefix and
+                        message.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:cmdMessage(player, cmd, args)
+    if args.Lenght == -1 then -- or do I need &quot;if args.Lenght == 1 then&quot;? idk... I think my error is here...
+        local Prefix = tostring(args[0])
+        local Message = tostring(args[1])
+        if player.net.connection.authLevel &lt; self.Config.Authlevel then
+            rust.SendChatMessage(player, &quot;Messages&quot;, self.Config.NoPermission)
+        else
+            rust.BroadcastChat(Prefix, Message)
+        end
+    else
+        rust.SendChatMessage(player, &quot;Messages&quot;, &quot;Syntax: /msg [Prefix] [Message]&quot;)       
+    end
+end
+</pre>{% endraw %}
+                        </div>I don&#039;t want a working code because its not helping me really. just as Hatemail said too.<br /> Just wanna know what I didn&#039;t understand yet... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76093' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2015 at 8:51 PM">Mar 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76093' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/76093/permalink">#42</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-76160" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-76093" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">kk<br /> [DOUBLEPOST=1427658673,1427643756][/DOUBLEPOST]I think I just got it right, but well it seems like I dont.<br /> There is the problem
+                                        that whatever I am writing im always getting the Syntax Error.<br /> I tried it with an example of message sending with a custom prefix and message.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+function PLUGIN:cmdMessage(player, cmd, args)
+    if args.Lenght == -1 then -- or do I need &quot;if args.Lenght == 1 then&quot;? idk... I think my error is here...
+        local Prefix = tostring(args[0])
+        local Message = tostring(args[1])
+        if player.net.connection.authLevel &lt; self.Config.Authlevel then
+            rust.SendChatMessage(player, &quot;Messages&quot;, self.Config.NoPermission)
+        else
+            rust.BroadcastChat(Prefix, Message)
+        end
+    else
+        rust.SendChatMessage(player, &quot;Messages&quot;, &quot;Syntax: /msg [Prefix] [Message]&quot;)      
+    end
+end
+</pre>{% endraw %}
+                                        </div>I don&#039;t want a working code because its not helping me really. just as Hatemail said too.<br /> Just wanna know what I didn&#039;t understand yet...
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>it&#039;s LengTH and in your case you need 2 arguments so you need to compare it against 2 so<br /> if args.Length == 2 then<br /> ................................ rest
+                        of your code <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76160' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2015 at 9:07 PM">Mar 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76160' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/76160/permalink">#43</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-76161" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Your mistake is in the line you think it is.<br /> What do you wanna check to get into the if? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76161' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2015 at 9:07 PM">Mar 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76161' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/76161/permalink">#44</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-76163" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> well I didn&#039;t see that I failed at typing ^^<br /> Ok now I think im sure with this case of args
+                        using...<br /> Thanks again and sorry for my many questions :v <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76163' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2015 at 9:17 PM">Mar 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3#post-76163' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/76163/permalink">#45</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="3" data-range="2" data-start="2" data-end="2" data-last="3" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/using-console-args-and-commands-lua.7390/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-2' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/using-console-args-and-commands-lua.7390/page-3' | prepend: site.baseurl }}" class="currentPage ">3</a>
+        </nav>
+    </div>
+</div>

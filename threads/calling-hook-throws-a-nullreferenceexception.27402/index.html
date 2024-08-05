@@ -1,0 +1,624 @@
+---
+layout: forums
+title: 'Solved - Calling hook throws a NullReferenceException'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/' | prepend: site.baseurl }}">Calling hook throws a
+            NullReferenceException</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rizzok</a>, <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 6, 2017 at 4:13 PM">Oct 6,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-354531" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Strange situation. I have hook in my plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [HookMethod(&quot;HasFriend&quot;)]
+        private bool HasFriend(ulong playerId, ulong friendId)
+        {
+            if (!knownPlayers.Contains(playerId) || !knownPlayers.Contains(friendId))
+            {
+                return false;
+            }            if (!playerInfo.ContainsKey(playerId))
+            {
+                var kvp = LoadData(playerId);
+                playerInfo.Add(kvp);
+            }            PlayerInfo p = null;
+            if (playerInfo.TryGetValue(playerId, out p))
+            {
+                var friend = p.friends.FirstOrDefault(f =&gt; f.Id == friendId);
+                if (friend != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }</pre>{% endraw %}
+                        </div>Calling it from other plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>return (bool)Players?.Call(&quot;HasFriend&quot;, new object[] { playerId, friendId });</pre>{% endraw %}
+                        </div>Before last Rust and Oxide update it was working fine? but now I&#039;m getting:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[FriendlyFire] FriendlyFire: OnPlayerAttack failed: Object reference not set to an instance of an object</pre>{% endraw %}
+                        </div>Hmm, trying other method:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>return (bool)Players?.CallHook(&quot;HasFriend&quot;, playerId, friendId );</pre>{% endraw %}
+                        </div>same error.<br />
+                        <br /> Wtf? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 6, 2017 at 4:13 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/354531/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354537" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;d recommend better null checking. It&#039;s hard to say without having the full plugin code, but with that
+                        snippet it looks like any of <i>knownPlayers</i>, <i>playerInfo</i>, or <i>p.friends</i> could be null. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354537' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 4:30 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354537' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354537/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354541" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">no, all vars is initializing correctly and plugin worked like a charm almost 2 years... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354541' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 4:36 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354541' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354541/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354552" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rizzok">
+                            <aside>
+                                <div class="attribution type">Rizzok said: <a href="#post-354541" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">no, all vars is initializing correctly and plugin worked like a charm almost 2 years...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Assuming this is true, it may be related to recent hook &quot;overloading&quot; changes in Oxide. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354552' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 4:57 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354552' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354552/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354667" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Please test the latest Oxide snapshot here: <a
+                            href="https://ci.appveyor.com/project/oxidemod/oxide/build/2.0.3519/artifacts" target="_blank" class="externalLink">AppVeyor</a><br />
+                        <br /> Should fix plugins using the wrong hook arguments in the plugin they are relying on (ie. Economics) by sending new object[ &quot;blah&quot;, blah ] instead of the actual
+                        hook&#039;s args in the plugin they are calling or sending an int when the target plugin expects a double.<br />
+                        <br /> I&#039;ve tested it personally and it resolved the issue you were having, so please test for yourself as able. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354667' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 10:33 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354667' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354667/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354684" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-354667" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Please test the latest Oxide snapshot here: <a href="https://ci.appveyor.com/project/oxidemod/oxide/build/2.0.3519/artifacts" target="_blank"
+                                            class="externalLink  rel=" nofollow">AppVeyor</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Just tested it now. Not working <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&gt; version
+Protocol: 2022.152.1
+Build Date: 10/06/2017 05:24:20
+Unity Version: 2017.1.1f1
+Changeset: 23156
+Branch: main
+Oxide Version: 2.0.3519</pre>{% endraw %}
+                        </div>Tried<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>return (bool)Players?.Call(&quot;HasFriend&quot;, new object[] { playerId, friendId });</pre>{% endraw %}
+                        </div> and <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>return (bool)Players?.CallHook(&quot;HasFriend&quot;, playerId, friendId );</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354684' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:04 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354684' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354684/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354685" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rizzok">
+                            <aside>
+                                <div class="attribution type">Rizzok said: <a href="#post-354684" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just tested it now. Not working <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":("
+                                            title="Frown    :(" /><br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>&gt; version
+Protocol: 2022.152.1
+Build Date: 10/06/2017 05:24:20
+Unity Version: 2017.1.1f1
+Changeset: 23156
+Branch: main
+Oxide Version: 2.0.3519</pre>{% endraw %}
+                                        </div>Tried<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>return (bool)Players?.Call(&quot;HasFriend&quot;, new object[] { playerId, friendId });</pre>{% endraw %}
+                                        </div> and <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>return (bool)Players?.CallHook(&quot;HasFriend&quot;, playerId, friendId );</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What types are playerId and friendId in the plugin doing the call? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354685' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:05 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354685' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354685/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354686" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-354685" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What types are playerId and friendId in the plugin doing the call?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private bool HasFriend(string playerId, string friendId) {
+            if (Players == null) return false;
+            return (bool)Players?.CallHook(&quot;HasFriend&quot;, playerId, friendId );
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354686' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:09 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354686' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354686/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354688" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rizzok">
+                            <aside>
+                                <div class="attribution type">Rizzok said: <a href="#post-354686" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        private bool HasFriend(string playerId, string friendId) {
+            if (Players == null) return false;
+            return (bool)Players?.CallHook(&quot;HasFriend&quot;, playerId, friendId );
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>So you&#039;re sending a string to a hook that expects a ulong? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354688' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:10 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354688' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354688/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354689" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-354688" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">So you&#039;re sending a string to a hook that expects a ulong?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I know that strange, but that worked before <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> I&#039;ll
+                        convert it and check again... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354689' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:12 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354689' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354689/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354690" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rizzok">
+                            <aside>
+                                <div class="attribution type">Rizzok said: <a href="#post-354689" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I know that strange, but that worked before <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                                            title="Smile    :)" /> I&#039;ll convert it and check again...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, now that multiple hook signatures are supported, best to send what the hook expects. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354690' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:18 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354690' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354690/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-354691" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-354690" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah, now that multiple hook signatures are supported, best to send what the hook expects.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Its working now. Thanks for help! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354691' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 6, 2017 at 11:23 PM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-hook-throws-a-nullreferenceexception.27402/#post-354691' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/354691/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

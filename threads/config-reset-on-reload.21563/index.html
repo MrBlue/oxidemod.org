@@ -1,0 +1,203 @@
+---
+layout: forums
+title: 'Solved - Config reset on reload'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/config-reset-on-reload.21563/' | prepend: site.baseurl }}">Config reset on reload</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sami37</a>, <a href="{{ '/threads/config-reset-on-reload.21563/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 20, 2016 at 4:11 PM">Oct 20, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-260501" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I have a problem with one of my plugin.<br /> I am trying to do a list of match string but when i edit config this list get reset to the default one from plugin.<br />
+                        <br /> My plugin is look like that<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private List&lt;string&gt; DefaultBasePoint = DefaultSRPay();        protected override void LoadDefaultConfig()
+        {
+            Config[&quot;SRMatch&quot;] = DefaultBasePoint;
+            SaveConfig();
+}        static List&lt;string&gt; DefaultSRPay()
+        {
+            var d = new List&lt;string&gt;
+            {
+                &quot;111x&quot;,
+                &quot;222x&quot;,
+                &quot;333x&quot;,
+                &quot;444x&quot;,
+                &quot;555x&quot;,
+                &quot;666x&quot;,
+                &quot;777x&quot;,
+                &quot;888x&quot;,
+                &quot;999x&quot;,
+                &quot;99x9&quot;,
+                &quot;9x99&quot;,
+                &quot;x999&quot;,
+                &quot;99xx&quot;,
+                &quot;9xxx&quot;
+            };
+            return d;
+        }        void Init()
+        {
+            LoadDefaultMessages();
+            permission.RegisterPermission(&quot;Lottery.canuse&quot;, this);
+            CheckCfg(&quot;SRMatch&quot;, ref DefaultBasePoint);
+            SaveConfig();
+        }
+        private void CheckCfg&lt;T&gt;(string Key, ref T var)
+        {
+            if (Config[Key] is T)
+                var = (T) Config[Key];
+            else
+            {
+                Config[Key] = var;
+                newConfig = true;
+            }
+        }
+</pre>{% endraw %}
+                        </div><br /> Anyone has an idea of what is the problem? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/config-reset-on-reload.21563/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 20, 2016 at 4:11 PM">Oct 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-reset-on-reload.21563/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/260501/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-260503" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Maybe because of that part of Init: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>CheckCfg(&quot;SRMatch&quot;, ref DefaultBasePoint);</pre>{% endraw %}
+                        </div>This looks on a quick fly over like its always loading ther defaults then from &quot;DefaultSRPay&quot;. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/config-reset-on-reload.21563/#post-260503' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 20, 2016 at 4:26 PM">Oct 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-reset-on-reload.21563/#post-260503' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/260503/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-260505" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-260503" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Maybe because of that part of Init: <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>CheckCfg(&quot;SRMatch&quot;, ref DefaultBasePoint);</pre>{% endraw %}
+                                        </div>This looks on a quick fly over like its always loading ther defaults then from &quot;DefaultSRPay&quot;.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I am doing it for other config and it&#039;s working example for a dictionnary<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;string, object&gt; DefaultWinRates = DefaultPay();
+protected override void LoadDefaultConfig()
+{
+     Config[&quot;WinRate&quot;] = DefaultWinRates;
+     SaveConfig();
+}
+void Init()
+{
+    CheckCfg(&quot;WinRate&quot;, ref DefaultWinRates);
+    SaveConfig();
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/config-reset-on-reload.21563/#post-260505' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 20, 2016 at 4:33 PM">Oct 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-reset-on-reload.21563/#post-260505' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/260505/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

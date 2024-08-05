@@ -1,0 +1,408 @@
+---
+layout: forums
+title: 'Rust - Crafting without components'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixRed">Rust</span> <a href="{{ '/threads/crafting-without-components.24187/' | prepend: site.baseurl }}">Crafting without components</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username" dir="auto">wIzard
+            6</a>, <a href="{{ '/threads/crafting-without-components.24187/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 1, 2017 at 8:25 PM">Mar 1, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-302984" class="message" data-author="wIzard 6">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wIzard 6" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wIzard 6</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey, looking for a plugin (Nocost,craftui) Ive used craftui but its still to buggy. I was wondering if there is a
+                        way so players have like a invisible amount of components so they can craft all items in the game. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wIzard 6</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 8:25 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/302984/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-302993" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well. You could give them like 10,000 components when they spawn. And delete them upon death, disconnect, etc.
+                        I&#039;ve got a private plugin that does this but its just for building(wood, metal, stones). <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            void OnPlayerDisconnected(BasePlayer target, string reason){
+                if(!infi.Contains(target.userID)) return;
+                target.inventory.containerMain.capacity = 24;
+                target.inventory.Take(null, 3655341, 5000000);
+                target.inventory.Take(null, -892070738, 5000000);
+                target.inventory.Take(null, 688032252, 5000000);
+                target.inventory.Take(null, 374890416, 5000000);
+                target.inventory.SendSnapshot();
+                infi.Remove(target.userID);
+            }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                        if(!infi.Contains(target.userID)){
+                            List&lt;Item&gt; toAdd = new List&lt;Item&gt;();
+                            target.inventory.containerMain.capacity = 30;
+                            toAdd.Add(ItemManager.CreateByItemID(3655341, 5000000)); //Wood
+                            toAdd.Add(ItemManager.CreateByItemID(-892070738, 5000000)); //Stone
+                            toAdd.Add(ItemManager.CreateByItemID(688032252, 5000000)); //Metal Frags
+                            toAdd.Add(ItemManager.CreateByItemID(374890416, 5000000)); //High Qual
+                            toAdd[0].MoveToContainer(target.inventory.containerMain, 29, true);
+                            toAdd[1].MoveToContainer(target.inventory.containerMain, 28, true);
+                            toAdd[2].MoveToContainer(target.inventory.containerMain, 27, true);
+                            toAdd[3].MoveToContainer(target.inventory.containerMain, 26, true);
+                            target.inventory.SendSnapshot();
+                            SendReply(target, &quot;Infinite Building turned on!&quot;);
+                            SendReply(player, $&quot;Infinite Building turned on for {target.displayName}&quot;);
+                            infi.Add(target.userID);
+                        }else{
+                            target.inventory.containerMain.capacity = 24;
+                            target.inventory.Take(null, 3655341, 5000000);
+                            target.inventory.Take(null, -892070738, 5000000);
+                            target.inventory.Take(null, 688032252, 5000000);
+                            target.inventory.Take(null, 374890416, 5000000);
+                            target.inventory.SendSnapshot();
+                            SendReply(target, &quot;Infinite Building turned off!&quot;);
+                            SendReply(player, $&quot;Infinite Building turned off for {target.displayName}&quot;);
+                            infi.Remove(target.userID);
+                        }</pre>{% endraw %}
+                        </div>A snippet from my version of it. Could be edited by most of the developers on oxide <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2"
+                            alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-302993' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 8:43 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-302993' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/302993/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-302994" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well i got a ready to use CreativeCrafting plugin pm me if you are interested <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-302994' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 8:46 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-302994' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/302994/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-303001" class="message" data-author="wIzard 6">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wIzard 6" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wIzard 6</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sami37">
+                            <aside>
+                                <div class="attribution type">sami37 said: <a href="#post-302994" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well i got a ready to use CreativeCrafting plugin pm me if you are interested</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How does your plugin work?<br /> [DOUBLEPOST=1488402162][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-302993" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well. You could give them like 10,000 components when they spawn. And delete them upon death, disconnect, etc. I&#039;ve got a private plugin
+                                        that does this but its just for building(wood, metal, stones).<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>            void OnPlayerDisconnected(BasePlayer target, string reason){
+                if(!infi.Contains(target.userID)) return;
+                target.inventory.containerMain.capacity = 24;
+                target.inventory.Take(null, 3655341, 5000000);
+                target.inventory.Take(null, -892070738, 5000000);
+                target.inventory.Take(null, 688032252, 5000000);
+                target.inventory.Take(null, 374890416, 5000000);
+                target.inventory.SendSnapshot();
+                infi.Remove(target.userID);
+            }</pre>{% endraw %}
+                                        </div>
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>                        if(!infi.Contains(target.userID)){
+                            List&lt;Item&gt; toAdd = new List&lt;Item&gt;();
+                            target.inventory.containerMain.capacity = 30;
+                            toAdd.Add(ItemManager.CreateByItemID(3655341, 5000000)); //Wood
+                            toAdd.Add(ItemManager.CreateByItemID(-892070738, 5000000)); //Stone
+                            toAdd.Add(ItemManager.CreateByItemID(688032252, 5000000)); //Metal Frags
+                            toAdd.Add(ItemManager.CreateByItemID(374890416, 5000000)); //High Qual
+                            toAdd[0].MoveToContainer(target.inventory.containerMain, 29, true);
+                            toAdd[1].MoveToContainer(target.inventory.containerMain, 28, true);
+                            toAdd[2].MoveToContainer(target.inventory.containerMain, 27, true);
+                            toAdd[3].MoveToContainer(target.inventory.containerMain, 26, true);
+                            target.inventory.SendSnapshot();
+                            SendReply(target, &quot;Infinite Building turned on!&quot;);
+                            SendReply(player, $&quot;Infinite Building turned on for {target.displayName}&quot;);
+                            infi.Add(target.userID);
+                        }else{
+                            target.inventory.containerMain.capacity = 24;
+                            target.inventory.Take(null, 3655341, 5000000);
+                            target.inventory.Take(null, -892070738, 5000000);
+                            target.inventory.Take(null, 688032252, 5000000);
+                            target.inventory.Take(null, 374890416, 5000000);
+                            target.inventory.SendSnapshot();
+                            SendReply(target, &quot;Infinite Building turned off!&quot;);
+                            SendReply(player, $&quot;Infinite Building turned off for {target.displayName}&quot;);
+                            infi.Remove(target.userID);
+                        }</pre>{% endraw %}
+                                        </div>A snippet from my version of it. Could be edited by most of the developers on oxide <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Do I have to change <br /> toAdd.Add(ItemManager.CreateByItemID(3655341, 5000000)); //Wood<br /> toAdd.Add(ItemManager.CreateByItemID(-892070738, 5000000)); //Stone<br />
+                        toAdd.Add(ItemManager.CreateByItemID(688032252, 5000000)); //Metal Frags<br /> toAdd.Add(ItemManager.CreateByItemID(374890416, 5000000)); //High Qual<br /> this to all the
+                        components? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wIzard 6</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-303001' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 9:01 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-303001' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/303001/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-303005" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="wIzard 6">
+                            <aside>
+                                <div class="attribution type">wIzard 6 said: <a href="#post-303001" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">How does your plugin work?<br /> [DOUBLEPOST=1488402162][/DOUBLEPOST]<br /> Do I have to change<br />
+                                        toAdd.Add(ItemManager.CreateByItemID(3655341, 5000000)); //Wood<br /> toAdd.Add(ItemManager.CreateByItemID(-892070738, 5000000)); //Stone<br />
+                                        toAdd.Add(ItemManager.CreateByItemID(688032252, 5000000)); //Metal Frags<br /> toAdd.Add(ItemManager.CreateByItemID(374890416, 5000000)); //High Qual<br /> this
+                                        to all the components?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It add items on respawn and connect in hidden slots, on dead it remove it before spawning the corpse <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-303005' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 9:08 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-303005' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/303005/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-303006" class="message" data-author="wIzard 6">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wIzard 6" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wIzard 6</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sami37">
+                            <aside>
+                                <div class="attribution type">sami37 said: <a href="#post-303005" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It add items on respawn and connect in hidden slots, on dead it remove it before spawning the corpse</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That sounds what i need. Do you want money for it? and how do I pm i forgot <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wIzard 6</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-303006' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 1, 2017 at 9:10 PM">Mar 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-303006' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/303006/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309104" class="message" data-author="Pyroller [FR]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pyroller [FR]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pyroller [FR]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey Sam, can we pm about this plugin? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br /> [DOUBLEPOST=1489922874][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="sami37">
+                            <aside>
+                                <div class="attribution type">sami37 said: <a href="#post-302994" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well i got a ready to use CreativeCrafting plugin pm me if you are interested</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pyroller [FR]</a>,</span>
+                        <a href="{{ '/threads/crafting-without-components.24187/#post-309104' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 19, 2017 at 11:27 AM">Mar 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-without-components.24187/#post-309104' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309104/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

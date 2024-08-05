@@ -1,0 +1,463 @@
+---
+layout: forums
+title: 'Solved - NullReferenceException in my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/' | prepend: site.baseurl }}">NullReferenceException in my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheBandolero</a>, <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 17, 2018 at 3:59 AM">Jun 17,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-404792" class="message" data-author="TheBandolero">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheBandolero" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheBandolero</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi i was playing around with finding TCs, getting the owner, getting the authorized players.... and i ended up
+                        with this code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public class TCMap : RustPlugin
+    {        private const string Prefab = &quot;cupboard.tool.deployed&quot;;        private void Loaded ()
+        {
+            LookForTCs ();
+        }        private void LookForTCs ()
+        {
+            int count = 0;            foreach (var tcb in GameObject.FindObjectsOfType&lt;BaseEntity&gt;())
+            {
+                if (IsCupboardEntity(tcb))
+                {
+                    count++;
+                    ulong tcOwnerID = tcb.OwnerID;
+                    string tcOwnerName;
+                    string playerState;                    GetAuthList(tcb, count);                    if (BasePlayer.FindByID(tcOwnerID) == null)
+                    {
+                        BasePlayer offlinePlayer = BasePlayer.FindSleeping(tcOwnerID);
+                        tcOwnerName = offlinePlayer.displayName;
+                        playerState = &quot;offline&quot;;
+                    }
+                    else
+                    {
+                        BasePlayer onlinePlayer = BasePlayer.FindByID(tcOwnerID);
+                        tcOwnerName = onlinePlayer.displayName;
+                        playerState = &quot;online&quot;;
+                    }                    PrintWarning(&quot;TC nº&quot; + count + &quot; owned by &quot; + playerState + &quot; player &quot; + tcOwnerName + &quot; with ID: &quot; + tcOwnerID);
+                }
+            }
+        }
+        private bool IsCupboardEntity(BaseEntity entity) =&gt; entity != null &amp;&amp; entity.ShortPrefabName == Prefab;        private void GetAuthList(BaseEntity tc, int count)
+        {
+            var tcPrivilege = tc.gameObject.GetComponentInParent&lt;BuildingPrivlidge&gt;();
+            if (tcPrivilege.authorizedPlayers.Count == 0)
+            {
+                PrintWarning(&quot;No players authorized in this TC.&quot;);
+            }
+            else
+            {
+                List&lt;AuthPlayer&gt; authList = new List&lt;AuthPlayer&gt;();
+                foreach (ProtoBuf.PlayerNameID playerNameID in tcPrivilege.authorizedPlayers)
+                {
+                    authList.Add(new AuthPlayer(playerNameID.userid, playerNameID.username));
+                }                foreach (AuthPlayer authPlayer in authList)
+                {
+                    PrintWarning(&quot;Player &quot; + authPlayer.GetAuthPlayerName() + &quot; with ID: &quot; + authPlayer.GetAuthPlayerID() + &quot; is authorized in TC Nº&quot; + count);
+                }
+            }
+        }        private class AuthPlayer
+        {
+            private ulong playerID;
+            private string playerName;            public AuthPlayer(ulong pID, string pName)
+            {
+                playerID = pID;
+                playerName = pName;
+            }            public ulong GetAuthPlayerID()
+            {
+                return playerID;
+            }            public void SetAuthPlayerID(ulong pID)
+            {
+                playerID = pID;
+            }            public string GetAuthPlayerName()
+            {
+                return playerName;
+            }            public void SetAuthPlayerID(string pName)
+            {
+                playerName = pName;
+            }
+        }
+    } 
+}</pre>{% endraw %}
+                        </div>I&#039;m getting the following error, and I don&#039;t know where it comes from. If anyone could help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br /> As you can see it starts working and suddenly it&#039;s screwed :/<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>OverflowException: Arithmetic operation resulted in an overflow.
+  at System.Linq.Enumerable.Sum[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] selector) [0x00036] in &lt;839a3cb835c04d14aeb58d83bb7bc4bd&gt;:0
+  at Oxide.Core.ServerConsole.ServerConsole.AddMessage (System.String message, System.ConsoleColor color) [0x00043] in &lt;ba44835247a74c58bf6cabef8b441b56&gt;:0
+  at Oxide.Core.Logging.Logger.HandleMessage (System.String message, System.String stackTrace, Oxide.Core.Logging.LogType logType) [0x0005b] in &lt;ba44835247a74c58bf6cabef8b441b56&gt;:0
+  at Oxide.Game.Rust.RustExtension.HandleLog (System.String message, System.String stackTrace, UnityEngine.LogType logType) [0x00032] in &lt;bd4caadc75b645369559ec9e852e22e4&gt;:0
+  at (wrapper delegate-invoke) System.Action`3[System.String,System.String,UnityEngine.LogType].invoke_void_T1_T2_T3(string,string,UnityEngine.LogType)
+  at Facepunch.Output.LogHandler (System.String log, System.String stacktrace, UnityEngine.LogType type) [0x00181] in &lt;d0b13463f2da4b51a744d3d898556a53&gt;:0
+  at (wrapper delegate-invoke) &lt;Module&gt;.invoke_void_string_string_LogType(string,string,UnityEngine.LogType)
+  at UnityEngine.Application.CallLogCallback (System.String logString, System.String stackTrace, UnityEngine.LogType type, System.Boolean invokedOnMainThread) [0x00014] in &lt;e62018e11c0a49d48c08c9fbcfd3623f&gt;:0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:LogError(Object)
+Oxide.Core.Unity.Logging.UnityLogger:ProcessMessage(LogMessage)
+Oxide.Core.Logging.Logger:Write(LogMessage)
+Oxide.Core.Logging.Logger:Write(LogType, String, Object[])
+Oxide.Core.Logging.CompoundLogger:Write(LogType, String, Object[])
+Oxide.Core.Logging.Logger:WriteException(String, Exception)
+Oxide.Core.OxideMod:LogException(String, Exception)
+Oxide.Plugins.CSharpPlugin:HandleAddedToManager(PluginManager)
+Oxide.Plugins.RustPlugin:HandleAddedToManager(PluginManager)
+Oxide.Core.Plugins.PluginManager:AddPlugin(Plugin)
+Oxide.Core.OxideMod:PluginLoaded(Plugin)
+Oxide.Plugins.&lt;&gt;c__DisplayClass6_0:&lt;LoadPlugin&gt;b__0(Boolean)
+Oxide.Plugins.CompiledAssembly:&lt;LoadAssembly&gt;b__19_0(Byte[])
+Oxide.Plugins.&lt;&gt;c__DisplayClass20_0:&lt;PatchAssembly&gt;b__2()
+Oxide.Core.OxideMod:OnFrame(Single)
+Oxide.Core.Unity.UnityScript:Update()
+ 
+(Filename: &lt;839a3cb835c04d14aeb58d83bb7bc4bd&gt; Line: 0)
+ 
+Failed to initialize plugin 'TCMap v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.TCMap.LookForTCs () [0x0004e] in &lt;1bf1368460414df5bd0ff8966d876b12&gt;:0
+  at Oxide.Plugins.TCMap.Loaded () [0x00000] in &lt;1bf1368460414df5bd0ff8966d876b12&gt;:0
+  at Oxide.Plugins.TCMap.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00067] in &lt;1bf1368460414df5bd0ff8966d876b12&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00079] in &lt;09b255f9a88d4ffda4779759134e116d&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x000d8] in &lt;ba44835247a74c58bf6cabef8b441b56&gt;:0
+  at Oxide.Plugins.CSharpPlugin.HandleAddedToManager (Oxide.Core.Plugins.PluginManager manager) [0x0006e] in &lt;09b255f9a88d4ffda4779759134e116d&gt;:0
+ 
+(Filename: C:\buildslave\unity\build\Runtime/Export/Debug.bindings.h Line: 43)
+ 
+Unloaded plugin TCMap v1.0.0 by TheBandolero
+Unloaded plugin TCMap v1.0.0 by TheBandolero</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 17, 2018 at 4:33 AM">Jun 17, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheBandolero</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 17, 2018 at 3:59 AM">Jun 17, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/404792/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404793" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <ol>
+                            <li>&quot;OverflowException: Arithmetic operation resulted in an overflow&quot; is not from your plugin<br />
+                            </li>
+                            <li>You&#039;re assuming a lot of things are there, so I&#039;d suggest adding null checks (your error is from something being null)</li>
+                            <li>I&#039;d also suggest not using Loaded() for finding things on the map, Loaded() is when the plugin is loaded, not when the server is loaded</li>
+                            <li>Please use descriptive titles when posting new threads... &quot;Error&quot; is not descriptive and would warrant a warning</li>
+                        </ol>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/#post-404793' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 17, 2018 at 4:34 AM">Jun 17, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/#post-404793' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404793/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404829" class="message" data-author="TheBandolero">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheBandolero" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheBandolero</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thx <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> , now
+                        it&#039;s working perfectly.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;TCMap&quot;, &quot;TheBandolero&quot;, &quot;1.0.1&quot;, ResourceId = 0)]
+    public class TCMap : RustPlugin
+    {
+        private const string Prefab = &quot;cupboard.tool.deployed&quot;;
+        private List&lt;BaseEntity&gt; listOfTCs;
+        private List&lt;AuthPlayer&gt; listOfAuthPlayers;        void Init()
+        {
+            int count = 0;
+            listOfTCs = new List&lt;BaseEntity&gt;();
+            listOfTCs = GetTCList();            foreach (BaseEntity tc in listOfTCs)
+            {
+                if (tc != null)
+                {
+                    count++;
+                    PrintWarning(&quot;TC nº&quot; + count + &quot; with ID: &quot; + tc.GetInstanceID().ToString());                    listOfAuthPlayers = GetAuthList(tc, count);
+                    foreach (AuthPlayer authPlayer in listOfAuthPlayers)
+                    {
+                        PrintWarning(&quot;PlayerName: &quot; + authPlayer.GetAuthPlayerName() + &quot; --- PlayerID: &quot; + authPlayer.GetAuthPlayerID() + &quot; --- Owner: &quot; + authPlayer.GetPlayerIsOwner()
+                            + &quot; --- CurrentlyOnline: &quot; + authPlayer.GetAuthPlayerOnline());
+                    }                   
+                }
+            }
+        }        private List&lt;BaseEntity&gt; GetTCList()
+        {
+            List&lt;BaseEntity&gt; tcList = new List&lt;BaseEntity&gt;();            foreach (var tcb in GameObject.FindObjectsOfType&lt;BaseEntity&gt;())
+            {
+                if (tcb != null &amp;&amp; IsCupboardEntity(tcb))
+                {
+                    tcList.Add(tcb);
+                }
+            }
+            return tcList;
+        }
+        private bool IsCupboardEntity(BaseEntity entity) =&gt; entity != null &amp;&amp; entity.ShortPrefabName == Prefab;        private List&lt;AuthPlayer&gt; GetAuthList(BaseEntity tc, int count)
+        {
+            if (tc != null)
+            {
+                var tcPrivilege = tc.gameObject.GetComponentInParent&lt;BuildingPrivlidge&gt;();
+                if (tcPrivilege != null)
+                {
+                    if (tcPrivilege.authorizedPlayers == null || tcPrivilege.authorizedPlayers.Count == 0)
+                    {
+                        PrintWarning(&quot;No players authorized in this TC.&quot;);
+                        return null;
+                    }
+                    else
+                    {
+                        List&lt;AuthPlayer&gt; authList = new List&lt;AuthPlayer&gt;();
+                        foreach (ProtoBuf.PlayerNameID playerNameID in tcPrivilege.authorizedPlayers)
+                        {
+                            if (playerNameID != null)
+                            {
+                                bool isOwner = false;                                if (playerNameID.userid == tc.OwnerID)
+                                {
+                                    isOwner = true;
+                                }
+                                authList.Add(new AuthPlayer(playerNameID.userid, playerNameID.username, isOwner, IsPlayerOnline(playerNameID.userid)));
+                            }                               
+                        }                        return authList;
+                    }
+                }
+                return null;               
+            }
+            return null;           
+        }        private bool IsPlayerOnline(ulong tcPlayerID)
+        {
+            if (BasePlayer.FindByID(tcPlayerID) != null)
+            {
+                return true;
+            }
+            return false;
+        }        private class AuthPlayer
+        {
+            private ulong playerID;
+            private string playerName;
+            private bool isOwner;
+            private bool playerOnline;            public AuthPlayer(ulong pID, string pName, bool pIsOwner, bool pOnline)
+            {
+                playerID = pID;
+                playerName = pName;
+                isOwner = pIsOwner;
+                playerOnline = pOnline;
+            }            public ulong GetAuthPlayerID()
+            {
+                return playerID;
+            }            public void SetAuthPlayerID(ulong pID)
+            {
+                playerID = pID;
+            }            public string GetAuthPlayerName()
+            {
+                return playerName;
+            }            public void SetAuthPlayerID(string pName)
+            {
+                playerName = pName;
+            }            public bool GetPlayerIsOwner()
+            {
+                return isOwner;
+            }            public void SetPlayerIsOwner(bool pIsOwner)
+            {
+                isOwner = pIsOwner;
+            }            public bool GetAuthPlayerOnline()
+            {
+                return playerOnline;
+            }            public void SetAuthPlayerOnline(bool pOnline)
+            {
+                playerOnline = pOnline;
+            }
+        }
+    }   
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(16:09:21) | TCMap was compiled successfully in 1980ms
+(16:09:21) | [TCMap] TC nº1 with ID: -2439668
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº2 with ID: -2365648
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº3 with ID: -2343618
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº4 with ID: -2330972
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº5 with ID: -1747796
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] CYuli --- PlayerID: 76561198000676026 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº6 with ID: -1693046
+(16:09:21) | [TCMap] PlayerName: On3lock --- PlayerID: 76561198006438430 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº7 with ID: -1628090
+(16:09:21) | [TCMap] PlayerName: Shmublik --- PlayerID: 76561198085121322 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº8 with ID: -1573176
+(16:09:21) | [TCMap] PlayerName: On3lock --- PlayerID: 76561198006438430 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº9 with ID: -1533384
+(16:09:21) | [TCMap] PlayerName: [RnL] CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº10 with ID: -1511692
+(16:09:21) | [TCMap] PlayerName: [RnL] CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº11 with ID: -1476020
+(16:09:21) | [TCMap] PlayerName: Öztürk --- PlayerID: 76561198024098334 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº12 with ID: -1452298
+(16:09:21) | [TCMap] PlayerName: ☜✰☞PinXo☜✰☞ --- PlayerID: 76561198167208084 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº13 with ID: -1425402
+(16:09:21) | [TCMap] PlayerName: [RT] Rogue Trooper --- PlayerID: 76561198303222626 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: [NIGG] ✪ TNP --- PlayerID: 76561198271613629 --- Owner: False --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº14 with ID: -1323754
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] CYuli --- PlayerID: 76561198000676026 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº15 with ID: -1321512
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] CYuli --- PlayerID: 76561198000676026 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº16 with ID: -1301730
+(16:09:21) | [TCMap] PlayerName: ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº17 with ID: -1294672
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº18 with ID: -1284204
+(16:09:21) | [TCMap] PlayerName: [NIGG] useless --- PlayerID: 76561198258482977 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: [NIGG] ✪ TNP --- PlayerID: 76561198271613629 --- Owner: False --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº19 with ID: -1273478
+(16:09:21) | [TCMap] PlayerName: CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº20 with ID: -1251426
+(16:09:21) | [TCMap] PlayerName: CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: [RnL] ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº21 with ID: -1247670
+(16:09:21) | [TCMap] PlayerName: CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº22 with ID: -1245334
+(16:09:21) | [TCMap] PlayerName: CYuli --- PlayerID: 76561198000676026 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: ØLØ --- PlayerID: 76561198135137565 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº23 with ID: -1241066
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº24 with ID: -1236354
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: False --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº25 with ID: -1224624
+(16:09:21) | [TCMap] PlayerName: Rick --- PlayerID: 76561198003861870 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº26 with ID: -1114010
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: False --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº27 with ID: -1102440
+(16:09:21) | [TCMap] PlayerName: On3lock --- PlayerID: 76561198006438430 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº28 with ID: -1054082
+(16:09:21) | [TCMap] PlayerName: On3lock --- PlayerID: 76561198006438430 --- Owner: True --- CurrentlyOnline: True
+(16:09:21) | [TCMap] TC nº29 with ID: -1040732
+(16:09:21) | [TCMap] PlayerName: Rappid Rabbit --- PlayerID: 76561198240776032 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº30 with ID: -892036
+(16:09:21) | [TCMap] PlayerName: TheBandolero --- PlayerID: 76561198332954876 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] TC nº31 with ID: -756960
+(16:09:21) | [TCMap] PlayerName: Pidge --- PlayerID: 76561197967014438 --- Owner: True --- CurrentlyOnline: False
+(16:09:21) | [TCMap] PlayerName: ice771man --- PlayerID: 76561198324247092 --- Owner: False --- CurrentlyOnline: True
+(16:09:21) | Loaded plugin TCMap v1.0.1 by TheBandolero</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheBandolero</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/#post-404829' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 17, 2018 at 3:13 PM">Jun 17, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-plugin.30876/#post-404829' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404829/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

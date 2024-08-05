@@ -1,0 +1,550 @@
+---
+layout: forums
+title: 'JSON data files writen by C# plugins aren&#039;t being read in realtime by other LUA plugins'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/' | prepend: site.baseurl }}">JSON data files writen by C# plugins aren&#039;t
+            being read in realtime by other LUA plugins</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRotAG</a>, <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/' | prepend: site.baseurl }}"><span
+                class="DateTime" title="Feb 16, 2015 at 3:49 AM">Feb 16, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-67243" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi guys!!<br />
+                        <br /> Today while I was studying C# to create some plugins and convert mine LUA ones, I had issues while reading JSON data files from my C# plugin with a LUA plugin. I can
+                        write everything I want in the datafile from my C# and got it saved instantly, but if I try to reach that data with my LUA test plugin, it wont read the table... only if I
+                        restart the server.<br />
+                        <br /> I&#039;ve a LUA plugin only for test purposes. It gives me a test chat and console command, so I can call any function i want with that commands in order to test new
+                        things.<br />
+                        <br /> To let u understand where I&#039;m into, here is part of my code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Data = Interface.GetMod().DataFileSystem.GetDatafile(&quot;ThisData&quot;); //capture my data file called ThisDatavar target = BasePlayer.Find(args[0].ToString());
+var flag = args[1].ToString();
+var userid = target.userID.ToString();
+var tname = target.displayName.ToString();
+      if (Data[userid] == null)
+          Data[userid] = new List&lt;object&gt;();
+      var getdata = Data[userid] as List&lt;object&gt;;
+       if (!(getdata.Contains(flag)))
+                {
+                    getdata.Add(flag);
+                    Data[userid] = getdata;
+                    SendReply(player, DefaultMsg+tname+&quot; received the flag &quot;+flag);
+                }
+                else
+                {
+                    SendReply(player, DefaultMsg+tname+&quot; already have the flag &quot;+flag);
+                }
+</pre>{% endraw %}
+                        </div>That works fine to add &quot;flag&quot; to the JSON file &quot;ThisData&quot; under the key &quot;userid&quot;. With the file opened in Notepad++ I can be sure that all
+                        &quot;flag&quot;s are being recorded in the file instantly under the key &quot;userid&quot;, but when I make the LUA Test plugin return table.concat(ThisData[userid], &quot;,
+                        &quot;) it says that the table is nil and continue to do this until I restart the server... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 3:49 AM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67243/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67244" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Config files are not monitored for new changes. You&#039;d need to restart the plugin or the server for it to
+                        recognize the changes made to the file. It&#039;s generally not an issue, as most plugins would only be touching their own files, and any updating to them would be read and
+                        stored every time it save to it. Now... you could probably have a function in the Lua plugin which is targeted by the C# plugin which either reloads the plugin, or reads the
+                        configuration file again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67244' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 3:57 AM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67244' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67244/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67249" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-67244" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Config files are not monitored for new changes. You&#039;d need to restart the plugin or the server for it to recognize the changes made to the
+                                        file. It&#039;s generally not an issue, as most plugins would only be touching their own files, and any updating to them would be read and stored every time it
+                                        save to it. Now... you could probably have a function in the Lua plugin which is targeted by the C# plugin which either reloads the plugin, or reads the
+                                        configuration file again.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well in LUA i&#039;ve:<br />
+                        <br /> function PLUGIN:Init()<br /> command.AddConsoleCommand(&quot;test.this&quot;, self.Plugin, &quot;ccmdTestThis&quot;)<br /> command.AddChatCommand(&quot;test&quot;,
+                        self.Plugin, &quot;cmdTestThis&quot;)<br />
+                        <br /> self:LoadSavedData()<br /> end<br />
+                        <br /> function PLUGIN:LoadSavedData()<br /> ThisData = datafile.GetDataTable( &quot;ThisData&quot; )<br /> ThisData = FlagsData or {}<br /> end<br />
+                        <br /> the LoadSavedData function should do the trick, right?<br />
+                        <br /> I tried to reload the C# plugin manually to test before u replied here in my topic and it didnt work... worse than that it gave and error where it couldn&#039;t read
+                        nothing under the key USERID. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67249' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 4:14 AM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67249' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67249/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67251" class="message" data-author="Feramor">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Feramor" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Feramor</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can do it like this.<br /> function PLUGIN:SendToCSharp()<br /> ThisData = datafile.GetDataTable(
+                        &quot;ThisData&quot; )<br /> ThisData = FlagsData or {}<br /> return ThisData<br /> end<br />
+                        <br /> I dont remember the type of datafile.GetDataTable so first check it with type() in c# to reference it and you can use my code for CallPluginFunction <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Feramor</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67251' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 4:22 AM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67251' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67251/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67376" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Feramor">
+                            <aside>
+                                <div class="attribution type">Feramor said: <a href="#post-67251" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can do it like this.<br /> function PLUGIN:SendToCSharp()<br /> ThisData = datafile.GetDataTable( &quot;ThisData&quot; )<br /> ThisData =
+                                        FlagsData or {}<br /> return ThisData<br /> end<br />
+                                        <br /> I dont remember the type of datafile.GetDataTable so first check it with type() in c# to reference it and you can use my code for CallPluginFunction <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>But I&#039;m trying to read a data file from a C# plugin in a LUA plugin, not the other way around <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie12" alt="o_O" title="Er... what?    o_O" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67376' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 10:42 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67376' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67376/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67385" class="message" data-author="Feramor">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Feramor" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Feramor</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can still call I guess like calling other lua plugins but you should return your values as LuaTable using
+                        NLua <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Feramor</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67385' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 11:44 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67385' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67385/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67425" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The data files should always be the same, it doesn&#039;t matter if it&#039;s created by a C# plugin or a LUA
+                        plugin, as it&#039;s always json format. Now, you posted your LUA code and say you reloaded the C# plugin, keep in mind that this did not reload your LUA plugin and therefor it
+                        did not read the updated datafile. Just make sure that the filename in both is the same and it should work. So for example, take the BuildingsOwner plugin, this is a C# plugin
+                        now that generates and modifies the configuration file BuildingOwners.json, now if you&#039;d want to get the data from that file in a LUA plugin you&#039;d simply do the
+                        following:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BuildingsOwnersData = datafile.GetDataTable( &quot;BuildingOwners&quot; )</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67425' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2015 at 6:48 AM">Feb 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67425' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67425/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67441" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-67425" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The data files should always be the same, it doesn&#039;t matter if it&#039;s created by a C# plugin or a LUA plugin, as it&#039;s always json
+                                        format. Now, you posted your LUA code and say you reloaded the C# plugin, keep in mind that this did not reload your LUA plugin and therefor it did not read the
+                                        updated datafile. Just make sure that the filename in both is the same and it should work. So for example, take the BuildingsOwner plugin, this is a C# plugin
+                                        now that generates and modifies the configuration file BuildingOwners.json, now if you&#039;d want to get the data from that file in a LUA plugin you&#039;d
+                                        simply do the following:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>BuildingsOwnersData = datafile.GetDataTable( &quot;BuildingOwners&quot; )</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Exaclty! Folowing the BuildingOwners C# from Reneb I copied the code that insert the values into the data and after that I used a LUA plugin to catch the data with the
+                        same example that you gave. It reads the datafile from my C# plugin into the var ThisData and then use table.concat(ThisData, &quot;, &quot;) to print the info stored in that
+                        data file.<br />
+                        <br /> Since both data files (C# and LUA) have the same base structure, I don&#039;t see a reason to not let a LUA plugin read a JSON file created by C#... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67441' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2015 at 7:59 AM">Feb 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67441' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67441/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67459" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheRotAG">
+                            <aside>
+                                <div class="attribution type">TheRotAG said: <a href="#post-67441" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Exaclty! Folowing the BuildingOwners C# from Reneb I copied the code that insert the values into the data and after that I used a LUA plugin to
+                                        catch the data with the same example that you gave. It reads the datafile from my C# plugin into the var ThisData and then use table.concat(ThisData, &quot;,
+                                        &quot;) to print the info stored in that data file.<br />
+                                        <br /> Since both data files (C# and LUA) have the same base structure, I don&#039;t see a reason to not let a LUA plugin read a JSON file created by C#...
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>And it&#039;s not working? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67459' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2015 at 10:22 AM">Feb 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67459' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67459/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67702" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-67459" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">And it&#039;s not working?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Working in parts.<br />
+                        <br /> If I use my C# plugin to store flags in the SteamID of the player and then restart the server, my LUA plugin will read all info inside the data file created by C#.
+                        Buuuutt, If I add flags to the SteamID from the player and try to reach that data with the server running, my LUA plugin simply can&#039;t find the new data until I restart the
+                        server... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67702' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2015 at 8:38 PM">Feb 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67702' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67702/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67723" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheRotAG">
+                            <aside>
+                                <div class="attribution type">TheRotAG said: <a href="#post-67702" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Working in parts.<br />
+                                        <br /> If I use my C# plugin to store flags in the SteamID of the player and then restart the server, my LUA plugin will read all info inside the data file
+                                        created by C#. Buuuutt, If I add flags to the SteamID from the player and try to reach that data with the server running, my LUA plugin simply can&#039;t find
+                                        the new data until I restart the server...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ah like that, well, you&#039;ll have to reload the datafile in the lua plugin as the plugin only loads the data once, when the plugin is loaded. What you could do is
+                        check if the value exists, if it doesn&#039;t exist you reload the datafile and check again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67723' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Feb 17, 2015 at 9:20 PM">Feb 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/json-data-files-writen-by-c-plugins-arent-being-read-in-realtime-by-other-lua-plugins.6875/#post-67723' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67723/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

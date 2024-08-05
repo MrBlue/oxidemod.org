@@ -1,0 +1,136 @@
+---
+layout: forums
+title: '[C#] Add new msgs to a List&lt;string&gt; of a Data File'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/' | prepend: site.baseurl }}">[C#] Add new msgs to a List&lt;string&gt; of a Data File</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRotAG</a>, <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 2, 2015 at 7:28 PM">Mar
+                2, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-70898" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">On my C# learning for Plugins I built a data file with player data and under the player steam ID I want to store
+                        alerts (messages) that will be sent to him when he connects to the server. Unfurtunately I&#039;ve issues with the code when trying to add new alerts to the list Alerts inside
+                        the data file.<br />
+                        <br /> This is the code that I use to add the alerts:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+if (!(data.ContainsKey(&quot;Alerts&quot;)))
+                    data.Add(&quot;Alerts&quot;, new List&lt;string&gt;());
+               
+                var offAlert = amountAlert.ToString()+&quot;x &quot;+sale.itemName;
+                var alerts = data[&quot;Alerts&quot;] as List&lt;string&gt;;
+ 
+                alerts.Add(offAlert);
+</pre>{% endraw %}
+                        </div>This is how I want the data to be saved:<br /> {<br /> &quot;76561198030425042&quot;: {<br /> &quot;Alerts&quot;: [<br /> &quot;2x Wood&quot;, <br /> &quot;4x
+                        Stones&quot;<br /> ],<br /> &quot;AlreadySent&quot;: &quot;no&quot;<br /> } <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 2, 2015 at 7:28 PM">Mar 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/70898/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-70908" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">perhaps something like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Dictionary&lt;string, PlayerData&gt; players;
+try
+{
+    players = Interface.GetMod().DataFileSystem.ReadObject&lt;Dictionary&lt;string, PlayerData&gt;&gt;(&quot;PluginNamePlayers&quot;);
+}
+catch (Exception)
+{
+    players = new Dictionary&lt;string, PlayerData&gt;();
+}
+PlayerData player;
+if (!players.TryGetValue(&quot;steamid1232435435&quot;, out player))
+{
+    players.Add(&quot;steamid1232435435&quot;, player = new PlayerData());
+}
+player.Alerts.Add(&quot;alert&quot; + new Random().Next());
+Interface.GetMod().DataFileSystem.WriteObject(&quot;PluginNamePlayers&quot;, players);</pre>{% endraw %}
+                        </div>and:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class PlayerData
+{
+    public List&lt;string&gt; Alerts;
+    public bool AlreadySent;    public PlayerData()
+    {
+        Alerts = new List&lt;string&gt;();
+        AlreadySent = false;
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/#post-70908' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 2, 2015 at 8:47 PM">Mar 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-add-new-msgs-to-a-list-string-of-a-data-file.7133/#post-70908' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/70908/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

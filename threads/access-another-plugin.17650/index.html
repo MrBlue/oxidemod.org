@@ -1,0 +1,687 @@
+---
+layout: forums
+title: 'Access another plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/access-another-plugin.17650/' | prepend: site.baseurl }}">Access another plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ttrism</a>, <a href="{{ '/threads/access-another-plugin.17650/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 27, 2016 at 9:39 PM">Apr 27, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-200685" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi,<br />
+                        <br /> so I am using ZLevels and ZoneManager + EventManager. I set up an deathmatch arena but when players are dying they lose XP from ZLevels. What I want to do now is access
+                        ZoneManager from ZLevels to check if player is in the zone and if yes, not decrease the XP.<br />
+                        <br /> In ZLevels there is this OnEntityDeath method that lowers the XP on death<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo)
+        {
+            if (entity is BasePlayer)
+            {
+                BasePlayer player = (BasePlayer)entity;
+                if (!inPlayerList(player.userID)) return;                string penaltyText =&quot;&lt;color=#FF0000&gt;You have lost XP for dying:&quot;;
+                bool penaltyExist = false;
+                foreach (string skill in Skills.ALL)
+                {
+                    if (!IsSkillDisabled(skill))
+                    {
+                        int penalty = GetPenalty(player, skill);
+                        if(penalty &gt; 0)
+                        {
+                            penaltyText += &quot;\n* -&quot; + penalty + &quot; &quot; + messages[skill + &quot;Skill&quot;] + &quot; XP.&quot;;
+                            removePoints(player.userID, skill, penalty);
+                            penaltyExist = true;
+                        }
+                    }
+                }
+                penaltyText += &quot;&lt;/color&gt;&quot;;                if(penaltyExist)
+                    PrintToChat(player,penaltyText);
+                SetPlayerLastDeathDate(player.userID);
+                RenderUI(player);
+            }        }</pre>{% endraw %}
+                        </div>and in ZoneManager there is are quite some flags I could use. For example I could use ZoneFlags.NoPve<br /> which is stored in the following function<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (HasZoneFlag(zone, ZoneFlags.NoPve))
+                    {
+CancelDamage(hitinfo); }</pre>{% endraw %}
+                        </div>What I want to do is check if NoPve is active and if yes, not trigger removePoints().<br />
+                        <br /> But how ca I access the ZoneManager flags in ZLevels? I have no idea. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 9:39 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200685/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200689" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">There are quite a few examples floating around, ie. <a
+                            href="http://oxidemod.org/threads/calling-my-core-plugin-c.8648/#post-90833" class="internalLink">Solved - Calling my core plugin? (C#) | Oxide</a>. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200689' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 9:41 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200689' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200689/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200694" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">thanks! Okay so to ZoneManager I now added<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[PluginReference]
+Plugin ZoneManager;private bool CheckPveFlag(Zone zone) {
+            if (HasZoneFlag(zone, ZoneFlags.NoPve)) return true;
+            return false;
+        }
+</pre>{% endraw %}
+                        </div>and now I want to add to ZLevels<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (!IsSkillDisabled(skill)  &amp;&amp; !ZoneManager?.Call(&quot;CheckPveFlag&quot;))</pre>{% endraw %}
+                        </div>But I get the compile error:<br />
+                        <br /> [Oxide] 14:03 [Error] ZLevelsRemastered.cs(1088,52): error CS0023: The `!&#039; operator cannot be applied to operand of type `object&#039;<br />
+                        <br /> why is it considered an object? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 28, 2016 at 10:31 AM">Apr 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200694' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 10:15 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200694' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200694/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200695" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ttrism">
+                            <aside>
+                                <div class="attribution type">ttrism said: <a href="#post-200694" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">thanks! Okay so to ZoneManager I now added<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+private bool CheckPveFlag(Zone zone) {
+            if (HasZoneFlag(zone, ZoneFlags.NoPve)) return true;
+            return false;
+        }
+</pre>{% endraw %}
+                                        </div>and now I want to add to ZLevels<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>if (!IsSkillDisabled(skill)  &amp;&amp; !ZoneManager?.Call(&quot;CheckPveFlag&quot;))</pre>{% endraw %}
+                                        </div>But I get the compile error:<br />
+                                        <br /> [Oxide] 14:03 [Error] ZLevelsRemastered.cs(1088,52): error CS0023: The `!&#039; operator cannot be applied to operand of type `object&#039;<br />
+                                        <br /> why is it considered an object?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Try casting it using (bool). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200695' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 10:15 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200695' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200695/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200697" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">tried<br /> bool PveZoneFlag = ZoneManager?.Call(&quot;CheckPveFlag&quot;, this);<br />
+                        <br /> but now get<br /> [Oxide] 14:22 [Error] ZLevelsRemastered.cs(1088,46): error CS0266: Cannot implicitly convert type `object&#039; to `bool&#039;. An explicit conversion
+                        exists (are you missing a cast?)<br />
+                        <br /> Sorry 3rd day on C# and OOP isn&#039;t my best. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200697' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 10:23 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200697' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200697/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200698" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool PveZoneFlag = (bool)ZoneManager?.Call(&quot;CheckPveFlag&quot;, this);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200698' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 10:27 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200698' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200698/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200699" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">just got it! but thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br /> [DOUBLEPOST=1461792689][/DOUBLEPOST][Oxide] 14:30 [Error] Failed to call hook &#039;CheckPveFlag&#039; on plugin &#039;ZoneManager v2.4.2&#039;
+                        (InvalidCastException: Cannot cast from source type to destination type.)<br />
+                        <br />
+                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br /> [DOUBLEPOST=1461792773][/DOUBLEPOST]I don&#039;t even get
+                        why I have to cast at all here if I declare CheckPveFlag() as bool in ZoneManager <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200699' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 10:30 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200699' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200699/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200712" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If its for events why not use the check in event manager? <br /> I think it&#039;s (bool) inEvent(ulong id) but
+                        you have to check to confirm.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo)
+        {
+            if (entity is BasePlayer)
+            {
+                BasePlayer player = (BasePlayer)entity;
+var isPlaying = EventManager?.Call(&quot;inEvent&quot;, player.userid); //Check if player is in event
+if (isPlaying is bool) //check if what was returned is bool
+   if ((bool)isPlaying)// Checknif the returned bool is true
+      return; //the bool is true so return before zlevels does any calculations
+                if (!inPlayerList(player.userID)) return;                string penaltyText =&quot;&lt;color=#FF0000&gt;You have lost XP for dying:&quot;;
+                bool penaltyExist = false;
+                foreach (string skill in Skills.ALL)
+                {
+                    if (!IsSkillDisabled(skill))
+                    {
+                        int penalty = GetPenalty(player, skill);
+                        if(penalty &gt; 0)
+                        {
+                            penaltyText += &quot;\n* -&quot; + penalty + &quot; &quot; + messages[skill + &quot;Skill&quot;] + &quot; XP.&quot;;
+                            removePoints(player.userID, skill, penalty);
+                            penaltyExist = true;
+                        }
+                    }
+                }
+                penaltyText += &quot;&lt;/color&gt;&quot;;                if(penaltyExist)
+                    PrintToChat(player,penaltyText);
+                SetPlayerLastDeathDate(player.userID);
+                RenderUI(player);
+            }        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200712' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 27, 2016 at 11:40 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200712' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200712/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200817" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">tested. Works like a charm! Well with one small change: It needs to be player.userID no player.userid.<br />
+                        <br /> Thanks a lot!<br />
+                        <br /> final code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[PluginReference]
+Plugin EventManager;void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo) {
+            if (entity is BasePlayer) {
+                BasePlayer player = (BasePlayer)entity;
+                if (!inPlayerList(player.userID)) return;                string penaltyText =&quot;&lt;color=#FF0000&gt;You have lost XP for dying:&quot;;
+                bool penaltyExist = false;
+                foreach (string skill in Skills.ALL) {
+                    //ttrism
+                    var isPlaying = EventManager?.Call(&quot;inEvent&quot;, player.userID); //Check if player is in event
+                    if (isPlaying is bool)//check if what was returned is bool
+                        if ((bool)isPlaying) return; // Checknif the returned bool is true
+                  
+                    if (!IsSkillDisabled(skill)) {
+                        int penalty = GetPenalty(player, skill);
+                        if(penalty &gt; 0) {
+                            penaltyText += &quot;\n* -&quot; + penalty + &quot; &quot; + messages[skill + &quot;Skill&quot;] + &quot; XP.&quot;;
+                            removePoints(player.userID, skill, penalty);
+                            penaltyExist = true;
+                        }
+                    }
+                }
+                penaltyText += &quot;&lt;/color&gt;&quot;;                if(penaltyExist)
+                    PrintToChat(player,penaltyText);
+                SetPlayerLastDeathDate(player.userID);
+                RenderUI(player);
+            }        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 28, 2016 at 10:31 AM">Apr 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200817' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 28, 2016 at 10:22 AM">Apr 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200817' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200817/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200820" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">It was a phone edit lol, at least it works <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200820' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 28, 2016 at 10:31 AM">Apr 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200820' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200820/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200821" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">proves that you are a god <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200821' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 28, 2016 at 10:31 AM">Apr 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200821' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200821/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200828" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If only, I would smite them all haha<br /> [DOUBLEPOST=1461914068,1461840801][/DOUBLEPOST]<a
+                            href="https://oxidemod.org/members/77189/" class="username" data-user="77189, @ttrism">@ttrism</a>
+                        <br /> I was just having a look through EventManager and I noticed the hook is actually &#039;bool isPlaying(BasePlayer player)&#039; inEvent is a variable attached to the
+                        EventPlayer component. If it works for you (I&#039;m not sure how <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />) then by all means use it, but if you find later that there&#039;s issues with it swap it over <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-200828' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2016 at 8:14 AM">Apr 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-200828' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/200828/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-201112" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">it worked but I guess because I made a huge mistake when testing causing me to think it works, when it actually
+                        didnt.<br />
+                        <br /> Didn&#039;t had the time yet to ask again. Very cool you checked it again! I will run another test later on and give feedback <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> [DOUBLEPOST=1461921891][/DOUBLEPOST]alright! pritty sure this is working now <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> had to change the param though from &quot;player.userID&quot; to &quot;player&quot; as initialized above.<br />
+                        <br /> var isPlaying = EventManager?.Call(&quot;isPlaying&quot;, player); //Check if player is in event<br />
+                        <br /> final code snippet:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo) {
+            if (entity is BasePlayer) {
+                BasePlayer player = (BasePlayer)entity;
+                if (!inPlayerList(player.userID)) return;                string penaltyText =&quot;&lt;color=#FF0000&gt;You have lost XP for dying:&quot;;
+                bool penaltyExist = false;
+                foreach (string skill in Skills.ALL) {
+                    //ttrism
+                    var isPlaying = EventManager?.Call(&quot;isPlaying&quot;, player); //Check if player is in event
+                    if (isPlaying is bool)
+                        if ((bool)isPlaying) return;//check if what was returned is bool
+                   
+                    if (!IsSkillDisabled(skill)) {
+                        int penalty = GetPenalty(player, skill);
+                        if(penalty &gt; 0) {
+                            penaltyText += &quot;\n* -&quot; + penalty + &quot; &quot; + messages[skill + &quot;Skill&quot;] + &quot; XP.&quot;;
+                            removePoints(player.userID, skill, penalty);
+                            penaltyExist = true;
+                        }
+                    }
+                }
+                penaltyText += &quot;&lt;/color&gt;&quot;;                if(penaltyExist)
+                    PrintToChat(player,penaltyText);
+                SetPlayerLastDeathDate(player.userID);
+                RenderUI(player);
+            }        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/access-another-plugin.17650/#post-201112' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2016 at 10:08 AM">Apr 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/access-another-plugin.17650/#post-201112' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/201112/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

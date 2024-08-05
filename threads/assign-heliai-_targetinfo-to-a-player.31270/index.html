@@ -1,0 +1,94 @@
+---
+layout: forums
+title: 'Assign HeliAI._targetinfo to a Player'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/assign-heliai-_targetinfo-to-a-player.31270/' | prepend: site.baseurl }}">Assign HeliAI._targetinfo to a Player</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Crushed</a>, <a href="{{ '/threads/assign-heliai-_targetinfo-to-a-player.31270/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 24, 2018 at 9:53 PM">Jul 24,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-409549" class="message" data-author="Crushed">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Crushed" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Crushed</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Greetings!<br />
+                        <br /> Im working atm with some Code around the heli, and im trying everything now to give the heli <br /> a BasePlayer as a target.<br />
+                        <br /> I know, giving the heli just Vector3 coords is the ez way and probably the only way other heli plugins doing that.<br />
+                        <br /> For my intentions, i cant use that.<br /> The Main thing i want to achieve here is just that the called heli has one target to shoot, <br /> if he kills the target, his
+                        job is done, then the heli can fly away again.<br />
+                        <br /> thinking, that i obviously need a reference to the targeted player, between the method to call the heli, to<br /> get rid of it again.<br />
+                        <br /> So i worked here for now with OnEntitySpawned-<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntitySpawned(BaseNetworkable entity)
+        {
+            if (entity == null ) return;
+            var prefabname = entity?.ShortPrefabName ?? string.Empty;
+            var longprefabname = entity?.PrefabName ?? string.Empty;
+            if (string.IsNullOrEmpty(prefabname) || string.IsNullOrEmpty(longprefabname)) return;
+            
+            if (prefabname.Contains(&quot;patrolhelicopter&quot;) &amp;&amp; !prefabname.Contains(&quot;gibs&quot;))
+            {
+    
+    
+                var AIHeli = entity?.GetComponent&lt;PatrolHelicopterAI&gt;() ?? null;
+                var BaseHeli = entity?.GetComponent&lt;BaseHelicopter&gt;() ?? null;
+                if (AIHeli == null || BaseHeli == null) return;
+                CurrentAI = AIHeli;
+              
+                
+                //AIHeli._targetList.First().ply = target;
+                
+                
+                var player =  AIHeli.rightGun._target as BasePlayer;
+                </pre>{% endraw %}
+                        </div>Main Method taken from HeliControl- Thanks for that-<br />
+                        <br /> Cause it seemed obvious, i tried now to handle this with the targetinfo,<br /> but that list is emtpy upon spawn of the heli entity.<br /> I tried aswell creating<br />
+                        new <a
+                            href="http://127.0.0.1/roeder/dotnet/Default.aspx?Target=code://mscorlib:4.0.0.0:b77a5c561934e089/System.Collections.Generic.List&lt;PatrolHelicopterAI.targetinfo&gt;/.ctor()"
+                            target="_blank" class="externalLink  rel=" nofollow">List</a>&lt;<a
+                            href="http://127.0.0.1/roeder/dotnet/Default.aspx?Target=code://Assembly-CSharp/PatrolHelicopterAI.targetinfo" target="_blank" class="externalLink  rel="
+                            nofollow">targetinfo</a>&gt;(); , and immediatly assign values - in the heli call method.<br /> everything doesnt work. Similar work with the Turrets - the _target field
+                        .<br /> Same thing. <br />
+                        <br /> Has someone maaaybe an idea how i could handle this? <br /> maybe even a complete diff. way, like i said. Main intention is to make the heli just an onepunch
+                        singletarget. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Crushed</a>,</span>
+                        <a href="{{ '/threads/assign-heliai-_targetinfo-to-a-player.31270/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2018 at 9:53 PM">Jul 24, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/assign-heliai-_targetinfo-to-a-player.31270/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/409549/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

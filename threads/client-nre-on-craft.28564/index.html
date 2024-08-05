@@ -1,0 +1,81 @@
+---
+layout: forums
+title: 'Client NRE on craft'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/client-nre-on-craft.28564/' | prepend: site.baseurl }}">Client NRE on craft</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/client-nre-on-craft.28564/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 9, 2017 at 7:18 PM">Dec 9, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-371933" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello everyone!<br /> I&#039;ve recently made a new plugin - <a
+                            href="http://oxidemod.org/plugins/quarry-craft.2715/" class="internalLink">Quarry Craft for Rust | Oxide</a><br /> But there is a problem. <br /> Here is what I&#039;m
+                        doing:<br />
+                        <ol>
+                            <li>Creating the blueprint, that doesn&#039;t exists in game anymore</li>
+                            <li>By the command createing a new craft entry with the new blueprint</li>
+                            <li>Calling the hook</li>
+                            <li>Enqueueing my custom task</li>
+                        </ol>So.... everything works like a charm with any blueprint, that exists in game, but with the non-existing one the client getting NRE <img
+                            src="https://oxidemod.org/attachments/upload_2017-12-9_22-16-1-png.42953/" alt="upload_2017-12-9_22-16-1.png" class="bbCodeImage LbImage" />
+                        <br /> At the game code we can see this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public static int GetCraftCount(ItemBlueprint x)
+  {
+    int num1 = 0;
+    if (LocalPlayer.CraftCounts.TryGetValue(x.targetItem.itemid, out num1))
+      return num1;
+    int num2 = PlayerPrefs.GetInt(string.Format(&quot;craftcount.{0}&quot;, (object) x.targetItem.shortname), 0);
+    LocalPlayer.CraftCounts.Add(x.targetItem.itemid, num2);
+    return num2;
+  }  public static void AddCraftCount(ItemBlueprint x)
+  {
+    int num = LocalPlayer.GetCraftCount(x) + 1;
+    LocalPlayer.CraftCounts[x.targetItem.itemid] = num;
+    PlayerPrefs.SetInt(string.Format(&quot;craftcount.{0}&quot;, (object) x.targetItem.shortname), num);
+  }</pre>{% endraw %}
+                        </div>And I don&#039;t know how PlayerPerfs work at all. Is this a client-side thing? Cos I think that this is what causes NRE. <br /> As I mention before - any over bp that
+                        exists doesn&#039;t create the NRE. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/client-nre-on-craft.28564/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Dec 9, 2017 at 7:18 PM">Dec
+                                9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/client-nre-on-craft.28564/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/371933/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

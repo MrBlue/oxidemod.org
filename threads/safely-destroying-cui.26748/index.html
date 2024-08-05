@@ -1,0 +1,355 @@
+---
+layout: forums
+title: 'Solved - Safely destroying CUI?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/safely-destroying-cui.26748/' | prepend: site.baseurl }}">Safely destroying CUI?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Mheetu</a>, <a href="{{ '/threads/safely-destroying-cui.26748/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 9, 2017 at 3:12 PM">Aug 9, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-343632" class="message" data-author="Mheetu">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mheetu" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mheetu</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m trying to create a custom UI for a plugin and on Unload() I&#039;m trying to cycle through all players
+                        and delete the container. However, I&#039;m getting Disconnected with an RPC Error - I&#039;m thinking this happens when attempting to destroy an element that doesn&#039;t
+                        exist?<br />
+                        <br /> What is the safe or proper way to try and delete an element on all players? Do I need to create a dictionary or something that tracks the status of the UI for each
+                        connected player? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mheetu</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:12 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343632/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343633" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> foreach(var player in BasePlayer.activePlayerList)<br /> CuiHelper.DestroyUi(player, “ui parent name here”); <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343633' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:14 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343633' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343633/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343636" class="message" data-author="Mheetu">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mheetu" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mheetu</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> That&#039;s essentially what I already have... isn&#039;t it? When it&#039;s just me in the server and the UI is
+                        visible, this (below) removes it correctly. If the UI doesn&#039;t exist and it tries to unload, I get disconnected with that RPC Error...<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void Unload() {
+            for (int i = 0; i &lt; BasePlayer.activePlayerList.Count; i++) {
+                DestroyUi(BasePlayer.activePlayerList[i], uiName);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mheetu</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343636' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:24 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343636' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343636/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343638" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What’s your DestroyUi method?<br />
+                        <br /> Never known there to be an RPC error when removing a UI <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343638' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:26 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343638' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343638/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343640" class="message" data-author="Mheetu">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mheetu" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mheetu</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Literally just a shorter method name at this point, will probably rename it and add the destruction of timers to
+                        it later... haven&#039;t gotten that far yet though.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void DestroyUi(BasePlayer player, string name)
+        {
+            CuiHelper.DestroyUi(player, name);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mheetu</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343640' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:30 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343640' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343640/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343641" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Maybe try destroying another element that isn’t your main parent?<br />
+                        <br /> Not quite sure <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343641' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:32 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343641' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343641/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343656" class="message" data-author="Mheetu">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mheetu" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mheetu</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Not sure if it helps any, but this is the red error message that appears in the top-left of the client when
+                        I&#039;m disconnected.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>NETRCV_ReadBytes returned falseNullReferenceException: Object reference not set to an instance of an object
+Facepunch.Network.Raknet.Peer.ReadUInt32 ()
+Facepunch.Network.Raknet.StreamRead.UInt32 ()
+Network.Read.MemoryStreamWithSize ()
+Network.Read.String ()
+(wrapper remoting-invoke-with-check) Network.Read:String ()
+CommunityEntity.DestroyUI (RPCMessage msg)
+CommunityEntity.OnRpcMessage (.BasePlayer player, UInt32 rpc, Network.Message msg)
+UnityEngine.Debug:LogException(Exception)
+CommunityEntity:OnRpcMessage(BasePlayer, UInt32, Message)
+BaseEntity:CL_RPCMessage(UInt32, UInt64, Message)
+Client:OnRPCMessage(Message)
+Client:OnNetworkMessage(Message)
+Facepunch.Network.Taknet.Client:HandleMessage()
+Facepunch.Network.Raknet.Client:Cycle()
+Client:Update()</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1502291148][/DOUBLEPOST]Figured it out, the &quot;Object reference not set to an instance of an object&quot; got me thinking... I&#039;m not explicitly
+                        defining a name, I&#039;m using a variable.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>uiName = elements.Add(new CuiPanel [...]</pre>{% endraw %}
+                        </div>The uiName variable was declared but never initialized until the UI was created at least once. If the plugin was unloaded before having to show the UI to anyone, it was
+                        essentially passing a null value. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 9, 2017 at 4:07 PM">Aug 9, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mheetu</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343656' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 3:47 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343656' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343656/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343661" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ahhh, yea. <br />
+                        <br /> Good find <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/safely-destroying-cui.26748/#post-343661' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2017 at 4:22 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/safely-destroying-cui.26748/#post-343661' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343661/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

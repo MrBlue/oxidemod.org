@@ -1,0 +1,1225 @@
+---
+layout: forums
+title: 'Solved - Remove Tool with hammer swing using OnHammerHit'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/' | prepend: site.baseurl }}">Remove Tool with hammer swing using
+            OnHammerHit</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Solis.Randy</a>, <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Mar 8, 2016 at 12:28 AM">Mar 8, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-185500" class="message" data-author="Solis.Randy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Solis.Randy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Solis.Randy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b>What I am trying to do:</b><br />
+                        <br /> I am trying to edit the R-Remover tool to make it so instead of using a RayHit to determine what is being Removed, to use a OnHammerHit to determine that.<br />
+                        <b><br /> What I know:<br />
+                        </b><br /> Now I know with the OnHammerHit you don&#039;t even need to have anything regarding Distance or Ray, but I don&#039;t know what I need to change.<br />
+                        <br />
+                        <b>Here is the code it determines what being Removed:</b><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>static BaseEntity FindRemoveObject(Ray ray, float distance)
+        {
+            RaycastHit hit;
+            if (!UnityEngine.Physics.Raycast(ray, out hit, distance, constructionColl))
+                return null;
+            return hit.GetEntity();
+        } ///
+        /// class Tool Remover
+///        class ToolRemover : MonoBehaviour
+        {
+            public BasePlayer player;
+            public int endTime;
+            public int timeLeft;
+            public RemoveType removeType;
+            public BasePlayer playerActivator;
+            public float distance;
+            public float lastUpdate;            public InputState inputState;            void Awake()
+            {
+                player = GetComponent&lt;BasePlayer&gt;();
+                lastUpdate = UnityEngine.Time.realtimeSinceStartup;
+            }            public void RefreshDestroy()
+            {
+                timeLeft = endTime;
+                CancelInvoke(&quot;DoDestroy&quot;);
+                CancelInvoke(&quot;RefreshRemoveGui&quot;);
+                Invoke(&quot;DoDestroy&quot;, endTime);
+                InvokeRepeating(&quot;RefreshRemoveGui&quot;, 1, 1);
+                DestroyGUI(player);
+                NewGUI(this);
+            }            void DoDestroy()
+            {
+                GameObject.Destroy(this);
+            }            void RefreshRemoveGui()
+            {
+                timeLeft--;
+                RefreshGUI(this);
+            }            void FixedUpdate()
+            {
+                if (!player.IsConnected() || player.IsDead()) { GameObject.Destroy(this); return; }
+                inputState = serverinput.GetValue(player) as InputState;
+                if (inputState.WasJustPressed(BUTTON.FIRE_PRIMARY))
+                {
+                    float currentTime = UnityEngine.Time.realtimeSinceStartup;
+                    if (lastUpdate + 0.5f &lt; currentTime)
+                    {
+                        lastUpdate = currentTime;
+                        if (player.GetActiveItem() != null)
+                        {
+                            PrintToChat(player, MessageErrorCantUseRemoveWithItem);
+                            return;
+                        }
+                        Ray ray = new Ray(player.eyes.position, Quaternion.Euler(inputState.current.aimAngles) * Vector3.forward);
+                        TryRemove(player, ray, removeType, distance);
+                    }
+                }
+            }            void OnDestroy()
+            {
+                DestroyGUI(player);
+                if (playerActivator != player)
+                {
+                    if (playerActivator.IsConnected())
+                        PrintToChat(playerActivator, string.Format(MessageTargetRemoveEnded, player.displayName));
+                }
+            }
+        }
+        void EndRemoverTool(BasePlayer player)
+        {
+            ToolRemover toolremover = player.GetComponent&lt;ToolRemover&gt;();
+            if (toolremover == null) return;
+            GameObject.Destroy(toolremover);</pre>{% endraw %}
+                        </div><b>And here is where the code above that is brought in:</b><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>static void TryRemove(BasePlayer player, Ray ray, RemoveType removeType, float distance)
+        {
+            BaseEntity removeObject = FindRemoveObject(ray, distance);
+            if (removeObject == null)
+            {
+                PrintToChat(player, MessageErrorNothingToRemove);
+                return;
+            }
+            var success = CanRemoveEntity(player, removeObject, removeType);
+            if (success is string)
+            {
+                PrintToChat(player, (string)success);
+                return;
+            }
+            if (usePay &amp;&amp; !CanPay(player, removeObject, removeType))
+            {
+                PrintToChat(player, MessageErrorNotEnoughPay);
+                return;
+            }
+            if (removeType == RemoveType.All)
+            {
+                Interface.Call(&quot;RemoveAllFrom&quot;, removeObject.transform.position);
+                return;
+            }
+            if (usePay)
+                Pay(player, removeObject, removeType);
+            if (useRefund)
+                Refund(player, removeObject, removeType);
+            DoRemove(removeObject);        }        List&lt;Vector3&gt; removeFrom = new List&lt;Vector3&gt;();
+        int currentRemove = 0;
+        void RemoveAllFrom(Vector3 pos)
+        {
+            removeFrom.Add(pos);
+            DelayRemoveAll();
+        }        List&lt;BaseEntity&gt; wasRemoved = new List&lt;BaseEntity&gt;();
+        void DelayRemoveAll()
+        {
+            if (currentRemove &gt;= removeFrom.Count)
+            {
+                currentRemove = 0;
+                removeFrom.Clear();
+                wasRemoved.Clear();
+                return;
+            }
+            List&lt;BaseEntity&gt; list = Pool.GetList&lt;BaseEntity&gt;();
+            Vis.Entities&lt;BaseEntity&gt;(removeFrom[currentRemove], 3f, list, constructionColl);
+            for(int i = 0; i &lt; list.Count; i++)
+            {
+                BaseEntity ent = list[i];
+                if (wasRemoved.Contains(ent)) continue;
+                if (!removeFrom.Contains(ent.transform.position))
+                    removeFrom.Add(ent.transform.position);
+                wasRemoved.Add(ent);
+                DoRemove(ent);
+            }
+            currentRemove++;
+            timer.Once(0.01f, () =&gt; DelayRemoveAll());
+        }        static void DoRemove(BaseEntity removeObject)
+        {
+            if (removeObject == null) return;
+            removeObject.KillMessage();
+        }</pre>{% endraw %}
+                        </div><b>Below is my attempts at trying to figure it out. I got frustrated and stopped so it might look incomplete:</b><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        static BaseEntity OnHammerHit(BasePlayer player, HitInfo info)
+        {       
+                OnHammerHit; 
+                if (info(player, info));       
+                return null;
+                return info.BaseEntity.ent;
+               
+        }    ////
+        /// class Tool Remover
+ ////               class ToolRemover : MonoBehaviour
+        {
+            public BasePlayer player;
+            public int endTime;
+            public int timeLeft;
+            public RemoveType removeType;
+            public float distance;
+            public float lastUpdate;
+            public HitInfo info;
+           
+            void Awake()
+            {
+                player = GetComponent&lt;BasePlayer&gt;();
+                lastUpdate = UnityEngine.Time.realtimeSinceStartup;
+            }
+           
+            void OnHammerHit(BasePlayer player, HitInfo info)
+            {
+                {info = &lt;BaseEntity&gt;.list;
+                   
+                    {
+                    TryRemove(player, removeType, info);
+                    }   
+                }       
+            }
+               
+        }
+        void EndRemoverTool(BasePlayer player)
+        {
+            ToolRemover toolremover = player.GetComponent&lt;ToolRemover&gt;();
+            if (toolremover == null) return;
+            GameObject.Destroy(toolremover);
+</pre>{% endraw %}
+                        </div><b>And again, the other portion with my edits:</b><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>static void TryRemove(BasePlayer player, RemoveType removeType, HitInfo info)
+        {
+            BaseEntity removeObject = OnHammerHit(player, info);
+            if (removeObject == null)
+            {
+                PrintToChat(player, MessageErrorNothingToRemove);
+                return;
+            }
+            var success = CanRemoveEntity(player, removeObject, removeType);
+            if (success is string)
+            {
+                PrintToChat(player, (string)success);
+                return;
+            }
+            if (removeType == RemoveType.All)
+            {
+                Interface.Call(&quot;RemoveAllFrom&quot;, removeObject.transform.position);
+                return;
+            }
+            if (useRefund)
+                Refund(player, removeObject, removeType);
+            DoRemove(removeObject);        }        List&lt;Vector3&gt; removeFrom = new List&lt;Vector3&gt;();
+        int currentRemove = 0;
+        void RemoveAllFrom(Vector3 pos)
+        {
+            removeFrom.Add(pos);
+            DelayRemoveAll();
+        }        List&lt;BaseEntity&gt; wasRemoved = new List&lt;BaseEntity&gt;();
+        void DelayRemoveAll()
+        {
+            if (currentRemove &gt;= removeFrom.Count)
+            {
+                currentRemove = 0;
+                removeFrom.Clear();
+                wasRemoved.Clear();
+                return;
+            }
+            List&lt;BaseEntity&gt; list = Pool.GetList&lt;BaseEntity&gt;();
+            Vis.Entities&lt;BaseEntity&gt;(removeFrom[currentRemove], 3f, list, constructionColl);
+            for(int i = 0; i &lt; list.Count; i++)
+            {
+                BaseEntity ent = list[i];
+                if (wasRemoved.Contains(ent)) continue;
+                if (!removeFrom.Contains(ent.transform.position))
+                    removeFrom.Add(ent.transform.position);
+                wasRemoved.Add(ent);
+                DoRemove(ent);
+            }
+            currentRemove++;
+            timer.Once(0.01f, () =&gt; DelayRemoveAll());
+        }        static void DoRemove(BaseEntity removeObject)
+        {
+            if (removeObject == null) return;
+            removeObject.KillMessage();
+        }
+</pre>{% endraw %}
+                        </div>This is the error I get:<br />
+                        <br /> [Oxide] 7:20 PM [Error] RemoverTool.cs(218,23): error CS1525: Unexpected symbol `&gt;&#039; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 8, 2016 at 12:47 AM">Mar 8, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Solis.Randy</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 8, 2016 at 12:28 AM">Mar 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185500/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185502" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What is on line 218? Your error is pointing to that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185502' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 8, 2016 at 12:31 AM">Mar 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185502' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185502/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185505" class="message" data-author="Solis.Randy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Solis.Randy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Solis.Randy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-185502" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What is on line 218? Your error is pointing to that.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Jesus, I hit the 10,0000 character limit. Sorry had to trim down the stuff that wasn&#039;t code. I made Edits to the code on the original Wulf and the code you needed
+                        was added.<br />
+                        <br /> Line 218: {info = &lt;BaseEntity&gt;.list; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Solis.Randy</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185505' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 8, 2016 at 12:49 AM">Mar 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185505' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185505/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185830" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Solis.Randy">
+                            <aside>
+                                <div class="attribution type">Solis.Randy said: <a href="#post-185505" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Jesus, I hit the 10,0000 character limit. Sorry had to trim down the stuff that wasn&#039;t code. I made Edits to the code on the original Wulf
+                                        and the code you needed was added.<br />
+                                        <br /> Line 218: {info = &lt;BaseEntity&gt;.list;</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>From what I can tell there is nothing like<br /> &lt;BaseEntity&gt;<br /> Not sure what you try to do in that line. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185830' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 9, 2016 at 12:14 PM">Mar 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185830' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185830/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185888" class="message" data-author="Solis.Randy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Solis.Randy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Solis.Randy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I know I posted earlier, but looking back, it was bad and I have made some changes to my file.<br />
+                        <br />
+                        <b>What I am trying to do:<br />
+                        </b><br /> Remove on the hit of the hammer; instead of the current method where you have to be looking at your object and be within a certain distance. <br />
+                        <br /> I know this is possible. I have seen servers that have it (Rusty Servers).<br />
+                        <br /> Attached is my Remover Tool file. There are no attempts on me trying to figure it out this time. All I have done is trimmed a lot of code fat for stuff I don&#039;t use
+                        (GUI, RemoveAll, Different Tiers, etc.) So the code is significantly less that the original and should be better to sift through.<br />
+                        <br /> I&#039;d be willing to throw a few $$ on Thursday to someone who can solve this for me (and explain how you did it if you can so I can learn). I just don&#039;t like the
+                        responsiveness of how it works right now. With a Hammer hit its easy: you must hit the object. No distance calculations or nothing. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="RemoverTool.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/removertool-cs.19067/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/removertool-cs.19067/" target="_blank">RemoverTool.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>16.8 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>70</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Solis.Randy</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185888' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 9, 2016 at 4:13 PM">Mar 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185888' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185888/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185905" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Not completely sure if I got all types of BaseEntities the plugin removes but I think I covered most of them
+                        (deployables, signs, building blocks, doors, etc.)<br /> Disregarding the possibilities that I might have missed some BaseEntities, which I think I didn&#039;t, it should
+                        function exactly the same as the old RemoveTool just that you actually remove stuff by hitting them with the hammer after you enter the remove command. I also removed some
+                        unnecessary code.<br /> [DOUBLEPOST=1457544711][/DOUBLEPOST]As far as the explanation how I did this goes, I simply got rid of the <i>FixedUpdate()</i> function inside the
+                        <i>ToolRemover</i> class which wasn&#039;t needed anymore since we won&#039;t handle removing with casting a ray anymore.<br /> Then I removed all the code and values which
+                        weren&#039;t used as a result. A handy way to instantly tell which values never get used is to look at the compiler log inside
+                        <i>.../server/&lt;identity&gt;/oxide/logs</i>!<br /> Then I simply included the <i>OnHammerHit(...)</i> hook below:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnHammerHit(BasePlayer player, HitInfo info)
+{
+    if (player.GetComponent&lt;ToolRemover&gt;()) // this is a shorthand for if(player.GetComponent&lt;ToolRemover&gt;() != null)
+    {
+        if (info.HitEntity.name.Contains(&quot;assets/prefabs/deployable&quot;) || info.HitEntity is BuildingBlock || info.HitEntity is SimpleBuildingBlock || info.HitEntity is Door)
+        {
+            TryRemove(player, info.HitEntity);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>The <i>TryRemove(...)</i> function is the one that was already inside the plugin. I just changed the parameters and remove one line of code right at the start of the
+                        function.<br /> I guess the best thing to do would be just using something like <a href="http://text-compare.com/" target="_blank" class="externalLink  rel=" nofollow">Text
+                            Compare! - An online diff tool that can find the difference between two texts</a> and pasting both files in there and then simply comparing them. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="RemoverTool.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/removertool-cs.19072/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/removertool-cs.19072/" target="_blank">RemoverTool.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>14.6 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>152</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 9, 2016 at 5:35 PM">Mar 9, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185905' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 9, 2016 at 5:18 PM">Mar 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185905' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185905/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185985" class="message" data-author="Solis.Randy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Solis.Randy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Solis.Randy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You are a godsend lol. Hook me up with some PayPal info I&#039;ll send some $ for your work <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Solis.Randy</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185985' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 9, 2016 at 9:35 PM">Mar 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-185985' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185985/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187462" class="message" data-author="Apk">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Apk" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Apk</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m curious what other kinds of baseentities I can use in this... I decompiled the c# assembly file but I
+                        think I&#039;m missing something. With your code a few odds and ends are missing, namely autoturrets, ladders, holiday junk, and locks.<br />
+                        <br /> I fixed part of the problem by just looking for the name, but I&#039;m a little stumped on locks...<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (info.HitEntity.name.Contains(&quot;assets/prefabs/deployable&quot;) || info.HitEntity is BuildingBlock || info.HitEntity is SimpleBuildingBlock || info.HitEntity is Door || info.HitEntity.name.Contains(&quot;autoturret&quot;) || info.HitEntity.name.Contains(&quot;ladder&quot;))
+                {
+                    TryRemove(player, info.HitEntity);
+                }</pre>{% endraw %}
+                        </div>I tried <i>info.HitEntity.name.Contains(&quot;lock&quot;) </i>and <i>info.HitEntity is CodeLock</i> (tried BaseLock as well) but that didn&#039;t get me anywhere.
+                        I&#039;d swing my hammer as if it was passing through the lock. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Apk</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187462' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2016 at 12:54 AM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187462' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187462/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187569" class="message" data-author="kpoIIIkaeHo7">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kpoIIIkaeHo7" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kpoIIIkaeHo7</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Same problem with detecting entity. So remove work fine, but refund can&#039;t work. Maybe info.HitEntity was not
+                        much right variant of detect entity who had hitted by hammer? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kpoIIIkaeHo7</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187569' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2016 at 2:22 PM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187569' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187569/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187791" class="message" data-author="azalea`">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="azalea`" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">azalea`</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> info.HitEntity.GetComponent&lt;Deployable&gt;() ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">azalea`</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187791' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 16, 2016 at 8:51 AM">Mar 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-187791' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187791/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188406" class="message" data-author="Fiddler">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Fiddler" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Fiddler</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> For this remover tool, I wonder. How can you make it so that when you remove something it resets the timer back
+                        to 30 seconds?<br /> Should be pretty easy but I&#039;m not very fluent in Java. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Fiddler</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188406' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2016 at 11:36 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188406' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188406/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188438" class="message" data-author="kpoIIIkaeHo7">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kpoIIIkaeHo7" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kpoIIIkaeHo7</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fiddler">
+                            <aside>
+                                <div class="attribution type">Fiddler said: <a href="#post-188406" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">For this remover tool, I wonder. How can you make it so that when you remove something it resets the timer back to 30 seconds?<br /> Should be
+                                        pretty easy but I&#039;m not very fluent in Java.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I saw this plugin on many servers. Maybe this is private plugin wroted by any user of this community for $$ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kpoIIIkaeHo7</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188438' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2016 at 1:43 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188438' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188438/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188451" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="kpoIIIkaeHo7">
+                            <aside>
+                                <div class="attribution type">kpoIIIkaeHo7 said: <a href="#post-188438" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I saw this plugin on many servers. Maybe this is private plugin wroted by any user of this community for $$</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://oxidemod.org/plugins/magic-hammer.1375/" class="internalLink">Magic Hammer for Rust | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188451' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2016 at 2:06 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188451' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188451/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188454" class="message" data-author="azalea`">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="azalea`" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">azalea`</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fiddler">
+                            <aside>
+                                <div class="attribution type">Fiddler said: <a href="#post-188406" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">For this remover tool, I wonder. How can you make it so that when you remove something it resets the timer back to 30 seconds?<br /> Should be
+                                        pretty easy but I&#039;m not very fluent in Java.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Replace old function with this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object OnHammerHit(BasePlayer player, HitInfo info)
+{
+            if (player.GetComponent&lt;ToolRemover&gt;())
+            {
+                if (info.HitEntity.GetComponent&lt;Deployable&gt;() || info.HitEntity is BuildingBlock)
+                {
+                    TryRemove(player, info.HitEntity);                    ToolRemover RemoverClass = player.GetComponent&lt;ToolRemover&gt;();
+                    RemoverClass.CancelInvoke(&quot;DoDestroy&quot;);
+                    RemoverClass.Invoke(&quot;DoDestroy&quot;, RemoverClass.endTime);                    return false;
+                }
+            }            return null;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 18, 2016 at 2:36 PM">Mar 18, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">azalea`</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188454' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2016 at 2:11 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188454' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188454/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188461" class="message" data-author="kpoIIIkaeHo7">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kpoIIIkaeHo7" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kpoIIIkaeHo7</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-188451" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="http://oxidemod.org/plugins/magic-hammer.1375/" class="internalLink">Magic Hammer for Rust | Oxide</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>May be, but this is not remover plugin that i and, i think, many other people saw at the rust servers. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kpoIIIkaeHo7</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188461' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2016 at 2:31 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188461' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188461/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188909" class="message" data-author="Fiddler">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Fiddler" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Fiddler</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="azalea`">
+                            <aside>
+                                <div class="attribution type">azalea` said: <a href="#post-188454" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Replace old function with this:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>object OnHammerHit(BasePlayer player, HitInfo info)
+{
+            if (player.GetComponent&lt;ToolRemover&gt;())
+            {
+                if (info.HitEntity.GetComponent&lt;Deployable&gt;() || info.HitEntity is BuildingBlock)
+                {
+                    TryRemove(player, info.HitEntity);                    ToolRemover RemoverClass = player.GetComponent&lt;ToolRemover&gt;();
+                    RemoverClass.CancelInvoke(&quot;DoDestroy&quot;);
+                    RemoverClass.Invoke(&quot;DoDestroy&quot;, RemoverClass.endTime);                    return false;
+                }
+            }            return null;
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks mate, this works perfectly, but one more question. When I change the following to false so that you don&#039;t need to place cupboards to remove things in a
+                        non-blocked area, it just stops letting me /remove altogether (whether you&#039;re authorized to all cupboards or none exist nearby). How can I make it so you don&#039;t need
+                        to place a cupboard just so you can /remove somewhere where there are no cupboards blocking/authorizing you?<br />
+                        <br /> Thanks again in advance.<br />
+                        <br /> Config File:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&quot;Remove - Access - Use ToolCupboards&quot;: false,</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Fiddler</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188909' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 20, 2016 at 7:57 AM">Mar 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-188909' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/188909/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189062" class="message" data-author="azalea`">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="azalea`" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">azalea`</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fiddler">
+                            <aside>
+                                <div class="attribution type">Fiddler said: <a href="#post-188909" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks mate, this works perfectly, but one more question. When I change the following to false so that you don&#039;t need to place cupboards to
+                                        remove things in a non-blocked area, it just stops letting me /remove altogether (whether you&#039;re authorized to all cupboards or none exist nearby). How can
+                                        I make it so you don&#039;t need to place a cupboard just so you can /remove somewhere where there are no cupboards blocking/authorizing you?<br />
+                                        <br /> Thanks again in advance.<br />
+                                        <br /> Config File:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>&quot;Remove - Access - Use ToolCupboards&quot;: false,</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m just give access to players remove only their entity&#039;s without any cupboard checks:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object CanRemoveEntity(BasePlayer player, BaseEntity entity)
+{
+            if (entity.isDestroyed) return &quot;Object already destroyed.&quot;; // possible with hammer hit?
+           
+            if (player.userID == entity.OwnerID) return true;
+           
+            if (player.net.connection.authLevel &gt; 0) return true;            return &quot;&lt;color=red&gt;You are not the owner of object.&lt;/color&gt;&quot;;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">azalea`</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189062' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 20, 2016 at 6:25 PM">Mar 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189062' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189062/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189101" class="message" data-author="kpoIIIkaeHo7">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kpoIIIkaeHo7" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kpoIIIkaeHo7</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="azalea`">
+                            <aside>
+                                <div class="attribution type">azalea` said: <a href="#post-189062" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m just give access to players remove only their entity&#039;s without any cupboard checks:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>object CanRemoveEntity(BasePlayer player, BaseEntity entity)
+{
+            if (entity.isDestroyed) return &quot;Object already destroyed.&quot;; // possible with hammer hit?
+          
+            if (player.userID == entity.OwnerID) return true;
+          
+            if (player.net.connection.authLevel &gt; 0) return true;            return &quot;&lt;color=red&gt;You are not the owner of object.&lt;/color&gt;&quot;;
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Nice and useless code, thx much more.<br />
+                        <br /> And now other question guys, on the plugin on this thread, edited by someone, when tryin to remove anything all going well, but<br /> Refund don&#039;t work, in console
+                        with yellow color of message wrote: &quot;Effect.Init - invalid entity&quot; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kpoIIIkaeHo7</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189101' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 20, 2016 at 7:53 PM">Mar 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189101' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189101/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189159" class="message" data-author="azalea`">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="azalea`" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">azalea`</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="kpoIIIkaeHo7">
+                            <aside>
+                                <div class="attribution type">kpoIIIkaeHo7 said: <a href="#post-189101" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Nice and useless code</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Maybe you wanted to say &#039;useful&#039;? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 12, 2016 at 2:01 PM">Jun 12, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">azalea`</a>,</span>
+                        <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189159' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 20, 2016 at 9:47 PM">Mar 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remove-tool-with-hammer-swing-using-onhammerhit.16470/#post-189159' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189159/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

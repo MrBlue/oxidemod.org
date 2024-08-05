@@ -1,0 +1,161 @@
+---
+layout: forums
+title: 'OnEntityDeath question'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/onentitydeath-question.9298/' | prepend: site.baseurl }}">OnEntityDeath question</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rusty</a>, <a href="{{ '/threads/onentitydeath-question.9298/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 9, 2015 at 11:53 PM">Jun 9, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-97414" class="message" data-author="Rusty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rusty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rusty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnEntityDeath(entity)
+  -- Convert entity to player
+  local player = entity:ToPlayer()
+  print(player.displayName .. &quot; died &quot;)
+end</pre>{% endraw %}
+                        </div>Can&#039;t find very info online about LUA&#039;s OnEntityDeath, how would i go about extracting the killer and the weapon he was using? Even the body part that got
+                        hit?<br />
+                        <br /> Help on this one would be very welcome, <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rusty</a>,</span>
+                        <a href="{{ '/threads/onentitydeath-question.9298/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 9, 2015 at 11:53 PM">Jun 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitydeath-question.9298/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/97414/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-97433" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The variables would be the same in any language, so plugins such as Death Notes would point the way. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onentitydeath-question.9298/#post-97433' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 10, 2015 at 2:28 AM">Jun 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitydeath-question.9298/#post-97433' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/97433/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-97893" class="message" data-author="Rusty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rusty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rusty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnEntityDeath (vic, hitinfo)
+    local attacker = nil
+    if (not vic) or (not hitinfo) then return false end
+    if not hitinfo.HitEntity then return false end
+   
+    print(&quot;[&quot; .. self.Title .. &quot;] HitEntity: &quot; .. tostring(hitinfo.HitEntity.displayName))
+    print(&quot;[&quot; .. self.Title .. &quot;] Vic: &quot; .. tostring(vic))
+   
+    if not hitinfo then return false end
+    print(&quot;Bone: &quot; .. hitinfo.HitBone)
+    local victim = vic:ToPlayer()
+    if victim then
+        print(&quot;VICTIM: &quot; .. victim.displayName)
+        local attacker = hitinfo.Initiator
+        print(attacker.displayName)
+        print(attacker:ToPlayer().displayName)
+            
+    end
+   
+    if (victim ~= nil) and (attacker ~= nil) then
+        print(&quot;PVP: &quot; .. attacker.displayName .. &quot; killed &quot; .. victim.displayName)
+        print(hitinfo.Weapon)   --&lt;&lt;-- doesnt return anything?
+    end
+end</pre>{% endraw %}
+                        </div>All is working except hitinfo.Weapon doesnt return a thing.. what am i doing wrong? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rusty</a>,</span>
+                        <a href="{{ '/threads/onentitydeath-question.9298/#post-97893' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 11, 2015 at 4:48 PM">Jun 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitydeath-question.9298/#post-97893' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/97893/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

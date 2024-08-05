@@ -1,0 +1,477 @@
+---
+layout: forums
+title: 'Solved - CUI not working in OnPlayerInit?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/' | prepend: site.baseurl }}">CUI not working in OnPlayerInit?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Ghosst</a>, <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 2, 2015 at 2:00 PM">Oct 2,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-133082" class="message" data-author="Ghosst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ghosst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ghosst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">After the update there is a strange (Bug?) thing. My plugin GUI (InfoPanel) isn&#039;t show up.<br /> That is my
+                        code now in the OnPlayerInit:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> void OnPlayerInit(BasePlayer player)
+        {
+            Puts(&quot;PINIT&quot;);
+            Puts(player.displayName);
+            Puts(&quot;PL: &quot;+Panels.Count);
+            InitializeGUI(player);
+            timer.Once(1, () =&gt; RefreshOnlineAndSleeperPlayerGui());
+        }</pre>{% endraw %}
+                        </div>Its working &quot;fine&quot; but my GUI remains in Wonderland....<br />
+                        <br /> If i add this to the OnPlayerSleepEnded then my GUI show up.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerSleepEnded(BasePlayer player)
+        {
+           
+            Puts(&quot;PSLEEPEND&quot;);
+            Puts(player.displayName);
+            Puts(&quot;PL: &quot; + Panels.Count);
+            InitializeGUI(player);
+            timer.Once(1, () =&gt; RefreshOnlineAndSleeperPlayerGui());
+        }</pre>{% endraw %}
+                        </div>Based on the console messages every variable is the same.<br />
+                        <br /> There is an other code pieces in the OnServerInitialized function.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {               
+                InitializeGUI(player);
+            }</pre>{% endraw %}
+                        </div>This one is calling the same InitializeGUI function and working fine if i am on the server and reload the plugin, so there is no problem i think.<br />
+                        <br /> Any idea? Suggestion? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ghosst</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 2:00 PM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133082/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133118" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Nothing changed with the hook, but it may be the player is taking longer to be spawned in the game now. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133118' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 3:31 PM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133118' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133118/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133120" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Use OnPlayerSleepEnded() as you already are.<br />
+                        <br /> Edit:<br />
+                        <br /> LustyMap still works init, maybe worth looking into. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 2, 2015 at 3:46 PM">Oct 2, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133120' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 3:34 PM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133120' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133120/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133131" class="message" data-author="Kayzor">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kayzor" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kayzor</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I know some of the other UI stuff has changed, it seem like OnPlayerInit is called to early to be used to add
+                        UI&#039;s now.<br /> If you use a timer to add the UI later (e.g. 10 seconds later, which is what I am currently doing in LustyMap), then it works, but this is a bit hit and
+                        miss as some clients may take longer than 10 seconds to load...<br />
+                        <br /> OnPlayerSleepEnded() is an ok workaround but you need to create some logic so that it only fires once per player per join.<br /> I guess we need some kind of way to
+                        check when the client has finished activating and is ready to accept the UI, but this is where someone cleverer than me needs to step in...<br />
+                        [DOUBLEPOST=1443799693][/DOUBLEPOST]Been experimenting a little and best I have come up with so far is to check and wait until the ReceivingSnapshot flag for the player is
+                        false, then you seem to be able to send the UI.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [HookMethod(&quot;OnPlayerInit&quot;)]
+        void OnPlayerInit(BasePlayer player)
+        {
+            sendUI(player);
+        }        private void sendUI(BasePlayer player)
+        {
+            if (player.HasPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot))
+            {
+                // Player still receiving snapshot, try again in a second...
+                timer.In(1, () =&gt; sendUI(player));
+            }
+            else
+            {
+                // Your UI code / method
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 2, 2015 at 4:28 PM">Oct 2, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kayzor</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133131' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 4:01 PM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133131' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133131/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133223" class="message" data-author="Ghosst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ghosst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ghosst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yeah that is a good solution i think. I tried a lots of variable/function in the BasePlayer/Connection but
+                        didn&#039;t find better than that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ghosst</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133223' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 7:07 PM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-133223' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133223/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144449" class="message" data-author="Rusty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rusty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rusty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What if the player gets disconnect before the timer kicks in? Like in rpc recieve texture error? maybe
+                        OnPlayerRespawned? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rusty</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144449' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 18, 2015 at 1:38 AM">Nov 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144449' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144449/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144450" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rusty">
+                            <aside>
+                                <div class="attribution type">Rusty said: <a href="#post-144449" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What if the player gets disconnect before the timer kicks in? Like in rpc recieve texture error? maybe OnPlayerRespawned?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If they get disconnected before the timer, then the UI wasn&#039;t even created yet. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144450' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 18, 2015 at 1:42 AM">Nov 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144450' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144450/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144454" class="message" data-author="Rusty">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rusty" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rusty</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just saying, 100% of the times a player gets connected then immediatly disconnected because of rpc recievetexture
+                        error (sign artist), the plugin starts throwing timer errors non stop, either until that player connects again, or i reload the infopanel plugin. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rusty</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144454' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 18, 2015 at 2:27 AM">Nov 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144454' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144454/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144455" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rusty">
+                            <aside>
+                                <div class="attribution type">Rusty said: <a href="#post-144454" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just saying, 100% of the times a player gets connected then immediatly disconnected because of rpc recievetexture error (sign artist), the plugin
+                                        starts throwing timer errors non stop, either until that player connects again, or i reload the infopanel plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It depends on the plugin. Sign Artist probably needs a few fixes. I&#039;ve never encountered the error with any of my plugins that use the CUI. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144455' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 18, 2015 at 2:30 AM">Nov 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144455' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144455/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-144483" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-144455" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It depends on the plugin. Sign Artist probably needs a few fixes. I&#039;ve never encountered the error with any of my plugins that use the CUI.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I was playing around with UI and the recieve texture error or whatever seems to be happening if you use not available setting. For example a not existing text align mode.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144483' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 18, 2015 at 7:22 AM">Nov 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-not-working-in-onplayerinit.12039/#post-144483' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/144483/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

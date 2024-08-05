@@ -1,0 +1,149 @@
+---
+layout: forums
+title: 'Solved - Registering a chat command?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/registering-a-chat-command.30870/' | prepend: site.baseurl }}">Registering a chat command?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheBandolero</a>, <a href="{{ '/threads/registering-a-chat-command.30870/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 15, 2018 at 4:18 PM">Jun 15,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-404661" class="message" data-author="TheBandolero">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheBandolero" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheBandolero</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> this is what i&#039;ve done after reading many posts about it. class is :RustPlugin.<br />
+                        <br /> registering permission and adding the chat command;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Init()
+        {
+            permission.RegisterPermission(&quot;saltydeath.admin&quot;, this);
+            cmd.AddChatCommand(&quot;sddisable&quot;, this, &quot;DisableCmd&quot;);
+        }</pre>{% endraw %}
+                        </div>the command:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void DisableCmd(IPlayer player, string command, string[] args)
+        {
+            if (player.HasPermission(&quot;saltydeath.admin&quot;))
+            {
+                enableSD = false;
+                Puts(&quot;SaltyDeath DISABLED!&quot;);
+                player.Reply(&quot;SaltyDeath DISABLED!&quot;);
+            }
+            else
+            {
+                Puts(&quot;You don't have the permission to use the sddisable command.&quot;);
+                player.Reply(&quot;You don't have the permission to use the sddisable command.&quot;);
+            }           
+        }</pre>{% endraw %}
+                        </div>obviously i got it wrong since it does nothing :/<br /> [DOUBLEPOST=1529076927][/DOUBLEPOST]ok, got it solved:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Init()
+        {
+            permission.RegisterPermission(&quot;saltydeath.admin&quot;, this);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;sddisable&quot;), Permission(&quot;saltydeath.admin&quot;)]
+        private void DisableCommand(BasePlayer player, string command, string[] args)
+        {
+            enableSD = false;
+            Puts(&quot;SaltyDeath DISABLED!&quot;);
+        }</pre>{% endraw %}
+                        </div>how can i check if the player has a permission using BasePlayer? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheBandolero</a>,</span>
+                        <a href="{{ '/threads/registering-a-chat-command.30870/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 15, 2018 at 4:18 PM">Jun 15, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/registering-a-chat-command.30870/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/404661/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404664" class="message" data-author="TheBandolero">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheBandolero" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheBandolero</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> ok, solved too lol<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;sdenable&quot;), Permission(&quot;saltydeath.admin&quot;)]
+        private void EnableCommand(BasePlayer player, string command, string[] args)
+        {
+            if (permission.UserHasPermission(player.userID.ToString(), &quot;saltydeath.admin&quot;))
+            {
+                enableSD = true;
+                Puts(&quot;SaltyDeath has been ENABLED!&quot;);
+                player.ChatMessage(&quot;SaltyDeath has been ENABLED!&quot;);
+            }
+            else
+            {
+                player.ChatMessage(&quot;You have no permission to use this command.&quot;);
+            }           
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheBandolero</a>,</span>
+                        <a href="{{ '/threads/registering-a-chat-command.30870/#post-404664' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 15, 2018 at 4:54 PM">Jun 15, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/registering-a-chat-command.30870/#post-404664' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/404664/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

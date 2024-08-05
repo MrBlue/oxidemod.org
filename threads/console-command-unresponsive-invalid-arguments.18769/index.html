@@ -1,0 +1,142 @@
+---
+layout: forums
+title: 'Solved - Console command unresponsive (invalid arguments)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/' | prepend: site.baseurl }}">Console command unresponsive (invalid
+            arguments)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Top
+            2</a>, <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 16, 2016 at 7:11 PM">Jun 16,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-216309" class="message" data-author="Top 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Top 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Top 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;Corpses&quot;, &quot;Steven&quot;, &quot;1.0.1&quot;, ResourceId = 8913)]
+    class Corpses : RustPlugin
+    {
+        [ConsoleCommand(&quot;deadclean&quot;)]
+        private void consoleDeadClean(ConsoleSystem.Arg arg, BasePlayer player, string command, string[] args)
+        {            if (arg.connection != null)
+            {
+                int count = 0;
+                var c = Resources.FindObjectsOfTypeAll&lt;PlayerCorpse&gt;();
+                for (int i = 0; i &lt; c.Length - 1; i++)
+                {
+                    count++;      
+                    c.KillMessage();
+                }
+                SendReply(player, &quot;Deleted &quot; + count + &quot; Dead Corpses.&quot;);
+            }
+        }
+      
+        [ConsoleCommand(&quot;deadcount&quot;)]
+        private void consoledeadcount(ConsoleSystem.Arg arg, BasePlayer player, string command, string[] args)
+        {            if (arg.connection != null)
+            {
+                int count = 0;
+                foreach(PlayerCorpse c in Resources.FindObjectsOfTypeAll&lt;PlayerCorpse&gt;()) count++;
+                SendReply(player, count-1 + &quot; Dead Corpses Found.&quot;);
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Top 2</a>,</span>
+                        <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 16, 2016 at 7:11 PM">Jun 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/216309/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-216311" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Console commands only take one argument:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>consoleDeadClean(ConsoleSystem.Arg arg)</pre>{% endraw %}
+                        </div>You&#039;d have to get the connection/player and other arguments from arg:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var player = arg.connection.player as BasePlayer;</pre>{% endraw %}
+                        </div>or<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var player = (BasePlayer)arg.connection.player;</pre>{% endraw %}
+                        </div>or<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var player = arg.connection.player.ToPlayer();</pre>{% endraw %}
+                        </div>You&#039;d also need to check if player is null or not if you expect to send a reply to that player, otherwise just send a reply to the connection or use Puts to print a
+                        message to the server log/console if you don&#039;t need the player. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/#post-216311' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 16, 2016 at 7:15 PM">Jun 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/console-command-unresponsive-invalid-arguments.18769/#post-216311' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/216311/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

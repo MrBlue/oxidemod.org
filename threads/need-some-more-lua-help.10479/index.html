@@ -1,0 +1,425 @@
+---
+layout: forums
+title: 'Need some more lua help'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/need-some-more-lua-help.10479/' | prepend: site.baseurl }}">Need some more lua help</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">JohnRU</a>, <a href="{{ '/threads/need-some-more-lua-help.10479/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 24, 2015 at 3:38 PM">Jul 24, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-111728" class="message" data-author="JohnRU">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JohnRU" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JohnRU</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Can someone give me an example of this function. If a certain player logs in it gives them a message and then it
+                        teleports them 30seconds later to a specified location. Also I need a command function that sets this location which only admins can. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JohnRU</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2015 at 3:38 PM">Jul 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/111728/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-111735" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Lets see how is my lua xD<br />
+                        <br /> so<br /> Permission for the /changepos =&gt; &quot;canchangepos&quot;<br /> commands /changepos<br />
+                        <br /> Sorry if i made a mistake <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                        <br /> Also try to write it alone. Take a look at mine the only thing that u need to remember is<br /> local playerpos = player.transform.position the other things are just
+                        simple lua.<br /> We wont write u the code every time becaues u wont learn like that. I just gave u an example.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:Init()
+self:LoadDefaultConfig()
+command.AddChatCommand(&quot;changepos&quot;,  self.Plugin, &quot;cmdChangePos&quot;)
+permission.RegisterPermission(&quot;canchangepos&quot;, self.Plugin)
+endfunction PLUGIN:LoadDefaultConfig()self.Config.Position = self.Config.Position or {}
+self.Config.Position.X = self.Config.Position.X or 31
+self.Config.Position.Y = self.Config.Position.Y or 32
+self.Config.Position.Z = self.Config.Position.Z or 33self:SaveConfig()
+endfunction PLUGIN:cmdChangePos(player, cmd, args)
+local steamId = rust.UserIDFromPlayer(player)
+if permission.UserHasPermission(steamId, &quot;canchangepos&quot;) then
+local playerpos = player.transform.position
+self.Config.Position.X = playerpos.x
+self.Config.Position.Y = playerpos.y
+self.Config.Position.Z = playerpos.z
+self:SaveConfig()
+end
+endfunction PLUGIN:OnPlayerInit(player)
+rust.SendChatMessage(player, &quot;Welcome to ........ In 30seconds you will get teleported somewhere&quot;)
+timer.Once(30, function()
+rust.ForcePlayerPosition(player, self.Config.Position.X, self.Config.Position.Y, self.Config.Position.Z)
+end, self.Plugin)
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 27, 2015 at 2:16 PM">Jul 27, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-111735' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2015 at 3:52 PM">Jul 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-111735' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/111735/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-111747" class="message" data-author="JohnRU">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JohnRU" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JohnRU</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ye I totally understand. I&#039;m definitely getting better but stuggling atm. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JohnRU</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-111747' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2015 at 4:20 PM">Jul 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-111747' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/111747/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-112011" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Man you should read the oxide api, as well as some lua documentation off-site<br />
+                        <br /> This whole section is just threads from you <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112011' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2015 at 5:01 AM">Jul 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112011' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/112011/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-112767" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-111735" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Lets see how is my lua xD<br />
+                                        <br /> so<br /> Permission for the /changepos =&gt; &quot;canchangepos&quot;<br /> commands /changepos<br />
+                                        <br /> Sorry if i made a mistake <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                                        <br /> Also try to write it alone. Take a look at mine the only thing that u need to remember is<br /> local playerpos = player.transform.position the other
+                                        things are just simple lua.<br /> We wont write u the code every time becaues u wont learn like that. I just gave u an example.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+function PLUGIN:Init()
+self:LoadDefaultConfig()
+command.AddChatCommand(&quot;changepos&quot;,  self.Plugin, &quot;cmdChangePos&quot;)
+permission.RegisterPermission(&quot;canchangepos&quot;, self.Plugin)
+endfunction PLUGIN:LoadDefaultConfig()self.Config.Position = self.Config.Position or {}
+self.Config.Position.X = self.Config.Position.X or 31
+self.Config.Position.Y = self.Config.Position.Y or 32
+self.Config.Position.Z = self.Config.Position.Z or 33self:SaveConfig()
+endfunction PLUGIN:cmdChangePos(player, cmd, args)
+local steamId = rust.UserIDFromPlayer(player)
+if permission.UserHasPermission(steamId, &quot;canchangepos&quot;) then
+local playerpos = player.transform.position
+self.Config.Position.X = playerpos.x
+self.Config.Position.Y = playerpos.y
+self.Config.Position.Z = playerpos.z
+end
+endfunction PLUGIN:OnPlayerInit(player)
+rust.SendChatMessage(player, &quot;Welcome to ........ In 30seconds you will get teleported somewhere&quot;)
+timer.Once(30, function()
+rust.ForcePlayerPosition(player, self.Config.Position.X, self.Config.Position.Y, self.Config.Position.Z)
+end, self.Plugin)
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>you forgot an &quot;end&quot; at the end<br />
+                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                        <br /> A little cleaned up:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:Init()
+    self:LoadDefaultConfig()
+    command.AddChatCommand(&quot;changepos&quot;,  self.Plugin, &quot;cmdChangePos&quot;)
+    if not permission.PermissionExists(&quot;canchangepos&quot;) then permission.RegisterPermission(&quot;canchangepos&quot;, self.Plugin)
+endfunction PLUGIN:LoadDefaultConfig()    self.Config.Position = self.Config.Position or {}
+    self.Config.Position.X = self.Config.Position.X or 31
+    self.Config.Position.Y = self.Config.Position.Y or 32
+    self.Config.Position.Z = self.Config.Position.Z or 33    self:SaveConfig()
+endfunction PLUGIN:cmdChangePos(player, cmd, args)
+    local steamId = rust.UserIDFromPlayer(player)
+    if permission.UserHasPermission(steamId, &quot;canchangepos&quot;) then
+        self.Config.Position.X = player.transform.position.x
+        self.Config.Position.Y = player.transform.position.y
+        self.Config.Position.Z = player.transform.position.z
+        self:SaveConfig()
+    end
+endfunction PLUGIN:OnPlayerInit(player)
+    rust.SendChatMessage(player, &quot;Welcome to ........ In 30seconds you will get teleported somewhere&quot;)
+   
+    timer.Once(30, function()
+        rust.ForcePlayerPosition(player, self.Config.Position.X, self.Config.Position.Y, self.Config.Position.Z)
+    end, self.Plugin)
+   
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112767' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 27, 2015 at 2:15 PM">Jul 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112767' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/112767/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-112768" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-112767" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">you forgot an &quot;end&quot; at the end<br />
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                                        <br /> A little cleaned up:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+function PLUGIN:Init()
+    self:LoadDefaultConfig()
+    command.AddChatCommand(&quot;changepos&quot;,  self.Plugin, &quot;cmdChangePos&quot;)
+    if not permission.PermissionExists(&quot;canchangepos&quot;) then permission.RegisterPermission(&quot;canchangepos&quot;, self.Plugin)
+endfunction PLUGIN:LoadDefaultConfig()    self.Config.Position = self.Config.Position or {}
+    self.Config.Position.X = self.Config.Position.X or 31
+    self.Config.Position.Y = self.Config.Position.Y or 32
+    self.Config.Position.Z = self.Config.Position.Z or 33    self:SaveConfig()
+endfunction PLUGIN:cmdChangePos(player, cmd, args)
+    local steamId = rust.UserIDFromPlayer(player)
+    if permission.UserHasPermission(steamId, &quot;canchangepos&quot;) then
+        self.Config.Position.X = player.transform.position.x
+        self.Config.Position.Y = player.transform.position.y
+        self.Config.Position.Z = player.transform.position.z
+        self:SaveConfig()
+    end
+endfunction PLUGIN:OnPlayerInit(player)
+    rust.SendChatMessage(player, &quot;Welcome to ........ In 30seconds you will get teleported somewhere&quot;)
+  
+    timer.Once(30, function()
+        rust.ForcePlayerPosition(player, self.Config.Position.X, self.Config.Position.Y, self.Config.Position.Z)
+    end, self.Plugin)
+  
+end</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah.. because i wrote it in this text editor xD <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112768' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 27, 2015 at 2:17 PM">Jul 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112768' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/112768/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-112772" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-112768" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah.. because i wrote it in this text editor xD</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>also you forgot the &quot;self:SaveConfig()&quot; in the command, and setting the playerpos variable is totally uneeded <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112772' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 27, 2015 at 2:18 PM">Jul 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-some-more-lua-help.10479/#post-112772' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/112772/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

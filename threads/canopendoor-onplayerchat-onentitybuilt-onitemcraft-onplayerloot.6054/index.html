@@ -1,0 +1,172 @@
+---
+layout: forums
+title: 'CanOpenDoor OnPlayerChat OnEntityBuilt OnItemCraft OnPlayerLoot'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/' | prepend: site.baseurl }}">CanOpenDoor OnPlayerChat OnEntityBuilt OnItemCraft OnPlayerLoot</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Reneb</a>, <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Nov 25, 2014 at 5:34 PM">Nov 25, 2014</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-56315" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Here are examples on how to use the new hooks:<br />
+                        <br />
+                        <b>CanOpenDoor</b><br />
+                        <br /> This will give admins power to open/close all doors<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:CanOpenDoor( player, lock )
+    -- Check if the level of the player is 1 or more (1 = moderator, 2 = owner)
+    if( player:GetComponent(&quot;BaseNetworkable&quot;).net.connection.authLevel &gt;= 1 ) then
+        -- If level is more then moderator level, then he may open and close anydoors
+        return true
+    end
+end</pre>{% endraw %}
+                        </div><b>OnPlayerChat<br />
+                        </b><br /> This will mute a player and log what he tried to say.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnPlayerChat(arg)
+    -- here you will get the name of the player, and on second the steamid of the player
+    print(arg.connection.player.displayName .. &quot; - &quot; .. rust.UserIDFromPlayer(arg.connection.player) .. &quot;: Tried to talk but was muted&quot;)
+    -- he you will get the full line of what he was trying to say
+    print(&quot;He tried to say: &quot; .. arg:GetString(0, &quot;text&quot;))
+ 
+    -- return false = cancel the message
+    return false
+end</pre>{% endraw %}
+                        </div><b>OnEntityBuilt<br />
+                        </b><br /> This will log who tried to build a structure (wall/stairs/foundations/windows/etc)<br /> and destroy it immediately.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnEntityBuilt( heldentity, gameobject )
+    -- here you will get the playername that built the thing, and on second you will first get the buildingblock (:GetComponent(&quot;BuildingBlock&quot;))
+    -- and then the name of the buildingblock
+    print(heldentity.ownerPlayer.displayName .. &quot; tried to build a &quot; .. gameobject:GetComponent(&quot;BuildingBlock&quot;).blockDefinition.name)
+    -- Here it will show you how to destroy a buildingblock, you need to get the BaseEntity Component first to call the function Kill
+    gameobject:GetComponent(&quot;BaseEntity&quot;):Kill(ProtoBuf.Mode.None,0,0,new(UnityEngine.Vector3._type,nil) )
+end</pre>{% endraw %}
+                        </div><b>OnItemCraft</b><br />
+                        <br /> This will log who tried to craft something, and make the craft time go down to 50%<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnItemCraft( itemcrafttask )
+    -- here you will first get the player that is trying to craft
+    -- in second you will get the name of the item that he is trying to craft
+    print(itemcrafttask.owner.displayName .. &quot; has started to craft a &quot; .. itemcrafttask.blueprint.targetItem.displayname)
+    -- this will make the craft time be lowered by 50%
+    itemcrafttask.endTime = UnityEngine.Time.get_time() + itemcrafttask.blueprint.time/2
+    return itemcrafttask
+end</pre>{% endraw %}
+                        </div>This will block players from crafting anything.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnItemCraft( itemcrafttask )
+    -- here you will first get the player that is trying to craft
+    -- in second you will get the name of the item that he is trying to craft
+    print(itemcrafttask.owner.displayName .. &quot; has started to craft a &quot; .. itemcrafttask.blueprint.targetItem.displayname)
+ 
+    -- this will cancel the craft
+    itemcrafttask.cancelled = true
+    return itemcrafttask
+end</pre>{% endraw %}
+                        </div><b>OnPlayerLoot</b><br />
+                        <br /> This will log any players that try to loot another player, and if the target player is an admin, it will cancel the looting.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnPlayerLoot( sourceplayerloot, target )
+   -- Check if the sourcePlayer is trying to loot a player (and not an item like a wood storage box)
+    if(target:GetComponent(&quot;BasePlayer&quot;)) then
+        -- Trying to loot a player
+        local sourcePlayer = sourceplayerloot:GetComponent(&quot;BasePlayer&quot;)
+        local targetPlayer = target:GetComponent(&quot;BasePlayer&quot;)
+        print(sourcePlayer.displayName .. &quot; is Starting to loot a player named: &quot; .. targetPlayer.displayName)
+        -- Check if player is trying to loot an admin
+        if( targetPlayer:GetComponent(&quot;BaseNetworkable&quot;).net.connection.authLevel &gt;= 1 ) then
+            -- If trying to loot an admin, close the loot
+            sourceplayerloot:Clear()
+            rust.SendChatMessage( sourcePlayer , &quot;SERVER&quot;, &quot;You may not loot an admin&quot; )
+        end
+    end
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Dec 10, 2014 at 8:45 PM">Dec 10, 2014</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 25, 2014 at 5:34 PM">Nov 25, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/56315/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-57028" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">updated function PLUGIN:OnEntityBuilt( heldentity, game object ) for next rust update. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/#post-57028' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 10, 2014 at 8:46 PM">Dec 10, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/canopendoor-onplayerchat-onentitybuilt-onitemcraft-onplayerloot.6054/#post-57028' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/57028/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

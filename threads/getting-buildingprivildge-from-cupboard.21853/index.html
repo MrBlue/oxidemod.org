@@ -1,0 +1,230 @@
+---
+layout: forums
+title: 'Getting BuildingPrivildge from cupboard?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/' | prepend: site.baseurl }}">Getting BuildingPrivildge from cupboard?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">PsychoTea</a>, <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 7, 2016 at 7:08 PM">Nov 7,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-266619" class="message" data-author="PsychoTea">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PsychoTea" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PsychoTea</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey.<br />
+                        <br /> Basically, I&#039;m trying to get the BuildingPrivilidge from a cupboard so I can get a list of all auth&#039;ed players on the cupboard.<br />
+                        <br /> Here is the code I have so far:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object closestEnt;
+Vector3 closestHit;
+Quaternion rot = Quaternion.Euler((serverinput.GetValue(player) as InputState).current.aimAngles);
+TryGetClosestRayPoint(player.transform.position, rot, out closestEnt, out closestHit);</pre>{% endraw %}
+                        </div>This code basically drwas a Raycast from the player in the direction they&#039;re looking, and returns the entity hit and the location of the entity hit.<br />
+                        <br /> How would I get the BuildingPrivilidge from the closestEnt, checking the closestEnt was infact a tool cupboard?<br />
+                        <br /> I&#039;m asking for the BuildingPrivilidge specifically as this contains a list of PlayerNameID (a class containing the player nickname and user id), called
+                        authorizedPlayers.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public List&lt;PlayerNameID&gt; authorizedPlayers = new List&lt;PlayerNameID&gt;();</pre>{% endraw %}
+                        </div>Any ideas? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PsychoTea</a>,</span>
+                        <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 7:08 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/266619/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266692" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object GetAuthList(BaseEntity cupboard){
+            if(cupboard is BuildingPrivlidge){
+                var bpriv = entity as BuildingPrivlidge;
+                if(bpriv == null) return null;
+                else return bpriv.authorizedPlayers.ToList();
+            }
+            return null;
+        }
+List&lt;ulong&gt; players = new List&lt;ulong&gt;();
+players = GetAuthList(entity);</pre>{% endraw %}
+                        </div>Or if you just want the BuildingPrivlidge Type:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        BuildingPrivlidge GetBuildingPriv(BaseEntity cupboard, List&lt;ulong&gt; authList){
+            if(cupboard is BuildingPrivlidge){
+                return cupboard as BuildingPrivlidge;
+            }
+            return null;
+        }</pre>{% endraw %}
+                        </div>*if that doesnt work:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        object GetBuildingPriv(BaseEntity cupboard, List&lt;ulong&gt; authList){
+            if(cupboard is BuildingPrivlidge){
+                return cupboard as BuildingPrivlidge;
+            }
+            return null;
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266692' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 9:58 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266692' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/266692/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266706" class="message" data-author="PsychoTea">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PsychoTea" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PsychoTea</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I had some code something along these lines, however it would always return a NullReferenceException.<br />
+                        <br /> It turns out, this was actually because of the way I was using the raycast. The raycast would return an object of type Collider, rather than a BaseEntity. This is why it
+                        seemed to refuse to play nicely with any of the code I was testing. I fixed this by using code, albeit slightly modified, from the Prod plugin, as follows:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BaseEntity DoRay(Vector3 Pos, Vector3 Aim)
+        {
+            var hits = UnityEngine.Physics.RaycastAll(Pos, Aim);
+            float distance = 100000f;
+            BaseEntity target = null;
+            foreach (var hit in hits)
+            {
+                if (hit.collider != null &amp;&amp; isPluginDev &amp;&amp; dumpAll)
+                    Dump(hit.GetEntity());
+                if (hit.distance &lt; distance)
+                {
+                    distance = hit.distance;
+                    target = hit.GetEntity();
+                }
+            }
+            return target;
+        }</pre>{% endraw %}
+                        </div>Admin, please mark this thread as solved. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PsychoTea</a>,</span>
+                        <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266706' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 10:43 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266706' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/266706/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266709" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yeah. A bunch of plugins have examples of the raycast, eye detection stuff. Such as prod, old remover tool
+                        versions, and my smarthomes plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266709' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 10:55 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-buildingprivildge-from-cupboard.21853/#post-266709' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/266709/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

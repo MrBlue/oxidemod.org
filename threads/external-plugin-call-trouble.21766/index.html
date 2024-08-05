@@ -1,0 +1,1146 @@
+---
+layout: forums
+title: 'Solved - External plugin call trouble'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}">External plugin call trouble</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Shytoos</a>, <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 3, 2016 at 8:29 PM">Nov 3, 2016</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/external-plugin-call-trouble.21766/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-264393" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> I tried to edit the Balance class from <a href="http://oxidemod.org/plugins/infopanel.1356/" class="internalLink">InfoPanel for Rust | Oxide</a> for it to display the
+                        player&#039;s RP amount from <a href="http://oxidemod.org/plugins/serverrewards.1751/" class="internalLink">ServerRewards for Rust | Oxide</a><br />
+                        <br /> So here are the interesting parts of the Balance class:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference] Plugin ServerRewards;public int GetBalance(string PlayerID)
+{             
+        var player = RustCore.FindPlayerByIdString(PlayerID);
+        if (player == null || !ServerRewards) return 0;
+        return (int)ServerRewards?.Call(&quot;CheckPoints&quot;, player.userID);
+}</pre>{% endraw %}
+                        </div>The problem is that the &quot;!ServerRewards&quot; condition is passing, so the function returns 0.<br />
+                        <br /> If I remove the &quot;!ServerRewards&quot; condition, the Call is called and I get tons of errors.<br />
+                        <br /> I don&#039;t know what is wrong, any of you could help me please? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:29 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264393/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264395" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If !ServerRewards passes, that means ServerRewards is installed. What errors are you getting exactly? Is the
+                        above code from your plugin I assume? First thing I would say is that you don&#039;t need to find the player to get their ID, you already have it from the argument.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference] Plugin ServerRewards;public int GetBalance(string id)
+{
+        if (!ServerRewards) return 0;
+        return (int)ServerRewards.Call(&quot;CheckPoints&quot;, Convert.ToUInt64(id));
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264395' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:31 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264395' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264395/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264399" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Here&#039;s the entire class, nothing has been edited outside of it:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        #region Balance        private Balance Bala;
+        private Timer BalanceUpdater;
+        public class Balance
+        {
+            [PluginReference] Plugin ServerRewards;            public int RefreshRate = 3;            public Balance(int RefreshRate)
+            {
+                this.RefreshRate = RefreshRate;
+            }            public int GetBalance(string PlayerID)
+            {             
+                var player = RustCore.FindPlayerByIdString(PlayerID);
+                if (player == null || !ServerRewards) return 0;
+                return (int)ServerRewards?.Call(&quot;CheckPoints&quot;, player.userID);
+            }            public void Refresh(StoredData storedData, Dictionary&lt;string, Dictionary&lt;string, IPanel&gt;&gt; panels)
+            {
+                if (!Settings.CheckPanelAvailability(&quot;Balance&quot;))
+                    return;                foreach (var panel in panels)
+                {
+                    IPanel iPanel;
+                    if (!panel.Value.TryGetValue(&quot;BalanceText&quot;, out iPanel)) continue;
+                    var balance = GetBalance(panel.Key);
+                    var panelText = (IPanelText)iPanel;
+                    if (!balance.Equals(panelText.Content))
+                    {
+                        panelText.Content = $&quot;{balance}&quot;;
+                        panelText.Refresh();
+                    }
+                }
+            }
+        }
+        #endregion</pre>{% endraw %}
+                        </div>If I let the plugin call the &quot;CheckPoints&quot; function from ServerRewards, I get this error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Error] Failed to call hook 'OnServerInitialized' on plugin 'InfoPanel v0.9.5' (NullReferenceException: Object reference not set to an instance of an object)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264399' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:34 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264399' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264399/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264401" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-264399" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Here&#039;s the entire class, nothing has been edited outside of it:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        #region Balance        private Balance Bala;
+        private Timer BalanceUpdater;
+        public class Balance
+        {
+            [PluginReference] Plugin ServerRewards;            public int RefreshRate = 3;            public Balance(int RefreshRate)
+            {
+                this.RefreshRate = RefreshRate;
+            }            public int GetBalance(string PlayerID)
+            {            
+                var player = RustCore.FindPlayerByIdString(PlayerID);
+                if (player == null || !ServerRewards) return 0;
+                return (int)ServerRewards?.Call(&quot;CheckPoints&quot;, player.userID);
+            }            public void Refresh(StoredData storedData, Dictionary&lt;string, Dictionary&lt;string, IPanel&gt;&gt; panels)
+            {
+                if (!Settings.CheckPanelAvailability(&quot;Balance&quot;))
+                    return;                foreach (var panel in panels)
+                {
+                    IPanel iPanel;
+                    if (!panel.Value.TryGetValue(&quot;BalanceText&quot;, out iPanel)) continue;
+                    var balance = GetBalance(panel.Key);
+                    var panelText = (IPanelText)iPanel;
+                    if (!balance.Equals(panelText.Content))
+                    {
+                        panelText.Content = $&quot;{balance}&quot;;
+                        panelText.Refresh();
+                    }
+                }
+            }
+        }
+        #endregion</pre>{% endraw %}
+                                        </div>If I let the plugin call the &quot;CheckPoints&quot; function from ServerRewards, I get this error:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Error] Failed to call hook 'OnServerInitialized' on plugin 'InfoPanel v0.9.5' (NullReferenceException: Object reference not set to an instance of an object)</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I added a snippet above for you, not sure if you saw it. Also, are you modifying InfoPanel? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264401' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:37 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264401' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264401/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264404" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I tried the code you gave to me, still returning 0 because of the line<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (!ServerRewards) return 0;</pre>{% endraw %}
+                        </div>And still getting the same error as above if I quote it.<br />
+                        <br /> Also, I&#039;m not doing a new plugin, I&#039;m editing the InfoPanel one. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264404' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:41 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264404' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264404/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264406" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-264404" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I tried the code you gave to me, still returning 0 because of the line<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>if (!ServerRewards) return 0;</pre>{% endraw %}
+                                        </div>And still get the same error as above if I quote it.<br />
+                                        <br /> Also, I&#039;m not doing a new plugin, I&#039;m editing the InfoPanel one.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Are you sure ServerRewards is actually installed and loaded? If it fails there, it generally means it isn&#039;t. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264406' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:42 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264406' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264406/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264408" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-264406" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Are you sure ServerRewards is actually installed and loaded? If it fails there, it generally means it isn&#039;t.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, just opened its Store menu in game at the moment. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264408' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:42 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264408' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264408/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264410" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-264408" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah, just opened its Store menu in game at the moment.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Also, pretty sure [PluginReference] Plugin ServerRewards; needs to be in the main namespace, not nested in a method or sub-class. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264410' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:43 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264410' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264410/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264413" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-264410" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Also, pretty sure [PluginReference] Plugin ServerRewards; needs to be in the main namespace, not nested in a method or sub-class.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I also thought about that, so I tried placing the line below in the main namespace:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference] static Plugin ServerRewards;</pre>{% endraw %}
+                        </div>Still the same result. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264413' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:44 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264413' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264413/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264414" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shytoos">
+                            <aside>
+                                <div class="attribution type">Shytoos said: <a href="#post-264413" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I also thought about that, so I tried placing the line below in the main namespace:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[PluginReference] static Plugin ServerRewards;</pre>{% endraw %}
+                                        </div>Still the same result.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>[PluginReference] Plugin ServerRewards; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264414' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:45 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264414' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264414/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264415" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Without the &quot;static&quot; I get:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>error CS0038: Cannot access a nonstatic member of outer type `Oxide.Plugins.InfoPanel' via nested type `Oxide.Plugins.InfoPanel.Balance'</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264415' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 8:46 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264415' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264415/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-264498" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You need the plugin reference in the main namespace. The create a static instance of your plugin. Then call
+                        ServerRewards via the instance <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[PluginReference] Plugin ServerRewards
+static InfoPanel instance;
+void OnServerInitialized()
+{
+   instance = this;
+}// in your class
+instance.ServerRewards?.Call....</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264498' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2016 at 10:20 PM">Nov 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-264498' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/264498/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266490" class="message" data-author="bazuka5801">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bazuka5801" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bazuka5801</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-264498" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You need the plugin reference in the main namespace. The create a static instance of your plugin. Then call ServerRewards via the instance<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[PluginReference] Plugin ServerRewards
+static InfoPanel instance;
+void OnServerInitialized()
+{
+   instance = this;
+}// in your class
+instance.ServerRewards?.Call....</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Singleton very bad style of programming <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bazuka5801</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266490' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 1:04 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266490' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/266490/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266680" class="message" data-author="Shytoos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shytoos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shytoos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-264498" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You need the plugin reference in the main namespace. The create a static instance of your plugin. Then call ServerRewards via the instance<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[PluginReference] Plugin ServerRewards
+static InfoPanel instance;
+void OnServerInitialized()
+{
+   instance = this;
+}// in your class
+instance.ServerRewards?.Call....</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This is working ! Thanks a lot ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shytoos</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266680' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 9:23 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266680' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/266680/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266700" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="bazuka5801">
+                            <aside>
+                                <div class="attribution type">bazuka5801 said: <a href="#post-266490" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Singleton very bad style of programming</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That is not a singleton.<br /> Static classes (even singletons!) are completly fine because the plugin class itself already acts as single namespace for all plugin
+                        code.<br /> Don&#039;t just randomly parrot things. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266700' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 7, 2016 at 10:25 PM">Nov 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266700' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/266700/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-266749" class="message" data-author="bazuka5801">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bazuka5801" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bazuka5801</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-266700" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That is not a singleton.<br /> Static classes (even singletons!) are completly fine because the plugin class itself already acts as single
+                                        namespace for all plugin code.<br /> Don&#039;t just randomly parrot things.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Static classes is another, <a href="https://en.wikipedia.org/wiki/Singleton_pattern" target="_blank" class="externalLink  rel=" nofollow">Singleton pattern -
+                            Wikipedia</a>
+                        <br /> try to build architecture without Singleton, class is an object, which in this should only manage itself. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bazuka5801</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266749' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 8, 2016 at 3:45 AM">Nov 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-266749' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/266749/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-284793" class="message" data-author="tommynanny">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="tommynanny" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">tommynanny</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-264498" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You need the plugin reference in the main namespace. The create a static instance of your plugin. Then call ServerRewards via the instance<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[PluginReference] Plugin ServerRewards
+static InfoPanel instance;
+void OnServerInitialized()
+{
+   instance = this;
+}// in your class
+instance.ServerRewards?.Call....</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have my ServerRewards plugin reference in the main namespace, and also create a static instance of info panel.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public double GetBalance(string id)
+            {
+                var player = RustCore.FindPlayerByIdString(id);
+                if (player == null) return 0;
+                return (double)instance.ServerRewards?.Call(&quot;CheckPoints&quot;, Convert.ToUInt64(id));
+            }</pre>{% endraw %}
+                        </div>But I get this error message:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnServerInitialized' on plugin 'InfoPanel v0.9.5' (InvalidCastException: Cannot cast from source type to destination type.)</pre>{% endraw %}
+                        </div>I guess there is something wrong with the cast issue:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnServerInitialized()
+{
+   instance = this;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">tommynanny</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-284793' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 14, 2017 at 7:48 AM">Jan 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-284793' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/284793/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-285685" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> did you get this working im also attempting to do this. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-285685' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 17, 2017 at 4:45 AM">Jan 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-285685' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/285685/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-286777" class="message" data-author="Canopy Sheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Canopy Sheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Canopy Sheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="tommynanny">
+                            <aside>
+                                <div class="attribution type">tommynanny said: <a href="#post-284793" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I have my ServerRewards plugin reference in the main namespace, and also create a static instance of info panel.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>public double GetBalance(string id)
+            {
+                var player = RustCore.FindPlayerByIdString(id);
+                if (player == null) return 0;
+                return (double)instance.ServerRewards?.Call(&quot;CheckPoints&quot;, Convert.ToUInt64(id));
+            }</pre>{% endraw %}
+                                        </div>But I get this error message:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Failed to call hook 'OnServerInitialized' on plugin 'InfoPanel v0.9.5' (InvalidCastException: Cannot cast from source type to destination type.)</pre>{% endraw %}
+                                        </div>I guess there is something wrong with the cast issue:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnServerInitialized()
+{
+   instance = this;
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ts3hosting">
+                            <aside>
+                                <div class="attribution type">Ts3hosting said: <a href="#post-285685" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">did you get this working im also attempting to do this.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public int GetBalance(string id)
+            {
+                var player = RustCore.FindPlayerByIdString(id);
+                if (player == null) return 0;
+                return (int)instance.ServerRewards?.Call(&quot;CheckPoints&quot;, Convert.ToUInt64(id));
+            }</pre>{% endraw %}
+                        </div>CheckPoints returns an int, forcing it as a double causes the error. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Canopy Sheep</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-286777' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2017 at 1:34 AM">Jan 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-286777' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/286777/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-287042" class="message" data-author="tommynanny">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="tommynanny" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">tommynanny</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Canopy Sheep">
+                            <aside>
+                                <div class="attribution type">Canopy Sheep said: <a href="#post-286777" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>public int GetBalance(string id)
+            {
+                var player = RustCore.FindPlayerByIdString(id);
+                if (player == null) return 0;
+                return (int)instance.ServerRewards?.Call(&quot;CheckPoints&quot;, Convert.ToUInt64(id));
+            }</pre>{% endraw %}
+                                        </div>CheckPoints returns an int, forcing it as a double causes the error.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>thanks so much man, this is working <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        [DOUBLEPOST=1484926029][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="Ts3hosting">
+                            <aside>
+                                <div class="attribution type">Ts3hosting said: <a href="#post-285685" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">did you get this working im also attempting to do this.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>it is working now <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">tommynanny</a>,</span>
+                        <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-287042' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2017 at 3:25 PM">Jan 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/external-plugin-call-trouble.21766/#post-287042' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287042/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/external-plugin-call-trouble.21766/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/external-plugin-call-trouble.21766/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

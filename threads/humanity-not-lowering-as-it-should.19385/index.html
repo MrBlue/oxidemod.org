@@ -1,0 +1,412 @@
+---
+layout: forums
+title: 'Humanity not lowering as it should'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/' | prepend: site.baseurl }}">Humanity not lowering as it should</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DylanSMR</a>, <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 9, 2016 at 8:50 PM">Jul 9,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-226190" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So this code should work. but for some reason it does not lower his humanity upon killing a player.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+        {
+            try
+            {
+                if(entity != null)
+                {
+                    BasePlayer attacker;
+                    BasePlayer victim;                    if (!info?.Initiator is BasePlayer) return;
+                    if(!entity is BasePlayer) return;                    attacker = info?.Initiator?.ToPlayer();
+                    victim = entity.ToPlayer();                    if(!humanityData.playerH.ContainsKey(attacker.userID)) OnPlayerInit(attacker);
+                    if(!humanityData.playerH.ContainsKey(victim.userID)) OnPlayerInit(victim);
+                    if(humanityData.playerH[victim.userID].Rank == 0 || humanityData.playerH[victim.userID].Rank == 1)
+                    {
+                        humanityData.playerH[attacker.userID].Humanity = humanityData.playerH[attacker.userID].Humanity - Convert.ToInt32(Config[&quot;HumanityLossGainOnKill&quot;]);
+                        CheckStats(attacker);
+                        SaveData();
+                        return;
+                    }
+                    if(humanityData.playerH[victim.userID].Rank == 2)
+                    {
+                        humanityData.playerH[attacker.userID].Humanity = humanityData.playerH[attacker.userID].Humanity + Convert.ToInt32(Config[&quot;HumanityLossGainOnKill&quot;]);
+                        CheckStats(attacker);
+                        SaveData();
+                        return;
+                    }
+                }
+            }
+            catch(System.Exception)
+            {return;}
+        }</pre>{% endraw %}
+                        </div>Rank: 0 - Neutral<br /> Rank: 1 - Hero<br /> Rank: 2 - Bandit<br />
+                        <br /> Data:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        class HumanityData
+        {
+            public Dictionary&lt;ulong, players&gt; playerH = new Dictionary&lt;ulong, players&gt;();
+            public HumanityData(){}
+        }           class players
+        {
+            public string playerName;
+            public ulong playerID;
+            public int Humanity;
+            public int Rank;
+            public players(){}
+        }</pre>{% endraw %}
+                        </div>For some reason when a player kills a bandit it does not lower his humanity. And im not sure about gaining humanity(killing a bandit). <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 9, 2016 at 8:50 PM">Jul 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226190/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226227" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am not really sure what could be wrong but I cleaned your code a little bit (in my opinion this is
+                        cleaner)<br />
+                        <br /> I might have gotten you way to decrease / increase humanity wrong though.<br /> I thought you wanna give + humanity for killing bandits and - humanity for killing
+                        innocent people or heroes.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        static HumanityData humanityData = new HumanityData();        class HumanityData
+        {
+            public Dictionary&lt;ulong, players&gt; playerH = new Dictionary&lt;ulong, players&gt;();
+            public HumanityData() { }
+        }        class players
+        {
+            public string playerName;
+            public ulong playerID;
+            public int Humanity;
+            public int Rank;
+            public players() { }            internal static players Find(BasePlayer player)
+            {
+                return humanityData.playerH.Values.First((d) =&gt; d.playerID == player.userID);
+            }
+        }        void OnEntityDeath(BaseCombatEntity victimEntity, HitInfo info)
+        {
+            if (info?.Initiator?.ToPlayer() != null &amp;&amp; victimEntity?.ToPlayer() != null)
+            {
+                BasePlayer victim = victimEntity.ToPlayer();
+                BasePlayer attacker = info.Initiator.ToPlayer();                if (players.Find(victim) == null)
+                    OnPlayerInit(victim);                if (players.Find(attacker) == null)
+                    OnPlayerInit(attacker);                players victimData = players.Find(victim);
+                players attackerData = players.Find(victim);                if (victimData.Rank == 0 || victimData.Rank == 1)
+                {
+                    attackerData.Humanity -= Convert.ToInt32(Config[&quot;HumanityLossGainOnKill&quot;]);
+                    CheckStats(attacker);
+                    SaveData();
+                }
+                else if (victimData.Rank == 2)
+                {
+                    attackerData.Humanity += Convert.ToInt32(Config[&quot;HumanityLossGainOnKill&quot;]);
+                    CheckStats(attacker);
+                    SaveData();
+                }
+            }
+        }        void OnPlayerInit(BasePlayer player)
+        {
+            // Do your stuff
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226227' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 9, 2016 at 10:01 PM">Jul 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226227' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/226227/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226259" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I will try that. Thanks for the response!<br /> [DOUBLEPOST=1468102961][/DOUBLEPOST]Hey so do you have any idea
+                        how I would fix the problem where people can see names through walls with this code? I have a idea but I think it would cause some server lag.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void CheckDis()
+        {
+            try
+            {
+                foreach(var player in BasePlayer.activePlayerList)
+                {
+                    BasePlayer nearbyP = null;
+                        List&lt;BaseEntity&gt; nearby = new List&lt;BaseEntity&gt;();
+                        Vis.Entities(player.transform.position, 20, nearby);
+                        foreach (var ent in nearby)              
+                            if (ent is BasePlayer)
+                                nearbyP = ent.ToPlayer();
+                                DrawChatMessage(player, nearbyP);
+                }
+                timer.Once(1, () =&gt; CheckDis());
+            }
+            catch(System.Exception)
+            {
+                return;
+            }
+        }        void DrawChatMessage (BasePlayer player, BasePlayer nearby)
+        {
+            try
+            {
+                var rankname = &quot;&quot;;
+                if(humanityData.playerH[player.userID].Rank == 0)
+                {
+                    rankname = &quot;Neutral&quot;;
+                }
+                else if(humanityData.playerH[player.userID].Rank == 1)
+                {
+                    rankname = &quot;Hero&quot;;
+                }
+                else if(humanityData.playerH[player.userID].Rank == 2)
+                {
+                    rankname = &quot;Bandit&quot;;
+                }
+                else
+                {
+                    OnPlayerInit(player);
+                    return;
+                }    
+                var ranknamex = &quot;[test]&quot;;
+                var lastMessage = ranknamex.Replace(&quot;test&quot;, rankname); 
+                Color messageColor = new Color(1,1,1,1);
+                   
+                nearby.SendConsoleCommand(&quot;ddraw.text&quot;, 0.1f, messageColor, player.transform.position + new Vector3(0, 1.9f, 0),&quot;&lt;size=25&gt;&quot; + lastMessage + &quot;&lt;/size&gt;&quot;);
+                timer.Repeat(0.1f, 1, () =&gt;
+                {
+                    nearby.SendConsoleCommand(&quot;ddraw.text&quot;, 0.1f, messageColor, player.transform.position + new Vector3(0, 1.9f, 0),&quot;&lt;size=25&gt;&quot; + lastMessage + &quot;&lt;/size&gt;&quot;);
+                });
+            }
+            catch(System.Exception)
+            {
+                return;
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226259' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 9, 2016 at 11:11 PM">Jul 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226259' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/226259/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226330" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I was thinking of a players eye sight but idk yet <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226330' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 12:12 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226330' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/226330/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226591" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-226330" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I was thinking of a players eye sight but idk yet</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I am not sure right now but somewhere in BaseEntity or BasePlayer there is something like IsVisible()<br /> You should try that. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226591' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 7:57 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226591' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/226591/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226740" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-226591" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I am not sure right now but somewhere in BaseEntity or BasePlayer there is something like IsVisible()<br /> You should try that.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yup I will when I get home. Starting the drive home tomorrow <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226740' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 2:24 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/humanity-not-lowering-as-it-should.19385/#post-226740' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/226740/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

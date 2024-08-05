@@ -1,0 +1,365 @@
+---
+layout: forums
+title: 'Rust Legacy - Log or block?'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Rust Legacy</span> <a href="{{ '/threads/log-or-block.14339/' | prepend: site.baseurl }}">Log or block?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">kaku924</a>, <a href="{{ '/threads/log-or-block.14339/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 8, 2016 at 1:06 AM">Jan 8, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-160614" class="message" data-author="kaku924">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kaku924" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kaku924</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi, im alredy ask about a cmd log, but now i want to be more specific, i want to give rcon to some Admins (who
+                        have some permissions), but i dont want to give the give (xD) permission, or log ALL the /give call (im using VeGive and i know the plugin has a permission but the
+                        inv.giveplayer and inv.giveall isnt of VeGive and run on rcon)<br />
+                        <br /> Can somebody guide me? thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kaku924</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Jan 8, 2016 at 1:06 AM">Jan 8,
+                                2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160614/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160622" class="message" data-author="Pilatus9">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pilatus9" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pilatus9</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Open the VeGive.cs after press CTRL + F and paste &quot;bool hasAccess(NetUser netuser)&quot; without the
+                        quotes.<br />
+                        <br />
+                        <b>Delete:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool hasAccess(NetUser netuser)
+        {
+            if (netuser.CanAdmin()) { return true; }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;cangive&quot;))
+            {
+                return true;
+            }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;all&quot;))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }</pre>{% endraw %}
+                        </div><b>Put:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool hasAccess(NetUser netuser)
+        {
+            if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;cangive&quot;))
+            {
+                return true;
+            }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;all&quot;))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }</pre>{% endraw %}
+                        </div>Now only give the permission &quot;cangive&quot; or &quot;all&quot; for who you want to give permission to use /give<br />
+                        <br /> grant user playername cangive<br />
+                        <br /> Should work! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pilatus9</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/#post-160622' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2016 at 1:13 AM">Jan 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/#post-160622' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160622/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160634" class="message" data-author="kaku924">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kaku924" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kaku924</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Pilatus9">
+                            <aside>
+                                <div class="attribution type">Pilatus9 said: <a href="#post-160622" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Open the VeGive.cs after press CTRL + F and paste &quot;bool hasAccess(NetUser netuser)&quot; without the quotes.<br />
+                                        <br />
+                                        <b>Delete:</b><br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>bool hasAccess(NetUser netuser)
+        {
+            if (netuser.CanAdmin()) { return true; }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;cangive&quot;))
+            {
+                return true;
+            }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;all&quot;))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }</pre>{% endraw %}
+                                        </div><b>Put:</b><br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>bool hasAccess(NetUser netuser)
+        {
+            if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;cangive&quot;))
+            {
+                return true;
+            }
+            else if (permission.UserHasPermission(netuser.playerClient.userID.ToString(), &quot;all&quot;))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }</pre>{% endraw %}
+                                        </div>Now only give the permission &quot;cangive&quot; or &quot;all&quot; for who you want to give permission to use /give<br />
+                                        <br /> grant user playername cangive<br />
+                                        <br /> Should work!
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>this work fine, but maybe u dont understand :/ what i want is block the RCON cmd, i mean if u have rcon but u dont have cangive you can use &quot;inv.giveplayer or
+                        inv.giveall&quot; on console.<br />
+                        <br />
+                        <br /> Thanks anyway <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kaku924</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/#post-160634' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2016 at 1:23 AM">Jan 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/#post-160634' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160634/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160635" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="kaku924">
+                            <aside>
+                                <div class="attribution type">kaku924 said: <a href="#post-160634" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">this work fine, but maybe u dont understand :/ what i want is block the RCON cmd, i mean if u have rcon but u dont have cangive you can use
+                                        &quot;inv.giveplayer or inv.giveall&quot; on console.<br />
+                                        <br />
+                                        <br /> Thanks anyway <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ll be porting my RCON Permissions plugin over when I get a chance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/#post-160635' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2016 at 1:24 AM">Jan 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/#post-160635' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160635/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160637" class="message" data-author="Pilatus9">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pilatus9" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pilatus9</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="kaku924">
+                            <aside>
+                                <div class="attribution type">kaku924 said: <a href="#post-160634" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">this work fine, but maybe u dont understand :/ what i want is block the RCON cmd, i mean if u have rcon but u dont have cangive you can use
+                                        &quot;inv.giveplayer or inv.giveall&quot; on console.<br />
+                                        <br />
+                                        <br /> Thanks anyway <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh sorry <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pilatus9</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/#post-160637' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2016 at 1:27 AM">Jan 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/#post-160637' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160637/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160656" class="message" data-author="kaku924">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kaku924" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kaku924</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-160635" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;ll be porting my RCON Permissions plugin over when I get a chance.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Really, okay i need just wait so, thanks again Wulf <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kaku924</a>,</span>
+                        <a href="{{ '/threads/log-or-block.14339/#post-160656' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 8, 2016 at 2:02 AM">Jan 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/log-or-block.14339/#post-160656' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160656/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,660 @@
+---
+layout: forums
+title: 'NullReferenceException: Object reference not set to an instance of an object'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/' | prepend: site.baseurl }}">NullReferenceException: Object reference not set to an
+            instance of an object</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">black
+            flame</a>, <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Nov 11, 2017 at 3:13 AM">Nov 11, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-365734" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How can i access the `public string lastMessage` in Foo.cs from Bar.js?<br />
+                        <b><br /> Foo.cs</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: Barnamespace Oxide.Plugins
+{
+    [Info(&quot;Foo&quot;, &quot;Game Limits&quot;, &quot;1.0.6&quot;)]    public class Foo : RustPlugin
+    {
+        public Bar bar = new Bar();
+        public string lastMessage = &quot;&quot;;
+       
+        void Init()
+        {
+            bar.Setup(this);
+        }
+       
+        public void Print()
+        {
+            Puts(lastMessage);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div><b>Bar.cs</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Bar&quot;, &quot;Game Limits&quot;, &quot;1.0.0&quot;)]    public class Bar : RustPlugin
+    {
+        Foo foo;
+       
+        public void Setup(Foo foo)
+        {
+            this.foo = foo;
+        }
+       
+        object OnPlayerChat(ConsoleSystem.Arg arg)
+        {
+            foo.lastMessage = &quot;test&quot;;
+            foo.Print();
+           
+            return false;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Failed to call hook 'OnPlayerChat' on plugin 'Bar v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.Bar.OnPlayerChat (.Arg arg) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Bar.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:13 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365734/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365735" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can&#039;t as far as I know, it&#039;d need to a method. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365735' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:15 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365735' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365735/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365739" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It seems that foo is null when called from the event OnPlayerChat. I dont realy get what you mean that it needs
+                        to a method? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365739' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:25 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365739' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365739/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365742" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="black flame">
+                            <aside>
+                                <div class="attribution type">black flame said: <a href="#post-365739" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It seems that foo is null when called from the event OnPlayerChat. I dont realy get what you mean that it needs to a method?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;re trying to grab variable, not a method. A variable isn&#039;t a method. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365742' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:34 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365742' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365742/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365746" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365742" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;re trying to grab variable, not a method. A variable isn&#039;t a method.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Do you mean this variable `foo.lastMessage = &quot;test&quot;;` lastMessage or foo ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365746' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:57 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365746' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365746/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365747" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="black flame">
+                            <aside>
+                                <div class="attribution type">black flame said: <a href="#post-365746" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Do you mean this variable `foo.lastMessage = &quot;test&quot;;` lastMessage or foo ?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>lastMessage is the variable. bar can&#039;t get foo&#039;s variables unless they are wrapped in a method that returns each.<br />
+                        <br /> Example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>string LastMessage() =&gt; this.lastMessage;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365747' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 3:59 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365747' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365747/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365749" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365747" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">lastMessage is the variable. bar can&#039;t get foo&#039;s variables unless they are wrapped in a method that returns each.<br />
+                                        <br /> Example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>string LastMessage() =&gt; this.lastMessage;</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I mean, even when i call just the mehods, this.foo is null when accessed from an event.<br />
+                        <br /> `Testing B wheeee` will get printed every 5 seconds. However, when typing it says `Is null`.<br />
+                        <br /> (I havent touched C# for like 6 years, i am more of a NodeJS guy, but still want to figure out what is happening).<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Bar&quot;, &quot;Game Limits&quot;, &quot;1.0.2&quot;)]    public class Bar : RustPlugin
+    {
+        Foo foo;
+      
+        public void Setup(Foo foo)
+        {
+            this.foo = foo;
+          
+            timer.Repeat(5f, 0, () =&gt;
+            {
+                if (foo == null) {
+                    Puts(&quot;Is null&quot;);
+                } else {
+                    foo.Print(&quot;Testing B wheeee&quot;);
+                }
+            });
+        }
+      
+        object OnPlayerChat(ConsoleSystem.Arg arg)
+        {
+            if (foo == null) {
+                Puts(&quot;Is null&quot;);
+                return false;
+            }
+          
+            foo.Print(&quot;Testing A wheeee&quot;);
+          
+            return false;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365749' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 4:12 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365749' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365749/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365750" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="black flame">
+                            <aside>
+                                <div class="attribution type">black flame said: <a href="#post-365749" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I mean, even when i call just the mehods, this.foo is null when accessed from an event.<br />
+                                        <br /> `Testing B wheeee` will get printed every 5 seconds. However, when typing it says `Is null`.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;Bar&quot;, &quot;Game Limits&quot;, &quot;1.0.2&quot;)]    public class Bar : RustPlugin
+    {
+        Foo foo;
+    
+        public void Setup(Foo foo)
+        {
+            this.foo = foo;
+        
+            timer.Repeat(5f, 0, () =&gt;
+            {
+                if (foo == null) {
+                    Puts(&quot;Is null&quot;);
+                } else {
+                    foo.Print(&quot;Testing B wheeee&quot;);
+                }
+            });
+        }
+    
+        object OnPlayerChat(ConsoleSystem.Arg arg)
+        {
+            if (foo == null) {
+                Puts(&quot;Is null&quot;);
+                return false;
+            }
+        
+            foo.Print(&quot;Testing A wheeee&quot;);
+        
+            return false;
+        }
+    }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Considering that the code you showed me there has nothing set for foo, then I imagine it would be null. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365750' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 4:13 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365750' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365750/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365751" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-365750" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Considering that the code you showed me there has nothing set for foo, then I imagine it would be null. <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well, i have set it to `this`. That is why i am really confused about what is going on <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1"
+                            alt=":)" title="Smile    :)" /><br />
+                        <br /> See: bar.Setup(this);<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Requires: Barnamespace Oxide.Plugins
+{
+    [Info(&quot;Foo&quot;, &quot;Game Limits&quot;, &quot;1.0.0&quot;)]    public class Foo : RustPlugin
+    {
+        public Bar bar = new Bar();
+      
+        void Init()
+        {
+            bar.Setup(this);
+        }
+      
+        public void Print(string str)
+        {
+            Puts(&quot;Message: &quot; + str);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365751' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 4:15 AM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365751' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365751/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365890" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Make it static <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365890' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 5:17 PM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365890' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365890/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-365968" class="message" data-author="black flame">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="black flame" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">black flame</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan">
+                            <aside>
+                                <div class="attribution type">Ryan said: <a href="#post-365890" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Make it static</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yep, that is what i did <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Still wondering why it happens tho :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">black flame</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365968' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Nov 11, 2017 at 7:43 PM">Nov 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-object-reference-not-set-to-an-instance-of-an-object.28080/#post-365968' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/365968/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

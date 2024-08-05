@@ -1,0 +1,307 @@
+---
+layout: forums
+title: 'Solved - Cui image rendering'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/cui-image-rendering.17962/' | prepend: site.baseurl }}">Cui image rendering</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">IŊŦΣCҴ¤Ŋ</a>, <a href="{{ '/threads/cui-image-rendering.17962/' | prepend: site.baseurl }}"><span class="DateTime" title="May 12, 2016 at 12:07 PM">May 12, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-205171" class="message" data-author="IŊŦΣCҴ¤Ŋ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="IŊŦΣCҴ¤Ŋ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">IŊŦΣCҴ¤Ŋ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Good day,<br />
+                        <br /> I am currently creating a GUI for my plugin and are having some rendering issues. I currently have an element on my UI that displays an image and block (progress bar
+                        like) [doing something similar to zLevels with a percentage that goes up].<br />
+                        <br /> Now, the problem I am having is that when the progress bar is suppose to update and I destroy and render the UI it creates a block where the image is for a split second
+                        before rendering it properly.<br />
+                        <br />
+                        <a href="http://steamcommunity.com/sharedfiles/filedetails/?id=682776888" target="_blank" class="externalLink  rel=" nofollow">Steam Community :: Screenshot</a> is how it looks
+                        after the render has completed, but as the UI should update each time a player gathers something it renders like <a
+                            href="http://steamcommunity.com/sharedfiles/filedetails/?id=682776829" target="_blank" class="externalLink  rel=" nofollow">Steam Community :: Screenshot</a> for a short
+                        period of time.<br />
+                        <br /> Below is the code that is used to render the UI which is called at OnDispencerGather:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    private void ProfessionRenderUI(BasePlayer player, string pName) {
+      Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt; uiFrameData = new Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt;();
+      uiFrameData[&quot;Gathering&quot;] = new Dictionary&lt;string, string&gt;();
+      uiFrameData[&quot;Gathering&quot;][&quot;Frame&quot;] = &quot;uiProfessionGathering&quot;;
+      uiFrameData[&quot;Gathering&quot;][&quot;Color&quot;] = &quot;0.1 0.1 0.1 0.9&quot;;
+      uiFrameData[&quot;Gathering&quot;][&quot;RTMin&quot;] = &quot;0.7 0.126&quot;; // left, bottom
+      uiFrameData[&quot;Gathering&quot;][&quot;RTMax&quot;] = &quot;0.8175 0.1625&quot;; // right, top
+      uiFrameData[&quot;Gathering&quot;][&quot;PRBar&quot;] = &quot;1 0 0 0.75&quot;;      uiFrameData[&quot;Harvesting&quot;] = new Dictionary&lt;string, string&gt;();
+      uiFrameData[&quot;Harvesting&quot;][&quot;Frame&quot;] = &quot;uiProfessionHarvesting&quot;;
+      uiFrameData[&quot;Harvesting&quot;][&quot;Color&quot;] = &quot;0.1 0.1 0.1 0.9&quot;;
+      uiFrameData[&quot;Harvesting&quot;][&quot;RTMin&quot;] = &quot;0.7 0.087&quot;;
+      uiFrameData[&quot;Harvesting&quot;][&quot;RTMax&quot;] = &quot;0.8175 0.1215&quot;;
+      uiFrameData[&quot;Harvesting&quot;][&quot;PRBar&quot;] = &quot;0 0 1 0.75&quot;;      if (!uiFrameData.ContainsKey(pName)) {
+        SendReply(player, pName);
+        return;
+      }      CuiHelper.DestroyUi(player, uiFrameData[pName][&quot;Frame&quot;]);      var elements = new CuiElementContainer();
+      var mainName = elements.Add(new CuiPanel {
+        Image = {
+          Color = uiFrameData[pName][&quot;Color&quot;]
+        },
+        RectTransform = {
+          AnchorMin = uiFrameData[pName][&quot;RTMin&quot;],
+          AnchorMax = uiFrameData[pName][&quot;RTMax&quot;],
+        }
+      }, &quot;HUD/Overlay&quot;, uiFrameData[pName][&quot;Frame&quot;]);      var uiIcon = new CuiElement {
+        Name = CuiHelper.GetGuid(),
+        Parent = uiFrameData[pName][&quot;Frame&quot;],
+        Components = {
+          new CuiRawImageComponent {
+            Url = &quot;http://i.imgur.com/CJihxEt.png&quot;,
+            Color = &quot;0.47 0.48 0.49 1&quot;
+          },
+          new CuiRectTransformComponent {
+            AnchorMin = &quot;0.035 0.15&quot;, AnchorMax = &quot;0.15 0.85&quot;
+          }
+        }
+      };
+      elements.Add(uiIcon);      long eMax = 1500;
+      long.TryParse(Config[&quot;ExperienceMax&quot;].ToString(), out eMax);      double pProgress = 0.25;
+      if (pProfessionData[player.userID].ContainsKey(pName)) {
+        pProgress = (0.725 * ((double)pProfessionData[player.userID][pName] / (double)eMax)) + 0.25;
+      }      var uiProgress = new CuiElement {
+        Name = CuiHelper.GetGuid(),
+        Parent = uiFrameData[pName][&quot;Frame&quot;],
+        Components = {
+          new CuiImageComponent { Color = uiFrameData[pName][&quot;PRBar&quot;] },
+          new CuiRectTransformComponent { AnchorMin = &quot;0.25 0.15&quot;, AnchorMax = pProgress.ToString() + &quot; 0.85&quot; }
+        }
+      };
+      elements.Add(uiProgress);      CuiHelper.AddUi(player, elements);
+    }</pre>{% endraw %}
+                        </div>Any advice on how I should go about to resolve the issue would be appreciated.<br />
+                        <br /> Regards <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">IŊŦΣCҴ¤Ŋ</a>,</span>
+                        <a href="{{ '/threads/cui-image-rendering.17962/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 12, 2016 at 12:07 PM">May 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-image-rendering.17962/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205171/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205190" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I actually figured this out at once point but I forget how I did it. I will have to go through my plugins and find
+                        it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/cui-image-rendering.17962/#post-205190' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 12, 2016 at 1:45 PM">May 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-image-rendering.17962/#post-205190' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205190/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205233" class="message" data-author="IŊŦΣCҴ¤Ŋ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="IŊŦΣCҴ¤Ŋ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">IŊŦΣCҴ¤Ŋ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just an update for others coming across the same problem on how I was able to get past this problem.<br />
+                        <br /> I created two containers. <br />
+                        <br /> One is rendered/destroyed once. I am currently using the plugin Init function (for testing) to render it. In the end I would probably render it once with OnPlayerInit
+                        and destroy in OnPlayerDisconnected.<br />
+                        <br /> The second ui is destroyed and rendered each time I want the bars to update. Still need to test it with text in it which is the next part <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Marking as solved as it is the only way I have found so far to make it work as intended.<br />
+                        <br /> Thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">IŊŦΣCҴ¤Ŋ</a>,</span>
+                        <a href="{{ '/threads/cui-image-rendering.17962/#post-205233' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 12, 2016 at 4:02 PM">May 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-image-rendering.17962/#post-205233' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205233/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205284" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="IŊŦΣCҴ¤Ŋ">
+                            <aside>
+                                <div class="attribution type">IŊŦΣCҴ¤Ŋ said: <a href="#post-205233" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just an update for others coming across the same problem on how I was able to get past this problem.<br />
+                                        <br /> I created two containers.<br />
+                                        <br /> One is rendered/destroyed once. I am currently using the plugin Init function (for testing) to render it. In the end I would probably render it once with
+                                        OnPlayerInit and destroy in OnPlayerDisconnected.<br />
+                                        <br /> The second ui is destroyed and rendered each time I want the bars to update. Still need to test it with text in it which is the next part <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                                        <br /> Marking as solved as it is the only way I have found so far to make it work as intended.<br />
+                                        <br /> Thanks</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There&#039;s another way to fix it. I highlighted the fix and some other stuff regarding images in UI elements here: <a
+                            href="http://oxidemod.org/threads/cuihelper-hide-update-instead-of-remove.13723/#post-154589" class="internalLink">Cuihelper hide/update instead of remove | Oxide</a><br />
+                        <br /> Most, if not all, should still work today! Hope that helps. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/cui-image-rendering.17962/#post-205284' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 12, 2016 at 7:06 PM">May 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-image-rendering.17962/#post-205284' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205284/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205320" class="message" data-author="IŊŦΣCҴ¤Ŋ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="IŊŦΣCҴ¤Ŋ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">IŊŦΣCҴ¤Ŋ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-205284" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">There&#039;s another way to fix it. I highlighted the fix and some other stuff regarding images in UI elements here: <a
+                                            href="http://oxidemod.org/threads/cuihelper-hide-update-instead-of-remove.13723/#post-154589" class="internalLink">Cuihelper hide/update instead of remove |
+                                            Oxide</a><br />
+                                        <br /> Most, if not all, should still work today! Hope that helps. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                                            title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for point that out. It does help to not flash to the color of the image (the silver color in the picture). It does however flash to a transparent image if the Gui
+                        is destroyed and rendered. But it is a massive improvement.<br />
+                        <br /> I have gone the route to have each box consist of 3 panels (CuiPanel). The container (or out box) parented to the HUD/Overlay and then 1 panel for the icon and one panel
+                        for the progress bar (both parented to the container).<br />
+                        <br /> Thus when ever I need to update my UI all I do is re-render the panel for the progress bar. This ends up with not having the image in the icon panel flash when ever it
+                        happens.<br />
+                        <br /> My previous approach for some reason kept throwing out rpc gui errors while in game and causing me to crash. This so far seems to work pretty well. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">IŊŦΣCҴ¤Ŋ</a>,</span>
+                        <a href="{{ '/threads/cui-image-rendering.17962/#post-205320' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 12, 2016 at 8:20 PM">May 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cui-image-rendering.17962/#post-205320' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/205320/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

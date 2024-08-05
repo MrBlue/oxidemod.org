@@ -1,0 +1,555 @@
+---
+layout: forums
+title: 'Customizing deployable or making dropped item not disappear?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/' | prepend: site.baseurl }}">Customizing deployable or making dropped item not disappear?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Aug 8, 2017 at 6:26 PM">Aug 8, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-343455" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ok, so let&#039;s say I have a tool cupboard and I want it to look different from the over ones. The simple way -
+                        skin - wouldn&#039;t work here, as the tool cupboards doesn&#039;t have a skins.<br /> So I was thinking about creating some worlditem on top of it. It was easy - this way was
+                        already discussed somewhere on the forum - so, here is a simplifyed code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;uint, DroppedItem&gt; entites = new Dictionary&lt;uint, DroppedItem&gt;();
+void OnHammerHit(BasePlayer player, HitInfo info)
+{
+    if (!entites.ContainsKey(entity.net.ID))
+    {
+        DroppedItem item = ItemManager.CreateByItemID(-1224598842, 1, 962868059)
+            .Drop(entity.transform.position + Vector3.up * 2, Vector3.zero, entity.transform.rotation)
+            .GetComponent&lt;DroppedItem&gt;();
+        item.GetComponent&lt;Rigidbody&gt;().isKinematic = true;
+        item.GetComponent&lt;Rigidbody&gt;().useGravity = false;
+        item.allowPickup = false;
+        entites.Add(entity.net.ID, item);
+        return;
+    }
+    entites[entity.net.ID].Kill();
+    entites.Remove(entity.net.ID);
+}</pre>{% endraw %}
+                        </div>And everything is cool, the item spawns etc, but.... after server restart it just drops to the ground. And after some time (server.itemdespawn) it would dissaper like a
+                        normal item.<br /> So - my question is here - How can I make them stay, or is there any over way to make it looks different?<br /> P.S. And please - don&#039;t tell me to add
+                        supply signal smoke effeect to it. It looks wierd and this cups would be easily detected by over players =) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 6:26 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343455/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343465" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>item.CancelInvoke(&quot;IdleDestroy&quot;);</pre>{% endraw %}
+                        </div> should work to fix the despawn time. When it drops on server reset, I assume that is because the server is just recreating the item, and not retaining its rigidbody. So
+                        you would probably have to remove it on unload, and spawn them on Loaded(with some data file saving the ones needing to be respawned over server restart) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343465' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 7:28 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343465' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343465/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343466" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>DroppedItem worldModel = ent.GetComponent&lt;DroppedItem&gt;();
+worldModel.CancelInvoke((Action)Delegate.CreateDelegate(typeof(Action), worldModel, &quot;IdleDestroy&quot;));</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343466' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:03 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343466' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343466/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343467" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="miRror">
+                            <aside>
+                                <div class="attribution type">miRror said: <a href="#post-343466" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">DroppedItem worldModel = ent.GetComponent&lt;DroppedItem&gt;();<br /> worldModel.CancelInvoke((Action)Delegate.CreateDelegate(typeof(Action),
+                                        worldModel, &quot;IdleDestroy&quot;));</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hey, CancleInvoke! Good itea! Didn&#039;t thought about it before.... <br /> also - why do you create delegate? why can&#039;t just cansle invoke by the method name? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343467' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:08 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343467' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343467/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343468" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-343467" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hey, CancleInvoke! Good itea! Didn&#039;t thought about it before....<br /> also - why do you create delegate? why can&#039;t just cansle invoke
+                                        by the method name?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Только таким способом работает. Остальные не прерывают выполнение метода. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343468' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:10 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343468' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343468/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343469" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Also - this would be resetted on each resart, as far as I can tell, so this is not the solution that could work
+                        for me.... Or am I wrong?<br /> [DOUBLEPOST=1502219426][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="miRror">
+                            <aside>
+                                <div class="attribution type">miRror said: <a href="#post-343468" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Только таким способом работает. Остальные не прерывают выполнение метода.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Got it. Thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343469' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:10 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343469' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343469/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343470" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="miRror">
+                            <aside>
+                                <div class="attribution type">miRror said: <a href="#post-343468" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Только таким способом работает. Остальные не прерывают выполнение метода.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>English please. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343470' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:11 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343470' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343470/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343471" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-343469" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Also - this would be resetted on each resart, as far as I can tell, so this is not the solution that could work for me.... Or am I wrong?<br />
+                                        [DOUBLEPOST=1502219426][/DOUBLEPOST]<br /> Got it. Thanks!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It may be necessary in OnServerInitialized go through all droppeditems and again to reset the timer <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343471' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 8, 2017 at 8:37 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343471' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343471/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343578" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="miRror">
+                            <aside>
+                                <div class="attribution type">miRror said: <a href="#post-343471" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It may be necessary in OnServerInitialized go through all droppeditems and again to reset the timer</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Then how I can save them? Or is there any way to find items by thier net id?<br /> Cos saving item net id is the only way to save entities, as far as I can see <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 9, 2017 at 8:57 AM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343578' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343578/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343607" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">When timer disabled, dropped items with server.itemdespawn 1000 after restart disappear too? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343607' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 9, 2017 at 1:01 PM">Aug 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343607' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343607/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343766" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">DroppedItem has no Profobuf =&gt; not in the save.<br /> Like it intended by the game..Only a small side-Note <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343766' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 10, 2017 at 1:05 AM">Aug 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343766' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343766/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343770" class="message" data-author="serezhadelaet">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="serezhadelaet" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">serezhadelaet</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-343578" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Then how I can save them? Or is there any way to find items by thier net id?<br /> Cos saving item net id is the only way to save entities, as
+                                        far as I can see</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>For save them, you don&#039;t need net.ID <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">serezhadelaet</a>,</span>
+                        <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343770' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 10, 2017 at 1:35 AM">Aug 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/customizing-deployable-or-making-dropped-item-not-disappear.26730/#post-343770' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343770/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

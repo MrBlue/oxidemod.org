@@ -1,0 +1,373 @@
+---
+layout: forums
+title: 'InvalidCastException: Help me please'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/' | prepend: site.baseurl }}">InvalidCastException: Help me please</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CoreSails</a>, <a href="{{ '/threads/invalidcastexception-help-me-please.15705/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 13, 2016 at 1:14 AM">Feb 13,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-176043" class="message" data-author="CoreSails">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CoreSails" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CoreSails</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>   private Vector3 position;
+   private float distance;
+void Init()
+        {
+            position = new Vector3((float) Config.Get(&quot;alterX&quot;), (float) Config.Get(&quot;alterY&quot;), (float) Config.Get(&quot;alterZ&quot;));  //Sets the mecca point
+            distance = (float) Config.Get(&quot;prayerDistance&quot;);  // sets the distance you need to be within to /pray
+        
+            Puts(&quot;[Plugin] Mecca Initialized!&quot;);
+        }
+[ChatCommand(&quot;pray&quot;)]
+        void PrayCommand(BasePlayer player, string command, string[] args)
+        {
+            var list = new List&lt;BaseEntity&gt;();
+             Vis.Entities&lt;BaseEntity&gt;(position, distance, list); //Gets every entity with in this parameter
+              foreach (var entity in list)
+              {
+                  if(player.name == entity.ToPlayer().name) //Looks for an entity with players name
+                  {
+                      SendChatMessage(player, (string)Config[&quot;Title&quot;], (string)Config[&quot;Message&quot;]);
+                      player.inventory.GiveItem(ItemManager.CreateByName((string)Config[&quot;prize&quot;],1)); //gives c4 for praying configurable
+                  }
+              }
+  
+        }
+</pre>{% endraw %}
+                        </div>I&#039;m getting this<br />
+                        <br /> [2/12/2016 7:59:54 PM] [Oxide] 7:59 PM [Error] Failed to initialize plugin &#039;Mecca v0.0.4&#039; (InvalidCastException: Cannot cast from source type to destination
+                        type.)<br />
+                        <br /> I can&#039;t figure out where I messed up I really would appreciate some help.<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>   void SendChatMessage(BasePlayer player, string prefix, string msg = null) =&gt; SendReply(player, msg == null ? prefix : &quot;&lt;color=#00FF8D&gt;&quot; + prefix + &quot;&lt;/color&gt;: &quot; + msg);</pre>{% endraw %}
+                        </div>That&#039;s the SendChatMessage, That works fine because my /loc command works which is this<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+  [ChatCommand(&quot;loc&quot;)]
+        void LocCommand(BasePlayer player, string command, string[] args)
+        {
+      
+            var x = player.transform.position.x.ToString();
+            var y = player.transform.position.y.ToString();
+            var z = player.transform.position.z.ToString();
+            SendChatMessage(player, (string)Config[&quot;Title&quot;], &quot;Your Location is: ( X: &quot; + x + &quot; Y: &quot; + y + &quot; Z: &quot; + z + &quot;)&quot;);
+        }
+</pre>{% endraw %}
+                        </div>If I had to guess the cause I would say it&#039;s saying I can&#039;t use a float for a vector like such.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>position = new Vector3((float) Config.Get(&quot;alterX&quot;), (float) Config.Get(&quot;alterY&quot;), (float) Config.Get(&quot;alterZ&quot;));  //Sets the mecca point</pre>{% endraw %}
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-176046" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well, to start with, player is already a player, so you do not need to cast it to a player again.<br />
+                                        <br />
+                                        <br /> It may be a custom one, because it isn&#039;t being used from Oxide&#039;s library, as you&#039;d need to prefix with rust. for that.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I fixed the player.ToPlayer() I&#039;m dumb for not noticing that. But thanks for pointing that out but that did not fix my problem.<br />
+                        <br /> My Console printout<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[Oxide] 8:38 PM [Debug]   at Oxide.Plugins.Mecca.Init () [0x00000] in &lt;filename
+unknown&gt;:0
+  at Oxide.Plugins.Mecca.DirectCallHook (System.String name, System.Object&amp; ret,
+System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo metho
+d, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[]
+args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.HandleAddedToManager (Oxide.Core.Plugins.Plugin
+Manager manager) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 13, 2016 at 1:52 AM">Feb 13, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CoreSails</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:14 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/176043/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176044" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Does SendChatMessage take a player and 2 strings? I don&#039;t know what the function is but you could try
+                        putting both your strings together<br /> SendChatMessage(player.ToPlayer(), (string)Config[&quot;Title&quot;] + (string)Config[&quot;Message&quot;]); <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176044' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:19 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176044' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176044/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176046" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well, to start with, player is already a player, so you do not need to cast it to a player again.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-176044" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Does SendChatMessage take a player and 2 strings? I don&#039;t know what the function is but you could try putting both your strings
+                                        together<br /> SendChatMessage(player.ToPlayer(), (string)Config[&quot;Title&quot;] + (string)Config[&quot;Message&quot;]);</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It may be a custom one, because it isn&#039;t being used from Oxide&#039;s library, as you&#039;d need to prefix with rust. for that. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176046' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:20 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176046' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176046/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176050" class="message" data-author="CoreSails">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CoreSails" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CoreSails</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Added to first post. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 13, 2016 at 1:53 AM">Feb 13, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CoreSails</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176050' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:30 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176050' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176050/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176053" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This is just a guess but you have player.inventory.GiveItem and the container set to 1?<br /> Does that work? I
+                        usually set the container<br /> player.inventory.containerBelt<br /> player.inventory.containerMain<br /> player.inventory.containerWear<br />
+                        <br /> edit sorry i misread, the 1 is the amount <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176053' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:38 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176053' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176053/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176057" class="message" data-author="CoreSails">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CoreSails" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CoreSails</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So I have 100% identified the cause is that The vector I&#039;m setting up Cant convert object to float how would
+                        I go around that <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CoreSails</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176057' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 1:59 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176057' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176057/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176061" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> try a parse or Convert.ToSingle(Config.Get(&quot;Key&quot;)) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176061' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 13, 2016 at 2:23 AM">Feb 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/invalidcastexception-help-me-please.15705/#post-176061' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176061/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

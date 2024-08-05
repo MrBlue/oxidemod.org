@@ -1,0 +1,473 @@
+---
+layout: forums
+title: '[GUIDE] How to develop on your local dev-machine'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/' | prepend: site.baseurl }}">[GUIDE] How to develop on your local dev-machine</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">FuJiCuRa</a>, <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 25, 2016 at 8:22 PM">Jun
+                25, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-219271" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi everybody,<br />
+                        <br /> i&#039;ve found it useful to share a small and fast solution to start your career as an succesful and <a href="http://www.dict.cc/englisch-deutsch/effective.html"
+                            target="_blank" class="externalLink  rel=" nofollow">effective</a> Rust plugin developer.<br />
+                        <br />
+                        <span style="text-decoration: underline">This Guide aims on the developing on your local Windows client.</span><br /> This guide is not intended to be used on a linux machine
+                        or on a remote server.<br /> It would <span style="text-decoration: underline">only</span> work on a remote &quot;<span style="text-decoration: underline">windows</span>&quot;
+                        server with full access to the machine (remote desktop or similar).<br />
+                        <br />
+                        <span style="text-decoration: underline">First of all, you need to get the server files into a folder on your client:</span><br /> For this i&#039;ve prepared the needed files
+                        and scripts:<br /> Download this archive to your client: <a href="http://s000.tinyupload.com/index.php?file_id=37157257105994218671" target="_blank" class="externalLink  rel="
+                            nofollow"><span style="color: #0000b3">RustDev.zip</span></a><br /> VirusTotal analysis to the file: <a
+                            href="https://www.virustotal.com/de/file/c194a68fa3d8c9c0e55a5e2aaee0f8fcb31c75ce1ea29daf21cb6349870c79d6/analysis/1466879405/" target="_blank" class="externalLink  rel="
+                            nofollow"><span style="color: #0000b3">RustDev-check-result</span></a><br /> As of the fact, that it consists of 3 executables, its always a good hint, to re-check any
+                        files by yourself which are provided on the web <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <br /> Once downloaded,create anywhere on the root of a drive a folder, for example &quot;RustDev&quot;, and extract the content of the archive to it.<br /> The result should
+                        look like this:<br />
+                        <img src="https://oxidemod.org/attachments/screenshot_14-png.23258/" alt="Screenshot_14.png" class="bbCodeImage LbImage" />
+                        <br /> Inside the folder &quot;_Updater&quot; you&#039;ll find this:<br />
+                        <img src="https://oxidemod.org/attachments/screenshot_1-png.23259/" alt="Screenshot_1.png" class="bbCodeImage LbImage" />
+                        <br /> On first start, you need to download the needed files, which is done by running &quot;<span style="text-decoration: underline">update.bat</span>&quot;.<br /> this file
+                        runs steamcmd to download first the steamfiles needed, and then it downloads the Rust server files to the folder &quot;<span
+                            style="text-decoration: underline">rustds</span>&quot;.<br /> Second it will download, unzip and patch your server-files with the current oxide version, and delete the
+                        downloaded Oxide-Rust.zip after being copied to &quot;rustds&quot;.<br /> The &quot;update.bat&quot; file consists of this code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>@echo off
+cls
+:startcd _Updater
+cd steam
+steamcmd.exe +runscript ../update_script.txt
+cd ..wget.exe -O oxide\Oxide-Rust.zip https://github.com/OxideMod/Snapshots/blob/master/Oxide-Rust.zip?raw=true
+7za.exe x oxide\Oxide-Rust.zip -oOxide\Oxide-Rust
+del oxide\Oxide-Rust.zip
+xcopy oxide\Oxide-Rust ..\rustds /e /y
+rd oxide\Oxide-Rust /s /q
+cd ..</pre>{% endraw %}
+                        </div>The result will look then like this in the folder &quot;<span style="text-decoration: underline">rustds</span>&quot;:<br />
+                        <img src="https://oxidemod.org/attachments/screenshot_2-png.23261/" alt="Screenshot_2.png" class="bbCodeImage LbImage" />
+                        <br />
+                        <br /> Now you would be ready to start your dev-server with the map &quot;<span style="text-decoration: underline">craggy-island</span>&quot; by running &quot;<span
+                            style="text-decoration: underline">run_craggy_dev.bat</span>&quot;<br /> This file has this content:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>@echo off
+cls
+:startcd rustds
+cls
+RustDedicated -batchmode -nographics +server.level &quot;CraggyIsland&quot; +server.hostname &quot;__Craggy DEV Server&quot; +server.identity &quot;craggy&quot; +server.maxplayers 5 +rcon.password &quot;12345&quot; +rcon.port 28016 +server.ip 0.0.0.0@echo.
+@echo Restarting server...
+@echo.
+cd ..
+goto start</pre>{% endraw %}
+                        </div><span style="text-decoration: underline">INFO </span>on starting local dev server: With current version it seems to be needed to start FIRST your Rust client and
+                        AFTERWARDS the server. Before the patches from June&#039;16 it was possible to start the client when server was running before. This seems atm not more possible.<br />
+                        <br /> The file &quot;<span style="text-decoration: underline">run_craggy_dev.bat</span>&quot; will always reload the server on commands like <span
+                            style="text-decoration: underline">restart </span>or <span style="text-decoration: underline">quit</span>, is its somtetimes needed to have a clean restart after
+                        you&#039;ve produced a loop or looping exceptions <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /><br /> A save exit to close the server/batch is best be done of using &quot;ctrl+c&quot; and to approve this with &quot;y&quot;.<br />
+                        <br /> Once the server and client are running, you can connect to your local server by hitting F1 and type into console: &quot;<span
+                            style="text-decoration: underline">client.connect 127.0.0.1:28015</span>&quot;<br />
+                        <br /> To give yourself ownerrights on your server, hit into serverconsole &quot;ownerid &lt;your steamid&gt;&quot; followed by &quot;<span
+                            style="text-decoration: underline">writecfg</span>&quot; and restart the server by &quot;<span style="text-decoration: underline">restart 0</span>&quot; or &quot;<span
+                            style="text-decoration: underline">quit</span>&quot;.<br />
+                        <br /> Your first plugin needs to be placed insde the right folder: <span style="text-decoration: underline"><i>RustDev\rustds\server\craggy\oxide\plugins</i></span><br />
+                        <br /> The need basic code for this will be found in the Oxide-docs: <a href="http://docs.oxidemod.org/rust/#getting-started" target="_blank" class="externalLink  rel="
+                            nofollow">Oxide API for Rust</a><br /> This simple example will look like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;EpicPlugin&quot;, &quot;Unknown&quot;, 0.1)]  // &lt;&lt; &quot;EpicPlugin is the name, needs your plugin name, obey the Capital letter at start
+    [Description(&quot;Makes epic stuff happen&quot;)]    class EpicPlugin : RustPlugin  // &lt;&lt; &quot;EpicPlugin needs to be changed to your plaugin name too
+    {
+        // The rest of the code and magic
+    }
+}</pre>{% endraw %}
+                        </div>&quot;Unknown&quot; should be replaced by your name you want to choose.<br /> This file needs to be saved inside the oxide\plugins folder, inm this example it must be
+                        called &quot;<span style="text-decoration: underline">EpicPlugin.cs</span>&quot;.<br />
+                        <br /> A good place to start would be the <a href="http://docs.oxidemod.org/rust/" target="_blank" class="externalLink  rel=" nofollow"><span style="color: #0059b3">Oxide API
+                                for Rust</span></a><br /> This should be your first source for getting conform with all the hooks which are available to be used to create your stuff you want to happen
+                        by your plugin.<br />
+                        <br /> A deeper dive into the hooks is the following page, but its usage would require a deeper knowlegde: <a
+                            href="https://github.com/OxideMod/Oxide/blob/master/Games/Unity/Oxide.Game.Rust/Rust.opj" target="_blank" class="externalLink  rel=" nofollow"><span
+                                style="color: #0059b3">GitHub Oxide.Game.Rust/Rust.opj</span></a><br />
+                        <br /> Second of all its always good to know the Unity-docs scriptreference: <a href="https://docs.unity3d.com/ScriptReference/index.html" target="_blank"
+                            class="externalLink  rel=" nofollow"><span style="color: #0059b3">Unity ScriptReference</span></a><br />
+                        <br /> Additonally its always a good practice to look into what others have created in their plugins. Most times another developer had used a similar function before, what
+                        could nearly that what you want to do. In my first days ongiong to develop, my beat source for learning C# was oxide itself and their lot of plugins, to show my the right
+                        direction, whats possible to do within.<br />
+                        <br /> Create yourself for the beginning a local plugin repository, and take this as your reference.<br /> This is best used with a grep-search tool. Those are able to search
+                        in complete texts and to show you on the results <a href="http://www.dict.cc/englisch-deutsch/in.html" target="_blank" class="externalLink  rel=" nofollow">in</a> <a
+                            href="http://www.dict.cc/englisch-deutsch/advance.html" target="_blank" class="externalLink  rel=" nofollow">advance</a> snippets/fragments, what simplifies it to
+                        identitfy/find the right code-fragments, you could try or need.<br /> Some example Grep-Tools:<br />
+                        <ul>
+                            <li><a href="https://sourceforge.net/projects/astrogrep/" target="_blank" class="externalLink  rel=" nofollow"><span style="color: #0059b3">AstroGrep</span></a></li>
+                            <li><a href="http://gnuwin32.sourceforge.net/packages/grep.htm" target="_blank" class="externalLink  rel=" nofollow"><span style="color: #0059b3">Grep for
+                                        Windows</span></a><br />
+                            </li>
+                            <li><a href="http://stefanstools.sourceforge.net/grepWin.html" target="_blank" class="externalLink  rel=" nofollow"><span style="color: #0059b3">GrepWin</span></a></li>
+                        </ul>sqroot did also write down a comprehensive link collection in <a href="http://oxidemod.org/threads/classes.18519/#post-213198" class="internalLink"><span
+                                style="color: #0059b3">this post</span></a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 28, 2016 at 2:49 AM">Jun 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2016 at 8:22 PM">Jun 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219271/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219661" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> - spacer - <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219661' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 27, 2016 at 7:46 AM">Jun 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219661' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219661/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219757" class="message" data-author="Sauron 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sauron 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sauron 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-219661" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">- spacer -</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>And also suggest to add information about libraries. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sauron 2</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219757' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 27, 2016 at 2:32 PM">Jun 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219757' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219757/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219758" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sauron 2">
+                            <aside>
+                                <div class="attribution type">Sauron 2 said: <a href="#post-219757" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">And also suggest to add information about libraries.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Still on the Task-List <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219758' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 27, 2016 at 2:38 PM">Jun 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219758' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219758/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219759" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sauron 2">
+                            <aside>
+                                <div class="attribution type">Sauron 2 said: <a href="#post-219757" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">And also suggest to add information about libraries.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://oxidemod.org/threads/classes.18519/#post-213198" class="internalLink">Classes | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219759' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 27, 2016 at 2:39 PM">Jun 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219759' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219759/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219958" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-219759" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="http://oxidemod.org/threads/classes.18519/#post-213198" class="internalLink">Classes | Oxide</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>One thing of the big picture <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> I think, additionally a
+                        quick guide for decompiling should be one right addtion to this.<br /> And debugging, how to dive into this, is almost some semtences worth, i think <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219958' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 28, 2016 at 1:43 AM">Jun 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-219958' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219958/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-220028" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-219958" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">One thing of the big picture <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                                        I think, additionally a quick guide for decompiling should be one right addtion to this.<br /> And debugging, how to dive into this, is almost some semtences
+                                        worth, i think <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I think we shouldn&#039;t need to teach people how to program, there are enough great resources for that matter.<br /> At this point I think one of the most lacking
+                        things is library documentation, which is best added via the Docs repo. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-220028' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 28, 2016 at 9:44 AM">Jun 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-220028' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/220028/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-220033" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-220028" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I think we shouldn&#039;t need to teach people how to program, there are enough great resources for that matter.<br /> At this point I think one
+                                        of the most lacking things is library documentation, which is best added via the Docs repo.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You truly might be right with this in most cases, but sometimes poeple need bit more then text, like an illustrated documentation <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> Many years in costumer support teached me to explain things
+                        like &quot;changes in IT&quot; with included pictures, this increases the ability to consume the information faster then instead only by reading boring text (seen from the
+                        users view) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-220033' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 28, 2016 at 10:12 AM">Jun 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/guide-how-to-develop-on-your-local-dev-machine.18963/#post-220033' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/220033/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

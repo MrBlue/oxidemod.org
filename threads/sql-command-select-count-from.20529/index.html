@@ -1,0 +1,424 @@
+---
+layout: forums
+title: 'Solved - SQL Command: SELECT COUNT*) FROM {};'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/sql-command-select-count-from.20529/' | prepend: site.baseurl }}">SQL Command: SELECT COUNT*) FROM {};</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DylanSMR</a>, <a href="{{ '/threads/sql-command-select-count-from.20529/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 24, 2016 at 12:10 AM">Aug 24,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-244764" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I had another thread on this but I thought it would be appropriate to move this to a new thread. I have the
+                        following which I want to receive:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                var sql = Sql.Builder.Append($&quot;SELECT COUNT(*) FROM messages;&quot;);
+                _mySql.Query(sql, _mySqlConnection, list =&gt;
+                {                });            </pre>{% endraw %}
+                        </div>This should give me a count but it does not(It gives one while SQL gives me<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>mysql&gt; SELECT COUNT(*) FROM messages;
++----------+
+| COUNT(*) |
++----------+
+|        3 |
++----------+
+1 row in set (0.00 sec)</pre>{% endraw %}
+                        </div>For the question is there a way to pull the value of COUNT() from that list? Or would I do this another way? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 12:10 AM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/244764/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-244791" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Solved: Probably isn&#039;t the most effective method but it works well for me(issue is you have to provide a
+                        table directory(so ID or NAME - etc)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private int GetTableCount(string table, string tray){
+            var DB = new MySqlConnection($&quot;Server={Cfg.Host}; database={Cfg.Database}; UID={Cfg.User}; password={Cfg.Password}&quot;);
+            DB.Open();
+      
+            var cmd = new MySqlCommand($&quot;SELECT * FROM {table};&quot;, DB);
+            var reader = cmd.ExecuteReader();
+            var i = 0;
+            while(reader.Read())
+            {
+                string msg = reader.GetString(reader.GetOrdinal(tray));
+                i++;
+            }
+            return i;
+            
+            DB.Close();  
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244791' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 1:45 AM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244791' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/244791/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-244820" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Please do not use non-concurrent queries, especially in MySQL.<br /> Aside from that, your code is prone to
+                        resource leaks! (if the database is correctly opened but it cannot connect to the db when executing the query, the database will never be closed).<br /> I am really starting to
+                        doubt if it&#039;s a good idea that people can even access the stdlib MySQL API. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244820' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 5:59 AM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244820' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/244820/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-244912" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How do you suggest I preform that sql command then? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244912' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 3:39 PM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244912' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/244912/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-244933" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You use the Oxide API, as you did in your first post.<br /> You probably tried to use list.Count. list.Count is
+                        *not* the count you receive, it&#039;s the amount of rows the select returned.<br /> The &quot;list&quot; variable is a list of rows, while each row is a dictionary (something
+                        like List&lt;Dictionary&lt;String, Object&gt;&gt;).<br /> To retrieve the value of the &quot;Count&quot; column of the first row you&#039;d use something like
+                        list[0][&quot;Count&quot;]. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244933' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 5:22 PM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-244933' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/244933/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-245010" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" />, doing that also seems to have made the code much shorter:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            private int GetTableCount(string table){
+                 var k = 0;
+                _mySql.Query(Sql.Builder.Append($&quot;SELECT COUNT(*) FROM {table};&quot;), _mySqlConnection, list =&gt;
+                {
+                    for(var i = 0; i &lt; list.Count; i++){
+                        k = (int)list[i][&quot;COUNT(*)&quot;];
+                    }
+                });
+                return k;
+            }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245010' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2016 at 10:11 PM">Aug 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245010' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/245010/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-245047" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Had to edit that as it seems the variable didn&#039;t carry after the query(had to make it all in the query) for
+                        example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    _mySql.Query(Sql.Builder.Append($&quot;SELECT * FROM commands{Cfg.serverName} WHERE server = '{Cfg.serverName}';&quot;), _mySqlConnection, list =&gt;
+                    {
+                        for(var i = 0; i &lt; list.Count; i++){
+                            var msg = list[i][&quot;command&quot;];
+                            var auth = list[i][&quot;authenticator&quot;];
+                            commandsR.Add(msg.ToString());
+                            commandsA.Add(auth.ToString());
+                            k++;
+                        }                        if(k != 0){
+                            Puts($&quot;Executing the following commands on {Cfg.serverName}:&quot;);
+                            Puts(&quot;|:|      Command      |:|      Authenticator     |:|&quot;);
+                            var newk = 0;
+                            foreach(var entry in commandsR){
+                                Puts($&quot;|:|      {entry}      |:|      {commandsA[newk]}     |:|&quot;);
+                                commandDelete(entry);
+                                ExecuteCommand(entry);
+                                newk++;
+                            }
+                        }
+                    });</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245047' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 25, 2016 at 12:33 AM">Aug 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245047' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/245047/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-245101" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-245047" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Had to edit that as it seems the variable didn&#039;t carry after the query(had to make it all in the query) for example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>                    _mySql.Query(Sql.Builder.Append($&quot;SELECT * FROM commands{Cfg.serverName} WHERE server = '{Cfg.serverName}';&quot;), _mySqlConnection, list =&gt;
+                    {
+                        for(var i = 0; i &lt; list.Count; i++){
+                            var msg = list[i][&quot;command&quot;];
+                            var auth = list[i][&quot;authenticator&quot;];
+                            commandsR.Add(msg.ToString());
+                            commandsA.Add(auth.ToString());
+                            k++;
+                        }                        if(k != 0){
+                            Puts($&quot;Executing the following commands on {Cfg.serverName}:&quot;);
+                            Puts(&quot;|:|      Command      |:|      Authenticator     |:|&quot;);
+                            var newk = 0;
+                            foreach(var entry in commandsR){
+                                Puts($&quot;|:|      {entry}      |:|      {commandsA[newk]}     |:|&quot;);
+                                commandDelete(entry);
+                                ExecuteCommand(entry);
+                                newk++;
+                            }
+                        }
+                    });</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Queries are concurrent. This is what&#039;s different from the C# SQL standard library. When you use _mySql.Query, that query is executed at some point in the future on a
+                        seperate thread. Because it&#039;s executed in the future, you need to pass a function to execute when the query is done. As that function is executed at some point in the
+                        future, while the other code in the same scope as _mySql.Query is executed now, on the main thread, it is obvious that you cannot and should not use any variables from the
+                        future in code that is executed now. In this case, scope is preventing you from doing this. Scope doesn&#039;t always prevent you from doing this, though.<br /> If you do not
+                        understand concurrency and its pitfalls, I suggest staying away from SQL until you properly understand concurrency. Concurrent code is a lot harder to reason about than regular
+                        code, and if you do not understand it, you will make it very hard for yourself. Trial and error barely ever works here.<br /> Not using the concurrent API is bad as well (see:
+                        <a href="http://oxidemod.org/threads/using-mysql-without-callbacks.19409/#post-226592" class="internalLink">Using MySQL without callbacks | Oxide</a>). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245101' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 25, 2016 at 8:30 AM">Aug 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sql-command-select-count-from.20529/#post-245101' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/245101/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,214 @@
+---
+layout: forums
+title: 'More hooks for the next update?'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Reign of Kings Discussion": "/forums/reign-of-kings-discussion.62/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/more-hooks-for-the-next-update.9590/' | prepend: site.baseurl }}">More hooks for the next update?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/reign-of-kings-discussion.62/' | prepend: site.baseurl }}">Reign of Kings Discussion</a>' started by <a class="username"
+            dir="auto">Sydney</a>, <a href="{{ '/threads/more-hooks-for-the-next-update.9590/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 19, 2015 at 8:17 PM">Jun 19,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-101004" class="message" data-author="Sydney">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sydney" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sydney</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The following is a list of hooks I suggest adding in the next update. I am already using them in my Assembly but
+                        I&#039;d love others to also have them and also save the process of updating my assembly with these hooks every time a new update comes out:<br />
+                        <br />
+                        <b>void OnPlayerCaptureAncientThrone(AncientThroneCaptureEvent e)</b><br /> As the name suggests, this hook will be called when a player attempts to capture / completes the
+                        capture process or vacated the throne. (Can be easily identified by using the following format:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (e.State == AncientThroneCaptureEvent.States.Capturing || e.State == AncientThroneCaptureEvent.States.Completed || e.State == AncientThroneCaptureEvent.States.Cancelled)</pre>{% endraw %}
+                        </div>Reference: <i>CodeHatch.Thrones.AncientThrone.AncientThroneListener / OnAncientThroneCapture</i><br />
+                        <br />
+                        <b>void OnPlayerNameChange(NameChangeEvent e)</b><br /> This hooks will be called when the player changes his name, now please note - This hook will only get most of the
+                        information and not set it, since it is originally called to update the player&#039;s name in the guild.<br /> Reference: <i>CodeHatch.Thrones.SocialSystem.ServerSupplier /
+                            OnMemberNameChange<br />
+                        </i><br />
+                        <b>object OnCubeSalvageDamage(CubeDamageEvent e) AND OnEntitySalvageDamage(EntityDamageEvent e)</b><br /> These 2 hooks are pretty straight forward, they will be called when a
+                        cube or an entity takes damage but these hooks will control the salvage damage. The tricky part is that they have ExitWhenValidType return behavior so in order to cancel the
+                        salvage resources players get you&#039;ll need to return false; (Just an example. Return anything that is not null in order for the salvage resources to be cancelled).<br />
+                        (After testing, these hooks will be called pretty much on the same time, sometimes even before and more likely after the original OnEntityHealthChange and
+                        OnCubeTakeDamage)<br />
+                        <br /> The snipper below will cancel the salvage process and the damage. You may remove e.Cancel(); to cancel the salvage and the damage event will be a normal damage event
+                        (i.e 5 damage with driftwood club)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private object OnCubeSalvageDamage(CubeDamageEvent e)
+{
+      e.Cancel();
+       return false;
+}</pre>{% endraw %}
+                        </div>Reference: <i>CodeHatch.Thrones.Weapons.Salvage.SalvageSupplier / OnCubeDamage and OnEntityDamage<br />
+                        </i><br /> You may also suggest hooks here and I will check weather they exist in a variation and add information about them. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sydney</a>,</span>
+                        <a href="{{ '/threads/more-hooks-for-the-next-update.9590/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 19, 2015 at 8:17 PM">Jun 19, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/more-hooks-for-the-next-update.9590/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101004/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101048" class="message" data-author="SweetLouHD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SweetLouHD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SweetLouHD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> can we add<br />
+                        <b>OnGadgetBeginConsume()</b><br /> CodeHatch.Networking.Events.Entities.Objects.Gadgets<br /> GadgetBeginConsumeEvent<br />
+                        <br /> Assuming you can catch if someone eats, drinks, takes a potion?<br />
+                        <br /> I tried to make this myself to test but i cannot figure out how to use the patcher <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SweetLouHD</a>,</span>
+                        <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-101048' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 19, 2015 at 11:11 PM">Jun 19, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-101048' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101048/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-103394" class="message" data-author="Sydney">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sydney" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sydney</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="SweetLouHD">
+                            <aside>
+                                <div class="attribution type">SweetLouHD said: <a href="#post-101048" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">can we add<br />
+                                        <b>OnGadgetBeginConsume()</b><br /> CodeHatch.Networking.Events.Entities.Objects.Gadgets<br /> GadgetBeginConsumeEvent<br />
+                                        <br /> Assuming you can catch if someone eats, drinks, takes a potion?<br />
+                                        <br /> I tried to make this myself to test but i cannot figure out how to use the patcher</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Would be even more awesome if we could force players consume stuff. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sydney</a>,</span>
+                        <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-103394' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 28, 2015 at 1:38 AM">Jun 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-103394' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/103394/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-103414" class="message" data-author="SweetLouHD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SweetLouHD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SweetLouHD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sydney">
+                            <aside>
+                                <div class="attribution type">Sydney said: <a href="#post-103394" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Would be even more awesome if we could force players consume stuff.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>keep your prisoners alive <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SweetLouHD</a>,</span>
+                        <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-103414' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 28, 2015 at 3:41 AM">Jun 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/more-hooks-for-the-next-update.9590/#post-103414' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/103414/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,331 @@
+---
+layout: forums
+title: 'Hurting/damaging players in a radius?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/' | prepend: site.baseurl }}">Hurting/damaging players in a radius?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">spleen</a>, <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 15, 2016 at 3:36 AM">Mar 15,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-187486" class="message" data-author="spleen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="spleen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">spleen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am using a nuke like explosion but when I call the /nuke command, players are not detected and only sometimes
+                        do other entities get detected. I also want to somehow implement this at the radtowns where the ExplosionFX goes off and damages entities in a radius. <br />
+                        <br /> So a little summary of my problems that I need help with.<br />
+                        <ol>
+                            <li>Getting the /nuke command to work and damage players</li>
+                            <li>Damaging players when ExplosionFX is set off at radtown</li>
+                        </ol>Any and all help will be appreciated, <br /> Cheers<br /> Here are snippits of the code that deal with this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> //variablesprivate float damage;
+        private float radius;
+        bool Multiplier=false;
+        bool readyToCheck = false;
+        Vector3 Nukepos = new Vector3(0,0,0);
+        Vector3 Powerpos = new Vector3(0,0,0);
+        Vector3 Plantpos = new Vector3(0,0,0);
+        Vector3 Trainpos = new Vector3(0,0,0);
+        Vector3 Radpos = new Vector3(0,0,0);
+        void OnServerInitialized()
+        {
+        damage = 600f;
+        radius = 1000f;
+       
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>//Nuke command
+[ChatCommand(&quot;nuke&quot;)]
+        void cmdNuke(BasePlayer player)
+        {
+            string id = rust.UserIDFromPlayer(player);
+            if (!IsAllowed(player, &quot;CanUseAdminshit&quot;)) return;
+            Nukepos=player.transform.position;
+            ExplosionFX(Nukepos);   
+            List&lt;BaseCombatEntity&gt; entities1 = new List&lt;BaseCombatEntity&gt;();
+            Vis.Entities&lt;BaseCombatEntity&gt;(Nukepos, radius, entities1);
+            rust.BroadcastChat(&quot;Radius: &quot;+radius*1.5);
+            foreach (BaseCombatEntity e in entities1)
+            {
+                if
+                rust.BroadcastChat(&quot;&quot;+e);
+                e.Hurt(damage, global::Rust.DamageType.Explosion, player, false);
+            }               
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>//ExplosionFX and finding rad towns etc.
+    void ExplosionFX(Vector3 pos)
+    {
+       
+        Effect.server.Run(prefabExplosion, pos + Vector3.zero);
+        timer.Once(0.00f, () =&gt; ExplosionFXUP(pos));
+        timer.Once(0.1f, () =&gt; ExplosionFX10(pos));
+        timer.Once(0.2f, () =&gt; ExplosionFX20(pos));
+        timer.Once(0.5f, () =&gt; ExplosionFXDome20(pos));
+        timer.Once(0.3f, () =&gt; ExplosionFX30(pos));
+        timer.Once(0.6f, () =&gt; ExplosionFXDome30(pos));
+   
+    }
+        private void findNukeZone()
+        {                  
+            var allobjects = UnityEngine.Object.FindObjectsOfType&lt;GameObject&gt;();
+            foreach (var gobject in allobjects)
+            {
+                    if (gobject.name.ToLower().Contains(&quot;powerplant_1&quot;))
+                    {
+                        Vector3 Powerpos = gobject.transform.position;
+                    }
+                    if (gobject.name.ToLower().Contains(&quot;large/water_treatment_plant_1&quot;))
+                    {
+                        Vector3 Waterpos = gobject.transform.position;
+                    }
+                    if (gobject.name.ToLower().Contains(&quot;large/trainyard_1&quot;))
+                    {
+                        Vector3 Trainpos = gobject.transform.position;
+                    }
+                    if (gobject.name.ToLower().Contains(&quot;small/radtown_small_3&quot;))
+                    {
+                        Vector3 Radpos = gobject.transform.position;
+                    }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">spleen</a>,</span>
+                        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2016 at 3:36 AM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/187486/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187500" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Look at my plugin Boobytraps to see how to deal radius damage <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187500' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2016 at 6:19 AM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187500' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187500/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187683" class="message" data-author="spleen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="spleen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">spleen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-187500" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Look at my plugin Boobytraps to see how to deal radius damage</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>My code looks the same other than the fact that you are using 3 different damage zones and a null attacker, but other than that it is the same. Any idea as to why players
+                        don&#039;t get hurt or don&#039;t die in mine? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">spleen</a>,</span>
+                        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187683' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 16, 2016 at 12:45 AM">Mar 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187683' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187683/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187693" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Off the top of my head I think I searched the surrounding area for entities, put them in a list and dealt the
+                        damage to everything in the list.<br /> It looks like you are searching for entities but only dealing damage to the player using the chat command, but that may just be you
+                        testing? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187693' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 16, 2016 at 1:27 AM">Mar 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187693' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187693/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187731" class="message" data-author="spleen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="spleen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">spleen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-187693" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Off the top of my head I think I searched the surrounding area for entities, put them in a list and dealt the damage to everything in the
+                                        list.<br /> It looks like you are searching for entities but only dealing damage to the player using the chat command, but that may just be you testing?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I looked at your booby trap code my code looked the same, for this iteration I changed it slightly but animals or players don&#039;t get hurt in the radius<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;nuke&quot;)]
+        void cmdNuke(BasePlayer player)
+        {
+            string id = rust.UserIDFromPlayer(player);
+            if (!IsAllowed(player, &quot;CanUseAdminshit&quot;)) return;
+            Nukepos=player.transform.position;
+            ExplosionFX(Nukepos);   
+            List&lt;BaseCombatEntity&gt; entities1 = new List&lt;BaseCombatEntity&gt;();
+            Vis.Entities&lt;BaseCombatEntity&gt;(Nukepos, radius, entities1);
+            rust.BroadcastChat(&quot;Radius: &quot;+radius*1.5);
+            foreach (BaseCombatEntity e in entities1)
+            {
+                rust.BroadcastChat(&quot;&quot;+e);
+                e.Hurt(damage, global::Rust.DamageType.Explosion, null, true);
+            }               
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1458105243][/DOUBLEPOST]Alright I fixed it, it just turned out the radius and the damage was set too high so I set the damage to the max health for each
+                        entity <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach(BaseCombatEntity e in entities){
+damage = e.MaxHealth();
+e.Hurt(damage, radius, null, true);
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">spleen</a>,</span>
+                        <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187731' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 16, 2016 at 3:44 AM">Mar 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hurting-damaging-players-in-a-radius.16658/#post-187731' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187731/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

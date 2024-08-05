@@ -1,0 +1,169 @@
+---
+layout: forums
+title: 'SQLite return value problems'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/sqlite-return-value-problems.21424/' | prepend: site.baseurl }}">SQLite return value problems</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TRJfl@sh</a>, <a href="{{ '/threads/sqlite-return-value-problems.21424/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 11, 2016 at 11:04 AM">Oct 11,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-258224" class="message" data-author="TRJfl@sh">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TRJfl@sh" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TRJfl@sh</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Please tell me how to return values after execution of a query to SQLite database. I have 3-4 hours does not work
+                        here is my code..<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        int GetEndDate(string SteamId, string Service)
+        {          
+            var sql = Sql.Builder.Append($&quot;SELECT `Days` FROM Base WHERE UserID = {SteamId} AND `ServiceName` = '{Service}'&quot;);
+            int result = 0;
+            _sqLite.Query(sql, _sqLiteConnection,  list =&gt;
+            {                if (list.Count == 0)
+                {
+                    result = 0;
+                }
+                else {
+                    result = Convert.ToInt32(list[0][&quot;Days&quot;]);
+                }
+               
+            });
+            return result;
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TRJfl@sh</a>,</span>
+                        <a href="{{ '/threads/sqlite-return-value-problems.21424/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 11, 2016 at 11:04 AM">Oct 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-return-value-problems.21424/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258224/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-258235" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> you can&#039;t do that.<br /> sqlite has his own thread so it does block the server while it querries.<br /> You
+                        would need to totally work another way.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void GetEndDate(string SteamId, string Service)
+        {
+var sql = Sql.Builder.Append($&quot;SELECT `Days` FROM Base WHERE UserID = {SteamId} AND `ServiceName` = '{Service}'&quot;);
+            int result = 0;
+            _sqLite.Query(sql, _sqLiteConnection,  list =&gt;
+            {                if (list.Count == 0)
+                {
+                    result = 0;
+                }
+                else {
+                    result = Convert.ToInt32(list[0][&quot;Days&quot;]);
+                }
+              SendReply(player, result);
+            });
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/sqlite-return-value-problems.21424/#post-258235' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 11, 2016 at 12:11 PM">Oct 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-return-value-problems.21424/#post-258235' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258235/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-258246" class="message" data-author="TRJfl@sh">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TRJfl@sh" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TRJfl@sh</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Cheers... ( sorry I didn&#039;t realize how to work with data files. More precisely, did not happen. According to
+                        this, I chose the usual way for me to store data from PHP. OK I will torment date files. Thank you <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TRJfl@sh</a>,</span>
+                        <a href="{{ '/threads/sqlite-return-value-problems.21424/#post-258246' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 11, 2016 at 12:48 PM">Oct 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-return-value-problems.21424/#post-258246' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258246/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

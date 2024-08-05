@@ -1,0 +1,175 @@
+---
+layout: forums
+title: 'Putting an item in a crate?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/putting-an-item-in-a-crate.31027/' | prepend: site.baseurl }}">Putting an item in a crate?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DEUSNEXUS</a>, <a href="{{ '/threads/putting-an-item-in-a-crate.31027/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 2, 2018 at 1:54 AM">Jul 2, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-406485" class="message" data-author="DEUSNEXUS">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DEUSNEXUS" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DEUSNEXUS</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Tell me what is best to use when I want to put an object in the crate<br />
+                        <br /> The idea is when I use hook &quot;OnLootEntity&quot; the right thing falls out to me when I open the drawer, but the problem here is that I can open this box many times
+                        and the object will drop out to me a lot<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnLootEntity(BasePlayer player, BaseEntity entity)
+        {
+            if (!_config.RandomDrop)
+                return;            if (entity.name.Contains(&quot;crate_tools&quot;) || entity.name.Contains(&quot;crate_basic&quot;) || entity.name.Contains(&quot;crate_normal&quot;) || entity.name.Contains(&quot;crate_elite&quot;) || entity.name.Contains(&quot;supply_drop&quot;) || entity.name.Contains(&quot;codelockedhackablecrate&quot;))
+            {
+                if ((Random.Range(0f, 100f) &lt; _config.ChanceOfDrop))
+                {
+                    var item = CreateSupply();                    var container = entity.GetComponent&lt;StorageContainer&gt;();
+                    item.MoveToContainer(container.inventory);
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>The idea is when I use hook &quot;OnEntitySpawned&quot; the necessary thing will appear immediately in the boxes that just appeared, but then I understand it is necessary
+                        to get the plugin correctly unloaded, because these items will remain even when unloading the plugin this is the first and second thing that this item will appear only in the
+                        newly appeared crate<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnEntitySpawned(BaseNetworkable entity)
+        {
+            if (!_config.RandomDrop)
+                return;            if (entity.name.Contains(&quot;crate_tools&quot;) || entity.name.Contains(&quot;crate_basic&quot;) || entity.name.Contains(&quot;crate_normal&quot;) || entity.name.Contains(&quot;crate_elite&quot;) || entity.name.Contains(&quot;supply_drop&quot;) || entity.name.Contains(&quot;codelockedhackablecrate&quot;))
+            {
+                if ((Random.Range(0f, 100f) &lt; _config.ChanceOfDrop))
+                {
+                    var item = CreateSupply();                    var container = entity.GetComponent&lt;StorageContainer&gt;();
+                    item.MoveToContainer(container.inventory);
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1530492915][/DOUBLEPOST]thanks for the ideas in advance <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DEUSNEXUS</a>,</span>
+                        <a href="{{ '/threads/putting-an-item-in-a-crate.31027/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 1:54 AM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/putting-an-item-in-a-crate.31027/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406485/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406541" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi,<br /> I think I understand what you mean; Sounds like you would need to keep a record of crates that should
+                        have the item in them, and a record of crates that have already given out the item.<br />
+                        <br /> That way, when the plugin reloads, you can tidy up and have all these items removed.<br />
+                        <br /> I don&#039;t know if there&#039;s a specific hook for when an item is moved or taken but, if not, you could use &quot;OnLootEntityEnd&quot; to check if the item has been
+                        removed, I guess, and then add that crate to your second list to prevent the item being added agin next time around. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/putting-an-item-in-a-crate.31027/#post-406541' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 2:06 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/putting-an-item-in-a-crate.31027/#post-406541' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406541/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406641" class="message" data-author="DEUSNEXUS">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DEUSNEXUS" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DEUSNEXUS</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-406541" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hi,<br /> I think I understand what you mean; Sounds like you would need to keep a record of crates that should have the item in them, and a
+                                        record of crates that have already given out the item.<br />
+                                        <br /> That way, when the plugin reloads, you can tidy up and have all these items removed.<br />
+                                        <br /> I don&#039;t know if there&#039;s a specific hook for when an item is moved or taken but, if not, you could use &quot;OnLootEntityEnd&quot; to check if
+                                        the item has been removed, I guess, and then add that crate to your second list to prevent the item being added agin next time around.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the thought! I was able to do via the hook OnEntitySpawned.<br /> I&#039;m made a couple of methods of repopulation loot. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DEUSNEXUS</a>,</span>
+                        <a href="{{ '/threads/putting-an-item-in-a-crate.31027/#post-406641' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 11:47 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/putting-an-item-in-a-crate.31027/#post-406641' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406641/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

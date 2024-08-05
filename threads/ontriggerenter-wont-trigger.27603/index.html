@@ -1,0 +1,160 @@
+---
+layout: forums
+title: 'OnTriggerEnter won&#039;t trigger'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/' | prepend: site.baseurl }}">OnTriggerEnter won&#039;t trigger</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Gen0</a>, <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 19, 2017 at 11:18 PM">Oct 19, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-357783" class="message" data-author="Gen0">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gen0" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gen0</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey how&#039;s it going I have recently taken up C# and would enjoy making some plugins, however I have hit a
+                        small speed bump - trying to create a simple sphere and trigger.<br />
+                        <br /> OnTriggerEnter won&#039;t trigger in this script:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        class CreateASphere : MonoBehaviour
+        {            private BaseEntity theSphere;
+            private GameObject theGameObject;
+           
+            public static void CreateTheSphere(Vector3 XYZCoordinates)
+            {
+                BaseEntity theSphere = new BaseEntity(); // Create new BaseEntity                                                                                      theSphere = GameManager.server.CreateEntity(&quot;assets/prefabs/visualization/sphere.prefab&quot;, XYZCoordinates, new Quaternion(0, 0, 0, 0), true);
+                theSphere.Spawn();                var theSpheresRigidBody = theSphere.gameObject.AddComponent&lt;Rigidbody&gt;();
+                // variable ^^ becomes ---&gt;&gt;&gt;
+                theSpheresRigidBody.useGravity = false;
+                theSpheresRigidBody.isKinematic = true;
+                theSpheresRigidBody.detectCollisions = true;                               var theSpheresBoxCollider = theSphere.gameObject.AddComponent&lt;BoxCollider&gt;();
+                theSpheresBoxCollider.isTrigger = true;
+                theSpheresBoxCollider.enabled = true;
+                //theSpheresBoxCollider.size = new Vector3(1, 2, 1);            }            public void OnTriggerEnter(Collider newCollider)
+            {
+                var thePlayer = newCollider.GetComponentInParent&lt;BasePlayer&gt;();                if (thePlayer != null)
+                {
+                 theSphere.Kill();
+                }                          }
+}</pre>{% endraw %}
+                        </div>I am aware the collider requires a rigidbody as well as being kinematic - can anyone please point me in the right direction what I am doing incorrectly or provide some
+                        guidance? it would be highly appreciated <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gen0</a>,</span>
+                        <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 19, 2017 at 11:18 PM">Oct 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/357783/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-357784" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <span style="text-decoration: line-through">I don&#039;t think you can have hooks inside of other classes like that.</span><br />
+                        <br /> Edit: Ignore that, noticed it isn&#039;t a hook. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/#post-357784' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 19, 2017 at 11:19 PM">Oct 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/#post-357784' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/357784/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-358475" class="message" data-author="serezhadelaet">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="serezhadelaet" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">serezhadelaet</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Try add this this after declare BoxCollider<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>TriggerBase trigger = theSpheresBoxCollider.GetComponent&lt;TriggerBase&gt;() ?? theSpheresBoxCollider.gameObject.AddComponent&lt;TriggerBase&gt;();
+trigger.interestLayers = LayerMask.GetMask(&quot;Player (Server)&quot;);
+trigger.enabled = true;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">serezhadelaet</a>,</span>
+                        <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/#post-358475' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 20, 2017 at 2:04 PM">Oct 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontriggerenter-wont-trigger.27603/#post-358475' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/358475/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,202 @@
+---
+layout: forums
+title: 'Request - OnUpdateSpectateTarget hook (Rust)'
+breadcrumbs:
+ - "Feature Suggestions": "/forums/feature-suggestions.6/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Request</span> <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/' | prepend: site.baseurl }}">OnUpdateSpectateTarget hook (Rust)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/feature-suggestions.6/' | prepend: site.baseurl }}">Feature Suggestions</a>' started by <a class="username"
+            dir="auto">k1lly0u</a>, <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 6, 2017 at 2:13 AM">Oct 6,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-354403" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Request to control what a player can spectate and to cancel switching targets<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+// BasePlayer
+public void UpdateSpectateTarget(string strName)
+    {
+        this.spectateFilter = strName;
+        IEnumerable&lt;BaseEntity&gt; baseEntities = null;
+        if (!this.spectateFilter.StartsWith(&quot;@&quot;))
+        {
+            IEnumerable&lt;BasePlayer&gt; basePlayers =
+                from x in BasePlayer.activePlayerList
+                where (x.IsSpectating() || x.IsDead() ? false : !x.IsSleeping())
+                select x;
+            if (strName.Length &gt; 0)
+            {
+                basePlayers =
+                    from x in basePlayers
+                    where (x.displayName.Contains(this.spectateFilter, CompareOptions.IgnoreCase) ? true : x.UserIDString.Contains(this.spectateFilter))
+                    where x != this
+                    select x;
+            }
+            basePlayers =
+                from x in basePlayers
+                orderby x.displayName
+                select x;
+            baseEntities = basePlayers.Cast&lt;BaseEntity&gt;();
+        }
+        else
+        {
+            string str = this.spectateFilter.Substring(1);
+            IEnumerable&lt;BaseNetworkable&gt; baseNetworkables =
+                from x in BaseNetworkable.serverEntities
+                where x.name.Contains(str, CompareOptions.IgnoreCase)
+                where x != this
+                select x;
+            baseEntities = baseNetworkables.Cast&lt;BaseEntity&gt;();
+        }
+        BaseEntity[] array = baseEntities.ToArray&lt;BaseEntity&gt;();
+        if ((int)array.Length == 0)
+        {
+            this.ChatMessage(&quot;No valid spectate targets!&quot;);
+            return;
+        }
+        BaseEntity baseEntity = array[this.SpectateOffset % (int)array.Length];
+        if (baseEntity != null)
+        {
+            object[] objArray = new object[] {this, baseEntity };  
+            object obj = Interface.CallHook(&quot;OnUpdateSpectateTarget&quot;, objArray);
+            if (obj is BaseEntity)
+            {
+                 baseEntity = (BaseEntity)obj;
+            }
+            else if (obj is bool &amp;&amp; !(bool)obj)
+            {                
+                 return;
+            }            if (!(baseEntity is BasePlayer))
+            {
+                this.ChatMessage(string.Concat(&quot;Spectating: &quot;, baseEntity.ToString()));
+            }
+            else
+            {
+                this.ChatMessage(string.Concat(&quot;Spectating: &quot;, (baseEntity as BasePlayer).displayName));
+            }
+            this.ClearEntityQueue(null);
+            using (TimeWarning timeWarning = TimeWarning.New(&quot;SendEntitySnapshot&quot;, 0.1f))
+            {
+                this.SendEntitySnapshot(baseEntity);
+            }
+            base.gameObject.Identity();
+            using (TimeWarning timeWarning1 = TimeWarning.New(&quot;SetParent&quot;, 0.1f))
+            {
+                base.SetParent(baseEntity, 0);
+            }
+        }
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 6, 2017 at 2:13 AM">Oct 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/354403/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-357763" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> As of right now, this would either need 3-4 modify hooks to make it, a wrapper, or changes to the patcher. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/#post-357763' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 19, 2017 at 9:17 PM">Oct 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/#post-357763' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/357763/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-358912" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> No biggie, I ended up writing something to manage it <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/#post-358912' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 21, 2017 at 1:10 PM">Oct 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onupdatespectatetarget-hook-rust.27389/#post-358912' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/358912/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

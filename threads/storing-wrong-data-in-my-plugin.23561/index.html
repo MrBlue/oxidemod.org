@@ -1,0 +1,964 @@
+---
+layout: forums
+title: 'Storing wrong data in my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/' | prepend: site.baseurl }}">Storing wrong data in my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Juan
+            David</a>, <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 6, 2017 at 9:55 AM">Feb 6, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-294161" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> hello can anyone help me i dont know what am doing wrong but my plugin is storing the wrong data into my .jason
+                        file any help is really appreciated thank you <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="GiveItems.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/giveitems-cs.33234/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/giveitems-cs.33234/" target="_blank">GiveItems.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>5 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>18</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 6, 2017 at 3:28 PM">Feb 6, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 9:55 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294161/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294174" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi there.<br /> As far as I can tell you are reading file called &quot;MyDataFile&quot; and writing file called
+                        &quot;playersWithKit&quot;<br /> Try to change in Loaded() this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            try
+            {
+                _flies = Interface.Oxide.DataFileSystem.ReadObject&lt;dataFiles&gt;(&quot;MyDataFile&quot;);
+            }</pre>{% endraw %}
+                        </div>to this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            try
+            {
+                _flies = Interface.Oxide.DataFileSystem.ReadObject&lt;dataFiles&gt;(&quot;playersWithKit&quot;);
+            }</pre>{% endraw %}
+                        </div>Also - in your case you don&#039;t have to create your own class<br /> You could use this:<br /> Read:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Dictionary&lt;string, ulong&gt; _playerIdRegistered;
+try
+{
+      _playerIdRegistered = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;string, ulong&gt;&gt;(&quot;playersWithKit&quot;);
+}catch
+{
+       _flies = new Dictionary&lt;string, ulong&gt;();
+}</pre>{% endraw %}
+                        </div>Write:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Interface.Oxide.DataFileSystem.WriteObject(&quot;playersWithKit&quot;, _playerIdRegistered);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294174' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 10:58 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294174' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294174/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294175" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> OMG how could i not see this, ill give this a try hope this solves the issue, thanks a lot <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294175' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 11:01 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294175' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294175/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294181" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> ok i apply the changes and still storing incorrect data this is the output <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <br /> {<br /> &quot;assets/prefabs/player/player.prefab&quot;: 0<br /> }<br /> [DOUBLEPOST=1486381107][/DOUBLEPOST]this is the edited file<br />
+                        [DOUBLEPOST=1486381215][/DOUBLEPOST]i dont know why is storing this shit &quot;assets/prefabs/player/player.prefab&quot; instead of the player name<br />
+                        [DOUBLEPOST=1486381475][/DOUBLEPOST]also the player iD is showing 0 <br /> doesnt make any sense <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="GiveItems.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/giveitems-cs.33238/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/giveitems-cs.33238/" target="_blank">GiveItems.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>5.1 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>13</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294181' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 11:37 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294181' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294181/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294182" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-294181" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">ok i apply the changes and still storing incorrect data this is the output <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                                        <br /> {<br /> &quot;assets/prefabs/player/player.prefab&quot;: 0<br /> }<br /> [DOUBLEPOST=1486381107][/DOUBLEPOST]this is the edited file<br />
+                                        [DOUBLEPOST=1486381215][/DOUBLEPOST]i dont know why is storing this shit &quot;assets/prefabs/player/player.prefab&quot; instead of the player name</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Why don&#039;t you just use <a href="http://oxidemod.org/plugins/kits.668/" class="internalLink"><b>Kits for rust</b></a>? It has autokit and allow you to set some kits
+                        to 1 use only...<br /> Insted of player.name.ToString() try to use player.displayName <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294182' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 11:48 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294182' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294182/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294183" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> because kits you have to type a command to actually get the kit, i want the player to get it as soon as he enters
+                        the game. <br /> ill give it a try with player.displayname<br /> thanks by the way i have a friend named vlad he is from bulgaria <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294183' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 11:51 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294183' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294183/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294184" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-294183" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">because kits you have to type a command to actually get the kit, i want the player to get it as soon as he enters the game.<br /> ill give it a
+                                        try with player.displayname<br /> thanks by the way i have a friend named vlad he is from bulgaria <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>As I mention above - kits got autokit, that will be automaticly given to a player as soon as he respawn.... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294184' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 11:53 AM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294184' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294184/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294203" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> fixed looks like the player.displayname does seem to display the correct name <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> thank you <br /> used ID still broken is returning 0 for all
+                        players <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294203' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 1:27 PM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294203' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294203/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294220" class="message" data-author="jcgm1990">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="jcgm1990" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">jcgm1990</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> pirobo <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">jcgm1990</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294220' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 2:09 PM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294220' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294220/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294223" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> callese<br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="jcgm1990">
+                            <aside>
+                                <div class="attribution type">jcgm1990 said: <a href="#post-294220" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">pirobo</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>fokiu men gonorrea <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294223' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 2:12 PM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294223' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294223/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294230" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-294203" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">fixed looks like the player.displayname does seem to display the correct name <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> thank you<br /> used ID still broken is returning 0 for all players</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>try UserIDString<br /> [DOUBLEPOST=1486391605][/DOUBLEPOST]Why the hell you are using player.OwnerID? OWNER ID?!<br /> player.UserID or player.UserIDString <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294230' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 6, 2017 at 2:31 PM">Feb 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294230' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294230/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294615" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> hey man sorry to bother again, i manage to fix the issue, the .jason file is now storing the correct data <br />
+                        {<br /> &quot;LeBelge&quot;: 76561198017318961,<br /> &quot;Juan David&quot;: 76561198050400801<br /> }<br />
+                        <br /> now i have another issue but it seems like its an oxide issue correct me if am wrong...<br /> basically the very first time a player comes into the server the player
+                        data is stored and saved in the jason file and the void that gives the kit is called but for some reason the player doest get the kit <br />
+                        <br /> but if i go into the jason file and remove the player, re start the server when he comes in he does get the kit @_@ <br />
+                        <br /> just to make it clear <br /> the very first time a player joins the server he doest get the kit but is storing the data like he actually got the kit.<br /> but if i
+                        remove his name from the .jason file when he comes in the next time he will get it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="GiveItems.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/giveitems-cs.33278/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/giveitems-cs.33278/" target="_blank">GiveItems.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>3.1 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>12</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294615' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2017 at 8:03 AM">Feb 7, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294615' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294615/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294676" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-294615" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">hey man sorry to bother again, i manage to fix the issue, the .jason file is now storing the correct data<br /> {<br /> &quot;LeBelge&quot;:
+                                        76561198017318961,<br /> &quot;Juan David&quot;: 76561198050400801<br /> }<br />
+                                        <br /> now i have another issue but it seems like its an oxide issue correct me if am wrong...<br /> basically the very first time a player comes into the
+                                        server the player data is stored and saved in the jason file and the void that gives the kit is called but for some reason the player doest get the kit<br />
+                                        <br /> but if i go into the jason file and remove the player, re start the server when he comes in he does get the kit @_@<br />
+                                        <br /> just to make it clear<br /> the very first time a player joins the server he doest get the kit but is storing the data like he actually got the
+                                        kit.<br /> but if i remove his name from the .jason file when he comes in the next time he will get it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You should be using a hook such as OnPlayerSpawn. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294676' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 7, 2017 at 4:18 PM">Feb 7, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294676' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294676/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-294921" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i tried that before and was the same thing, but i cant really test it because i just started the server and i
+                        dont have new players coming in to test it, is there any way to delete myself from the server??<br /> so when i go in it takes me as a complete new player?<br /> ive been
+                        looking for a way to do this but there isnt much info on how to do this if its even possible <br /> thanks wolf.. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294921' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 8, 2017 at 7:58 AM">Feb 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-294921' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/294921/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295563" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-294921" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">i tried that before and was the same thing, but i cant really test it because i just started the server and i dont have new players coming in to
+                                        test it, is there any way to delete myself from the server??<br /> so when i go in it takes me as a complete new player?<br /> ive been looking for a way to do
+                                        this but there isnt much info on how to do this if its even possible<br /> thanks wolf..</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Actually OnPlayerInit or OnPlayerSpawn should work, both are there and get triggered. Why can&#039;t you test the hook? Just comment out any portion that identifies you
+                        as a returning player and test. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-295563' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 8:32 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-295563' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/295563/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296047" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> am not saying they dont work, in fact if you check my previous post it says onplayer init is being called and is
+                        registering the player name and user ID as if the player got the kit, but for some reason for first time players that come to the server is not giving it, its only giving the
+                        kit to the player that are inside the server already, thats why i said this looks more of an oxide bug. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296047' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 10, 2017 at 9:05 AM">Feb 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296047' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/296047/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296197" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-296047" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">am not saying they dont work, in fact if you check my previous post it says onplayer init is being called and is registering the player name and
+                                        user ID as if the player got the kit, but for some reason for first time players that come to the server is not giving it, its only giving the kit to the player
+                                        that are inside the server already, thats why i said this looks more of an oxide bug.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The player isn&#039;t fully spawned in OnPlayerInit only initialized as a BasePlayer; that&#039;s not a bug, that&#039;s where the hook is in Rust. That&#039;s why I said
+                        OnPlayerSpawn would probably be better, as they&#039;d actually have their inventory setup there. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296197' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 10, 2017 at 6:27 PM">Feb 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296197' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/296197/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296632" class="message" data-author="Juan David">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Juan David" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Juan David</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Same thing <br /> It is being called but doesn&#039;t give the kit to new players <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Juan David</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296632' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 11, 2017 at 9:15 PM">Feb 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296632' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/296632/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296672" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Juan David">
+                            <aside>
+                                <div class="attribution type">Juan David said: <a href="#post-296632" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Same thing<br /> It is being called but doesn&#039;t give the kit to new players <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That would be with your code, not the hook. Like I said, the player&#039;s inventory may not be setup at that point, so do some checking and print out some checks to
+                        debug what the issue may be with giving it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296672' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 11, 2017 at 11:45 PM">Feb 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296672' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/296672/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296795" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You need to wait until the player has finished loading in and stopped sleeping before giving them anything.
+                        Something like this;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void MethodName(BasePlayer player)
+{
+   if (player.IsSleeping() || player.HasPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot))
+   {
+      timer.In(1, () =&gt; MethodName(player));
+         return;
+   }
+   // Do Stuff
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296795' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 12, 2017 at 8:49 AM">Feb 12, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storing-wrong-data-in-my-plugin.23561/#post-296795' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/296795/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

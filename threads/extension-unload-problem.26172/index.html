@@ -1,0 +1,155 @@
+---
+layout: forums
+title: 'Extension unload problem'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/extension-unload-problem.26172/' | prepend: site.baseurl }}">Extension unload problem</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRyuzaki</a>, <a href="{{ '/threads/extension-unload-problem.26172/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 2, 2017 at 8:57 AM">Jul 2, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-335202" class="message" data-author="TheRyuzaki">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRyuzaki" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRyuzaki</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public class ZeroLoader : PluginLoader
+    {
+        private Dictionary&lt;string, Type&gt; plugins = new Dictionary&lt;string, Type&gt;();        public ZeroLoader()
+        {
+            this.GetType().Assembly.GetTypes().Where(t =&gt; t.Namespace == &quot;Oxide.Ext.Zero.Plugins&quot;).ToList().ForEach(t =&gt; plugins.Add(t.Name, t));
+        }        public override Plugin Load(string directory, string name)
+        {
+            if (plugins.ContainsKey(name))
+            {
+                object obj = Activator.CreateInstance(plugins[name], true);
+                if (obj != null)
+                {
+                    Plugin plugin = (Plugin) obj;
+                    return plugin;
+                } else
+                    Interface.Oxide.LogError(&quot;Plugin &lt;&quot;+name+&quot;&gt; is not initialized!&quot;);
+            }
+            return null;
+        }        public override IEnumerable&lt;string&gt; ScanDirectory(string directory) =&gt; plugins.Keys;
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public class ZeroExtension : Extension
+    {
+        public ZeroExtension(ExtensionManager manager) : base(manager) { }        public override string Name =&gt; &quot;Zero&quot;;
+        public override string Author =&gt; &quot;TheRyuzaki&quot;;
+        public override VersionNumber Version =&gt; new VersionNumber(0,0,1);        public override void Load()
+        {
+            SingletonType&lt;ZeroExtension&gt;.Setup(this);
+            Manager.RegisterPluginLoader(SingletonType&lt;ZeroLoader&gt;.Instance);
+        }
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> public class ZeroPlayer : RustPlugin
+    {
+        public ZeroPlayer()
+        {
+            this.Name = this.GetType().Name;
+            this.Author = SingletonType&lt;ZeroExtension&gt;.Instance.Author;
+            this.Version = new VersionNumber(0,0,1);
+        }        private void Unload() =&gt; Interface.Oxide.LogWarning(&quot;Unload&quot;);
+        private void Loaded() =&gt; Interface.Oxide.LogWarning(&quot;Loaded&quot;);    }</pre>{% endraw %}
+                        </div><a href="http://prntscr.com/fqmmq1" target="_blank" class="externalLink  rel=" nofollow">Screenshot</a><br /> What is it? Need fixed =( <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRyuzaki</a>,</span>
+                        <a href="{{ '/threads/extension-unload-problem.26172/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2017 at 8:57 AM">Jul 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/extension-unload-problem.26172/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/335202/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-335208" class="message" data-author="TheRyuzaki">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRyuzaki" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRyuzaki</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public override Plugin Load(string directory, string name)
+        {
+            if (plugins.ContainsKey(name))
+            {
+                object obj = Activator.CreateInstance(plugins[name], true);
+                if (obj != null)
+                {
+                    CSharpPlugin plugin = (CSharpPlugin) obj;
+                    plugin.Loader = this;
+                    plugin.Watcher = new FSWatcher(Interface.Oxide.PluginDirectory, &quot;.zero&quot;);
+                    return plugin;
+                } else
+                    Interface.Oxide.LogError(&quot;Plugin &lt;&quot;+name+&quot;&gt; is not initialized!&quot;);
+            }
+            return null;
+        }</pre>{% endraw %}
+                        </div>this is good code - Oxide default - dont have Watcher to plugin! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRyuzaki</a>,</span>
+                        <a href="{{ '/threads/extension-unload-problem.26172/#post-335208' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2017 at 10:55 AM">Jul 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/extension-unload-problem.26172/#post-335208' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/335208/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

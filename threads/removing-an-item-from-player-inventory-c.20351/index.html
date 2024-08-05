@@ -1,0 +1,486 @@
+---
+layout: forums
+title: 'Solved - Removing an item from player inventory? (C#)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/' | prepend: site.baseurl }}">Removing an item from player inventory?
+            (C#)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Sir
+            BenSon</a>, <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 15, 2016 at 9:47 PM">Aug 15,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-241681" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello everybody <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> i&#039;m looking for a way to remove an item from a player inventory.<br />
+                        <br /> here is my code but it doesnt work with this exception:<br />
+                        <br /> Code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+if (iitem.info.shortname == item_name &amp;&amp; iitem.amount == item_count)
+{
+     player.inventory.containerMain.itemList.Remove(iitem);
+ }
+</pre>{% endraw %}
+                        </div>And this is the exception: <br /> [Oxide] 22:34 [Error] Web request callback raised an exception (InvalidOperationException: Collection was modified; enumeration
+                        operation may not execute.)<br /> [Oxide] 22:34 [Debug] at System.Collections.Generic.List`1+Enumerator[Item].VerifyState () [0x00000] in &lt;filename unknown&gt;:0<br /> at
+                        System.Collections.Generic.List`1+Enumerator[Item].MoveNext () [0x00000] in &lt;filename unknown&gt;:0<br /> at Oxide.Plugins.InventoryInfo.PostCallbackval (Int32 code,
+                        System.String response, .BasePlayer player, System.String[] arr, System.String transaktion) [0x00000] in &lt;filename unknown&gt;:0<br /> at
+                        Oxide.Plugins.InventoryInfo+&lt;PostRequestfin&gt;c__AnonStorey0.&lt;&gt;m__0 (Int32 code, System.String response) [0x00000] in &lt;filename unknown&gt;:0<br /> at
+                        Oxide.Core.Libraries.WebRequests+WebRequest.&lt;OnComplete&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0<br />
+                        <br /> Is there a better way to remove an item by name from inventory? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 9:47 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/241681/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241685" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Looks like you are you trying to remove it in a foreach loop? If so use a for loop<br /> The proper way to take a
+                        item is using the take method which requires a item ID.<br /> Off the top of my head phone edit:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var itemDef = ItemManager.FindItemDefinition(shortname);
+if (itemDef != null)
+   player.inventory.Take(itemDef.info.itemID, amount);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 15, 2016 at 10:01 PM">Aug 15, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241685' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 9:54 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241685' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241685/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241688" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-241685" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Looks like you are you trying to remove it in a foreach loop? If so use a for loop<br /> The proper way to take a item is using the take method
+                                        which requires a item ID.<br /> Off the top of my head phone edit:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>var itemDef = ItemManager.FindItemDefinition(shortname);
+if (itemDef != null)
+   player.inventory.Take(itemDef.info.itemID, amount);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How you did it in a plugin: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void TakeResources(BasePlayer player, int itemid, int amount) =&gt; player.inventory.Take(null, itemid, amount);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241688' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 10:06 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241688' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241688/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241696" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Mhh now it works with the first Item but than it crashed in an exception <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <br /> i get via webrequest the items and the itemamount. I split the string in an array. I take the player main inventory in a list of items and with foreach i check my
+                        webrequest with the items in the list. if this correkt i will remove this. but it works only with the first item.<br />
+                        <br /> The itemarray looks like this and its split in an array with &quot;;&quot;<br /> item=amount;item=amount;item=amount;<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+List&lt;Item&gt; items = player.inventory.containerMain.itemList;
+foreach (string itemstring in arr)
+{
+     string[] itemval = itemstring.Split(&quot;=&quot;.ToCharArray());
+     string item_name = itemval[0];
+     int item_count = int.Parse(itemval[1]);
+     foreach (Item iitem in items)
+     {
+          if (iitem.info.shortname == item_name &amp;&amp; iitem.amount == item_count)
+          {
+                var itemDef = ItemManager.FindItemDefinition(item_name);
+                player.inventory.Take(null, itemDef.itemid, item_count);
+          }
+     }
+}
+</pre>{% endraw %}
+                        </div>Error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> [Error] Web request callback raised an exception (InvalidOperationException: Collection was modified; enumeration operation may not execute.)
+[Oxide] 23:26 [Debug]   at System.Collections.Generic.List`1+Enumerator[Item].VerifyState () [0x00000] in &lt;filename unknown&gt;:0
+  at System.Collections.Generic.List`1+Enumerator[Item].MoveNext () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.InventoryInfo.PostCallbackval (Int32 code, System.String response, .BasePlayer player, System.String[] arr, System.String transaktion) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.InventoryInfo+&lt;PostRequestfin&gt;c__AnonStorey0.&lt;&gt;m__0 (Int32 code, System.String response) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.WebRequests+WebRequest.&lt;OnComplete&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241696' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 10:34 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241696' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241696/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241712" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> That&#039;s fine, switch the foreach loop to a for loop.<br /> [DOUBLEPOST=1471298758][/DOUBLEPOST]The other
+                        thing you should do is check the inventory for the item and amount. Problem being they may have enough of the item, but spread over a few stacks, and the way you are doing it
+                        won&#039;t detect that. Maybe <a href="https://oxidemod.org/members/53846/" class="username" data-user="53846, @DylanSMR">@DylanSMR</a> can post that snippet aswell,
+                        there&#039;s a example in the same plugin he got the above one from <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241712' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 11:02 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241712' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241712/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241715" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Switching the first / second or both loops? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241715' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 11:08 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241715' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241715/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241716" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The one that loops through the inventory. You cant remove entries from a list or dictionary in a foreach loop. If
+                        I was driving a truck in peek hour traffic right now id give you a better explanation <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241716' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 11:13 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241716' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241716/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241718" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Mh ok <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" /> but i store the items in a new list of items. so if i remove an item from the collection, the itemlist is the same or? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241718' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2016 at 11:18 PM">Aug 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241718' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241718/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241727" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok now it works <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /> Thanks a lot <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> [Finished] <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241727' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 16, 2016 at 12:01 AM">Aug 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241727' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241727/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-241738" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-241712" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That&#039;s fine, switch the foreach loop to a for loop.<br /> [DOUBLEPOST=1471298758][/DOUBLEPOST]The other thing you should do is check the
+                                        inventory for the item and amount. Problem being they may have enough of the item, but spread over a few stacks, and the way you are doing it won&#039;t detect
+                                        that. Maybe <a href="https://oxidemod.org/members/53846/" class="username" data-user="53846, @DylanSMR">@DylanSMR</a> can post that snippet aswell, there&#039;s
+                                        a example in the same plugin he got the above one from <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                                            title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Just incase the OP still needs it: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private bool HasEnoughRes(BasePlayer player, int itemid, int amount) =&gt; player.inventory.GetAmount(itemid) &gt;= amount;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241738' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 16, 2016 at 1:04 AM">Aug 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-an-item-from-player-inventory-c.20351/#post-241738' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/241738/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

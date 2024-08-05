@@ -1,0 +1,412 @@
+---
+layout: forums
+title: 'Bug (Maybe?) with getting explosions and hit entities'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/' | prepend: site.baseurl }}">Bug (Maybe?) with getting explosions and hit entities</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Me_Goes_RAWR</a>, <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="May 11, 2018 at 8:07 PM">May 11, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-400182" class="message" data-author="Me_Goes_RAWR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Me_Goes_RAWR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Me_Goes_RAWR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello. I have been trying to make a plugin work, but I cant get part of it to work. When an explosive blows up and
+                        hits an entity, it will only register the owner of said entity (building blocks or deployables) in the entity is self but not in the HitInfo bit.<br />
+                        <br /> My current testing code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
+        {
+            if(info.InitiatorPlayer != null){
+                PrintToChat(&quot;EntityOwnerId &quot; + entity.OwnerID.ToString());
+                PrintToChat(&quot;HitEntityOwnerId &quot; + info.HitEntity.OwnerID.ToString());
+            }
+}</pre>{% endraw %}
+                        </div>Error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnEntityTakeDamage' on plugin 'RustNotifications v0.1' (NullReferenceException: Object reference not set to an instance of an object)
+at Oxide.Plugins.RustNotifications.OnEntityTakeDamage (.BaseCombatEntity entity, .HitInfo info) [0x00000] in &lt;filename unknown&gt;:0
+at Oxide.Plugins.RustNotifications.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>The InitiatorPlayer bit is so I dont get chat spammed with 0s.<br />
+                        <br /> Screenshot with the code on my test server: <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1383440195" target="_blank" class="externalLink  rel="
+                            nofollow">Steam Community :: Screenshot</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Me_Goes_RAWR</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2018 at 8:07 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400182/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400183" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">info.HitEntity may not always exist, same with OwnerID. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400183' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:12 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400183' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400183/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400185" class="message" data-author="Me_Goes_RAWR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Me_Goes_RAWR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Me_Goes_RAWR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I had it working fine like an hour or so ago, but then explosive bullets gave errors and now i lost the working
+                        file. :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Me_Goes_RAWR</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400185' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:15 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400185' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400185/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400188" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Me_Goes_RAWR">
+                            <aside>
+                                <div class="attribution type">Me_Goes_RAWR said: <a href="#post-400185" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I had it working fine like an hour or so ago, but then explosive bullets gave errors and now i lost the working file. :/</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Bullets wouldn&#039;t have an OwnerID. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400188' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:16 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400188' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400188/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400191" class="message" data-author="Me_Goes_RAWR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Me_Goes_RAWR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Me_Goes_RAWR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">No, I mean when you hit the entity with the bullet, it does say the ownerid of the entity it hit. But with
+                        explosive bullets it doesnt work right. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Me_Goes_RAWR</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400191' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:20 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400191' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400191/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400192" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Me_Goes_RAWR">
+                            <aside>
+                                <div class="attribution type">Me_Goes_RAWR said: <a href="#post-400191" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">No, I mean when you hit the entity with the bullet, it does say the ownerid of the entity it hit. But with explosive bullets it doesnt work
+                                        right.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The entity arg would be the target, the HitInfo would be the bullet. The way your example code is, there&#039;s lots of room for NREs there as you&#039;re assuming both
+                        are players. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400192' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:21 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400192' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400192/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400197" class="message" data-author="Me_Goes_RAWR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Me_Goes_RAWR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Me_Goes_RAWR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
+        {
+            if (info == null || info.Initiator == null || info.Weapon == null || info.HitEntity == null)
+            {
+                return;
+            }            BasePlayer player = (BasePlayer)info.Initiator;
+            ulong hitEntityOwnerID = entity.OwnerID != 0 ? entity.OwnerID : info.HitEntity.OwnerID;
+            if (hitEntityOwnerID == 0)
+            {
+                return;
+            }            // if (hitEntityOwnerID == player.userID)
+            //     return;            if (entity.ShortPrefabName.Contains(&quot;target&quot;))
+                return;            if (IO())
+            {
+                string tag = Clans.Call&lt;string&gt;(&quot;GetClanOf&quot;, player.userID);                if (tag != null)
+                {                    var clan = GetOnlineClanMembers(tag);
+                    if (clan.Contains(hitEntityOwnerID.ToString()))
+                        return;                }
+            }
+            string name = entity.ShortPrefabName.Replace(&quot;.entity&quot;, &quot;&quot;);
+            
+            if(entity is BuildingBlock)
+            {
+                var block = (BuildingBlock)entity;
+                name = block?.grade.ToString() + &quot; &quot; + entity.ShortPrefabName.Replace(&quot;.entity&quot;, &quot;&quot;).Replace(&quot;.&quot;, &quot; &quot;);
+            } else
+            {
+                foreach (var def in ItemManager.GetItemDefinitions())
+                {
+                    if (def.shortname == entity.ShortPrefabName)
+                    {
+                        name = def.displayName.english;
+                        break;
+                    }
+                }
+            }
+            
+            string MessageText = lang.GetMessage(&quot;BaseAttackedMessageTemplate&quot;, this, player.UserIDString)
+                                                .Replace(&quot;{Attacker}&quot;, player.displayName)
+                                                .Replace(&quot;{Owner}&quot;, GetDisplayNameByID(hitEntityOwnerID))
+                                                .Replace(&quot;{Weapon}&quot;, info.Weapon.GetOwnerItemDefinition().displayName.english)
+                                                .Replace(&quot;{Position}&quot;, String.Format(&quot;X: {0}, Y: {1}, Z:{2}&quot;, Math.Round(entity.transform.position.x, 2), Math.Round(entity.transform.position.y, 2), Math.Round(entity.transform.position.z, 2)))
+                                                .Replace(&quot;{Structure}&quot;, name)
+                                                .Replace(&quot;{Damage}&quot;, Math.Round(info.damageTypes.Total(), 2).ToString());            //get structure's percentage health remaining for check against threshold
+            int PercentHealthRemaining = (int)((entity.Health() / entity.MaxHealth()) * 100);
+            string rd = discordData.getID(hitEntityOwnerID);            if (IsPlayerActive(hitEntityOwnerID) &amp;&amp; IsPlayerNotificationCooledDown(hitEntityOwnerID, NotificationType.ServerNotification, Settings.ServerConfig.NotificationCooldownInSeconds))
+            {
+                if (PercentHealthRemaining &lt;= Settings.ServerConfig.ThresholdPercentageHealthRemaining)
+                {
+                    BasePlayer p = BasePlayer.activePlayerList.Find(x =&gt; x.userID == hitEntityOwnerID);
+                    if (rd != null)
+                    {
+                        Client.DiscordServer.GetGuildMember(Client, rd, (GuildMember) =&gt;
+                        {
+                            GuildMember.user.CreateDM(Client, (Channel) =&gt; {
+                                Channel.CreateMessage(Client, MessageText);
+                            });
+                        });
+                    }
+                    BasePlayer sp = BasePlayer.sleepingPlayerList.Find(x =&gt; x.userID == hitEntityOwnerID);
+                    if (sp == null)
+                        PrintToChat(p, MessageText);
+                    if (IO())
+                    {
+                        string tag = Clans.Call&lt;string&gt;(&quot;GetClanOf&quot;, hitEntityOwnerID);                        if (tag != null)
+                        {                            var clan = GetOnlineClanMembers(tag);                            foreach (String c in clan)
+                            {
+                                if (p.userID.ToString() != c)
+                                {
+                                    BasePlayer bp = BasePlayer.Find(c);
+                                    PrintToChat(bp, MessageText);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //Slack
+            if (Settings.SlackConfig.DoNotifyWhenBaseAttacked &amp;&amp; IsPlayerNotificationCooledDown(hitEntityOwnerID, NotificationType.SlackNotification, Settings.SlackConfig.NotificationCooldownInSeconds))
+            {
+                if (PercentHealthRemaining &lt;= Settings.SlackConfig.ThresholdPercentageHealthRemaining)
+                {
+                    SendSlackNotification(player, MessageText);
+                }
+            }
+            //Discord
+            if (Settings.DiscordConfig.DoNotifyWhenBaseAttacked &amp;&amp; IsPlayerNotificationCooledDown(hitEntityOwnerID, NotificationType.DiscordNotification, Settings.DiscordConfig.NotificationCooldownInSeconds))
+            {
+                if (PercentHealthRemaining &lt;= Settings.DiscordConfig.ThresholdPercentageHealthRemaining)
+                {
+                    if (rd != null) return;
+                    SendDiscordNotification(player, MessageText);
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>This is what it is in total. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Me_Goes_RAWR</a>,</span>
+                        <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400197' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 11, 2018 at 8:34 PM">May 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/bug-maybe-with-getting-explosions-and-hit-entities.30552/#post-400197' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400197/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

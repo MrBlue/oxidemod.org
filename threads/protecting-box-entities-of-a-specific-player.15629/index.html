@@ -1,0 +1,702 @@
+---
+layout: forums
+title: 'Protecting box entities of a specific player?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/' | prepend: site.baseurl }}">Protecting box entities of a specific player?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">isuelt</a>, <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 10, 2016 at 5:56 PM">Feb 10,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-175143" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Can anyone help me with some code to protect boxes and stashes of a <span
+                            style="text-decoration: underline"><i>specific player</i></span> from damage ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 10, 2016 at 5:56 PM">Feb 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/175143/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-175187" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m not home atm but you could use OnEntityTakeDamage, check for the type of object being damaged, use
+                        entityowner to check for owner, scale damage accordingly.<br /> There are plenty of examples on how to check the owner with entity owner, I can&#039;t think of any of my own
+                        off the top of my head but I think there is one on the overview.<br /> You can see how to scale damage in TeamDeathmatch /Slasher/ChopperSurvival<br />
+                        [DOUBLEPOST=1455176191,1455132843][/DOUBLEPOST] <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> List&lt;string&gt; PlayersWhoseBoxesCantBeDamaged = new List&lt;string&gt;(); // For this example I am using a List, the strings in the list would be player.UserIDString. You can add players in many different ways, and it doesn't necessarily have to be a list.        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo hitinfo) // Called when a entity takes damage
+        {
+            try
+            {
+                if (entity is StorageContainer &amp;&amp; hitinfo.Initiator is BasePlayer) // Player is attacking a storage container
+                {
+                    var box = entity.GetComponent&lt;StorageContainer&gt;();
+                    var owner = FindOwner(box); // Find the owner of the box using EntityOwner
+                    if (owner != &quot;&quot;) // Make sure there is a owner before proceeding
+                    {
+                        if (PlayersWhoseBoxesCantBeDamaged.Contains(owner))
+                        {
+                            hitinfo.damageTypes.ScaleAll(0); // Scales all damage types                          
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        private string FindOwner(BaseEntity entity) // Pinched from one of Calytic's plugins to use as a example on how to call from EntityOwner
+        {
+            object returnhook = null;
+            string ownerid = &quot;&quot;;
+            returnhook = EntityOwner?.Call(&quot;FindEntityData&quot;, entity);
+            if (returnhook != null)
+            {
+                if (!(returnhook is bool))
+                {
+                    ownerid = Convert.ToString(returnhook);
+                }
+            }
+            return ownerid; // Returns the owner ID as a string since that is what the function type is
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-175187' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 11, 2016 at 7:36 AM">Feb 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-175187' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/175187/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176784" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-175187" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not home atm but you could use OnEntityTakeDamage, check for the type of object being damaged, use entityowner to check for owner, scale
+                                        damage accordingly.<br /> There are plenty of examples on how to check the owner with entity owner, I can&#039;t think of any of my own off the top of my head
+                                        but I think there is one on the overview.<br /> You can see how to scale damage in TeamDeathmatch /Slasher/ChopperSurvival<br />
+                                        [DOUBLEPOST=1455176191,1455132843][/DOUBLEPOST] <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre> List&lt;string&gt; PlayersWhoseBoxesCantBeDamaged = new List&lt;string&gt;(); // For this example I am using a List, the strings in the list would be player.UserIDString. You can add players in many different ways, and it doesn't necessarily have to be a list.        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo hitinfo) // Called when a entity takes damage
+        {
+            try
+            {
+                if (entity is StorageContainer &amp;&amp; hitinfo.Initiator is BasePlayer) // Player is attacking a storage container
+                {
+                    var box = entity.GetComponent&lt;StorageContainer&gt;();
+                    var owner = FindOwner(box); // Find the owner of the box using EntityOwner
+                    if (owner != &quot;&quot;) // Make sure there is a owner before proceeding
+                    {
+                        if (PlayersWhoseBoxesCantBeDamaged.Contains(owner))
+                        {
+                            hitinfo.damageTypes.ScaleAll(0); // Scales all damage types                         
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        private string FindOwner(BaseEntity entity) // Pinched from one of Calytic's plugins to use as a example on how to call from EntityOwner
+        {
+            object returnhook = null;
+            string ownerid = &quot;&quot;;
+            returnhook = EntityOwner?.Call(&quot;FindEntityData&quot;, entity);
+            if (returnhook != null)
+            {
+                if (!(returnhook is bool))
+                {
+                    ownerid = Convert.ToString(returnhook);
+                }
+            }
+            return ownerid; // Returns the owner ID as a string since that is what the function type is
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><br /> Wow! Awesome reply. Thanks alot. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176784' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 15, 2016 at 2:29 AM">Feb 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176784' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176784/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176806" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="isuelt">
+                            <aside>
+                                <div class="attribution type">isuelt said: <a href="#post-176784" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Wow! Awesome reply. Thanks alot.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can now just check for the owner without EntityOwner as Rust now saves the owner itself. <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+if (AwesomeSteamIDList.Contains(entity.SteamID) &amp;&amp; entity is StorageContainer)
+   // Block Damage
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176806' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 15, 2016 at 6:17 AM">Feb 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176806' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176806/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176931" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-176806" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can now just check for the owner without EntityOwner as Rust now saves the owner itself.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+if (AwesomeSteamIDList.Contains(entity.SteamID) &amp;&amp; entity is StorageContainer)
+   // Block Damage
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176931' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 15, 2016 at 2:16 PM">Feb 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176931' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176931/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-176934" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="isuelt">
+                            <aside>
+                                <div class="attribution type">isuelt said: <a href="#post-176931" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks !</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>No problem <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176934' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 15, 2016 at 2:19 PM">Feb 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-176934' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/176934/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177605" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-176806" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can now just check for the owner without EntityOwner as Rust now saves the owner itself.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+if (AwesomeSteamIDList.Contains(entity.SteamID) &amp;&amp; entity is StorageContainer)
+   // Block Damage
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m having some problems could you give a more complete example of this? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177605' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 17, 2016 at 3:52 AM">Feb 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177605' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/177605/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177618" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="isuelt">
+                            <aside>
+                                <div class="attribution type">isuelt said: <a href="#post-177605" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m having some problems could you give a more complete example of this?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>List&lt;ulong&gt; playersWithProtectedBoxes = new List&lt;ulong&gt;();void OnEntityTakeDamage(BaseCombatEntity vic, HitInfo info)
+{
+if (vic == null || vic.SteamID == null)
+return;if (playersWithProtectedBoxes.Contains(vic.SteamID) &amp;&amp; vic is StorageContainer)
+info.damageTypes.scaleAll(0);
+} </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177618' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 17, 2016 at 5:44 AM">Feb 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177618' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/177618/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177699" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I get this error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Type `BaseCombatEntity' does not contain a definition for `SteamID' and no extension method `SteamID' of type `BaseCombatEntity' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177699' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 17, 2016 at 2:51 PM">Feb 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177699' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/177699/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177700" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="isuelt">
+                            <aside>
+                                <div class="attribution type">isuelt said: <a href="#post-177699" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I get this error:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Type `BaseCombatEntity' does not contain a definition for `SteamID' and no extension method `SteamID' of type `BaseCombatEntity' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yea sorry, wrote that quickly this morning on mobile. I will write you a working example once I am at home. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177700' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 17, 2016 at 2:52 PM">Feb 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-177700' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/177700/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-178023" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-177700" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yea sorry, wrote that quickly this morning on mobile. I will write you a working example once I am at home.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Can you still help me with this? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178023' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 18, 2016 at 5:23 PM">Feb 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178023' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/178023/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-178025" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="isuelt">
+                            <aside>
+                                <div class="attribution type">isuelt said: <a href="#post-178023" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Can you still help me with this?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+List&lt;ulong&gt; playersWithProtectedBoxes =[URL='http://www.google.com/search?q=new+msdn.microsoft.com']new[/URL] List&lt;ulong&gt;();void OnEntityTakeDamage(BaseCombatEntity vic, HitInfo info)
+{
+if(vic ==null|| vic.ToPlayer() ==null)
+    return;if(playersWithProtectedBoxes.Contains(vic.ToPlayer().userID) &amp;&amp; vic is StorageContainer)
+    info.damageTypes.scaleAll(0);
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178025' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 18, 2016 at 5:34 PM">Feb 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178025' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/178025/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-178348" class="message" data-author="isuelt">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="isuelt" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">isuelt</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for the help on this ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">isuelt</a>,</span>
+                        <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178348' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 19, 2016 at 1:51 AM">Feb 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/protecting-box-entities-of-a-specific-player.15629/#post-178348' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/178348/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

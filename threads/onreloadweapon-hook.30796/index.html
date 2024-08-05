@@ -1,0 +1,82 @@
+---
+layout: forums
+title: 'OnReloadWeapon hook'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/onreloadweapon-hook.30796/' | prepend: site.baseurl }}">OnReloadWeapon hook</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">wazzzup</a>, <a href="{{ '/threads/onreloadweapon-hook.30796/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 9, 2018 at 9:10 PM">Jun 9, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-403487" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> <br /> there are three hooks for reloading weapons<br /> OnReloadWeapon - when
+                        reload starts<br /> OnSwitchAmmo - if player switched ammo, fired before OnReloadWeapon<br /> OnReloadMagazine - in the end, right before calling Reload() function that finds
+                        ammo and puts it in the magazine, but there is one bad thing with it - in Reload() if it doesn&#039;t find current ammoType, it will search for any other possible ammoTypes for
+                        this weapon<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    public bool Reload(BasePlayer owner)
+    {
+      List&lt;Item&gt; list1 = owner.inventory.FindItemIDs(this.ammoType.itemid).ToList&lt;Item&gt;();
+      if (list1.Count == 0)
+      {
+        List&lt;Item&gt; list2 = new List&lt;Item&gt;();
+        owner.inventory.FindAmmo(list2, this.definition.ammoTypes);
+        if (list2.Count == 0)
+          return false;
+        list1 = owner.inventory.FindItemIDs(list2[0].info.itemid).ToList&lt;Item&gt;();
+        if (list1 == null || list1.Count == 0)
+          return false;
+        if (this.contents &gt; 0)
+        {
+          owner.GiveItem(ItemManager.CreateByItemID(this.ammoType.itemid, this.contents, 0UL), BaseEntity.GiveItemReason.Generic);
+          this.contents = 0;
+        }
+        this.ammoType = list1[0].info;
+      }
+</pre>{% endraw %}
+                        </div>so say, you have 10 ammo in AK and current ammoType = ammo.rifle, you press reload and drop your ammo.rifle, having ammo.rifle.explosive in the inventory, it will be
+                        reloaded in the weapon, but all three hooks won&#039;t ever know about this because of mentioned above code. <br /> So is there any chance to fix this? maybe fire additional
+                        hook OnSwitchAmmo when no such amo found? or else method?<br />
+                        <br /> there is one bad method how this can be coded without hook changes, but...<br /> and thanks for your time reading this <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/onreloadweapon-hook.30796/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Jun 9, 2018 at 9:10 PM">Jun
+                                9, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onreloadweapon-hook.30796/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/403487/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,332 @@
+---
+layout: forums
+title: 'Useful Functions [LUA]'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/useful-functions-lua.10207/' | prepend: site.baseurl }}">Useful Functions [LUA]</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Norn</a>, <a href="{{ '/threads/useful-functions-lua.10207/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 14, 2015 at 4:24 AM">Jul 14, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-108171" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <span style="text-decoration: underline">Post <b>functions</b> that you have found/created that would be <b>useful</b> for plugin developers using the <b>LUA</b>
+                            language.</span><br />
+                        <br /> Alternative threads can be created and maintained by users that program in any of the other three languages.<br />
+                        <br />
+                        <b>Rules:</b><br />
+                        <ul>
+                            <li>DO NOT POST UNTESTED CODE!</li>
+                            <li>Do not spam</li>
+                            <li>Do not go offtopic</li>
+                            <li>If you post a function which is not created by yourself, you <span style="text-decoration: underline">have to</span> give the original author credits</li>
+                            <li>And also if you use a function in your plugin that you copied from this topic, don&#039;t forget to give the original author credits</li>
+                        </ul><b>Example:</b><br />
+                        <br /> printf<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function printf(...) print(string.format(...)) end</pre>{% endraw %}
+                        </div>Example Usage:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+                printf(&quot;Hello %s&quot;, username)
+</pre>{% endraw %}
+                        </div>This is a copy of a thread I originally contributed to on another modification. The thread ended up at 452 pages, I hope we can achieve similar standards here.<br />
+                        <br />
+                        <b>Beginning of thread:<br /> -----------------------------------------------------------------------------------------------------------------------</b><br />
+                        [DOUBLEPOST=1436844668][/DOUBLEPOST]FindPlayerByName(name)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:FindPlayerByName( playerName )
+    -- Check if a player name was supplied.
+    if not playerName then return end    -- Set the player name to lowercase to be able to search case insensitive.
+    playerName = string.lower( playerName )    -- Setup some variables to save the matching BasePlayers with that partial
+    -- name.
+    local matches = {}
+    local itPlayerList = global.BasePlayer.activePlayerList:GetEnumerator()    -- Iterate through the online player list and check for a match.
+    while itPlayerList:MoveNext() do
+        -- Get the player his/her display name and set it to lowercase.
+        local displayName = string.lower( itPlayerList.Current.displayName )        -- Look for a match.
+        if string.find( displayName, playerName, 1, true ) then
+            -- Match found, add the player to the list.
+            table.insert( matches, itPlayerList.Current )
+        end        if string.len( playerName ) == 17 then
+            if string.find( rust.UserIDFromPlayer( itPlayerList.Current ), playerName ) then
+                -- Match found, add the player to the list.
+                table.insert( matches, itPlayerList.Current )
+            end
+        end
+    end    -- Return all the matching players.
+    return matches
+end
+</pre>{% endraw %}
+                        </div><b>Example usage:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+local targetPlayer = self:FindPlayerByName( namestring )
+Item = global.ItemManager.CreateByName(&quot;stones&quot;, &quot;1000&quot;);
+Item.isBlueprint = false;
+local Inventory = targetPlayer.inventory;
+Inventory:GiveItem(Item, nil);
+</pre>{% endraw %}
+                        </div><b>Credits:</b> Mughisi<br />
+                        <br />
+                        <b>---------------------------------------------------------------------------</b><br />
+                        <br /> [DOUBLEPOST=1436844912][/DOUBLEPOST]SetHostname(hostname)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:SetHostname(hostname)
+    rust.RunServerCommand(&quot;server.hostname&quot;, hostname)
+    rust.RunServerCommand(&quot;server.writecfg&quot;)
+end
+</pre>{% endraw %}
+                        </div><b>Usage:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SetHostname(hostname)</pre>{% endraw %}
+                        </div><b>---------------------------------------------------------------------------</b><br />
+                        <br /> [DOUBLEPOST=1436845117][/DOUBLEPOST]Print(self, message)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+local function Print(self, message) print(&quot;[&quot; .. self.Title .. &quot;] &quot; .. message) end
+</pre>{% endraw %}
+                        </div>This will make printing dynamic in that it you will only have to change self.Title and the Print function will always display that.<br />
+                        <br />
+                        <b>Example Usage:</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Print(self, &quot;You need to set the hostname by using /&quot; .. self.Config.Command .. &quot; &lt;newhostname&gt;&quot;)
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 14, 2015 at 4:41 AM">Jul 14, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/useful-functions-lua.10207/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2015 at 4:24 AM">Jul 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/useful-functions-lua.10207/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/108171/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-108174" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Add multiple commands from a config value or hard coded values. This just reduces having multiple lines calling
+                        the same thing.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    for _, cmd in pairs({'cmd1','cmd2'}) do
+        command.AddChatCommand(cmd, self.Plugin, &quot;cmdFunction&quot;)
+    end</pre>{% endraw %}
+                        </div>Default config loading.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:LoadDefaultConfig()
+    -- Settings
+    self.Config.Settings = self.Config.Settings or {}
+    self.Config.Settings.Setting1 = self.Config.Settings.Setting1 or &quot;true&quot;
+    self.Config.Settings.Setting2 = self.Config.Settings.Setting2 or 5
+    -- Messages
+    self.Config.Messages = self.Config.Messages or {}
+    self.Config.Messages.Message1 = self.Config.Messages.Message1 or &quot;Message One&quot;
+    self.Config.Messages.Message2 = self.Config.Messages.Message2 or &quot;Message Two&quot;
+    self:SaveConfig()
+end</pre>{% endraw %}
+                        </div>Check user for a permission, if they are a mod or higher they have access.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function HasPermission(player, perm)
+    local userId = rust.UserIDFromPlayer(player)
+    if player:GetComponent(&quot;BaseNetworkable&quot;).net.connection.authLevel &gt; 0 then
+        return true
+    end
+    if permission.UserHasPermission(userId, perm) then
+        return true
+    end
+    return false
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/useful-functions-lua.10207/#post-108174' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2015 at 4:44 AM">Jul 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/useful-functions-lua.10207/#post-108174' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/108174/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-108247" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Split chat messages into multiple messages after set amount of character limit. Its intelligent and doesnt cut
+                        words. Returns a table with all messages.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function SplitLongMessages(msg, charlimit)
+    local length = msg:len()
+    local msgTbl = {}
+    if length &gt; 128 then
+        msg = msg:sub(1, 128)
+    end
+    if length &gt; charlimit then
+        while length &gt; charlimit do
+            local subStr = msg:sub(1, charlimit)
+            local first, last = subStr:reverse():find(&quot; &quot;)
+            if first then
+                subStr = subStr:sub(1, -first)
+            end
+            table.insert(msgTbl, subStr)
+            msg = msg:sub(subStr:len() + 1)
+            length = msg:len()
+        end
+        table.insert(msgTbl, msg)
+    else
+        table.insert(msgTbl, msg)
+    end
+    return msgTbl
+end</pre>{% endraw %}
+                        </div>Converts a ConsoleSystem.Arg used in chat and console commands to a lua table.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function ArgsToTable(args, src)
+    local argsTbl = {}
+    if src == &quot;chat&quot; then
+        local length = args.Length
+        for i = 0, length - 1, 1 do
+            argsTbl[i + 1] = args[i]
+        end
+        return argsTbl
+    end
+    if src == &quot;console&quot; then
+        local i = 1
+        while args:HasArgs(i) do
+            argsTbl[i] = args:GetString(i - 1)
+            i = i + 1
+        end
+        return argsTbl
+    end
+    return argsTbl
+end</pre>{% endraw %}
+                        </div>Usage:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>-- chat command
+function PLUGIN:cmdTest(player, cmd, args)
+    local args = ArgsToTable(args, &quot;chat&quot;)
+    local 1st_arg = args[1]
+    local 2nd_arg = args[2]
+    ...
+end
+-- console command
+function PLUGIN:ccmdTest(arg)
+    local args = ArgsToTable(arg, &quot;console&quot;)
+    local 1st_arg = args[1]
+    local 2nd_arg = args[2]
+    ...
+end</pre>{% endraw %}
+                        </div>Calculate hours, minutes and seconds until specific timestamp and return as formatted string.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function TimeUntilTimestamp(timestamp)
+    local now = time.GetUnixTimestamp()
+    local time = timestamp - now
+    local hours = tostring(math.floor(time / 3600)):format(&quot;%02.f&quot;)
+    local minutes = tostring(math.floor(time / 60 - (hours * 60))):format(&quot;%02.f&quot;)
+    local seconds = tostring(math.floor(time - (hours * 3600) - (minutes * 60))):format(&quot;%02.f&quot;)
+    return tostring(hours..&quot;h &quot;..minutes..&quot;m &quot;..seconds..&quot;s&quot;)
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/useful-functions-lua.10207/#post-108247' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2015 at 9:36 AM">Jul 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/useful-functions-lua.10207/#post-108247' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/108247/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

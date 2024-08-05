@@ -1,0 +1,138 @@
+---
+layout: forums
+title: 'On gathering items from boxes/barrels'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/' | prepend: site.baseurl }}">On gathering items from boxes/barrels</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Tunnleram</a>, <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 4, 2017 at 7:44 PM">Feb 4,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-293355" class="message" data-author="Tunnleram">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tunnleram" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tunnleram</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m expanding one of the discontinued stats plugins for my server and it&#039;s working for resources like
+                        wood (from chopping) or cloth (from gathering hemp) however, it doesn&#039;t seem to work when gathering items from boxes or barrels.<br />
+                        <br /> Here&#039;s what I got:<br />
+                        <br /> void OnDispenserGather(ResourceDispenser dispenser, BaseEntity entity, Item item) {<br /> if(entity is BasePlayer) { <br /> executeQuery(&quot;INSERT INTO
+                        player_gather_resource (player, resource, count, date) VALUES (@0, @1, @2, @3)&quot; +<br /> &quot;ON DUPLICATE KEY UPDATE count = count + &quot; + item.amount,
+                        ((BasePlayer)entity).userID, item.info.displayName.english, item.amount, getDate());<br /> }<br /> }<br />
+                        <br /> Is OnDispenserGather the correct hook? Or is there another one for this?<br />
+                        <br /> Thanks in advance.<br /> [DOUBLEPOST=1486237530][/DOUBLEPOST]Oh, sorry I have this part too<br />
+                        <br /> void OnCollectiblePickup(Item item, BasePlayer player) {<br /> executeQuery(&quot;INSERT INTO player_gather_resource (player, resource, count, date) VALUES (@0, @1, @2,
+                        @3)&quot; +<br /> &quot;ON DUPLICATE KEY UPDATE count = count + &quot; + item.amount, player.userID, item.info.displayName.english, item.amount, getDate());<br /> } <br />
+                        <br /> That&#039;s for the hemp, wood and stone laying around on the ground.<br />
+                        <br /> Neither works for barrels and boxes, it appears. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tunnleram</a>,</span>
+                        <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2017 at 7:44 PM">Feb 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/293355/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-293382" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> OnDispenserGather and On CollectiblePickup should work for you. I would test it to be sure. For barrels and
+                        boxes, im not sure entirely. I guess you could scan for nearby items with OnEntityDeath, and check if it is a Item. If so, get the item, amount, player, etc. Then do whatever
+                        you want. There might be a better way. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/#post-293382' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2017 at 8:35 PM">Feb 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/#post-293382' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/293382/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-293924" class="message" data-author="Tunnleram">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tunnleram" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tunnleram</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It seems that OnDispenserGather works for chopping wood and picking stone and OnCollectiblePickup works well for
+                        hemp and other things you pickup, but neither seems to work for items in barrels and boxes.<br />
+                        <br /> I&#039;ll try using OnEntityDeath, but it sounds like it&#039;ll be a pain. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tunnleram</a>,</span>
+                        <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/#post-293924' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 5, 2017 at 8:08 PM">Feb 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/on-gathering-items-from-boxes-barrels.23519/#post-293924' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/293924/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

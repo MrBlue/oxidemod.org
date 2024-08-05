@@ -1,0 +1,134 @@
+---
+layout: forums
+title: '[Snippet] Updating configs in Python'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/snippet-updating-configs-in-python.16377/' | prepend: site.baseurl }}">[Snippet] Updating configs in Python</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sqroot</a>, <a href="{{ '/threads/snippet-updating-configs-in-python.16377/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 4, 2016 at 5:04 PM">Mar 4,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-184158" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> A lot of plugins seem to make a huge effort to keep their configurations up to date.<br /> Here&#039;s a small
+                        Python-snippet that matches the loaded config against the expected default config and overwrites parts from config that don&#039;t match the default config.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>only_check_type = [(list, tuple), (int, float), str, bool]
+def mask_default_cfg(dcfg, cfg):
+    # causes changes in cfg to affect dcfg,
+    # which is fine since we don't care about the default cfg
+    # after masking
+    if dcfg is None:
+        return dcfg
+    if isinstance(dcfg, dict):
+        if not isinstance(cfg, dict):
+            return dcfg
+        for k, v in dcfg.items():
+            if k not in cfg:
+                cfg[k] = v
+                continue
+            cfg[k] = mask_default_cfg(v, cfg[k])
+        return cfg
+    for t in only_check_type:
+        if isinstance(dcfg, t):
+            return cfg if isinstance(cfg, t) else dcfg
+    raise TypeError(&quot;did not expect type %s in default cfg&quot; % type(dcfg))</pre>{% endraw %}
+                        </div>This recursively checks whether the structure of nested dicts match and whether the expected value types match as well.<br />
+                        <br /> Here are some examples of what it does:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>dcfg
+{
+    &quot;Foo&quot;: &quot;Bar&quot;
+}
+cfg
+{}
+result
+{
+    &quot;Foo&quot;: &quot;Bar&quot;
+}dcfg
+{
+    &quot;Foo&quot;: &quot;Bar&quot;
+}
+cfg
+{
+    &quot;Foo&quot;: 1
+}
+result
+{
+    &quot;Foo&quot;: &quot;Bar&quot;
+}dcfg
+{
+    &quot;Foo&quot;: {
+        &quot;Bar&quot;: {
+            &quot;Foobar&quot;: 3,
+            &quot;Barfoo&quot;: &quot;a value&quot;
+        }
+    }
+}
+cfg
+{
+    &quot;Foo&quot;: {
+        &quot;Bar&quot;: {
+            &quot;Foobar&quot;: &quot;a string&quot;,
+            &quot;Barfoo&quot;: &quot;another value&quot;
+        }
+    }
+}
+result
+{
+    &quot;Foo&quot;: {
+        &quot;Bar&quot;: {
+            &quot;Foobar&quot;: 3,
+            &quot;Barfoo&quot;: &quot;another value&quot;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>It will only recursively validate dictionaries, not things like lists of dictionaries or nested lists. Only dictionaries have their structure validated, since for
+                        dictionaries, it is fairly common for the default config to contain the full structure you can use to automatically match configs, while for lists this can not be guaranteed
+                        (the default might be empty).<br />
+                        <br /> Lists and tuples are treated interchangably, as well as floats and ints (floats in the default config may be ints as well in the config).<br />
+                        <br /> Keep in mind that this creates a new type that links together cfg and dcfg, so mutating the resulting type will mutate cfg and dcfg. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/snippet-updating-configs-in-python.16377/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 4, 2016 at 5:04 PM">Mar 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/snippet-updating-configs-in-python.16377/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/184158/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

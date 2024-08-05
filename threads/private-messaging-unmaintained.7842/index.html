@@ -1,0 +1,360 @@
+---
+layout: forums
+title: 'Private Messaging [Unmaintained]'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/private-messaging-unmaintained.7842/' | prepend: site.baseurl }}">Private Messaging [Unmaintained]</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-support.31/' | prepend: site.baseurl }}">Plugin Support</a>' started by <a class="username"
+            dir="auto">Domestos</a>, <a href="{{ '/threads/private-messaging-unmaintained.7842/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 18, 2015 at 5:43 PM">Apr 18,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-80294" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Domestos submitted a new resource:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/private-messaging.969/" class="internalLink">Private Messaging</a> - Allows users to chat privately with each other<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><b>Description</b><br /> This plugin allows all users to send private messages to each other<br />
+                                        <br />
+                                        <b>Usage</b><br />
+                                        <div style="padding-left: 30px">/pm &lt;name&gt; &lt;message&gt;<br /> /r &lt;message&gt; -- this replies to the last person you got a pm from&#8203;</div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://oxidemod.org/plugins/private-messaging.969/" class="internalLink">Read more about this resource...</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 18, 2015 at 5:43 PM">Apr 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/80294/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81000" class="message" data-author="Jarsky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Jarsky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Jarsky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This breaks with the Oxide 2.0.773 onwards because of chatName<br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">11:03 AM [Error] Failed to call hook &#039;SendHelpText&#039; on plugin &#039;Private Messaging&#039;<br /> File: privatemessage.lua Line: 116
+                                        attempt to index field &#039;Config&#039; (a nil value):<br /> at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0<br />
+                                        at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0<br /> at (wrapper
+                                        managed-to-native) System.Reflection.MonoMethod:InternalInvoke (object,object[],System.Exception&amp;)<br /> at System.Reflection.MonoMethod.Invoke
+                                        (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00000] in
+                                        &lt;filename unknown&gt;:0</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Fixed it with the below<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:LoadDefaultConfig()
+    self.Config.chatName = self.Config.chatName or &quot;Oxide&quot;
+    self:SaveConfig()
+end</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    rust.SendChatMessage(netuser, self.Config.chatName, cmd)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 21, 2015 at 12:19 AM">Apr 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Jarsky</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81000' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 12:11 AM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81000' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81000/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81003" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> there is nothing to fix, this is a legacy plugin not experime,tal <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81003' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 12:18 AM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81003' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81003/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81004" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Jarsky">
+                            <aside>
+                                <div class="attribution type">Jarsky said: <a href="#post-81000" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">This breaks with the Oxide 2.0.773 onwards because of chatName<br />
+                                        <br /> Fixed it with the below<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>function PLUGIN:LoadDefaultConfig()
+    self.Config.chatName = self.Config.chatName or &quot;Oxide&quot;
+    self:SaveConfig()
+end</pre>{% endraw %}
+                                        </div>
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>    rust.SendChatMessage(netuser, self.Config.chatName, cmd)</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It won&#039;t in the future, as that will be an optional argument soon.<br /> [DOUBLEPOST=1429571961][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote"
+                            data-author="Reneb">
+                            <aside>
+                                <div class="attribution type">Reneb said: <a href="#post-81003" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">there is nothing to fix, this is a legacy plugin not experime,tal</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s a valid change. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81004' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 12:19 AM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81004' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81004/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81005" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> nvm me ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81005' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 12:20 AM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-81005' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81005/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-165687" class="message" data-author="kaku924">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kaku924" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kaku924</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Can u do with this base like a faction chat? (chat to all people of X group?, like the old factions plugins but
+                        just the chat)<br />
+                        <br /> Thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kaku924</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-165687' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 19, 2016 at 3:26 PM">Jan 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-165687' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/165687/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-201073" class="message" data-author="My Name is Jeff">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="My Name is Jeff" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">My Name is Jeff</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It says unknown command when I try to PM someone<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&gt; oxide.reload privatemessage
+[Oxide] 20:07 [Info] Unloaded plugin Private Messaging v1.0.0 by #Domestos
+[Oxide] 20:07 [Info] Loaded plugin Private Messaging v1.0.0 by #Domestos
+[Oxide] 20:07 [Error] Failed to initialize plugin 'privatemessage v1.0.0'
+File: privatemessage.lua Line: 10 invalid arguments to method call:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.HandleAddedToManager (Oxide.Core.Plugins.PluginManager manager) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.PluginManager.AddPlugin (Oxide.Core.Plugins.Plugin plugin) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.OxideMod.PluginLoaded (Oxide.Core.Plugins.Plugin plugin) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 29, 2016 at 4:27 AM">Apr 29, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">My Name is Jeff</a>,</span>
+                        <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-201073' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2016 at 4:09 AM">Apr 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/private-messaging-unmaintained.7842/#post-201073' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/201073/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

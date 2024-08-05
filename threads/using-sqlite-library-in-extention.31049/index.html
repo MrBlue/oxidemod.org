@@ -1,0 +1,109 @@
+---
+layout: forums
+title: 'Using sqlite Library in extention'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/using-sqlite-library-in-extention.31049/' | prepend: site.baseurl }}">Using sqlite Library in extention</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sililia</a>, <a href="{{ '/threads/using-sqlite-library-in-extention.31049/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 3, 2018 at 9:52 PM">Jul 3,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-406742" class="message" data-author="sililia">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sililia" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sililia</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am trying to use the SQLite Libray in my extension. I&#039;m unsure as to why, but for some reason my delegate
+                        sometimes gets called and sometimes it doesn&#039;t. I know this because &#039;wait&#039; timesout about 70% of the time. Below in the first snippest is how the library is
+                        initialised. The connection to the database is in &#039;open&#039; state.<br /> I tried loading it directly from oxide, but i was getting a &quot;Null reference&quot;
+                        exception.<br /> &#039;Databases&#039; is a dictionary containing instances of my class &#039;database&#039; which inherits from a class that implements the first
+                        snipest.<br />
+                        <br /> The second snipest is the execution of the query, the catch statement is never executed since nothing prints to the console, and it doesn&#039;t seem like my delegate is
+                        ever invoked.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        /// &lt;summary&gt;
+        /// An instance of Sqlite Lib
+        /// &lt;/summary&gt;
+        private static readonly Core.SQLite.Libraries.SQLite Sql = new Core.SQLite.Libraries.SQLite();        private readonly object _sqlSync = new object();        /// &lt;summary&gt;
+        /// Gets an instance of the MySql core library
+        /// &lt;/summary&gt;
+        public Core.SQLite.Libraries.SQLite SqlProvider
+        {
+            get
+            {
+                lock (_sqlSync)
+                    return Sql;
+            }
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+var wait = new ManualResetEvent(false);Databases[&quot;someDb&quot;].SqlProvider.Query(Sql.Builder.Append(&quot;SELECT version FROM DBVERSION&quot;), Databases[&quot;someDb&quot;].ConnectionHandler.Connection,
+    delegate (List&lt;Dictionary&lt;string, object&gt;&gt; result)
+    {
+        try
+        {
+            if (result?.Count &lt; 1)
+            {
+                currentVersion = null;
+                wait.Set();
+                return;
+            }            // set current version from record
+            currentVersion = new Version((string)result[0][&quot;version&quot;]);
+        }
+        catch (Exception e)
+        {
+            Interface.Oxide.RootLogger.Write(LogType.Warning, &quot;Couldn't read database version.&quot;);
+#if DEBUG
+            Interface.Oxide.RootLogger.Write(LogType.Error, $&quot;{e}&quot;);
+#endif
+            currentVersion = null;
+        }
+        // Signal thread to contiue
+        wait.Set();
+    });wait.WaitOne(ServerConfig.Timeout * 1000);
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sililia</a>,</span>
+                        <a href="{{ '/threads/using-sqlite-library-in-extention.31049/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 3, 2018 at 9:52 PM">Jul 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-sqlite-library-in-extention.31049/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406742/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

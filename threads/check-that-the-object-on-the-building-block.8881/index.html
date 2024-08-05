@@ -1,0 +1,147 @@
+---
+layout: forums
+title: 'Solved - Check that the object on the building block'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/' | prepend: site.baseurl }}">Check that the object on the building
+            block</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Sanlerus</a>, <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/' | prepend: site.baseurl }}"><span class="DateTime" title="May 28, 2015 at 7:46 AM">May 28,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-93427" class="message" data-author="Sanlerus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sanlerus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sanlerus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi guys. How to check the object deployed on the building block?<br /> [DOUBLEPOST=1432798601][/DOUBLEPOST] <div
+                            class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+RaycastHit hit;
+Physics.Raycast(barricade.transform.position, Vector3.down, out hit);
+if(hit.collider.GetComponentInParent&lt;BuildingBlock&gt;()) continue;
+</pre>{% endraw %}
+                        </div>? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 28, 2015 at 9:19 AM">May 28, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sanlerus</a>,</span>
+                        <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 28, 2015 at 7:46 AM">May 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/93427/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-93464" class="message" data-author="apocdev">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="apocdev" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">apocdev</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">That&#039;d probably be the easiest method, however I&#039;ve found that that specific one will sometimes
+                        &quot;hit&quot; the object itself, and not the building block.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private bool IsAboveBuildingBlock(Vector3 position, float maxDistance = 1f)
+        {
+            foreach (var hit in Physics.RaycastAll(position, Vector3.down, maxDistance))
+            {
+                if (hit.collider.GetComponentInParent&lt;BuildingBlock&gt;() != null)
+                    return true;
+            }
+            return false;
+        }</pre>{% endraw %}
+                        </div>That should allow you to more easily detect it. (Set maxDistance to a usable value) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">apocdev</a>,</span>
+                        <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/#post-93464' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 28, 2015 at 1:11 PM">May 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/#post-93464' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/93464/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-93652" class="message" data-author="Sanlerus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sanlerus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sanlerus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thank man! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sanlerus</a>,</span>
+                        <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/#post-93652' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 28, 2015 at 10:30 PM">May 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-that-the-object-on-the-building-block.8881/#post-93652' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/93652/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

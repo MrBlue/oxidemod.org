@@ -1,0 +1,445 @@
+---
+layout: forums
+title: 'Solved - C# - Storing and Retrieving Data'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/c-storing-and-retrieving-data.9616/' | prepend: site.baseurl }}">C# - Storing and Retrieving Data</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">AnExiledGod</a>, <a href="{{ '/threads/c-storing-and-retrieving-data.9616/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 20, 2015 at 4:20 PM">Jun 20,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-101236" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I followed the docs on storing and retrieving data, and it isn&#039;t working 100%. The data is stored everytime a
+                        player respawns. (It&#039;s set to respawn for easy testing)<br />
+                        <br /> This leaves me to thing that the playTimeData.Players.Contains(info) isn&#039;t being checked properly.<br />
+                        <br /> Could someone provide me with an idea as to what is wrong?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;PlayTime&quot;, &quot;AnExiledGod&quot;, 1.0)]
+    [Description(&quot;Logs players play time and allows you to view the players play time with a command.&quot;)]
+    public class PlayTime : RustPlugin
+    {
+        class PlayTimeData
+        {
+            public HashSet&lt;PlayerInfo&gt; Players = new HashSet&lt;PlayerInfo&gt;();            public PlayTimeData()
+            {
+            }
+        }        class PlayerInfo
+        {
+            public string SteamID;
+            public string Name;            public PlayerInfo()
+            {
+            }            public PlayerInfo(BasePlayer player)
+            {
+                SteamID = player.userID.ToString();
+                Name = player.displayName;
+            }
+        }        PlayTimeData playTimeData;        private void Loaded()
+        {
+            playTimeData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayTimeData&gt;(&quot;PlayTime&quot;);
+        }        void OnPlayerRespawned(BasePlayer player)
+        {
+            var info = new PlayerInfo(player);
+            if (playTimeData.Players.Contains(info))
+            {
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            }
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+                playTimeData.Players.Add(info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;PlayTime&quot;, playTimeData);
+            }
+        }        void OnPlayerDisconnected(BasePlayer player)
+        {
+            Puts(&quot;OnPlayerDisconnected works!&quot;);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/c-storing-and-retrieving-data.9616/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2015 at 4:20 PM">Jun 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-storing-and-retrieving-data.9616/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101236/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101244" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">the PlayTimeData uses a HashSet&lt;PlayerInfo&gt; and contains checks against an object hash, so when you create a
+                        new instance of PlayerInfo the Contains method will never return true since the new object has a new hash...you can try it this way:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;PlayTime&quot;, &quot;AnExiledGod&quot;, 1.0)]
+    [Description(&quot;Logs players play time and allows you to view the players play time with a command.&quot;)]
+    public class PlayTime : RustPlugin
+    {
+        class PlayTimeData
+        {
+            public Dictionary&lt;string, PlayerInfo&gt; Players = new Dictionary&lt;string, PlayerInfo&gt;();            public PlayTimeData()
+            {
+            }
+        }        class PlayerInfo
+        {
+            public string SteamID;
+            public string Name;            public PlayerInfo()
+            {
+            }            public PlayerInfo(BasePlayer player)
+            {
+                SteamID = player.userID.ToString();
+                Name = player.displayName;
+            }
+        }        PlayTimeData playTimeData;        private void Loaded()
+        {
+            playTimeData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayTimeData&gt;(&quot;PlayTime&quot;);
+        }        void OnPlayerRespawned(BasePlayer player)
+        {
+            var info = new PlayerInfo(player);
+            if (playTimeData.Players.ContainsKey(info.SteamID))
+            {
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            }
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+                playTimeData.Players.Add(info.SteamID, info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;PlayTime&quot;, playTimeData);
+            }
+        }        void OnPlayerDisconnected(BasePlayer player)
+        {
+            Puts(&quot;OnPlayerDisconnected works!&quot;);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101244' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2015 at 4:39 PM">Jun 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101244' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101244/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101329" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-101244" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">the PlayTimeData uses a HashSet&lt;PlayerInfo&gt; and contains checks against an object hash, so when you create a new instance of PlayerInfo the
+                                        Contains method will never return true since the new object has a new hash...you can try it this way:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using System.Collections.Generic;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;PlayTime&quot;, &quot;AnExiledGod&quot;, 1.0)]
+    [Description(&quot;Logs players play time and allows you to view the players play time with a command.&quot;)]
+    public class PlayTime : RustPlugin
+    {
+        class PlayTimeData
+        {
+            public Dictionary&lt;string, PlayerInfo&gt; Players = new Dictionary&lt;string, PlayerInfo&gt;();            public PlayTimeData()
+            {
+            }
+        }        class PlayerInfo
+        {
+            public string SteamID;
+            public string Name;            public PlayerInfo()
+            {
+            }            public PlayerInfo(BasePlayer player)
+            {
+                SteamID = player.userID.ToString();
+                Name = player.displayName;
+            }
+        }        PlayTimeData playTimeData;        private void Loaded()
+        {
+            playTimeData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayTimeData&gt;(&quot;PlayTime&quot;);
+        }        void OnPlayerRespawned(BasePlayer player)
+        {
+            var info = new PlayerInfo(player);
+            if (playTimeData.Players.ContainsKey(info.SteamID))
+            {
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            }
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+                playTimeData.Players.Add(info.SteamID, info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;PlayTime&quot;, playTimeData);
+            }
+        }        void OnPlayerDisconnected(BasePlayer player)
+        {
+            Puts(&quot;OnPlayerDisconnected works!&quot;);
+        }
+    }
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That&#039;s exactly what I was looking for! Thank you very much! Still new to C# <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br /> [DOUBLEPOST=1434849481,1434831538][/DOUBLEPOST]I know I marked this as solved, but could you help me again?<br />
+                        <br /> The data that is stored is like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;Players&quot;: {
+    &quot;76561198051290806&quot;: {
+      &quot;SteamID&quot;: &quot;76561198051290806&quot;,
+      &quot;Name&quot;: &quot;AnExiledGod&quot;,
+      &quot;LastLoginTime&quot;: 1434844747,
+      &quot;Played&quot;: 0
+    }
+  }
+}</pre>{% endraw %}
+                        </div>My code is<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using Oxide.Core;
+using System;
+using System.Globalization;namespace Oxide.Plugins
+{
+    [Info(&quot;PlayTime&quot;, &quot;AnExiledGod&quot;, 1.0)]
+    [Description(&quot;Logs players play time and allows you to view the players play time with a command.&quot;)]
+    public class PlayTime : RustPlugin
+    {
+        class PlayTimeData
+        {
+            public Dictionary&lt;string, PlayerInfo&gt; Players = new Dictionary&lt;string, PlayerInfo&gt;();            public PlayTimeData()
+            {
+            }
+        }        class PlayerInfo
+        {
+            public string SteamID;
+            public string Name;
+            public long LastLoginTime;
+            public int Played;            public PlayerInfo()
+            {
+            }            public PlayerInfo(BasePlayer player)
+            {
+                SteamID = player.userID.ToString();
+                Name = player.displayName;
+                LastLoginTime = GrabCurrentTimestamp();
+                Played = 0;
+            }
+        }        PlayTimeData playTimeData;        private void Loaded()
+        {
+            playTimeData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayTimeData&gt;(&quot;PlayTime&quot;);
+        }        void OnPlayerRespawned(BasePlayer player)
+        {
+            var info = new PlayerInfo(player);            if (playTimeData.Players.ContainsKey(info.SteamID))
+            {
+                Puts(&quot;Player already has a PlayTime log.&quot;);                long lastLogin = playTimeData.Players[info.SteamID][&quot;LastLoginTime&quot;];                long totalPlayed = GrabCurrentTimestamp() - lastLogin;
+                Puts(&quot;Total Played: &quot; + totalPlayed);
+            }
+            else
+            {
+                Puts(&quot;Saving new player to PlayTime log.&quot;);
+                playTimeData.Players.Add(info.SteamID, info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;PlayTime&quot;, playTimeData);
+            }
+        }        void OnPlayerDisconnected(BasePlayer player)
+        {
+            Puts(&quot;OnPlayerDisconnected works!&quot;);
+        }        private static long GrabCurrentTimestamp()
+        {
+            long timestamp = 0;
+            long ticks = DateTime.UtcNow.Ticks - DateTime.Parse(&quot;01/01/1970 00:00:00&quot;).Ticks;
+            ticks /= 10000000;
+            timestamp = ticks;            return timestamp;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>I am attempting on line 56 to grab the LastLoginTime from the field, but this doesn&#039;t work. I realized after a lot of playing around that it&#039;s stored as a type
+                        of PlayerInfo, do you know how I can access that information individually? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101329' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 21, 2015 at 2:18 AM">Jun 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101329' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101329/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101411" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Try:<br /> long lastLogin = playTimeData.Players[info.SteamID].LastLoginTime; <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101411' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 21, 2015 at 2:34 AM">Jun 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101411' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101411/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101413" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-101411" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Try:<br /> long lastLogin = playTimeData.Players[info.SteamID].LastLoginTime;</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Wow, I could have sworn I&#039;d tried that, but I apparently didn&#039;t, because now it&#039;s working. Again, I appreciate it. I hate running into these tiny little
+                        mistakes <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101413' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 21, 2015 at 3:05 AM">Jun 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-storing-and-retrieving-data.9616/#post-101413' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101413/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

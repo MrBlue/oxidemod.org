@@ -1,0 +1,336 @@
+---
+layout: forums
+title: 'Solved - Detecting cupboard position?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/detecting-cupboard-position.23168/' | prepend: site.baseurl }}">Detecting cupboard position?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sami37</a>, <a href="{{ '/threads/detecting-cupboard-position.23168/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 20, 2017 at 11:51 PM">Jan 20,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-287257" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I am trying to detect cupboard position while player build.<br /> I just try with RaycastAll but i can&#039;t get it working, any tips?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Facepunch.Extend;
+using Newtonsoft.Json.Linq;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;CupLimiter&quot;, &quot;sami37&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;Limit cupboard placement&quot;)]
+    class CupLimiter : RustPlugin
+    {
+        #region Oxide Hooks
+        private FieldInfo serverinput;        void OnServerInitialized()
+        {
+            serverinput = typeof(BasePlayer).GetField(&quot;serverInput&quot;, (BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic));
+        }        private void OnEntityBuilt(Planner plan, GameObject ent)
+        {
+            var cupboard = ent.GetComponent&lt;BuildingPrivlidge&gt;();
+            if(cupboard)
+            {
+                var player = BasePlayer.FindByID(cupboard.OwnerID);
+                if (player != null)
+                {
+                    var input = serverinput.GetValue(player) as InputState;
+                    var currentRot = Quaternion.Euler(input.current.aimAngles) * Vector3.forward;
+                    Vector3 eyesAdjust = new Vector3(0f, 1.5f, 0f);
+                    var rayResult = Ray(player.transform.position + eyesAdjust, currentRot);
+                    if (rayResult is BaseEntity)
+                    {
+                        var target = rayResult as BaseEntity;
+                        if (target.transform.position == cupboard.transform.position)
+                            return;
+                        SendReply(player, &quot;You are not able to place Tool Cupboard here.&quot;);
+                        cupboard.Kill();
+                    }
+                }
+            }
+        }
+        private object Ray(Vector3 Pos, Vector3 Aim)
+        {
+            var hits = Physics.RaycastAll(Pos, Aim);
+            float distance = 70f;
+            object target = null;            foreach (var hit in hits)
+            {
+                if (hit.collider.GetComponent&lt;BuildingPrivlidge&gt;() != null)
+                {
+                    if (hit.distance &lt; distance)
+                    {
+                        distance = hit.distance;
+                        target = hit.collider.GetComponent&lt;BuildingPrivlidge&gt;();
+                    }
+                }
+            }
+            return target;
+        }
+        #endregion    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2017 at 11:51 PM">Jan 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287257/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-287319" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">From what I remember, OnEntityBuilt only detects things built with the building plan, that is: foundations, walls,
+                        floors, etc. If you&#039;re wanting to detect a cupboard, you should apply the same code with OwnerID but with OnEntitySpawned instead. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287319' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 21, 2017 at 2:22 AM">Jan 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287319' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287319/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-287539" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-287319" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">From what I remember, OnEntityBuilt only detects things built with the building plan, that is: foundations, walls, floors, etc. If you&#039;re
+                                        wanting to detect a cupboard, you should apply the same code with OwnerID but with OnEntitySpawned instead.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Actually the code detect the placed cupboard, but not the other one in the range.<br /> I am trying to get existing cupboard within a range of placed cupboard. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287539' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 21, 2017 at 6:47 PM">Jan 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287539' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287539/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-287612" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sami37">
+                            <aside>
+                                <div class="attribution type">sami37 said: <a href="#post-287539" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Actually the code detect the placed cupboard, but not the other one in the range.<br /> I am trying to get existing cupboard within a range of
+                                        placed cupboard.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m not sure I understand, are you saying OnEntityBuilt does indeed detect cupboards? Even if it does, I&#039;m still not entirely sure what your goal is, because
+                        your raycast seems to just find whatever the player is looking at? Apologies for the confusion. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287612' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 21, 2017 at 10:06 PM">Jan 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287612' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287612/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-287617" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I am trying to limit placement of cupboard within a radius of another one, but i am not sure if i should use a
+                        raycast or simple check of cupboard position <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287617' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 21, 2017 at 10:32 PM">Jan 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/#post-287617' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/287617/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-288402" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">It sounds like you should be using something like <i>Physics.OverlapSphere</i> to check for all cupboards
+                        (BuildingPrivlidge) within some specified radius of where you are trying to place.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// check for entities within sphere with radius at position
+var hits = Physics.OverlapSphere(position, radius);
+// loop through hits and check for BuildingPrivlidge objects, check ownership, calculate distances
+foreach(var ent in hits)
+{
+    BuildingPrivlidge privs = ent.GetComponentInParent&lt;BuildingPrivlidge&gt;();
+    if(privs != null)
+        // check ownership and distance here and handle appropriately
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jan 24, 2017 at 1:55 PM">Jan 24, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/detecting-cupboard-position.23168/#post-288402' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 24, 2017 at 1:50 PM">Jan 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-cupboard-position.23168/#post-288402' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/288402/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

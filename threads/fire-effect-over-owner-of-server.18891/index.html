@@ -1,0 +1,365 @@
+---
+layout: forums
+title: 'Fire effect over owner of server'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/' | prepend: site.baseurl }}">Fire effect over owner of server</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Macthelost</a>, <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 22, 2016 at 8:21 PM">Jun 22,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-218200" class="message" data-author="Macthelost">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Macthelost" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Macthelost</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I want to have a fire effect floating over a player with a certain SteamId. I tried to do it myself with a simple
+                        username finder, but it told me that it couldn&#039;t compile because &quot;Vector3 does not exist in the certain context&quot; Here is the code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;FireMan&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Put fire on Fireman!&quot;)]    class FireSpawn : RustPlugin {
+        BasePlayer fireManPlayer;
+        void Start() {
+      
+        }
+        void OnPlayerInit(BasePlayer player) {
+        fireManPlayer = BasePlayer.Find(&quot;Fire Man&quot;);
+        }        void Update() {
+            Effect.server.Run(&quot;assets/prefabs/npc/patrol helicopter/effects/rocket_fire.prefab&quot;, fireManPlayer.transform.position, Vector3.zero, null, false);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Macthelost</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2016 at 8:21 PM">Jun 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/218200/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-218203" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Vector3 is from UnityEngine, so you&#039;d need to add using UnityEngine; to the top of the plugin. You also have
+                        a good bit of unneeded code.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;FireMan&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Put fire on Fireman!&quot;)]    class FireSpawn : RustPlugin
+    {
+        void OnPlayerInit(BasePlayer player) {
+           var fireMan = BasePlayer.Find(&quot;Fire Man&quot;);
+           if (fireMan != null)
+               Effect.server.Run(&quot;assets/prefabs/npc/patrol helicopter/effects/rocket_fire.prefab&quot;, fireMan.transform.position, Vector3.zero, null, false);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Pretty sure you can also remove null and false at the end too, as they are assumed/default if I recall correctly. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218203' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2016 at 8:27 PM">Jun 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218203' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/218203/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-218288" class="message" data-author="Macthelost">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Macthelost" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Macthelost</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I tried that, but it didn&#039;t work. Someone joined and I heard a rocket fire sound, so I figured out that I
+                        picked the wrong prefab, so I found a flamethrower &quot;fireball&quot; prefab. It didn&#039;t work. I want the fire to follow the player around.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;FireMan&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Put fire on Fireman!&quot;)]    class FireManScript : RustPlugin
+    {
+        void OnPlayerInit(BasePlayer player)
+        {
+            var fireMan = BasePlayer.Find(&quot;Fire Man&quot;);
+            if (fireMan != null)
+                Effect.server.Run(&quot;assets/bundled/prefabs/fireball_small.prefab&quot;, fireMan.transform.position, Vector3.zero, null, false);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Macthelost</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218288' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 23, 2016 at 4:05 AM">Jun 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218288' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/218288/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-218290" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Macthelost">
+                            <aside>
+                                <div class="attribution type">Macthelost said: <a href="#post-218288" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I tried that, but it didn&#039;t work. Someone joined and I heard a rocket fire sound, so I figured out that I picked the wrong prefab, so I
+                                        found a flamethrower &quot;fireball&quot; prefab. It didn&#039;t work. I want the fire to follow the player around.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;FireMan&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Put fire on Fireman!&quot;)]    class FireManScript : RustPlugin
+    {
+        void OnPlayerInit(BasePlayer player)
+        {
+            var fireMan = BasePlayer.Find(&quot;Fire Man&quot;);
+            if (fireMan != null)
+                Effect.server.Run(&quot;assets/bundled/prefabs/fireball_small.prefab&quot;, fireMan.transform.position, Vector3.zero, null, false);
+        }
+    }
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I don&#039;t think there&#039;s a fire effect that attaches to the player, as I&#039;m sure if there was the flamethrower/incendiary rockets would already use it. You
+                        could use timers to keep creating new ones on the player&#039;s position, might be wonky. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218290' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 23, 2016 at 4:18 AM">Jun 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218290' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/218290/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-218302" class="message" data-author="Macthelost">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Macthelost" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Macthelost</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It compiled correctly, but it didn&#039;t spawn anything<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;FireMan&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Put fire on Fireman!&quot;)]    class FireManScript : RustPlugin
+    {
+        void OnPlayerInit(BasePlayer player)
+        {
+            var fireMan = BasePlayer.Find(&quot;Fire Man&quot;);
+            if (fireMan != null)
+            {
+                timer.Repeat(1f, 0, () =&gt;
+                    {
+                        Effect.server.Run(&quot;assets/bundled/prefabs/fireball_small.prefab&quot;, fireMan.transform.position, Vector3.zero, null, false);
+                    });
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1466657267][/DOUBLEPOST]UPDATE: I found an error in the console, the timer is working, but the &#039;Effect.Server.Run&#039; needs an EffectRecycle. (?) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 23, 2016 at 6:03 AM">Jun 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Macthelost</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218302' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 23, 2016 at 5:23 AM">Jun 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-218302' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/218302/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-220063" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I got you homie! The prefab you want is &quot;assets/bundled/prefabs/fx/player/onfire.prefab&quot;, Ideally you
+                        want a callback that can detect player movement to call this, someone mentioned &quot;OnClientMove&quot; in another thread but I don&#039;t see it documented anywhere yet.
+                        Anyway a quick test you can do where you&#039;re the only player<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using UnityEngine;
+using Oxide.Core;timer.Repeat(0f, 0, () =&gt;
+            {
+                var Online = BasePlayer.activePlayerList as List&lt;BasePlayer&gt;;
+                foreach( BasePlayer player in Online )
+                {
+                    Effect.server.Run(&quot;assets/bundled/prefabs/fx/player/onfire.prefab&quot;, player.transform.position);
+                }
+            });</pre>{% endraw %}
+                        </div>The fire follows you around if you run, and engulfs you if you stand still, check it out!<br />
+                        <br />
+                        <br /> Edit: Here&#039;s a cleaner way to do the above, that&#039;s better on performance<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerInput(BasePlayer player, InputState input)
+        {
+                Effect.server.Run(&quot;assets/bundled/prefabs/fx/player/onfire.prefab&quot;, player.transform.position);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 28, 2016 at 1:14 PM">Jun 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-220063' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 28, 2016 at 12:25 PM">Jun 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/fire-effect-over-owner-of-server.18891/#post-220063' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/220063/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

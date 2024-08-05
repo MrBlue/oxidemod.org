@@ -1,0 +1,91 @@
+---
+layout: forums
+title: 'Request - CanTakeDoorCloser hook (Rust)'
+breadcrumbs:
+ - "Feature Suggestions": "/forums/feature-suggestions.6/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Request</span> <a href="{{ '/threads/cantakedoorcloser-hook-rust.30821/' | prepend: site.baseurl }}">CanTakeDoorCloser hook (Rust)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/feature-suggestions.6/' | prepend: site.baseurl }}">Feature Suggestions</a>' started by <a class="username"
+            dir="auto">FuJiCuRa</a>, <a href="{{ '/threads/cantakedoorcloser-hook-rust.30821/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 11, 2018 at 1:48 PM">Jun 11,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-403903" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// DoorCloser
+[global::BaseEntity.RPC_Server, global::BaseEntity.RPC_Server.MaxDistance(3f)]
+public void RPC_Take(global::BaseEntity.RPCMessage rpc)
+{
+    if (!rpc.player.CanInteract())
+    {
+        return;
+    }
+    if (!rpc.player.CanBuild())
+    {
+        return;
+    }
+    global::Door door = this.GetDoor();
+    if (door == null)
+    {
+        return;
+    }
+    if (!door.GetPlayerLockPermission(rpc.player))
+    {
+        return;
+    }
+    // begin
+    object obj = Interface.CallHook(&quot;CanTakeDoorCloser&quot;, this, rpc.player);
+    if (obj is bool)
+    {
+        return (bool)obj;
+    }
+    // end
+    global::Item item = global::ItemManager.Create(this.itemType, 1, this.skinID);
+    if (item != null)
+    {
+        rpc.player.GiveItem(item, global::BaseEntity.GiveItemReason.Generic);
+    }
+    base.Kill(global::BaseNetworkable.DestroyMode.None);
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cantakedoorcloser-hook-rust.30821/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 11, 2018 at 1:48 PM">Jun 11, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cantakedoorcloser-hook-rust.30821/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/403903/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

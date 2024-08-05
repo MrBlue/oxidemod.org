@@ -1,0 +1,187 @@
+---
+layout: forums
+title: 'Adding item to lootcontainer/StorageContainer(StorageBox)?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/' | prepend: site.baseurl }}">Adding item to lootcontainer/StorageContainer(StorageBox)?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ZyKron</a>, <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Feb 28, 2018 at 11:39 AM">Feb 28, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-388768" class="message" data-author="ZyKron">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ZyKron" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ZyKron</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This is the code I have, i am wondering how to add an item to a storage box, like an AK for example.<br /> And can
+                        I know how to spawn the box on the Dome?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;event&quot;)]
+        private void Event(BasePlayer plr, string command, string[] args)
+        {
+            if (!permission.UserHasPermission(plr.userID.ToString(), &quot;event.use&quot;))
+            {
+                SendReply(plr, &quot;No permission!&quot;);
+            }
+            else
+            {
+                if (args.Length == 0)
+                {
+                    SendReply(plr, &quot;/event start explosives/weapons/scrap/components&quot;);
+                    SendReply(plr, &quot;/event end &lt;ID&gt;&quot;);
+                }
+                else
+                {
+                    switch (args[0])
+                    {
+                        case &quot;start&quot;:
+                            if (args[1].ToString() == &quot;explosives&quot;)
+                            {
+                                string prefab = &quot;assets/prefabs/deployable/large wood storage/box.wooden.large.prefab&quot;;
+                                BaseEntity entity = GameManager.server.CreateEntity(prefab, plr.transform.position, new Quaternion(), false);
+                                entity?.Spawn();
+                                rust.BroadcastChat(null, &quot;There is an explosives box on the top of Dome! First one there gets it!&quot;);
+                                           var box = entity as LootContainer;
+                                            box.inventory.AddItem(x);
+                            }
+                            break;
+                    }                }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ZyKron</a>,</span>
+                        <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 28, 2018 at 11:39 AM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388768/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388779" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello, here a sample code :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+static Dictionary&lt;string, object&gt; chestRewardItem = new Dictionary&lt;string, object&gt;();
+chestRewardItem.Add(&quot;apple&quot;, 2);
+chestRewardItem.Add(&quot;stone&quot;, 2);
+chestRewardItem.Add(&quot;black.raspberries&quot;, 2);string chestPrefab = &quot;assets/prefabs/deployable/large wood storage/box.wooden.large.prefab&quot;;var entitys = GameManager.server.CreateEntity(chestPrefab, player.transform.position, Quaternion.Euler(0, player.GetNetworkRotation().y + 180, 0));
+entitys.Spawn();var box = entitys.GetComponentInParent&lt;StorageContainer&gt;();
+if (box != null)
+{
+    foreach (var reward in chestRewardItem)
+    {
+        var items = ItemManager.CreateByName(reward.Key, (int)reward.Value);
+        items?.MoveToContainer(box.inventory);
+    }
+}
+</pre>{% endraw %}
+                        </div>To find monument you may use :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var objects = UnityEngine.Object.FindObjectsOfType&lt;GameObject&gt;();
+            foreach (var monument in objects)
+                if (monument.name.Contains(&quot;autospawn/monument&quot;) &amp;&amp; monument.name.Contains(&quot;sphere_tank&quot;))
+                    //Here your code to spawn chest</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/#post-388779' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 28, 2018 at 1:07 PM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/#post-388779' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388779/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-388856" class="message" data-author="ZyKron">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ZyKron" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ZyKron</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thank you so much, ill test it now. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ZyKron</a>,</span>
+                        <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/#post-388856' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Feb 28, 2018 at 11:22 PM">Feb 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-item-to-lootcontainer-storagecontainer-storagebox.29699/#post-388856' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/388856/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,129 @@
+---
+layout: forums
+title: 'Proper way to spawn entity'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/proper-way-to-spawn-entity.21703/' | prepend: site.baseurl }}">Proper way to spawn entity</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sami37</a>, <a href="{{ '/threads/proper-way-to-spawn-entity.21703/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 29, 2016 at 6:14 PM">Oct 29, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-262996" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> I am trying to get a proper way to spawn entity at random position without having trouble like<br />
+                        <br /> Population is null, entity spawned from outside the spawn handler?<br />
+                        <br /> Here is my code<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void spawnResourceNode(Vector3 location)
+        {
+            string prefabName = &quot;assets/bundled/prefabs/autospawn/resource/ores/&quot;;            // Select a random ResourceNode type {Metal, Stone, Sulfur}.          
+            int r = UnityEngine.Random.Range(0, 2);            switch (r)
+            {
+                case 1:
+                    prefabName += &quot;metal-ore&quot;;
+                    break;                case 2:
+                    prefabName += &quot;stone-ore&quot;;
+                    break;                default:
+                    prefabName += &quot;sulfur-ore&quot;;
+                    break;
+            }            prefabName += &quot;.prefab&quot;;            // &amp; spawn the ResourceNode at Vector3(location).
+            var newPos = AdjustPosition(location);
+            BaseEntity resourceNode = GameManager.server.CreateEntity(prefabName, newPos, new Quaternion(), true);
+            resourceNode.Spawn();
+        }
+        private Vector3 AdjustPosition(Vector3 pos)
+        {
+            Vector3 randomPos = Quaternion.Euler(UnityEngine.Random.Range((float)(-100 * 0.2), 100 * 0.2f), UnityEngine.Random.Range((float)(-100 * 0.2), 100 * 0.2f), UnityEngine.Random.Range((float)(-100 * 0.2), 100 * 0.2f)) * pos;
+            Vector3 correctPos = GetGroundPosition(randomPos);
+            return correctPos;
+        }        static Vector3 GetGroundPosition(Vector3 sourcePos) // credit Wulf &amp; Nogrod
+        {
+            RaycastHit hitInfo;            if (Physics.Raycast(sourcePos, Vector3.down, out hitInfo, LayerMask.GetMask(&quot;Terrain&quot;, &quot;World&quot;, &quot;Construction&quot;)))
+                sourcePos.y = hitInfo.point.y;
+            sourcePos.y = Mathf.Max(sourcePos.y, TerrainMeta.HeightMap.GetHeight(sourcePos));
+            return sourcePos;
+        }
+</pre>{% endraw %}
+                        </div>Each time a resource spawn i get spammed by this message.<br />
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> is there a way to avoid this message? <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/proper-way-to-spawn-entity.21703/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 29, 2016 at 6:14 PM">Oct 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/proper-way-to-spawn-entity.21703/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/262996/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-262999" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Every object that can be spawned from the `autospawn` prefabs has a population. This `SpawnPopulation` takes care
+                        of spawning and respawning the resources in specific areas of the map whilst keeping a &quot;steady&quot; population to not spawn too many resources all over the map. So every
+                        time you spawn a tree, stone ore, metal ore, etc. it will check this against the spawn population resulting in that `Population is null` message showing up. The only way to get
+                        around it is to setup your own `SpawnHandler` to handle it instead of manually spawning the resources. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/proper-way-to-spawn-entity.21703/#post-262999' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 29, 2016 at 6:27 PM">Oct 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/proper-way-to-spawn-entity.21703/#post-262999' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/262999/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

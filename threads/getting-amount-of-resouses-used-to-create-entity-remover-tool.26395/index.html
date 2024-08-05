@@ -1,0 +1,314 @@
+---
+layout: forums
+title: 'Solved - Getting amount of resouses used to create entity (Remover tool)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/' | prepend: site.baseurl }}">Getting amount of
+            resouses used to create entity (Remover tool)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">pdr</a>, <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 16, 2017 at 7:02 PM">Jul 16, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-338308" class="message" data-author="pdr">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pdr" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pdr</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello. For now I&#039;m trying to rebuild the R-Remver plugin for my own server, to use it with hammer and other
+                        cool stuff. Actually i made it already, but have a little issue. I want to modify refund function, to make it give player not the deployed entity, but resourses, used to create
+                        this entity. Can someone help me with method, that i can use to get amount of these resouses.<br /> You can see my actual refund function below.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void GiveItemToPlayer(BasePlayer player, int item, int amount)
+        {
+            player.inventory.GiveItem(ItemManager.CreateByItemID(item, Convert.ToInt32(amount * _config.RateOfReturn)), null);
+            player.Command(&quot;note.inv&quot;, new object[] { item, Convert.ToInt32(amount * _config.RateOfReturn) });
+        }        void Refund(BasePlayer player, BaseEntity entity)
+        {
+            if (deployedToItem.ContainsKey(entity.PrefabName))
+            {
+                if (entity.PrefabName.Contains(&quot;furnace.large&quot;))
+                {
+                    GiveItemToPlayer(player, 3655341, 600); //дерево
+                    GiveItemToPlayer(player, -892070738, 500); // камни
+                    GiveItemToPlayer(player, 28178745, 75); // топливо
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;furnace&quot;))
+                {
+                    GiveItemToPlayer(player, 3655341, 200); //дерево
+                    GiveItemToPlayer(player, -892070738, 200); // камни
+                    GiveItemToPlayer(player, 28178745, 50); // топливо
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;campfire&quot;))
+                {
+                    GiveItemToPlayer(player, 3655341, 100); //дерево
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;ceilinglight&quot;))
+                {
+                    GiveItemToPlayer(player, 688032252, 50); //металл
+                    GiveItemToPlayer(player, 28178745, 30); // топливо
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;lantern.deployed&quot;))
+                {
+                    GiveItemToPlayer(player, 688032252, 40); //металл
+                    GiveItemToPlayer(player, 28178745, 10); // топливо
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;refinery_small&quot;))
+                {
+                    GiveItemToPlayer(player, 3655341, 200); //дерево
+                    GiveItemToPlayer(player, 28178745, 250); // топливо
+                    GiveItemToPlayer(player, 688032252, 500); //металл
+                    return;
+                }
+                if (entity.PrefabName.Contains(&quot;tunalight&quot;))
+                {
+                    GiveItemToPlayer(player, 3655341, 20); //дерево
+                    GiveItemToPlayer(player, 28178745, 10); // топливо
+                    GiveItemToPlayer(player, 1050986417, 1); //банка
+                    return;
+                }
+                    GiveItemToPlayer(player, deployedToItem[entity.PrefabName], 1);
+            }
+            if (entity is BuildingBlock)
+            {
+                BuildingBlock buildingblock = entity as BuildingBlock;
+                if (buildingblock.blockDefinition == null) return;
+                int buildingblockGrade = (int)buildingblock.grade;                if (buildingblock.blockDefinition.grades[buildingblockGrade] != null)
+                {
+                    List&lt;ItemAmount&gt; currentCost = buildingblock.blockDefinition.grades[buildingblockGrade].costToBuild as List&lt;ItemAmount&gt;;
+                    foreach (ItemAmount ia in currentCost)
+                    {
+                        var item = ItemManager.CreateByItemID(ia.itemid, Convert.ToInt32(ia.amount * _config.RateOfReturn));
+                        player.inventory.GiveItem(item, player.inventory.containerMain);
+                        player.Command(&quot;note.inv&quot;, new object[] { ia.itemid, Convert.ToInt32(ia.amount * _config.RateOfReturn) });
+                    }
+                }
+            }
+        }
+</pre>{% endraw %}
+                        </div>As You can see - I made a temp solvation for a few items, but I&#039;m not happy to manually write all items into plugin xD. Hope someone help me. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pdr</a>,</span>
+                        <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 16, 2017 at 7:02 PM">Jul 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/338308/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-338356" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> RemoverTool has this already included in the &quot;GetRefund&quot; function <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338356' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 16, 2017 at 11:45 PM">Jul 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338356' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/338356/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-338360" class="message" data-author="pdr">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pdr" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pdr</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-338356" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">RemoverTool has this already included in the &quot;GetRefund&quot; function <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>In the remover tool You made, server owner have to write amount of refunded resourses in the config. I don&#039;t want this, I simply left a float modifier of this
+                        amount... I just ask for a function, that will return amount of resourses needed to create this item. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pdr</a>,</span>
+                        <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338360' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2017 at 12:09 AM">Jul 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338360' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/338360/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-338395" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="pdr">
+                            <aside>
+                                <div class="attribution type">pdr said: <a href="#post-338360" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I just ask for a function, that will return amount of resourses needed to create this item.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thats why i wrote you the name of the &quot;GetRefund&quot; function. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" /><br />
+                        <br /> It does already include exactly such a refund function based on the blueprint receipt, making it posssible to set a simple number as percentage of the resources to give
+                        back. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338395' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2017 at 11:37 AM">Jul 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338395' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/338395/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-338456" class="message" data-author="pdr">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pdr" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pdr</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-338395" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thats why i wrote you the name of the &quot;GetRefund&quot; function. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                                        <br /> It does already include exactly such a refund function based on the blueprint receipt, making it posssible to set a simple number as percentage of the
+                                        resources to give back.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, Fujikura, thank You a lot. I was sleepy and stupid, so i just missed this stuff, sorry xD. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pdr</a>,</span>
+                        <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338456' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2017 at 6:19 PM">Jul 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-amount-of-resouses-used-to-create-entity-remover-tool.26395/#post-338456' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/338456/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

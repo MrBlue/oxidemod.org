@@ -1,0 +1,314 @@
+---
+layout: forums
+title: 'FindPlayer Issue'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/findplayer-issue.16136/' | prepend: site.baseurl }}">FindPlayer Issue</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Capadillo</a>, <a href="{{ '/threads/findplayer-issue.16136/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 26, 2016 at 7:11 AM">Feb 26, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-181358" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am having issues with the rust.FindPlayer function. This is the code I am using at the moment:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:cmdAllowPlayer(player, cmd, args)
+    local target = rust:FindPlayer(args[0])
+    print(target.displayName)
+end</pre>{% endraw %}
+                        </div>And the error i am recieving is:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 6:06 PM [Error] Failed to call hook 'cmdAllowPlayer' on plugin 'CapaPlugin v0.0.1'
+File: CapaPlugin.lua Line: 37 attempt to call field 'FindPlayer' (a nil value):
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>The only other relevant code to this is:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:Init()
+    command.AddChatCommand('allow', self.Object, &quot;cmdAllowPlayer&quot;)
+end</pre>{% endraw %}
+                        </div>I call it by typing &quot;/allow Capadillo&quot; in chat.<br />
+                        <br /> I&#039;ve both copied this code from another plugin and reviewed the Oxide.Game.Rust.dll file where this function is kept and can&#039;t find any clues as to why
+                        it&#039;s giving me the error as so far as I can tell, FindPlayer does exist. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/findplayer-issue.16136/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Feb 26, 2016 at 7:11 AM">Feb
+                                26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/findplayer-issue.16136/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/181358/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-181381" class="message" data-author="Ankawi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ankawi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ankawi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Try this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function FindPlayer(searchedName, player)
+  local players = global.BasePlayer.activePlayerList:GetEnumerator()
+  local matchingPlayers = {}
+   
+  while players:MoveNext() do
+  if string.match(string.lower(players.Current), string.lower(searchedName)) then
+  table.insert(matchingPlayers, players.Current)
+  end
+  end
+   
+  if matchingPlayers.Length == 1 then
+  return matchingPlayers[0]
+   
+  elseif matchingPlayers.Length &gt; 1 then
+  rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+   
+  for _, name in pairs(matchingPlayers) do
+  rust.SendChatMessage(player, name)
+  end
+  return nil
+   
+  elseif matchingPlayers == 0 then
+  rust.SendChatMessage(player, &quot;No matching player has been found&quot;)
+  return nil
+   
+  end
+end
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ankawi</a>,</span>
+                        <a href="{{ '/threads/findplayer-issue.16136/#post-181381' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 26, 2016 at 8:36 AM">Feb 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/findplayer-issue.16136/#post-181381' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/181381/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-181383" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks Ankawi! I had to modify it a little to the following otherwise it wouldn&#039;t work for me:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:FindPlayer(searchedName, player)
+   local players = global.BasePlayer.activePlayerList:GetEnumerator()
+   local matchingPlayers = {}
+   while players:MoveNext() do
+     if string.match(string.lower(players.Current.displayName), string.lower(searchedName)) then
+       table.insert(matchingPlayers, players.Current)
+     end
+   end
+   if #matchingPlayers == 1 then
+     return matchingPlayers[1]
+   elseif #matchingPlayers &gt; 1 then
+     rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+     for _, name in pairs(matchingPlayers) do
+       rust.SendChatMessage(player, name.displayName)
+     end
+   elseif #matchingPlayers == 0 then
+     rust.SendChatMessage(player, &quot;No matching player has been found.&quot;)
+   end
+   return nil
+end</pre>{% endraw %}
+                        </div>I was really hoping to be able to use a built-in library function, but this is just as good for the moment. I won&#039;t mark this as solved just yet though, as this is
+                        only a work around. Either way, really great response. Thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> EDIT: Rewrote it to be a little more like the built in functionality...<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function FindPlayer(nameOrID, player)
+    local activePlayer = global.BasePlayer.activePlayerList:GetEnumerator()
+    local partialMatch = {}
+    while activePlayer:MoveNext() do
+        if activePlayer.Current.UserIDString == nameOrID or string.lower(activePlayer.Current.displayName) == string.lower(nameOrID) then
+            return activePlayer.Current
+        elseif string.match(string.lower(activePlayer.Current.displayName), string.lower(nameOrID)) then
+            table.insert(partialMatch, activePlayer.Current)
+        end
+    end
+    if #partialMatch == 1 then
+        return partialMatch[1]
+    elseif #partialMatch &gt;= 2 then
+        rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+        for key, partial in pairs(partialMatch) do
+            rust.SendChatMessage(player, partial.displayName)
+        end
+    else
+        rust.SendChatMessage(player, &quot;No matching player has been found.&quot;)
+    end
+    return false
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 26, 2016 at 2:10 PM">Feb 26, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/findplayer-issue.16136/#post-181383' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 26, 2016 at 8:55 AM">Feb 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/findplayer-issue.16136/#post-181383' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/181383/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-181385" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Its <span style="color: #ff8000"><b>.</b></span>FindPlayer() not <span
+                            style="color: #ff8000"><b>:</b></span>FindPlayer() <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/findplayer-issue.16136/#post-181385' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 26, 2016 at 9:03 AM">Feb 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/findplayer-issue.16136/#post-181385' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/181385/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-181387" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Doesn&#039;t make a difference. rust:FindPlayer() is just a shortcut for rust.FindPlayer(rust). If the error was
+                        saying something along the lines of &quot;invalid parameter&quot; or &quot;string expected, got userdata&quot; then I would fully agree with you.<br />
+                        <br /> At least it is in Lua. In either case, I tried both and received the same error. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 26, 2016 at 9:20 AM">Feb 26, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/findplayer-issue.16136/#post-181387' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 26, 2016 at 9:08 AM">Feb 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/findplayer-issue.16136/#post-181387' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/181387/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

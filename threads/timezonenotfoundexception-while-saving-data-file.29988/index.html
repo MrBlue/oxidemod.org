@@ -1,0 +1,438 @@
+---
+layout: forums
+title: 'TimeZoneNotFoundException while saving data file'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/' | prepend: site.baseurl }}">TimeZoneNotFoundException while saving data file</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sami37</a>, <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 27, 2018 at 2:47 PM">Mar
+                27, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-392925" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> I&#039;m getting a little issue from my INdev-plugin while create new teleporter after using one of them.<br /> I&#039;m assigning 3 tp to each arena using a
+                        command:<br /> The problem appear only if i use on of existing tp and after that trying to create/change a tp<br />
+                        <br /> After some search it seem to be related to missing registry key for timezone, but which one?<br /> I&#039;m under my local windows 10 pro edition and my oxide is
+                        uptodate<br />
+                        <img src="https://oxidemod.org/attachments/1522165287-png.45628/" alt="1522165287.png" class="bbCodeImage LbImage" />
+                        <br /> If someone has a tip for this, maybe <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> <br /> Here is the exception :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>15:38 [Error] Failed to call hook 'cmdTeleport' on plugin 'PVPArena v1.0.0' (TimeZoneNotFoundException: Exception of type 'System.TimeZoneNotFoundException' was thrown.)
+  at System.TimeZoneInfo.get_Local () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Utilities.DateTimeUtils.GetUtcOffset (DateTime d) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Utilities.DateTimeUtils.WriteDateTimeString (System.Char[] chars, Int32 start, DateTime value, Nullable`1 offset, DateTimeKind kind, DateFormatHandling format) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextWriter.WriteValue (DateTime value) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonWriter.WriteValue (Newtonsoft.Json.JsonWriter writer, PrimitiveTypeCode typeCode, System.Object value) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializePrimitive (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonPrimitiveContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeValue (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonContract valueContract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonObjectContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract collectionContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>and here is the class and save data function:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private List&lt;Arena&gt; arenas = new List&lt;Arena&gt;();private class Arena
+{
+    public string ID { get; set; }
+    public TeleporterInfo Lobby { get; set; }
+    public TeleporterInfo TeamA { get; set; }
+    public TeleporterInfo TeamB { get; set; }
+    public List&lt;TDMPlayer&gt; ListPlayer { get; set; }    public Arena(string ID)
+    {
+        this.ID = ID;
+        ListPlayer = new List&lt;TDMPlayer&gt;();
+    }
+}
+class TDMPlayer : MonoBehaviour
+{
+    public BasePlayer player;
+    public Team team;
+    public int kills;    void Awake()
+    {
+        player = GetComponent&lt;BasePlayer&gt;();
+        enabled = false;
+        team = Team.NONE;
+        kills = 0;
+    }
+}private class TeleporterPlayerHandler : MonoBehaviour
+{
+    public Timer timer;
+    public BasePlayer player =&gt; gameObject.GetComponent&lt;BasePlayer&gt;();    public void Teleport(TeleporterEntity teleporter)
+    {
+        TeleporterPoint otherPoint = teleporter.point.PointType == PortalPointType.Entrance
+            ? teleporter.info.Exit
+            : teleporter.info.Entrance;        if (teleporter.info.ID.Contains(&quot;lobby&quot;))
+        {
+            string[] name = teleporter.info.ID.Split('_');
+            if (Instance.arenas.FindIndex(x =&gt; x.ID == name[0]) != -1)
+            {
+                List&lt;TDMPlayer&gt; p = new List&lt;TDMPlayer&gt;();
+                if (player.gameObject.GetComponent&lt;TDMPlayer&gt;() != null)
+                {
+                    Destroy(player.gameObject.GetComponent&lt;TDMPlayer&gt;());
+                }                player.gameObject.AddComponent&lt;TDMPlayer&gt;();
+                var pl = player.GetComponent&lt;TDMPlayer&gt;();
+                pl.team = Team.NONE;                foreach (var arena in Instance.arenas)
+                {
+                    arena.ListPlayer?.RemoveAll(x =&gt; x.player.UserIDString == player.UserIDString);
+                }                p.Add(pl);
+                if (Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer == null)
+                    Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer = p;
+                else
+                    Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer.Add(pl);
+            }
+        }
+        else
+        {
+            string[] name = teleporter.info.ID.Split('_');
+            if (Instance.arenas.FindIndex(x =&gt; x.ID == name[0]) != -1)
+            {
+                List&lt;TDMPlayer&gt; p = new List&lt;TDMPlayer&gt;();
+                TDMPlayer pl;
+                if (player.gameObject.GetComponent&lt;TDMPlayer&gt;())
+                {
+                    Destroy(player.gameObject.GetComponent&lt;TDMPlayer&gt;());
+                }                player.gameObject.AddComponent&lt;TDMPlayer&gt;();
+                if (name[1].Contains(&quot;team&quot;))
+                {
+                    pl = player.GetComponent&lt;TDMPlayer&gt;();
+                    pl.team = name[1] == &quot;teama&quot; ? Team.A : Team.B;
+                }
+                else
+                {
+                    pl = player.GetComponent&lt;TDMPlayer&gt;();
+                    pl.team = Team.NONE;
+                }                foreach (var arena in Instance.arenas)
+                {
+                    arena.ListPlayer?.RemoveAll(x =&gt; x.player.UserIDString == player.UserIDString);
+                }                p.Add(pl);
+                if (Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer == null)
+                    Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer = p;
+                else
+                    Instance.arenas[Instance.arenas.FindIndex(x =&gt; x.ID == name[0])].ListPlayer.Add(pl);
+            }
+        }        Instance.Teleport(player, otherPoint.Location.Vector3);
+    }
+}
+        private void SaveData()
+        {
+            Interface.Oxide.DataFileSystem.WriteObject($&quot;{DataFileName}/CombatTag_Arena&quot;, arenas);
+            Interface.Oxide.DataFileSystem.WriteObject($&quot;{DataFileName}/CombatTag_Portals&quot;, portals);
+        }</pre>{% endraw %}
+                        </div>Here my command<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [ChatCommand(&quot;arena&quot;)]
+        private void cmdTeleport(BasePlayer player, string cmd, string[] args)
+        {
+            if (!HasPerm(player.userID, &quot;admin&quot;))
+            {
+                SendReply(player, GetMsg(&quot;No Permission&quot;));
+                return;
+            }            if (args.Length == 0)
+            {
+                SendReply(player, &quot;Syntax: /arena &lt;create|lobby|teama|teamb|remove|list&gt; &lt;ID&gt;&quot;);
+                return;
+            }            string ID;
+            Arena arena = null;            TeleporterInfo teleporter;
+            switch (args[0].ToLower())
+            {
+                case &quot;create&quot;:                    if (args.Length != 2)
+                    {
+                        SendReply(player, &quot;Syntax: /arena create &lt;name&gt;&quot;);
+                        return;
+                    }                    ID = args[1];                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                        }
+                        else
+                        {
+                            arena = new Arena(ID);
+                            arenas.Add(arena);
+                        }                    }
+                    else
+                    {
+                        arena = new Arena(ID);
+                        arenas.Add(arena);
+                    }                    string msg = GetMsg(&quot;Arena Created&quot;).Replace(&quot;{ID}&quot;, args[1]);
+                    msg = msg.Replace(&quot;{syntax}&quot;, &quot;/arena lobby entrance &quot; + args[1]);
+                    SendReply(player, msg);
+                    SaveData();
+                    break;                case &quot;lobby&quot;:                    if (args.Length != 3)
+                    {
+                        SendReply(player, &quot;Syntax: /arena lobby &lt;entrance|exit&gt; &lt;ID&gt;&quot;);
+                        return;
+                    }                    ID = args[2];
+                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                        }
+                        else
+                        {
+                            arena = new Arena(ID);
+                            arenas.Add(arena);
+                        }                    }
+                    else
+                    {
+                        arena = new Arena(ID);
+                        arenas.Add(arena);
+                    }                    switch (args[1].ToLower())
+                    {
+                        case &quot;entrance&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_lobby&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_lobby&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Entrance.Location.Vector3 = player.transform.position;
+                            arena.Lobby = teleporter;
+                            teleporter.Refresh();                            break;
+                        case &quot;exit&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_lobby&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_lobby&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Exit.Location.Vector3 = player.transform.position;
+                            arena.Lobby = teleporter;
+                            teleporter.Refresh();                            break;
+                    }                    SaveData();
+                    break;
+                case &quot;teama&quot;:                    if (args.Length != 3)
+                    {
+                        SendReply(player, &quot;Syntax: /arena teama &lt;entrance|exit&gt; &lt;ID&gt;&quot;);
+                        return;
+                    }                    ID = args[2];
+                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                        }
+                        else
+                        {
+                            arena = new Arena(ID);
+                            arenas.Add(arena);
+                        }                    }
+                    else
+                    {
+                        arena = new Arena(ID);
+                        arenas.Add(arena);
+                    }                    switch (args[1].ToLower())
+                    {
+                        case &quot;entrance&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_teama&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_teama&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Entrance.Location.Vector3 = player.transform.position;
+                            arena.TeamA = teleporter;
+                            teleporter.Refresh();                            break;
+                        case &quot;exit&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_teama&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_teama&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Exit.Location.Vector3 = player.transform.position;
+                            arena.TeamA = teleporter;
+                            teleporter.Refresh();                            break;
+                    }                    SaveData();
+                    break;                case &quot;teamb&quot;:                    if (args.Length != 3)
+                    {
+                        SendReply(player, &quot;Syntax: /arena teamb &lt;entrance|exit&gt; &lt;ID&gt;&quot;);
+                        return;
+                    }                    ID = args[2];
+                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                        }
+                        else
+                        {
+                            arena = new Arena(ID);
+                            arenas.Add(arena);
+                        }                    }
+                    else
+                    {
+                        arena = new Arena(ID);
+                        arenas.Add(arena);
+                    }                    switch (args[1].ToLower())
+                    {
+                        case &quot;entrance&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_teamb&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_teamb&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Entrance.Location.Vector3 = player.transform.position;
+                            arena.TeamB = teleporter;
+                            teleporter.Refresh();                            break;
+                        case &quot;exit&quot;:
+                            teleporter = TeleporterInfo.Find(ID + &quot;_teamb&quot;);
+                            if (teleporter == null)
+                            {
+                                teleporter = new TeleporterInfo(ID + &quot;_teamb&quot;);
+                                portals.Add(teleporter);
+                            }                            teleporter.Exit.Location.Vector3 = player.transform.position;
+                            arena.TeamB = teleporter;
+                            teleporter.Refresh();                            break;
+                    }                    SaveData();
+                    break;                case &quot;remove&quot;:                    if (args.Length != 2)
+                    {
+                        SendReply(player, &quot;Syntax: /arena remove &lt;ID&gt;&quot;);
+                        return;
+                    }                    ID = args[1];
+                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                        }
+                    }                    if (arena == null)
+                    {
+                        SendReply(player, &quot;This arena did not exist);
+                        return;
+                    }                    arenas.Remove(arena);                    SaveData();                    break;                case &quot;detail&quot;:                    if (args.Length != 2)
+                    {
+                        SendReply(player, &quot;Syntax: /arena detail &lt;ID&gt;&quot;);
+                        return;
+                    }                    ID = args[1];
+                    if (arenas != null &amp;&amp; arenas.Count != 0)
+                    {
+                        if (arenas.FindIndex(x =&gt; x.ID == ID) != -1)
+                        {
+                            arena = arenas[arenas.FindIndex(x =&gt; x.ID == ID)];
+                            Puts(arena.ID + &quot;\n&quot;);
+                        }
+                    }                    break;
+                case &quot;save&quot;:
+                    SaveData();
+                    break;
+                default:                    SendReply(player, &quot;Syntax: /arena &lt;create|lobby|teama|teamb|remove|list&gt; &lt;ID&gt;&quot;);                    break;
+            }
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 27, 2018 at 2:47 PM">Mar 27, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/392925/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-392926" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I believe it&#039;s Mono or Newtonsoft.Json issue, can&#039;t recall which. Basically has to do with DateTime.Now
+                        or ToLocalTime() last I recall; using DateTime.UtcNow or similar should work fine. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/#post-392926' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 27, 2018 at 2:51 PM">Mar 27, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/#post-392926' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/392926/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-393167" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Solved by removing public List&lt;TDMPlayer&gt; ListPlayer { get; set; } from my Arena class<br />
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> can&#039;t find anymore the button to mark thread as solved <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/#post-393167' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 29, 2018 at 5:03 PM">Mar 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timezonenotfoundexception-while-saving-data-file.29988/#post-393167' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/393167/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

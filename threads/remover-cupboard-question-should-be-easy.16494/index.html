@@ -1,0 +1,218 @@
+---
+layout: forums
+title: 'Remover Cupboard Question (Should be Easy!)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/' | prepend: site.baseurl }}">Remover Cupboard Question (Should be Easy!)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Solis.Randy</a>, <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 9, 2016 at 5:20 AM">Mar 9,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-185773" class="message" data-author="Solis.Randy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Solis.Randy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Solis.Randy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> Editing the Remover Tool, I have a question and I am assuming this should be a few lines of code to add.<br />
+                        <br /> I have it set to use Cupboards so you need to have access on a cupboard (and all cupboards attached) to remove. But what I also want to add, is <b>the ability to Remove
+                            if there is NO Cupboards, I.E. if you see a shack in the middle of no where, you can remove it if there is no cupboard at all.</b><br />
+                        <br /> Here is the code regarding cupboard access:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// Check Access
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        static bool hasTotalAccess(BasePlayer player)
+        {
+            List&lt;BuildingPrivlidge&gt; playerpriv = buildingPrivlidges.GetValue(player) as List&lt;BuildingPrivlidge&gt;;
+            if (playerpriv.Count == 0)
+            {
+                return false;
+            }
+            foreach (BuildingPrivlidge priv in playerpriv.ToArray())
+            {
+                List&lt;ProtoBuf.PlayerNameID&gt; authorized = priv.authorizedPlayers;
+                bool foundplayer = false;
+                foreach (ProtoBuf.PlayerNameID pni in authorized.ToArray())
+                {
+                    if (pni.userid == player.userID)
+                        foundplayer = true;
+                }
+                if (!foundplayer)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }        static object CanRemoveEntity(BasePlayer player, BaseEntity entity, RemoveType removeType)
+        {
+            if (entity.isDestroyed) return &quot;Entity is already destroyed&quot;;
+            if (removeType == RemoveType.Admin || removeType == RemoveType.All) return true;
+            var externalPlugins = Interface.CallHook(&quot;canRemove&quot;, player);
+            if (useToolCupboard)
+                if (hasTotalAccess(player))
+                    return true;            return  &quot;&lt;color=red&gt;You must have Access to all connected Tool Cupboards&lt;/color&gt;&quot;;
+        }
+</pre>{% endraw %}
+                        </div>Any help? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Solis.Randy</a>,</span>
+                        <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2016 at 5:20 AM">Mar 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/185773/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193976" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I strictly would not recommend to do that. <br /> In My opponion this &#039;remove&#039; would include any
+                        deployable on the map, which has no cupboard in Range.<br /> Think of the &quot;Repair Bench&quot; in the Warehouses... ;-) Chaos would come onto your server^^<br />
+                        <br /> But, i haven&#039;t tested it yet....Did you by now? I&#039;ll try to rewrite the R-Remover-Tool to do this... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-193976' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 7, 2016 at 1:49 PM">Apr 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-193976' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193976/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194071" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-193976" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I strictly would not recommend to do that.<br /> In My opponion this &#039;remove&#039; would include any deployable on the map, which has no
+                                        cupboard in Range.<br /> Think of the &quot;Repair Bench&quot; in the Warehouses... ;-) Chaos would come onto your server^^<br />
+                                        <br /> But, i haven&#039;t tested it yet....Did you by now? I&#039;ll try to rewrite the R-Remover-Tool to do this...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The repair bench in warehouses-rad towns-etc are objects via map objects not game entitys im pretty sure. Hence why you can remove it via R-Remover-Tool(With bypass
+                        enabled) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-194071' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 7, 2016 at 10:17 PM">Apr 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-194071' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194071/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-194076" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/93031/" class="username" data-user="93031, @Solis.Randy">@Solis.Randy</a> Change if(HasTotalAccess(player)) to if
+                        (player.CanBuild())<br /> I believe it just checks to make sure building is not blocked for the player in question <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-194076' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 7, 2016 at 10:32 PM">Apr 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/remover-cupboard-question-should-be-easy.16494/#post-194076' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/194076/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

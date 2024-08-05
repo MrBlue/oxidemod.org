@@ -1,0 +1,195 @@
+---
+layout: forums
+title: 'Lua, Sync Webrequest?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/lua-sync-webrequest.6888/' | prepend: site.baseurl }}">Lua, Sync Webrequest?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Mancs</a>, <a href="{{ '/threads/lua-sync-webrequest.6888/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 16, 2015 at 11:03 PM">Feb 16, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-67379" class="message" data-author="Mancs">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mancs" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mancs</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi guys,<br />
+                        <br /> I&#039;m pretty new to rust modding, and I&#039;m not planning on cooking anything hardcore either, just trying to get a quick basic feature done.<br />
+                        <br /> I got a neat hook: CanClientLogin, in which I run a webrequest.<br /> The only problem is, the webrequest is async, and regardless of what I do in that scope, any player
+                        will be auto allowed in. (Since the main scope ends and therefore allows the connection.)<br />
+                        <br /> Any idea on how to solve this issue?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:CanClientLogin(connection)
+    local steamId = rust.UserIDFromConnection(connection)
+    if debug then print(connection.username .. &quot; (&quot; .. steamId .. &quot;) connected&quot;) end
+  
+    local flag = false
+// get to my web based whitelist solution
+    webrequests.EnqueueGet((&quot;fancy nice url&quot; .. steamId), function(code, response)
+//unnecessary debug stuff
+        print(code)
+        if code == 200 then
+            flag = true
+        end
+      
+        if flag then
+            return
+        else
+            return self.Config.Messages.Rejected
+        end
+    end, self.Plugin)
+end</pre>{% endraw %}
+                        </div>Any help would be much appreciated!<br /> Cheers! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mancs</a>,</span>
+                        <a href="{{ '/threads/lua-sync-webrequest.6888/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Feb 16, 2015 at 11:03 PM">Feb
+                                16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-sync-webrequest.6888/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/67379/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67380" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> That code looks familiar... <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2"
+                            alt=";)" title="Wink    ;)" /><br />
+                        <br /> The problem with your situation is that the webrequest response happens after they already are logged in, therefore returning anything is pointless. You&#039;d need to
+                        kick the player instead once the response is received. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67380' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2015 at 11:05 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67380' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/67380/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67381" class="message" data-author="Mancs">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mancs" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mancs</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hmm, alright let me see if I can solve this.<br />
+                        <br /> Another question if I may?<br /> xml parsing by any chance?<br />
+                        <br /> If I can get my hands on that, off we go and I can release an experimental compatible steamgroup whitelist plugin <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mancs</a>,</span>
+                        <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67381' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2015 at 11:07 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67381' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/67381/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67382" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Any parsing would need to be done either using regex or whatever libraries/modules/etc that are available in the
+                        language you are writing the plugin in. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67382' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2015 at 11:12 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-sync-webrequest.6888/#post-67382' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/67382/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

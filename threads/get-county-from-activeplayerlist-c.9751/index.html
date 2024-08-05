@@ -1,0 +1,161 @@
+---
+layout: forums
+title: 'Get county from activePlayerList (C#)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/' | prepend: site.baseurl }}">Get county from activePlayerList (C#)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Gobbler</a>, <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 26, 2015 at 7:00 PM">Jun 26,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-102692" class="message" data-author="Gobbler">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gobbler" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gobbler</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi, <br /> I&#039;m new here and started this night with my own plugin. <br /> My C# knowledge is average but I
+                        can&#039;t understand why the text output in the wrong order.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;test&quot;)]
+void playerslist(BasePlayer player, string command, string[] args)
+{
+    int count = 1;
+    var catchactiveplayerlist = BasePlayer.activePlayerList as List&lt;BasePlayer&gt;;
+    var catchsleeperplayerlist = BasePlayer.sleepingPlayerList as List&lt;BasePlayer&gt;;
+    WebRequests webRequests = Interface.GetMod().GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;);    PrintToConsole(&quot;&lt;color=cyan&gt;PLAYERS ONLINE:&lt;/color&gt;&quot;);
+    foreach (BasePlayer user in catchactiveplayerlist)
+    {
+        string[] ipaddress = user.net.connection.ipaddress.Split(':');
+        Interface.GetMod().GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;).EnqueueGet(&quot;http://ipinfo.io/&quot; + ipaddress[0] + &quot;/country&quot;, (code, response) =&gt; addnextPlayer(code, response, player, count), this);
+        count++;
+    }   
+    PrintToConsole(&quot;&lt;color=white&gt;--------------------------------------------------&lt;/color&gt;&quot;);
+    PrintToConsole(&quot;&lt;color=white&gt;There are&lt;/color&gt; &lt;color=cyan&gt;&quot; + Convert.ToString(countonline) + &quot;&lt;/color&gt; &lt;color=white&gt;Players online.&lt;/color&gt;&quot;);
+}
+private void addnextPlayer(int code, string response, BasePlayer player, int count)
+{
+    if (response == null || code != 200)
+    {
+        response = &quot;undefined&quot;;
+    }
+    PrintToConsole(&quot;&lt;color=white&gt;&quot; + count.ToString(&quot;000&quot;) + &quot; |&lt;/color&gt;&lt;color=lime&gt; &quot; + player.displayName + &quot;&lt;/color&gt;&lt;color=white&gt; | &quot; + player.userID + &quot; | &quot; + response + &quot;&lt;/color&gt;\n&quot;);    
+}
+ </pre>{% endraw %}
+                        </div>Normaly i think the output should looks like this:<br /> PLAYERS ONLINE:<br /> 001 | playername | playerid | country<br /> 002 | playername | playerid | country<br />
+                        -------------------------------------------------<br /> There are 2 Players online<br />
+                        <br /> But it looks like this:<br /> PLAYERS ONLINE:<br /> -------------------------------------------------<br /> There are 2 Players online<br /> 002 | playername | playerid
+                        | country<br /> 003 | playername | playerid | country<br />
+                        <br /> and yes the webrequest works and i get my country information =).<br />
+                        <br /> I hope anyone can help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> greetz Gobbles<br /> [DOUBLEPOST=1435341600,1435295825][/DOUBLEPOST]Have nobody any idea about my problem? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gobbler</a>,</span>
+                        <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 26, 2015 at 7:00 PM">Jun 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/102692/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-102866" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I don&#039;t see a wrong order, just different numbering. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/#post-102866' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 26, 2015 at 7:02 PM">Jun 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/#post-102866' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/102866/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-102869" class="message" data-author="Gobbler">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gobbler" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gobbler</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The numbering is wrong and it print the list of the players after the line and the text &quot;There are 2 Players
+                        online&quot; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gobbler</a>,</span>
+                        <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/#post-102869' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 26, 2015 at 7:07 PM">Jun 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-county-from-activeplayerlist-c.9751/#post-102869' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/102869/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

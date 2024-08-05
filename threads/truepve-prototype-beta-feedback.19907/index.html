@@ -1,0 +1,219 @@
+---
+layout: forums
+title: 'TruePVE prototype (beta) feedback'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/truepve-prototype-beta-feedback.19907/' | prepend: site.baseurl }}">TruePVE prototype (beta) feedback</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ignignokt84</a>, <a href="{{ '/threads/truepve-prototype-beta-feedback.19907/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 25, 2016 at 12:26 PM">Jul 25,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-235098" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello all - I&#039;ve developed a beta version of the <a href="http://oxidemod.org/plugins/truepve.1789/"
+                            class="internalLink">TruePVE plugin</a> as a prototype to reduce the number configuration options I have to maintain, and try to move much of the customization to the user
+                        side via a map-based system, allowing for more versatile damage control configurations. If any of you are interested in playing around with the new setup, I&#039;d definitely
+                        appreciate any feedback.<br />
+                        <br />
+                        <span style="text-decoration: underline"><b>Chat command:</b></span><br />
+                        <i>/tpvebeta_prod</i> - Show the type and prefab name of the entity being looked at (to assist with mapping)<br />
+                        <br />
+                        <b><span style="text-decoration: underline">Console commands:</span></b><br />
+                        <i>tpvebeta.get</i> - Get the value of the specified option<br />
+                        <i>tpvebeta.set</i> - Set the value of the specified option<br />
+                        <i>tpvebeta.list</i> - List the available options<br />
+                        <i>tpvebeta.def [all|config|data]</i> - Reset to default configuration, data (mappings), or both<br />
+                        <br />
+                        <b><span style="text-decoration: underline">Configuration:</span></b><br /> Some built-in configuration options are still available for more complex handling, but have been
+                        renamed:<br />
+                        <i>allowSuicide</i> - Allow players to use Fi &gt; kill<br />
+                        <i>authDamage</i> - Allow players to damage entities they own or have build authorization on<br />
+                        <i>corpseLooting</i> - Allow players to loot other players&#039; corpses<br />
+                        <i>handleDamage</i> - Enable TruePVE processing of damage<br />
+                        <i>handleLooting</i> - Enable TruePVE processing of looting<br />
+                        <i>heliDamage</i> - Enable heli to damage all entities<br />
+                        <i>heliDamageLocked</i> - Enable heli to damage locked doors/boxes<br />
+                        <i>immortalLocks</i> - Locked doors/boxes are indestructible<br />
+                        <i>sleeperAdminDamage</i> - Admins can hurt/kill sleepers<br />
+                        <i>sleeperLooting</i> - Allow player to loot sleepers<br />
+                        <br />
+                        <b><span style="text-decoration: underline">Mappings:</span></b><br /> The damage control beyond some of the configurable options is handled in a map-based system, where
+                        containers are mapped to other containers and associated with a flag indicating whether to allow damage. There is a &quot;global&quot; container which is by default mapped to
+                        itself and specifies if damage is globally enabled or disabled, which can then be overridden by additional mappings. The global container should never have any entries in
+                        <i>prefabs</i> or <i>types</i>.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    &quot;global&quot;: {
+      &quot;name&quot;: &quot;global&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [],
+      &quot;links&quot;: {
+        &quot;global&quot;: false // linked to itself, false means no damage - this is the &quot;catchall&quot; damage condition
+      },
+      &quot;enabled&quot;: true
+    }</pre>{% endraw %}
+                        </div>Additional mappings can be added to global to specify their default damage. Mappings <b>from</b> global indicate whether the entity or entities represented by the
+                        container can be damaged.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    &quot;global&quot;: {
+      &quot;name&quot;: &quot;global&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [],
+      &quot;links&quot;: {
+        &quot;global&quot;: false, // linked to itself, false means no damage
+        &quot;player&quot;: true // players take damage
+      },
+      &quot;enabled&quot;: true
+    },
+    &quot;player&quot;: {
+      &quot;name&quot;: &quot;player&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [
+        &quot;BasePlayer&quot;
+      ],
+      &quot;links&quot;: {},
+      &quot;enabled&quot;: true
+    }
+</pre>{% endraw %}
+                        </div>In addition, other containers can be mapped <b>to</b> global to signify that the entity or entities represented can damage anything. For example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    &quot;global&quot;: {
+      &quot;name&quot;: &quot;global&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [],
+      &quot;links&quot;: {
+        &quot;global&quot;: false // linked to itself, false means no damage
+      },
+      &quot;enabled&quot;: true
+    },
+    &quot;napalm&quot;: {
+      &quot;name&quot;: &quot;napalm&quot;,
+      &quot;prefabs&quot;: [
+        &quot;napalm&quot; // entity with ShortPrefabName = &quot;napalm&quot;
+      ],
+      &quot;types&quot;: [],
+      &quot;links&quot;: {
+        &quot;global&quot;: true // linked to global, napalm can damage anything
+      },
+      &quot;enabled&quot;: true
+    }
+</pre>{% endraw %}
+                        </div>There is an inherent priority to mappings, so global mappings are overridden by more specific mappings. Damage handling logic first checks the target and initiator to
+                        determine if they are directly mapped, then if the initiator is mapped to global, then if global is mapped to the target entity. This prioritizing allows generic mappings to be
+                        overridden by more specific mappings. In the following configuration, damage is globally enabled against players, but &quot;traps&quot; overrides the global mapping and
+                        prevents traps and spikes from damaging the player:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    &quot;global&quot;: {
+      &quot;name&quot;: &quot;global&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [],
+      &quot;links&quot;: {
+        &quot;global&quot;: false,
+        &quot;player&quot;: true // anything can damage players
+      },
+      &quot;enabled&quot;: true
+    },
+    &quot;player&quot;: {
+      &quot;name&quot;: &quot;player&quot;,
+      &quot;prefabs&quot;: [],
+      &quot;types&quot;: [
+        &quot;BasePlayer&quot;
+      ],
+      &quot;links&quot;: {},
+      &quot;enabled&quot;: true
+    },
+    &quot;traps&quot;: {
+      &quot;name&quot;: &quot;traps&quot;,
+      &quot;prefabs&quot;: [
+        &quot;spikes.floor&quot; // floor spike prefab name
+      ],
+      &quot;types&quot;: [
+        &quot;BearTrap&quot;, // bear trap type
+        &quot;Landmine&quot; // land mine type
+      ],
+      &quot;links&quot;: {
+        &quot;player&quot;: false  // traps and spikes cannot damage players - overrides global-&gt;player mapping
+      },
+      &quot;enabled&quot;: true
+    }
+</pre>{% endraw %}
+                        </div><b><span style="text-decoration: underline">Mapping Containers:</span></b><br /> The structure of the container for mapping entities is as follows:<br />
+                        <i>name</i> - Name of the container - can be any string, but must be unique<br />
+                        <i>prefabs</i> - List of short prefab names<br />
+                        <i>types</i> - List of entity type names<br />
+                        <i>links</i> - Damage mappings to other containers - map of container name to damage flag (true = damageable)<br />
+                        <i>enabled</i> - Turns on and off this container, meaning no mappings to/from the container will be used<br />
+                        <br /> The list <i>prefabs</i> and <i>types</i> are used to link to the entity - if the entity type matches any entry in <i>types</i>, OR the entity prefab matches any entry in
+                        <i>prefabs</i>, then the container is considered a match for that entity.<br />
+                        <br />
+                        <i><b>Note:</b></i> The chat command <i>/tpvebeta_prod</i> will print the type and prefab name of the entity which is being looked at, to help with setting up mappings.<br />
+                        <br />
+                        <span style="text-decoration: underline"><b>Default Mapping:</b></span><br /> The default mapping configuration has the following rules:<br /> - Global damage disabled<br /> -
+                        Players and heli can take damage by default<br /> - Napalm damages anything<br /> - Players cannot damage other players<br /> - Players can damage traps and barricades<br /> -
+                        Traps and barricades cannot hurt players<br /> - High external walls cannot hurt players <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="TruePVEBeta.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/truepvebeta-cs.25561/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/truepvebeta-cs.25561/" target="_blank">TruePVEBeta.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>25.7 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>9</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/truepve-prototype-beta-feedback.19907/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2016 at 12:26 PM">Jul 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/truepve-prototype-beta-feedback.19907/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/235098/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

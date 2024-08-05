@@ -1,0 +1,1450 @@
+---
+layout: forums
+title: 'Some errors and issues with some code'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}">Some errors and issues with some code</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">cookiecool</a>, <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 4, 2018 at 6:41 AM">Feb 4,
+                2018</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/some-errors-and-issues-with-some-code.29336/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-384010" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        var propi;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), 3))
+        {
+            propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Error while compiling: ControlProp.cs(113,17): error CS0127: `Oxide.Plugins.ControlProp.GetIntInFront(BasePlayer)': A return keyword must not be followed by any expression when method returns void</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 6:41 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/384010/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384012" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> There&#039;s at least two issues with that code. Firstly, you&#039;re using void, that&#039;s not going to
+                        accept any return values. In your case, it looks like it should be BaseEntity GetIntInFront(BasePlayer player)<br />
+                        <br /> Secondly, you&#039;re only returning a value if the raycast actually happens. You&#039;ll need return something after the if (incase the if is not met). Check code
+                        below:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        var propi;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), 3))
+        {
+            propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }
+</pre>{% endraw %}
+                        </div>EDIT: Also, the BasePlayer bplayer = player as BasePlayer is redundant and unneeded. player is already declared and is already a BasePlayer. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384012' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 6:44 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384012' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384012/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384014" class="message" data-author="HOUGAN_Y">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HOUGAN_Y" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HOUGAN_Y</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> First of all, you can&#039;t declare a var without saing what you will save in it.<br /> It should be:<br />
+                        var propi = new BaseEntity();<br /> or, BaseEntity propi;<br /> Other - <a href="https://oxidemod.org/members/25129/" class="username"
+                            data-user="25129, @Shady757">@Shady757</a> said.<br />
+                        <br /> PS. You raycast will not work, cause itdoesnot save RayHit in anything.<br /> Should work.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BaseEntity GetIntInFront(BasePlayer player)
+{
+RaycastHit hitinfo;
+if (Physics.Raycast(player.eyes.position, Quaternion.Euler(player.GetNetworkRotation()) * Vector3.forward, out hitinfo, 5f)
+{
+    if (hitinfo.GetEntity() != null)
+    {
+        Puts(hitinfo.GetEntity().ShortPrefabName);
+        return hitinfo.GetEntity();
+    }
+}
+return null;
+}</pre>{% endraw %}
+                        </div>PSS. Actually, it will have troubles sometimes, as i think, you want to check is something in front of player (and you think about object), then you need to add Layer
+                        check, because maybe it will find trigger in front of you (if you are in building zone (or building trigger was removed in building 3.0?)) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Feb 4, 2018 at 6:58 AM">Feb 4, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HOUGAN_Y</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384014' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 6:49 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384014' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384014/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384016" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> K thx <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384016' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:06 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384016' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384016/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384018" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cookiecool">
+                            <aside>
+                                <div class="attribution type">cookiecool said: <a href="#post-384016" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">So I have been trying to make my first plugin for like 12 hours now and I been fixing all the bugs for like 4 hours and it finally loaded but
+                                        it&#039;s not working. The commands don&#039;t work. Please help.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core.Libraries.Covalence;
+using Oxide.Game.Rust.Cui;
+using UnityEngine;namespace Oxide.Plugins
+{
+[Info(&quot;ControlProp&quot;, &quot;cookiecool&quot;, 0.1)]
+[Description(&quot;Allows you to control props to diguise your self or to hide.&quot;)]    class ControlProp : RustPlugin
+{        private Dictionary&lt;IPlayer, BaseEntity&gt; props = new Dictionary&lt;IPlayer, BaseEntity&gt;();
+    string perm = &quot;controlprop.use&quot;;
+    #region Loaded
+    void Loaded()
+    {
+        permission.RegisterPermission(&quot;controlprop.use&quot;, this);
+        while (props.Count &gt;= 1)
+        {
+            foreach (IPlayer player in props.Keys)
+            {
+                var basePlayer = player.Object as BasePlayer;
+                BaseEntity prop = props[player];
+                prop.transform.position = (new Vector3(basePlayer.transform.position.x, basePlayer.transform.position.y, basePlayer.transform.position.z));
+                prop.SendNetworkUpdate();
+            }
+        }
+    }
+    #endregion        #region EnterPropCommand
+    [ChatCommand(&quot;enterprop&quot;)]
+    private void EnterPropCommand(IPlayer player, string command, string[] args)
+    {            if (!player.HasPermission(perm))
+        {
+            player.Reply(&quot;You do not have permission to this command!&quot;, player.Id);
+        }
+        if (player.HasPermission(perm))
+        {                if (props.ContainsKey(player))
+            {
+                player.Reply(&quot;You have to leave the current prop with /leaveprop before you can enter a new one&quot;, player.Id);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                var propi = GetIntInFront(player as BasePlayer);
+                if (propi == null)
+                {
+                    player.Reply(&quot;You have to be looking at a prop!&quot;, player.Id);                    }
+                else if (!propi == null)
+                {
+                    if (propi is BuildingBlock)
+                    {
+                        player.Reply(&quot;You can not control building blocks!&quot;, player.Id);
+                    }
+                    else if (!propi is BuildingBlock)
+                    {
+                        props.Add(player, propi);
+                        player.Reply(&quot;You are now controlling a prop.&quot;, player.Id);
+                    }                    }
+            }
+        }
+    }
+    #endregion        #region LeavePropCommand
+    [ChatCommand(&quot;leaveprop&quot;)]
+    private void LeavePropCommand(IPlayer player, string command, string[] args)
+    {
+        if (!player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            player.Reply(&quot;You do not have permission to this command!&quot;, player.Id);
+        } else if (player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            if (props.ContainsKey(player))
+            {
+                player.Reply(&quot;You have left the prop!&quot;, player.Id);                    props.Remove(player);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                player.Reply(&quot;You are currently not controlling a prop.&quot;, player.Id);
+            }
+        }
+    }
+    #endregion        #region GetIntInfront
+    BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), out hit, 3))
+        {
+            var propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }        #endregion        #region Unload
+    private void Unload()
+    {
+        props.Clear();
+    }
+    #endregion    }
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can’t use IPlayer just anywhere you want. Chat commands in a RustPlugin expect a BasePlayer. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384018' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:10 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384018' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384018/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384020" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-384018" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can’t use IPlayer just anywhere you want. Chat commands in a RustPlugin expect a BasePlayer.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What parts do I need to fix? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384020' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:11 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384020' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384020/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384021" class="message" data-author="HOUGAN_Y">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HOUGAN_Y" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HOUGAN_Y</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Change IPlayer to BasePlayer, it have ~same methods and fields.<br /> player.Reply -&gt; player.ChatMessage
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HOUGAN_Y</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384021' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:12 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384021' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384021/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384022" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="HOUGAN_Y">
+                            <aside>
+                                <div class="attribution type">HOUGAN_Y said: <a href="#post-384021" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Change IPlayer to BasePlayer, it have ~same methods and fields.<br /> player.Reply -&gt; player.ChatMessage</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core.Libraries.Covalence;
+using Oxide.Game.Rust.Cui;
+using UnityEngine;namespace Oxide.Plugins
+{
+[Info(&quot;ControlProp&quot;, &quot;cookiecool&quot;, 0.1)]
+[Description(&quot;Allows you to control props to diguise your self or to hide.&quot;)]    class ControlProp : RustPlugin
+{        private Dictionary&lt;BasePlayer, BaseEntity&gt; props = new Dictionary&lt;BasePlayer, BaseEntity&gt;();
+    string perm = &quot;controlprop.use&quot;;
+    #region Loaded
+    void Loaded()
+    {
+        permission.RegisterPermission(&quot;controlprop.use&quot;, this);
+        while (props.Count &gt;= 1)
+        {
+            foreach (BasePlayer player in props.Keys)
+            {
+                var basePlayer = player.Object as BasePlayer;
+                BaseEntity prop = props[player];
+                prop.transform.position = (new Vector3(basePlayer.transform.position.x, basePlayer.transform.position.y, basePlayer.transform.position.z));
+                prop.SendNetworkUpdate();
+            }
+        }
+    }
+    #endregion        #region EnterPropCommand
+    [ChatCommand(&quot;enterprop&quot;)]
+    private void EnterPropCommand(BasePlayer player, string command, string[] args)
+    {            if (!player.HasPermission(perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        }
+        if (player.HasPermission(perm))
+        {                if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have to leave the current prop with /leaveprop before you can enter a new one&quot;);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                var propi = GetIntInFront(player);
+                if (propi == null)
+                {
+                    player.ChatMessage(&quot;You have to be looking at a prop!&quot;);                    }
+                else if (!propi == null)
+                {
+                    if (propi is BuildingBlock)
+                    {
+                        player.ChatMessage(&quot;You can not control building blocks!&quot;);
+                    }
+                    else if (!propi is BuildingBlock)
+                    {
+                        props.Add(player, propi);
+                        player.ChatMessage(&quot;You are now controlling a prop.&quot;);
+                    }                    }
+            }
+        }
+    }
+    #endregion        #region LeavePropCommand
+    [ChatCommand(&quot;leaveprop&quot;)]
+    private void LeavePropCommand(BasePlayer player, string command, string[] args)
+    {
+        if (!player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        } else if (player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have left the prop!&quot;);                    props.Remove(player);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                player.ChatMessage(&quot;You are currently not controlling a prop.&quot;);
+            }
+        }
+    }
+    #endregion        #region GetIntInfront
+    BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), out hit, 3))
+        {
+            var propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }        #endregion        #region Unload
+    private void Unload()
+    {
+        props.Clear();
+    }
+    #endregion    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Unable to load ControlProp. ControlProp.cs(88,31): error CS1061: Type `BasePlayer' does not contain a definition for `HasPermission' and no extension method `HasPermission' of type `BasePlayer' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384022' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:19 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384022' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384022/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384023" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cookiecool">
+                            <aside>
+                                <div class="attribution type">cookiecool said: <a href="#post-384022" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core.Libraries.Covalence;
+using Oxide.Game.Rust.Cui;
+using UnityEngine;namespace Oxide.Plugins
+{
+[Info(&quot;ControlProp&quot;, &quot;cookiecool&quot;, 0.1)]
+[Description(&quot;Allows you to control props to diguise your self or to hide.&quot;)]    class ControlProp : RustPlugin
+{        private Dictionary&lt;BasePlayer, BaseEntity&gt; props = new Dictionary&lt;BasePlayer, BaseEntity&gt;();
+    string perm = &quot;controlprop.use&quot;;
+    #region Loaded
+    void Loaded()
+    {
+        permission.RegisterPermission(&quot;controlprop.use&quot;, this);
+        while (props.Count &gt;= 1)
+        {
+            foreach (BasePlayer player in props.Keys)
+            {
+                var basePlayer = player.Object as BasePlayer;
+                BaseEntity prop = props[player];
+                prop.transform.position = (new Vector3(basePlayer.transform.position.x, basePlayer.transform.position.y, basePlayer.transform.position.z));
+                prop.SendNetworkUpdate();
+            }
+        }
+    }
+    #endregion        #region EnterPropCommand
+    [ChatCommand(&quot;enterprop&quot;)]
+    private void EnterPropCommand(BasePlayer player, string command, string[] args)
+    {            if (!player.HasPermission(perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        }
+        if (player.HasPermission(perm))
+        {                if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have to leave the current prop with /leaveprop before you can enter a new one&quot;);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                var propi = GetIntInFront(player);
+                if (propi == null)
+                {
+                    player.ChatMessage(&quot;You have to be looking at a prop!&quot;);                    }
+                else if (!propi == null)
+                {
+                    if (propi is BuildingBlock)
+                    {
+                        player.ChatMessage(&quot;You can not control building blocks!&quot;);
+                    }
+                    else if (!propi is BuildingBlock)
+                    {
+                        props.Add(player, propi);
+                        player.ChatMessage(&quot;You are now controlling a prop.&quot;);
+                    }                    }
+            }
+        }
+    }
+    #endregion        #region LeavePropCommand
+    [ChatCommand(&quot;leaveprop&quot;)]
+    private void LeavePropCommand(BasePlayer player, string command, string[] args)
+    {
+        if (!player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        } else if (player.HasPermission(&quot;controlprop.use&quot;))
+        {
+            if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have left the prop!&quot;);                    props.Remove(player);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                player.ChatMessage(&quot;You are currently not controlling a prop.&quot;);
+            }
+        }
+    }
+    #endregion        #region GetIntInfront
+    BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), out hit, 3))
+        {
+            var propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }        #endregion        #region Unload
+    private void Unload()
+    {
+        props.Clear();
+    }
+    #endregion    }
+}</pre>{% endraw %}
+                                        </div>
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Unable to load ControlProp. ControlProp.cs(88,31): error CS1061: Type `BasePlayer' does not contain a definition for `HasPermission' and no extension method `HasPermission' of type `BasePlayer' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Means you can’t use the HasPermission method with that variable because it doesn’t contain it. You would have to use the permission library helper in Oxide instead.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384023' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:23 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384023' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384023/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384024" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-384023" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Means you can’t use the HasPermission method with that variable because it doesn’t contain it. You would have to use the permission library
+                                        helper in Oxide instead.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How would I do that? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384024' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:26 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384024' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384024/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384025" class="message" data-author="HOUGAN_Y">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HOUGAN_Y" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HOUGAN_Y</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> if(permission.UserHasPermission(player.UserIDString, &quot;name&quot;)) <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HOUGAN_Y</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384025' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:30 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384025' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384025/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384026" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="HOUGAN_Y">
+                            <aside>
+                                <div class="attribution type">HOUGAN_Y said: <a href="#post-384025" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">if(permission.UserHasPermission(player.UserIDString, &quot;name&quot;))</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core.Libraries.Covalence;
+using Oxide.Game.Rust.Cui;
+using UnityEngine;namespace Oxide.Plugins
+{
+[Info(&quot;ControlProp&quot;, &quot;cookiecool&quot;, 0.1)]
+[Description(&quot;Allows you to control props to diguise your self or to hide.&quot;)]    class ControlProp : RustPlugin
+{        private Dictionary&lt;BasePlayer, BaseEntity&gt; props = new Dictionary&lt;BasePlayer, BaseEntity&gt;();
+    string perm = &quot;controlprop.use&quot;;
+    #region Loaded
+    void Loaded()
+    {
+        permission.RegisterPermission(&quot;controlprop.use&quot;, this);
+        while (props.Count &gt;= 1)
+        {
+            foreach (BasePlayer player in props.Keys)
+            {
+                var basePlayer = player.Object as BasePlayer;
+                BaseEntity prop = props[player];
+                prop.transform.position = (new Vector3(basePlayer.transform.position.x, basePlayer.transform.position.y, basePlayer.transform.position.z));
+                prop.SendNetworkUpdate();
+            }
+        }
+    }
+    #endregion        #region EnterPropCommand
+    [ChatCommand(&quot;enterprop&quot;)]
+    private void EnterPropCommand(BasePlayer player, string command, string[] args)
+    {            if (!permission.UserHasPermission(player.UserIDString, perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        }
+        if (permission.UserHasPermission(player.UserIDString, perm))
+        {                if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have to leave the current prop with /leaveprop before you can enter a new one&quot;);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                var propi = GetIntInFront(player);
+                if (propi == null)
+                {
+                    player.ChatMessage(&quot;You have to be looking at a prop!&quot;);                    }
+                else if (!propi == null)
+                {
+                    if (propi is BuildingBlock)
+                    {
+                        player.ChatMessage(&quot;You can not control building blocks!&quot;);
+                    }
+                    else if (!propi is BuildingBlock)
+                    {
+                        props.Add(player, propi);
+                        player.ChatMessage(&quot;You are now controlling a prop.&quot;);
+                    }                    }
+            }
+        }
+    }
+    #endregion        #region LeavePropCommand
+    [ChatCommand(&quot;leaveprop&quot;)]
+    private void LeavePropCommand(BasePlayer player, string command, string[] args)
+    {
+        if (!permission.UserHasPermission(player.UserIDString, perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        } else if (permission.UserHasPermission(player.UserIDString, perm))
+        {
+            if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have left the prop!&quot;);                    props.Remove(player);
+            }
+            else if ((!props.ContainsKey(player)))
+            {
+                player.ChatMessage(&quot;You are currently not controlling a prop.&quot;);
+            }
+        }
+    }
+    #endregion        #region GetIntInfront
+    BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        BasePlayer bplayer = player as BasePlayer;
+        if (Physics.Raycast(bplayer.eyes.HeadRay(), out hit, 3))
+        {
+            var propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }        #endregion        #region Unload
+    private void Unload()
+    {
+        props.Clear();
+    }
+    #endregion    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Error while compiling: ControlProp.cs(28,45): error CS1061: Type `BasePlayer' does not contain a definition for `Object' and no extension method `Object' of type `BasePlayer' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384026' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:37 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384026' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384026/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384027" class="message" data-author="HOUGAN_Y">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HOUGAN_Y" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HOUGAN_Y</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> var basePlayer = player.Object as BasePlayer;<br /> For what you try to use it? What is it? <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HOUGAN_Y</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384027' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:41 AM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384027' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384027/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384045" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So the leave command works and says you don&#039;t have permission or tells you that you aren&#039;t
+                        controlling a prop if they have permission. the enterprop command though doesn&#039;t telling you if its a building block or lets you enter a prop. But it does output the
+                        entity name to console.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core.Libraries.Covalence;
+using Oxide.Game.Rust.Cui;
+using UnityEngine;namespace Oxide.Plugins
+{
+[Info(&quot;ControlProp&quot;, &quot;cookiecool&quot;, 0.1)]
+[Description(&quot;Allows you to control props to diguise your self or to hide.&quot;)]    class ControlProp : RustPlugin
+{        private Dictionary&lt;BasePlayer, BaseEntity&gt; props = new Dictionary&lt;BasePlayer, BaseEntity&gt;();
+    string perm = &quot;controlprop.use&quot;;
+    #region Loaded
+    void Loaded()
+    {
+        permission.RegisterPermission(&quot;controlprop.use&quot;, this);
+        while (props.Count &gt;= 1)
+        {
+            foreach (BasePlayer player in props.Keys)
+            {
+                BaseEntity prop = props[player];
+                prop.transform.position = (new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z));
+                prop.SendNetworkUpdate();
+            }
+        }
+    }
+    #endregion        #region EnterPropCommand
+    [ChatCommand(&quot;enterprop&quot;)]
+    private void EnterPropCommand(BasePlayer player, string command, string[] args)
+    {            if (!permission.UserHasPermission(player.UserIDString, perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        }
+        else if (permission.UserHasPermission(player.UserIDString, perm))
+        {                if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have to leave the current prop with /leaveprop before you can enter a new one&quot;);
+            }
+            else if (!props.ContainsKey(player))
+            {
+                var propi = GetIntInFront(player);
+                if (propi == null)
+                {
+                    player.ChatMessage(&quot;You have to be looking at a prop!&quot;);                    }
+                else if (!propi == null)
+                {
+                    if (propi is BuildingBlock)
+                    {
+                        player.ChatMessage(&quot;You can not control building blocks!&quot;);
+                    }
+                    else if (!propi is BuildingBlock)
+                    {
+                        props.Add(player, propi);
+                        player.ChatMessage(&quot;You are now controlling a prop.&quot;);
+                    }                    }
+            }
+        }
+    }
+    #endregion        #region LeavePropCommand
+    [ChatCommand(&quot;leaveprop&quot;)]
+    private void LeavePropCommand(BasePlayer player, string command, string[] args)
+    {
+        if (!permission.UserHasPermission(player.UserIDString, perm))
+        {
+            player.ChatMessage(&quot;You do not have permission to this command!&quot;);
+        } else if (permission.UserHasPermission(player.UserIDString, perm))
+        {
+            if (props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You have left the prop!&quot;);                    props.Remove(player);
+            }
+            else if (!props.ContainsKey(player))
+            {
+                player.ChatMessage(&quot;You are currently not controlling a prop.&quot;);
+            }
+        }
+    }
+    #endregion        #region GetIntInfront
+    BaseEntity GetIntInFront(BasePlayer player)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(player.eyes.HeadRay(), out hit, 3))
+        {
+            var propi = hit.GetEntity();
+            Puts(propi.ShortPrefabName);
+            return propi;
+        }
+        return null;
+    }        #endregion        #region Unload
+    private void Unload()
+    {
+        props.Clear();
+    }
+    #endregion    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384045' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 6:37 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384045' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384045/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384048" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You don’t have the permission then. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384048' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 6:46 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384048' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384048/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384061" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-384048" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You don’t have the permission then.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I gave my self permission I know because the leave prop command said that I want in a prop which is should I have permission. But the enter prop didn&#039;t. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384061' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:14 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384061' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384061/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384062" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cookiecool">
+                            <aside>
+                                <div class="attribution type">cookiecool said: <a href="#post-384061" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I gave my self permission I know because the leave prop command said that I want in a prop which is should I have permission. But the enter
+                                        prop didn&#039;t.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you see the no permission message as you previously stated, then that is where the code is stopping, which would mean you don’t have the permission.<br />
+                        <br /> Also, you don’t need to do multiple checks for each permission check in the command, either do a return or a else, not any else if. Same goes for the dictionary
+                        check. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384062' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:15 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384062' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384062/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384065" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-384062" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you see the no permission message as you previously stated, then that is where the code is stopping, which would mean you don’t have the
+                                        permission.<br />
+                                        <br /> Also, you don’t need to do multiple checks for each permission check in the command, either do a return or a else, not any else if. Same goes for the
+                                        dictionary check.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I see the no permission message but I don&#039;t see other messages<br />
+                        <br /> fix no building message I had to chane if (!propi == nil) to if(prop != nil) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384065' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:24 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384065' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384065/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384067" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cookiecool">
+                            <aside>
+                                <div class="attribution type">cookiecool said: <a href="#post-384065" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I see the no permission message but I don&#039;t see other messages<br />
+                                        <br /> fix no building message I had to chane if (!propi == nil) to if(prop != nil)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yup, one of the many issues. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384067' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:27 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384067' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384067/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-384068" class="message" data-author="cookiecool">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cookiecool" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cookiecool</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cookiecool">
+                            <aside>
+                                <div class="attribution type">cookiecool said: <a href="#post-384065" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I see the no permission message but I don&#039;t see other messages<br />
+                                        <br /> fix no building message I had to chane if (!propi == nil) to if(prop != nil)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>When I type /enterprop on like a stone node or a hemp bush still doesn&#039;t work. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cookiecool</a>,</span>
+                        <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384068' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 4, 2018 at 7:27 PM">Feb 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/#post-384068' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/384068/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/some-errors-and-issues-with-some-code.29336/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/some-errors-and-issues-with-some-code.29336/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,314 @@
+---
+layout: forums
+title: 'Need help with my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/need-help-with-my-plugin.27293/' | prepend: site.baseurl }}">Need help with my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ZeGalinha</a>, <a href="{{ '/threads/need-help-with-my-plugin.27293/' | prepend: site.baseurl }}"><span class="DateTime" title="Sep 27, 2017 at 2:01 PM">Sep 27, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-352780" class="message" data-author="ZeGalinha">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ZeGalinha" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ZeGalinha</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I finally try to create a vip plugin where the adm writes example: / addvip Player name + time, except that in
+                        this command it will give time of the vip pro player and next comes the permissions of the vip so he can use the kit vip and give the tag, currently I was able to do it add
+                        time and and it seems the message in the chat and pro player and for adm, example:<br /> &lt;Message Chat Globla: You added Player 1 day ago&gt;<br /> &lt;ADM Message: You
+                        Added Vip to Player&gt;<br /> &lt;Player Message: You have been added as vip&gt;<br /> and when it finishes the time of the vip it appears to the player: Your VIP is
+                        over.<br /> the Plugin that created it has these functions, but at the time of granting the vip it does not send the tag vip and nor the permission pro player uses the vip
+                        kit.<br /> Plugin .LUA<br /> Could someone help me in this part?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:Init()    command.AddChatCommand( &quot;addviptime&quot;, self.Plugin, &quot;cmdAddVipTime&quot; )
+    command.AddChatCommand( &quot;Removeviptime&quot;, self.Plugin, &quot;cmdRemoverVipTime&quot; )
+    command.AddChatCommand( &quot;test&quot;, self.Plugin, &quot;cmdtest&quot; )
+    ServerInitialized = true
+   
+    Vip_chatPlayers = {}
+   
+    permission.RegisterPermission(&quot;canVip_chat&quot;, self.Plugin)
+   
+    endfunction PLUGIN:OnPlayerChat(player, message)
+    if (message:sub( 1, 1 ) ~= &quot;/&quot;) then
+        if(self:isVip_chat(player))then
+        rust.Notice(player,self.Config.youAreVip_chat)
+            return true
+        end
+    end
+endfunction PLUGIN:cmdAddVipTime(player,cmd,args)    local playerID = rust.UserIDFromPlayer(player)    if self:canVip_chat(player) then   
+        if(args.Length == 0) then
+        rust.Notice(player,&quot;Syntax: /addviptime Nome e Minutos&quot;)
+       
+        end
+   
+        if(args.Length &gt;= 1) then
+       
+            local target = rust.FindPlayer(args[0])
+           
+            if(target == nil)then
+            rust.Notice(player,&quot;Nenhum usuário encontrado com o nome &quot;..args[0])
+                return
+            end
+           
+            if(self:isVip_chat(target)) then
+            rust.Notice(player,args[0]..&quot; já está com Vip.&quot;)
+                return
+            end
+           
+            local Vip_chattime = self.Config.defaultVip_chatTime
+           
+            if(args.Length == 2) then
+           
+           
+                Vip_chattime = tonumber(args[1])
+               
+                   
+                    if(Vip_chattime == nil)then
+                        Vip_chattime = self.Config.defaultVip_chatTime
+                    end
+           
+                   
+            end
+           
+           
+       
+           
+            self:Vip_chatPlayer(target,Vip_chattime*60)
+            rust.Notice(player,&quot;Você silenciou &quot;..target.displayName)
+            if(self.Config.broadcastVip_chats == true)then
+                rust.BroadcastChat(target.displayName..self.Config.hasBeenVip_chat..&quot; (&quot;..Vip_chattime..&quot; Minutos)&quot;)
+            end
+           
+           
+            return
+        end
+   
+   
+   
+    else
+    rust.Notice(player,&quot;Você não tem permissão para usar esse comando.&quot;)
+   
+    --    endendfunction PLUGIN:cmdRemoverVipTime(player,cmd,args)    local playerID = rust.UserIDFromPlayer(player)    if self:canVip_chat(player) then
+       
+       
+        if(args.Length == 0) then
+        rust.Notice(player,&quot;Syntax: /RemoveVipTime player&quot;)
+            return
+        end
+       
+        if(args.Length == 1) then
+       
+            local target = rust.FindPlayer(args[0])
+           
+            if(target == nil)then
+            rust.Notice(player,&quot;Nenhum usuário encontrado com o nome &quot;..args[0])
+                return
+            end
+           
+            if (self:isVip_chat(target) == false) then
+            rust.Notice(player,args[0]..&quot; não está Mais VIP.&quot;)
+                return
+            end
+           
+            self:unVip_chatPlayer(target)
+            rust.Notice(player,&quot;Vip Removido &quot;..target.displayName)
+                return
+        end
+       
+       
+       
+       
+       
+   
+    else
+    rust.Notice(player,&quot;Você não tem permissão para usar este comando.&quot;)
+   
+    end
+end
+function PLUGIN:canVip_chat(player)    local playerID = rust.UserIDFromPlayer(player)    if(player:CanAdmin() or permission.UserHasPermission(playerID, &quot;canVip_chat&quot;)) then
+        return true
+    else return falseendendfunction PLUGIN:isVip_chat(player)    playerID = rust.UserIDFromPlayer(player)    if(Vip_chatPlayers[playerID] == &quot;1&quot;)then
+        return true
+    end
+    return false
+endfunction PLUGIN:Vip_chatPlayer(player, Vip_chattime)    rust.Notice(player,&quot;Você foi silenciado&quot;)
+    playerID = rust.UserIDFromPlayer(player)
+    Vip_chatPlayers[playerID] = &quot;1&quot;    timer.Once(Vip_chattime, function()
+        self:unVip_chatPlayer(player)
+    end, self.Plugin)
+endfunction PLUGIN:RemoveviptimePlayer(player)    if(self:isVip_chat(player) == false)then
+        return
+    end    rust.Notice(player,&quot;Removeviptime&quot;)
+    playerID = rust.UserIDFromPlayer(player)
+    Vip_chatPlayers[playerID] = nil
+    end   
+function PLUGIN:LoadDefaultConfig()
+    self.Config.defaultVip_chatTime = 5
+    self.Config.hasBeenVip_chat = &quot; [color red] Foi Adicionado Vip&quot;
+    self.Config.youAreVip_chat = &quot;Voce Esta com Vip!.&quot;
+    self.Config.broadcastVip_chats = trueend
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 27, 2017 at 2:32 PM">Sep 27, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ZeGalinha</a>,</span>
+                        <a href="{{ '/threads/need-help-with-my-plugin.27293/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 27, 2017 at 2:01 PM">Sep 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-help-with-my-plugin.27293/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/352780/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-352785" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You don&#039;t seem to be actually granting or revoking any permissions. Adding/removing players to
+                        <i>Vip_chatPlayers</i> works fine for internal use, but you need to grant and revoke the permission using Oxide&#039;s built in permission system or checking
+                        <i>permission.UserHasPermission</i> will always return false... I don&#039;t know the exact syntax in LUA, but I suspect in your case it should be
+                        <i>permission.GrantUserPermission(playerId, &quot;canVip_chat&quot;, self.Plugin)</i> and <i>permission.RevokeUserPermission(playerId, &quot;canVip_chat&quot;)</i>. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352785' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 27, 2017 at 2:56 PM">Sep 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352785' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/352785/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-352792" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Would not write the plugin in LUA to start with <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352792' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 27, 2017 at 4:48 PM">Sep 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352792' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/352792/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-352795" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Resistance">
+                            <aside>
+                                <div class="attribution type">Resistance said: <a href="#post-352792" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Would not write the plugin in LUA to start with</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That&#039;s also a good point. <a href="https://oxidemod.org/members/104409/" class="username" data-user="104409, @ZeGalinha">@ZeGalinha</a> - It&#039;s worth mentioning
+                        that LUA is not longer officially supported, so you&#039;re better off developing in C#... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352795' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 27, 2017 at 5:02 PM">Sep 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-help-with-my-plugin.27293/#post-352795' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/352795/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

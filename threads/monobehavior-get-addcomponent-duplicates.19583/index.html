@@ -1,0 +1,362 @@
+---
+layout: forums
+title: 'Solved - MonoBehavior Get/AddComponent duplicates ?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/' | prepend: site.baseurl }}">MonoBehavior Get/AddComponent duplicates ?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Yatta</a>, <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 14, 2016 at 10:54 PM">Jul 14,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-229200" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello. I have a problem with a monobehaviour class. Here&#039;s the code I use to add it on a player gameObject
+                        :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+            BasePlayer pl = BasePlayer.activePlayerList[0];
+            EquityPlayer epl = pl.gameObject.GetComponent&lt;EquityPlayer&gt;();
+            if (epl == null) {
+                epl = pl.gameObject.AddComponent&lt;EquityPlayer&gt;();
+           }
+</pre>{% endraw %}
+                        </div>This code is called after OnServerInitialized(). <br />
+                        <br /> As you can see this code is supposed to add the component only if it doesnt exist. It works fine - once. If I reload the plugin (without restarting the server), it seems
+                        to add the component to the player again, so with multiple plugin reloads, components pile up on the player.<br />
+                        <br /> No problem with a full server restart tough, so its not a big deal, but its not clean either. Any idea whats going on ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2016 at 10:54 PM">Jul 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/229200/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-229270" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You need to destroy the component at some point. So in RadtownAninals I destroy it when the animal is killed or
+                        on unload <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-229270' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 14, 2016 at 11:23 PM">Jul 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-229270' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/229270/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230200" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The thing is the player is neither killed or destroyed. Its just the plgin that is reloaded AND there is a check
+                        to make sure the compoenent isnt already present as you can see in the code, yet it is added again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230200' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 15, 2016 at 4:40 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230200' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230200/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230667" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> try <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (player.GetComponent&lt;EquityPlayer&gt;())
+                    UnityEngine.Object.Destroy(player.GetComponent&lt;EquityPlayer&gt;());</pre>{% endraw %}
+                        </div>then add the new component <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230667' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2016 at 3:28 AM">Jul 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230667' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230667/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230799" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ill try that, but basically isnt that trying to fix an unexpected result of a check using
+                        &quot;GetComponent&quot;, by adding anoter check using &quot;GetComponent&quot; ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230799' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2016 at 10:24 AM">Jul 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230799' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230799/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230803" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Its checking for old component and destroying it. You should be destroying the component anyway on plugin unload
+                        or your just stacking them<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Unload()
+        {            
+            var components = UnityEngine.Object.FindObjectsOfType&lt;EquityPlayer&gt;();
+            if (components!= null)
+                foreach (var comp in components)
+                    UnityEngine.Object.Destroy(comp);           
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230803' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2016 at 10:34 AM">Jul 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230803' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230803/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230812" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Unload cleanup sounds like a good idea, ill do that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230812' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2016 at 10:56 AM">Jul 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230812' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230812/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230838" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b>It seems cleanup at the plugin unload fixed the problem.</b> However I wanted to figure out what happened so I did more tests :<br />
+                        <br /> In my monobehavior class I added a regular Debug.Log based on FixedUpdate to figure out if it is active or not.<br />
+                        <br /> So every 20 fixedUpdates, I get a &quot;Im alive&quot; message.<br />
+                        <br /> Then I add &quot;GameObject.FindObjectsOfType&lt;EquityPlayer&gt;().Length&quot; to that Debug.Log, so I get &quot;Im alive, 1&quot; messages.<br />
+                        <br /> Now if I reload the plugin (not the server) multiples times, I still get &quot;Im alive, 1&quot; messages, but A LOT of them, directly related to the number of times I
+                        reloaded the plugin.<br />
+                        <br /> So GetComponent or FindObjectsOfType fail to find multiples instances of my component, BUT multiple components scripts are still all running.<br /> Something noteworthy
+                        is that &quot;ghost components&quot; use older version of their scripts (as seen by the not-updated Debug.Log message).<br />
+                        <br /> I assumed that somehow the &quot;component object&quot; is actually destroyed, but its code is still called.<br />
+                        <br /> I tried to have the component have a self-check :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+                bool found = false;
+                EquityPlayer[] eps = GameObject.FindObjectsOfType&lt;EquityPlayer&gt;();
+                foreach (EquityPlayer ep in eps) {
+                    if (ep == this) found = true;
+                }
+                Debug.Log(&quot;Am i legit ?? &quot; + found + &quot; tot &quot; + eps.Length);
+</pre>{% endraw %}
+                        </div>So it checks in the list of all components &quot;detected&quot; and see if its part of it. I assumed since FindObjectsOfType only returned one component, &quot;ghost
+                        components&quot; would not find themselves in the list. However ... they all say that the only Component found is themselves, and therefore are all assumed legit.<br />
+                        <br /> My conclusion is as follows :<br />
+                        <br /> - My script defines and adds a EquityPlayer component on a gameObject<br /> - I reload the plugin<br /> - My script re-defines and re-adds a EquityPlayer component on a
+                        gameObject<br /> - <b>Since the component has been &quot;re-defined&quot;, old versions of the component are not detected by GetComponent / FindObject. So when the new
+                            component tries to find &quot;EquityPlayer&quot; it only finds itselfs using the updated definition/identity of the component, and when the old component try to find
+                            &quot;EquityPlayer&quot;, they also only find themselves with the outdated definition/identity. Hence all components believe they&#039;re legit.</b><br />
+                        <br /> Anyways its fixed now. Thanks k1lly0u. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230838' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2016 at 12:05 PM">Jul 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monobehavior-get-addcomponent-duplicates.19583/#post-230838' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230838/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,1078 @@
+---
+layout: forums
+title: 'Monument Radiation | Page 4'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="resourceInfo">
+    <div class="resourceImage">
+        <img src="data/resource_icons/1/1562.jpg?1451019718" alt="" class="resourceIcon" />
+    </div>
+    <div class="resourceDesc">
+        <h1><a href="{{ '/threads/monument-radiation.13806/' | prepend: site.baseurl }}">Monument Radiation</a></h1>
+        <p class="tagLine muted">Create radiation zones at designated monuments</p>
+        <p class="downloadCount">Total Downloads: 5,467 - First Release: <span class="DateTime" title="Dec 25, 2015 at 5:27 AM">Dec 25, 2015</span> - Last Update: <span class="DateTime"
+                title="Dec 30, 2017 at 8:15 AM">Dec 30, 2017</span>
+        </p>
+        <div class="rating">
+            <div class="rating">
+                <dl>
+                    <dt class="prompt muted"></dt>
+                    <dd>
+                        <span class="ratings">
+                            <span class="star"></span>
+                        </span>
+                        <span class="RatingValue"><span class="Number" itemprop="average">5</span>/<span itemprop="best">5</span>,</span>
+                        <span class="Hint">22 likes</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="resourceTabs">
+    <ul class="tabs">
+        <li class="resourceTabDescription ">
+            <a href="plugins/monument-radiation.1562/">Overview</a>
+        </li>
+        <li class="resourceTabUpdates ">
+            <a href="plugins/monument-radiation.1562/updates">Updates (23)</a>
+        </li>
+        <li class="resourceTabHistory ">
+            <a href="plugins/monument-radiation.1562/history">Version History</a>
+        </li>
+    </ul>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="4" data-range="2" data-start="2" data-end="6" data-last="18" data-sentinel="{{sentinel}}" data-baseurl="threads/monument-radiation.13806/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/monument-radiation.13806/page-3' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/monument-radiation.13806/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev hidden">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/monument-radiation.13806/page-2' | prepend: site.baseurl }}" class="">2</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-3' | prepend: site.baseurl }}" class="">3</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-4' | prepend: site.baseurl }}" class="currentPage ">4</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-5' | prepend: site.baseurl }}" class="">5</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-6' | prepend: site.baseurl }}" class="">6</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/monument-radiation.13806/page-18' | prepend: site.baseurl }}" class="">18</a>
+            <a href="{{ '/threads/monument-radiation.13806/page-5' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-186732" class="message" data-author="b1343779">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="b1343779" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">b1343779</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I added the following to my plugin file. Maybe the Developer can add it in his plugin by default.<br />
+                        <br /> In &quot;#region functions MonumentRadiation&quot; block:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+# new function
+private int getTimerRandom(int iOnOff) {
+  if (iOnOff == 0) {
+  return UnityEngine.Random.Range(5, 20);
+  } else {
+  return UnityEngine.Random.Range(25, 55);
+  }
+  }</pre>{% endraw %}
+                        </div>startsRadTimers():<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private void startRadTimers()
+  {
+  OnTimer = timerOn * 60;
+  timer.Repeat(1, OnTimer, () =&gt;
+  {
+  OnTimer--;
+  if (OnTimer == 0)
+  {
+  ConVar.Server.radiation = false;
+  if (broadcastTimer)
+  {
+// ############################# code added here ##
+  if (timersRandom) {
+  timerOff = getTimerRandom(0);
+  }
+// ###########################################
+  MessageAllPlayers(lang.GetMessage(&quot;RadsOffMsg&quot;, this), timerOff);
+  }
+  OffTimer = timerOff * 60;
+  timer.Repeat(1, OffTimer, () =&gt;
+  {
+  OffTimer--;
+  if (OffTimer == 0)
+  {
+  ConVar.Server.radiation = true;
+  if (broadcastTimer)
+  {
+// ############################# code added here ##
+  if (timersRandom) {
+  timerOn = getTimerRandom(1);
+  }
+// ###########################################
+  MessageAllPlayers(lang.GetMessage(&quot;RadsOnMsg&quot;, this), timerOn);
+  }
+  startRadTimers();
+  }
+  });
+  }
+  });
+  }</pre>{% endraw %}
+                        </div>Changes in LoadConfigVariables():<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>CheckCfg(&quot;Options - Timers - Amount of time Random&quot;, ref timersRandom);
+  if (timersRandom) {
+  Puts(&quot;====== Using random timers&quot;);
+  timerOff = getTimerRandom(0);
+  timerOn = getTimerRandom(1);
+  } else {
+  Puts(&quot;====== Using static timers&quot;);
+  CheckCfg(&quot;Options - Timers - Amount of time deactivated (mins)&quot;, ref timerOff);
+  CheckCfg(&quot;Options - Timers - Amount of time activated (mins)&quot;, ref timerOn);
+  }</pre>{% endraw %}
+                        </div>json-file:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&quot;Options - Timers - Amount of time Random&quot;: true,</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 15, 2016 at 10:23 PM">Mar 15, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">b1343779</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-186732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 12, 2016 at 5:22 PM">Mar 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-186732' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186732/permalink">#61</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187646" class="message" data-author="Cat with special needs">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Cat with special needs" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Cat with special needs</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/36455/" class="username" data-user="36455, @k1lly0u">@k1lly0u</a>: I love your plugin, but have a question: Players on my server keep
+                        telling me that there is radiation at atleast two random locations like in the middle of nowhere, but at the same time the radiation for all monument-locations seem to work
+                        properly. Do you have an idea how i can fix this? Cause it destroys immersion somehow :-( I am using Zonesmanager 2.3.2. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Cat with special needs</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-187646' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2016 at 8:39 PM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-187646' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/187646/permalink">#62</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188543" class="message" data-author="cucagmin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cucagmin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cucagmin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> [MonumentRadiation] Created 0 monument radiation zones<br /> Why??<br /> Map Hapisisland <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cucagmin</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-188543' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 5:35 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-188543' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188543/permalink">#63</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188619" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Cat with special needs">
+                            <aside>
+                                <div class="attribution type">Cat with special needs said: <a href="#post-187646" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/36455/" class="username" data-user="36455, @k1lly0u">@k1lly0u</a>: I love your plugin, but have a question:
+                                        Players on my server keep telling me that there is radiation at atleast two random locations like in the middle of nowhere, but at the same time the radiation
+                                        for all monument-locations seem to work properly. Do you have an idea how i can fix this? Cause it destroys immersion somehow :-( I am using Zonesmanager 2.3.2.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>PM your ZoneManager data file<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cucagmin">
+                            <aside>
+                                <div class="attribution type">cucagmin said: <a href="#post-188543" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">[MonumentRadiation] Created 0 monument radiation zones<br /> Why??<br /> Map Hapisisland</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m not sure what monuments are on HapisIsland, but make sure you have them set to true in the config <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-188619' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 11:08 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-188619' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188619/permalink">#64</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189293" class="message" data-author="Vaalberith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vaalberith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vaalberith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve fixed some your issues with adding zones every restart if plugin was not unloaded properly.<br /> the
+                        way it is:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> void OnServerInitialized()
+        {
+            if (!plugins.Exists(&quot;ZoneManager&quot;))
+            {
+                Puts(lang.GetMessage(&quot;noZoneM&quot;, this));
+                return;
+            }
+            if (!Interface.Oxide.DataFileSystem.ExistsDatafile(&quot;MR_data&quot;)) //check
+            {
+                    Puts(&quot;Creating new MR_data&quot;);
+                    findAllMonuments(); //  for creating zones and calling ZoneManager
+            }
+           
+            if (ConVar.Server.radiation == false)
+            {
+                RadsOn = false;
+                ConVar.Server.radiation = true;
+            }
+            if (useRadTimer)
+                startRadTimers();
+        } </pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void findAllMonuments()
+        {   
+            Puts(&quot;Reading MR_data&quot;);      
+            ZoneData = Interface.Oxide.DataFileSystem.GetFile(&quot;MR_data&quot;);
+            ZoneData.Settings.Converters = new JsonConverter[] { new StringEnumConverter(), new UnityVector3Converter(), };
+            LoadData();
+            LoadVariables();
+            var allobjects = UnityEngine.Object.FindObjectsOfType&lt;GameObject&gt;();
+            foreach (var gobject in allobjects)
+            {
+                var pos = gobject.transform.position;
+                if (radsLighthouse)..................................................................</pre>{% endraw %}
+                        </div>It checks for file MR_data. If exists, it skips creating new zones (stops calling zoneManager and any things about MR_data exept loading)<br /> Ive got 100% some logical
+                        mistakes here but it works pretty good.<br /> If u want to disable plugin - just unload it and all radzones instantly remove from MR_data and ZoneManager (as it was previously
+                        by GrandPluginMaster <b><span style="font-size: 15px"><a href="http://oxidemod.org/members/k1lly0u.36455/" class="internalLink">k1lly0u</a></span></b>)<br /> But to enable it
+                        back, you should delete empty file MR_zone, otherwise plugin wouldnt add zones (cuz of added Check)<br /> K1llyou, it would be kind of you, if you would take this little idea
+                        and realize it properly in your plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="MonumentRadiation.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/monumentradiation-cs.19486/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/monumentradiation-cs.19486/" target="_blank">MonumentRadiation.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>23.5 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>21</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vaalberith</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189293' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 3:26 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189293' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189293/permalink">#65</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189460" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I just had a look at the plugin and it turns out I have fixed the issue with multiple zones, I must have
+                        forgotten to post it. It was a while ago because I don&#039;t remember doing it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /><br />
+                        <a href="https://oxidemod.org/members/120795/" class="username" data-user="120795, @Vaalberith">@Vaalberith</a>, the reason I have the zones wipe on unload and startup and not
+                        just check for existing is because if there is existing data and the user has changed the map seed the monuments will be in different locations<br />
+                        <a href="https://oxidemod.org/members/119747/" class="username" data-user="119747, @b1343779">@b1343779</a> I have added option for random timers to the update I am about to
+                        post.<br /> Thanks for the input guys <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189460' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2016 at 8:20 AM">Mar 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189460' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189460/permalink">#66</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189462" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> k1lly0u updated <a href="http://oxidemod.org/plugins/monument-radiation.1562/" class="internalLink">Monument
+                            Radiation</a> with a new update entry:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/monument-radiation.1562/update?update=8944" class="internalLink">0.1.7</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The actual fix for zones duplicating<br /> Added option to use random timers with configurable min and max<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>&quot;Options - Timers - Random - Off maximum (mins)&quot;: 60,
+  &quot;Options - Timers - Random - Off minimum (mins)&quot;: 25,
+  &quot;Options - Timers - Random - On maximum (mins)&quot;: 5,
+  &quot;Options - Timers - Random - On minimum (mins)&quot;: 30,
+  &quot;Options - Timers - Use random timers&quot;: false,</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189462' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2016 at 8:23 AM">Mar 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189462' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189462/permalink">#67</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189843" class="message" data-author="Speedy2M">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Speedy2M" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Speedy2M</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The plugin dosn&#039;t find the Monuments on Hapisisland. Is there a way to add the zones manually ? I made a
+                        zone named satellite_1 and gave it the same amount of rad as in the config, after that i reloaded the monument plugin but it didn&#039;t work. Any idea ?<br />
+                        <br /> Add:<br />
+                        <br /> Can someone tell me whats inside the MR_data.json(oxide/data) after creating the zones or can even upload me one. I guess i can add the zones manually with that. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Speedy2M</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189843' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2016 at 6:52 PM">Mar 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189843' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189843/permalink">#68</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189853" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> deleted <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 23, 2016 at 9:10 PM">Mar 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189853' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2016 at 7:43 PM">Mar 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189853' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189853/permalink">#69</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189859" class="message" data-author="Speedy2M">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Speedy2M" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Speedy2M</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Resistance">
+                            <aside>
+                                <div class="attribution type">Resistance said: <a href="#post-189853" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">This is whats in mine you can edit it to match your own map</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you Resistance, i tried a few things but seems like manual adding the zones dosn&#039;t work. Maybe cause it can&#039;t find the monuments. You can&#039;t even see
+                        them on the RUST:IO live map or on the Lustymap ingame. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /> tobad.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Speedy2M</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189859' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2016 at 8:24 PM">Mar 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189859' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189859/permalink">#70</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189937" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The monuments on HapisIsland are not the same monuments as a procedural map, it looks like they have placed
+                        individual parts from each monument to build new areas so there is no way to detect them. I have gone around and recorded the position of them all and will post a update <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189937' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 5:08 AM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189937' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189937/permalink">#71</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189938" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> k1lly0u updated <a href="http://oxidemod.org/plugins/monument-radiation.1562/" class="internalLink">Monument
+                            Radiation</a> with a new update entry:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/monument-radiation.1562/update?update=8955" class="internalLink">0.1.8</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Added zones for HapisIsland.<br /> Set the config option &quot;Using Hapis Island&quot; to true.<br /> Zone size is set automatically, but
+                                        radiation amount is adjustable</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-189938' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 5:26 AM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-189938' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189938/permalink">#72</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-190051" class="message" data-author="Speedy2M">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Speedy2M" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Speedy2M</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-189938" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">k1lly0u updated <a href="http://oxidemod.org/plugins/monument-radiation.1562/" class="internalLink">Monument Radiation</a> with a new update
+                                        entry:<br />
+                                        <br />
+                                        <a href="http://oxidemod.org/plugins/monument-radiation.1562/update?update=8955" class="internalLink">0.1.8</a><br />
+                                        <br />
+                                        <br />
+                                        <br />
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You are awesome, thank you <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Speedy2M</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-190051' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 3:38 PM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-190051' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/190051/permalink">#73</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-191132" class="message" data-author="pookins">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pookins" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pookins</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Deleted text cos I did not check version of plugin<br />
+                        <br />
+                        <br /> Seems I was using older version and have now updated plugin , will see how it goes , but hopefully will be ok, <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 28, 2016 at 3:12 PM">Mar 28, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pookins</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-191132' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 28, 2016 at 1:31 PM">Mar 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-191132' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/191132/permalink">#74</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-191359" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Make sure to delete your old zone manager data and also edit the zone options in the monument radiation config.
+                        They get updated so changing them through zonemanager won&#039;t work <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-191359' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 29, 2016 at 2:37 AM">Mar 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-191359' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/191359/permalink">#75</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-191957" class="message" data-author="pookins">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pookins" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pookins</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks, seems to be working 100% now and along with the wolves added through another plugin stops players sitting
+                        in radtowns waiting for loot respawns <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pookins</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-191957' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 31, 2016 at 1:26 PM">Mar 31, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-191957' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/191957/permalink">#76</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193599" class="message" data-author="a_psychopath">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="a_psychopath" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">a_psychopath</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i enter mr_list and get reply as monument radiation none <br /> any help would be appreciated ? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">a_psychopath</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-193599' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 5, 2016 at 11:34 PM">Apr 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-193599' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/193599/permalink">#77</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-195031" class="message" data-author="Dmiiser">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dmiiser" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dmiiser</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Evening, my monument radiation isnt working on my server?<br /> I&#039;ve tried redownloading it and uploading it
+                        again. It doesn&#039;t seem to work.<br /> I have editing the files in anyway, and am currently on procedural map.<br />
+                        <br /> Any ideas would be much appreciated. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dmiiser</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-195031' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 10, 2016 at 11:31 AM">Apr 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-195031' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/195031/permalink">#78</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-195610" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="a_psychopath">
+                            <aside>
+                                <div class="attribution type">a_psychopath said: <a href="#post-193599" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">i enter mr_list and get reply as monument radiation none<br /> any help would be appreciated ?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Dmiiser">
+                            <aside>
+                                <div class="attribution type">Dmiiser said: <a href="#post-195031" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Evening, my monument radiation isnt working on my server?<br /> I&#039;ve tried redownloading it and uploading it again. It doesn&#039;t seem to
+                                        work.<br /> I have editing the files in anyway, and am currently on procedural map.<br />
+                                        <br /> Any ideas would be much appreciated.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Have you set the monuments you want to have radiation to true in the config? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-195610' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 11, 2016 at 11:48 PM">Apr 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-195610' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/195610/permalink">#79</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-195671" class="message" data-author="Dmiiser">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dmiiser" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dmiiser</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-195610" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Have you set the monuments you want to have radiation to true in the config?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That was he problem, thank you very much.<br /> I used to work before and hadn&#039;t been edited. Thank you once again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dmiiser</a>,</span>
+                        <a href="{{ '/threads/monument-radiation.13806/page-4#post-195671' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 12, 2016 at 2:58 AM">Apr 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/monument-radiation.13806/page-4#post-195671' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/195671/permalink">#80</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="4" data-range="2" data-start="2" data-end="6" data-last="18" data-sentinel="{{sentinel}}" data-baseurl="threads/monument-radiation.13806/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/monument-radiation.13806/page-3' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/monument-radiation.13806/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev hidden">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/monument-radiation.13806/page-2' | prepend: site.baseurl }}" class="">2</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-3' | prepend: site.baseurl }}" class="">3</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-4' | prepend: site.baseurl }}" class="currentPage ">4</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-5' | prepend: site.baseurl }}" class="">5</a>
+                    <a href="{{ '/threads/monument-radiation.13806/page-6' | prepend: site.baseurl }}" class="">6</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/monument-radiation.13806/page-18' | prepend: site.baseurl }}" class="">18</a>
+            <a href="{{ '/threads/monument-radiation.13806/page-5' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

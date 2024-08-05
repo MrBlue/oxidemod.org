@@ -1,0 +1,298 @@
+---
+layout: forums
+title: 'Solved - Failed to run timer (null in timer)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/' | prepend: site.baseurl }}">Failed to run timer (null in timer)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Gary?</a>, <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/' | prepend: site.baseurl }}"><span class="DateTime" title="May 13, 2018 at 8:43 AM">May 13,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-400335" class="message" data-author="Gary?">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gary?" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gary?</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So what im trying to do is that when the F1 explodes it spawns 10 more F1s thrown around it<br /> I get this
+                        error only when it tries to run the timer. the code compiles fine<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to run a 3.00 timer in 'test v0.0.1' (NullReferenceException: )
+at (wrapper managed-to-native) UnityEngine.Component:get_transform ()
+at Oxide.Plugins.test+&lt;OnEntityKill&gt;c__AnonStorey0.&lt;&gt;m__0 () [0x00000] in &lt;filename unknown&gt;:0
+at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>and this is my code :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Oxide.Core;
+using Oxide.Core.Configuration;
+using Oxide.Game.Rust.Cui;
+using Oxide.Core.Plugins;
+using System.Linq;
+using System.Globalization;
+using System.IO;
+using Newtonsoft.Json;
+using UnityEngine;namespace Oxide.Plugins
+{
+   [Info(&quot;test&quot;, &quot;Gary&quot;, &quot;0.0.1&quot;)]
+   internal class test : RustPlugin
+   {
+        
+       public string entit = &quot;assets/prefabs/weapons/f1 grenade/grenade.f1.deployed.prefab&quot;;
+       public BasePlayer player;       void OnEntityKill(BaseNetworkable entity)
+       {
+           {
+               string ent = entity.ToString();
+               if (ent.Contains(&quot;grenade.f1&quot;))
+               {                   timer.Once(3.9f, () =&gt;
+                   {
+                       var x = 0;
+                       var minis = 10;
+                       var pos = entity.transform.position;
+                       var rot = entity.transform.rotation;                       while (x &lt; minis) ++x;
+                       {
+                           System.Random rand = new System.Random();
+                           var newnader = GameManager.server.CreateEntity(entit, pos, rot, true);
+                           Rigidbody rigidbody = newnader.gameObject.GetComponent&lt;Rigidbody&gt;();
+                           rigidbody.useGravity = true;
+                           rigidbody.velocity = new Vector3(rand.Next(3), 10, rand.Next(3));
+                       }                   });
+               }
+           }
+       }       void OnExplosiveThrown(BasePlayer player, BaseEntity entity)
+       {
+           string ent = entity.ToString();
+           if(ent.Contains(&quot;grenade.f1&quot;)) {
+                         }
+       }
+   }
+  
+   }</pre>{% endraw %}
+                        </div><br /> Any advice on fixing the time, or just cleaning up my code in general<br />
+                        <br /> Thanks in advance! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gary?</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 8:43 AM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400335/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400348" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/199242/" class="username" data-user="199242, @Gary?">@Gary?</a> After the timer delay, de &quot;entity&quot; does for sure not exist
+                        anymore.<br /> And that&#039;s why you can&#039;t access the non-existing &quot;entity.transform&quot; <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400348' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 12:14 PM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400348' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400348/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400366" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yup. ^<br /> Try storing the position/rotation before the timer. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400366' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 3:50 PM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400366' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400366/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400370" class="message" data-author="Gary?">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gary?" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gary?</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> oh lol didnt see that thanks, before i had it to when the explosive was thrown, so i wanted to store the pos when
+                        it was about to explode <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gary?</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400370' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 5:09 PM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400370' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400370/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400373" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m not sure if grenade explosion delay is fixed or randomised but, if it&#039;s fixed, you&#039;d need a
+                        delay that you know is fractionally shorter than the fuse.<br /> Would do no harm to null check the entity, though, just in case.<br />
+                        <br /> I did the same to get the smoking position of supply signal grenade because the thrown position could be 20-30 meters out from the call position, depending on terrain
+                        etc; Grab the entity position 3 seconds after it&#039;s spawned, or whatever. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400373' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 5:27 PM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400373' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400373/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400374" class="message" data-author="Gary?">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gary?" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gary?</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> now i have a different problem, spawning the entity, I had it put the pos and rot in chat and that worked, but no
+                        entity spawns <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gary?</a>,</span>
+                        <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400374' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 5:39 PM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/failed-to-run-timer-null-in-timer.30569/#post-400374' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/400374/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,474 @@
+---
+layout: forums
+title: 'OnEntityTakeDamage also for structures and deployables'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/' | prepend: site.baseurl }}">OnEntityTakeDamage also for structures and deployables</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ttrism</a>, <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 26, 2016 at 8:09 PM">Apr 26, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-200357" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I am using <a href="http://oxidemod.org/plugins/weapon-damage-scaler.1594/" class="internalLink">Weapon Damage
+                            Scaler for Rust | Oxide</a> by Shady to also scale up melee weapons for my medieval server. It works fine on wooden doors but not on foundations, walls or high external
+                        walls etc.<br />
+                        <br /> Here is a snippet taken from the plugin.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)
+        {
+            if (entity == null || hitInfo == null || hitInfo?.Initiator == null) return;            if (hitInfo?.Initiator is BasePlayer)
+            {
+                if ((bool)Config[&quot;UseGlobalDamageScaler&quot;])
+                {
+                    hitInfo.damageTypes.ScaleAll(float.Parse(Config[&quot;GlobalDamageScaler&quot;].ToString()));
+                    return;
+                }
+                if ((bool)Config[&quot;PlayersOnly&quot;])
+                {
+                    if (entity is BasePlayer)
+                        if (entity as BasePlayer != null || hitInfo != null)
+                            ScaleDealtDamage(hitInfo);
+                    return;
+                }
+                else ScaleDealtDamage(hitInfo);
+            }
+        }private void ScaleDealtDamage(HitInfo hitInfo)
+        {
+            string bodypart = StringPool.Get(hitInfo.HitBone) ?? string.Empty;
+            if (string.IsNullOrEmpty(bodypart)) return;            float ammoMod = 1.0f;            BaseProjectile heldWeapon = hitInfo?.Weapon?.GetItem()?.GetHeldEntity() as BaseProjectile ?? null;
+            if (heldWeapon != null)
+                if (weaponData.AmmoTypes.ContainsKey(heldWeapon.primaryMagazine?.ammoType?.shortname))
+                    ammoMod = weaponData.AmmoTypes[heldWeapon.primaryMagazine?.ammoType?.shortname];            string weapon = hitInfo?.Weapon?.GetItem()?.info?.shortname ?? string.Empty;
+            if (string.IsNullOrEmpty(weapon)) return;            if (InList(weapon, bodypart))
+            {
+                float globalMod = weaponData.Weapons[weapon].GlobalModifier;
+                float individualMod = weaponData.Weapons[weapon].IndividualParts[bodypart];
+                float totalMod = (globalMod + individualMod + ammoMod) / 3;
+                if (totalMod != 1.0f)
+                    hitInfo.damageTypes.ScaleAll(totalMod);
+            }
+        }</pre>{% endraw %}
+                        </div>I think the OnEntityTakeDamage() method does not count for structures like foundations, walls or deployables like high externals. Is there a hook to fix this?<br />
+                        <br /> edit: I added ScaleDealtDamage() because actually the else statement &quot;else ScaleDealtDamage(hitInfo);&quot; is triggered since in my config
+                        &quot;UseGlobalDamageScaler&quot; and &quot;PlayersOnly&quot; is false<br />
+                        <br /> edit2: Problem seems to be in ScaleDealtDamage() at<br />
+                        <br /> string bodypart = StringPool.Get(hitInfo.HitBone) ?? string.Empty;<br /> if (string.IsNullOrEmpty(bodypart)) return;<br />
+                        <br /> Strangely the wooden door is treated as a bone, thats why the damage scales. But walls and such obviously does not count as Bone. So is there something like
+                        hitInfo.HitEntity or hitInfo.HitStructure <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 26, 2016 at 8:46 PM">Apr 26, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 26, 2016 at 8:09 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200357/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200379" class="message" data-author="Troubled">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Troubled" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Troubled</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Try to broadcast to chat in the OnEntityTakeDamage() and fire at a building to see if it triggers it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Troubled</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200379' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 26, 2016 at 8:45 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200379' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200379/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200389" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you have a empty onentitytakedamage with a broadcast it will fire like a hundred times a second lol. It does
+                        catch everything but you need to filter for what you want. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200389' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 26, 2016 at 9:00 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200389' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200389/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200394" class="message" data-author="Troubled">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Troubled" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Troubled</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you are the only one in the server you will be allright. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Troubled</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200394' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 26, 2016 at 9:03 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200394' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200394/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200410" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It fires constantly on my test server and I&#039;m the only one on there. You need to filter for a player doing
+                        the damage ,just check for hitinfo.Initiator is BasePlayer and you&#039;ll be fine <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 26, 2016 at 10:03 PM">Apr 26, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200410' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 26, 2016 at 9:56 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200410' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200410/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200424" class="message" data-author="Troubled">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Troubled" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Troubled</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Guess thats the decay then. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Troubled</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200424' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 26, 2016 at 10:20 PM">Apr 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200424' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200424/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200709" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ll take a look into this, shouldn&#039;t be hard to change/fix. For future reference, since you seem to be
+                        specifically talking about the plugin, you should probably try posting in it&#039;s thread! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200709' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 27, 2016 at 11:33 PM">Apr 27, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200709' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200709/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-200769" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I did entitys like this: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BuildingBlock buildingBlock = entity.GetComponent&lt;BuildingBlock&gt;();
+if(hitinfo.Initiator is BasePlayer &amp;&amp; entity == buildingBlock)
+{
+Do stuff if it is a building block(wall, foundation, ceiling, etc)
+}
+else
+{
+Do stuff if not a building block.
+}</pre>{% endraw %}
+                        </div>This should work with most objects. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200769' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 28, 2016 at 2:47 AM">Apr 28, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-200769' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/200769/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-201118" class="message" data-author="ttrism">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ttrism" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ttrism</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-200709" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;ll take a look into this, shouldn&#039;t be hard to change/fix. For future reference, since you seem to be specifically talking about the
+                                        plugin, you should probably try posting in it&#039;s thread!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>would be awesome! I know, but I figured here in the forums there are more people contributing (and faster) as when I post it in the plugin thread <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ttrism</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-201118' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 29, 2016 at 10:36 AM">Apr 29, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-201118' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/201118/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-202777" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ttrism">
+                            <aside>
+                                <div class="attribution type">ttrism said: <a href="#post-200357" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Strangely the wooden door is treated as a bone, thats why the damage scales. But walls and such obviously does not count as Bone. So is there
+                                        something like hitInfo.HitEntity or hitInfo.HitStructure</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The BaseCombatEntity <i>entity</i> passed into OnEntityTakeDamage is the entity which is receiving damage - you don&#039;t need to get it from the HitInfo. You can check
+                        its type with conditions such as:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if(entity is BasePlayer)
+    // handle player damage
+else if (entity is BuildingBlock)
+    // handle building block damage
+else
+    // etc</pre>{% endraw %}
+                        </div>Or you can even check for specific items by using prefab ID:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if(entity.LookupShortPrefabName() == &quot;campfire.prefab&quot;)
+    // handle campfire damage</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-202777' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 4, 2016 at 4:27 PM">May 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentitytakedamage-also-for-structures-and-deployables.17629/#post-202777' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/202777/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

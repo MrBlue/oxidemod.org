@@ -1,0 +1,298 @@
+---
+layout: forums
+title: 'Calling second command 30 seconds after first'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/' | prepend: site.baseurl }}">Calling second command 30 seconds after first</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kuba85</a>, <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 3, 2018 at 10:48 AM">Aug 3,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-410640" class="message" data-author="Kuba85">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuba85" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuba85</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [ChatCommand(&quot;test&quot;)]
+        private void TestCommand(BasePlayer player, string command, string[] args)
+            {
+                if (!Cooldowns.Contains(player.userID))
+                {
+                    Cooldowns.Add(player.userID);
+                    timer.Once(30, () =&gt; Cooldowns.Remove(player.userID));
+                    PrintToChat(player, &quot;Loot fast! You will be teleported to town in 30 seconds!&quot;);
+                }
+                if (!Cooldowns.Remove(player.userID))
+                {
+                    string tptown = &quot;teleport.topos {0} -279 75 -310&quot;;
+                    player.SendConsoleCommand(string.Format(tptown, player.displayName));
+                }
+            }</pre>{% endraw %}
+                        </div>Hello. I have small problem, beacuse i am not good at C# <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /> How to make command which is called 30 seconds after the other? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuba85</a>,</span>
+                        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 3, 2018 at 10:48 AM">Aug 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/410640/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-410669" class="message" data-author="Kuba85">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuba85" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuba85</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Update. <a href="https://oxidemod.org/members/203585/" class="username" data-user="203585, @hoppel">@hoppel</a>
+                        just help me and it works, but i have another problem. How to initlialize this command when player kills NPC? This code don&#039;t send errors and not working <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core;
+using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;Execute&quot;, &quot;ThePitereq&quot;, &quot;1.0.2&quot;)]
+    class Execute : RustPlugin
+    {
+        HashSet&lt;ulong&gt; Cooldowns = new HashSet&lt;ulong&gt;();
+        #region Commands
+        private void OnKillNPC(BasePlayer npc, BasePlayer player)
+        {
+            if (!Cooldowns.Contains(player.userID))
+            {
+                Cooldowns.Add(player.userID);
+                timer.Once(30, () =&gt;
+                {
+                    Cooldowns.Remove(player.userID);
+                    string tptown = &quot;teleport.topos {0} -279 75 -310&quot;;
+                    player.SendConsoleCommand(string.Format(tptown, player.displayName));
+                });
+                PrintToChat(player, &quot;PL: Gratulacje! Zbieraj loot szybko! Za &lt;color=#008215&gt;60 sekund&lt;/color&gt; zostaniesz przeteleportowany do &lt;color=#008215&gt;towna&lt;/color&gt;! \nEN: Congratulations! Loot fast! You will be teleported to &lt;color=#008215&gt;town&lt;/color&gt; in &lt;color=#008215&gt;60 seconds&lt;/color&gt;!&quot;);
+            }
+        }
+        #endregion
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuba85</a>,</span>
+                        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410669' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 3, 2018 at 1:18 PM">Aug 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410669' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/410669/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-410788" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">OnKillNPC is not correct Event. Use OnEntityDeath :<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;Execute&quot;, &quot;ThePitereq&quot;, &quot;1.0.2&quot;)]
+    class Execute : RustPlugin
+    {
+        HashSet&lt;ulong&gt; Cooldowns = new HashSet&lt;ulong&gt;();        #region Hooks        private void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo)
+        {
+            var npc = entity as BaseNpc;
+            var player = hitInfo.Initiator as BasePlayer;
+            if (null != npc &amp;&amp; null != player)
+            {
+                OnKillNPC(npc, player);
+            }
+        }
+        #endregion        #region Commands
+        private void OnKillNPC(BaseNpc npc, BasePlayer player)
+        {
+            if (!Cooldowns.Contains(player.userID))
+            {
+                Cooldowns.Add(player.userID);
+                timer.Once(30, () =&gt;
+                {
+                    Cooldowns.Remove(player.userID);
+                    string tptown = &quot;teleport.topos {0} -279 75 -310&quot;;
+                    player.SendConsoleCommand(string.Format(tptown, player.displayName));
+                });
+                PrintToChat(player, &quot;PL: Gratulacje! Zbieraj loot szybko! Za &lt;color=#008215&gt;60 sekund&lt;/color&gt; zostaniesz przeteleportowany do &lt;color=#008215&gt;towna&lt;/color&gt;! \nEN: Congratulations! Loot fast! You will be teleported to &lt;color=#008215&gt;town&lt;/color&gt; in &lt;color=#008215&gt;60 seconds&lt;/color&gt;!&quot;);
+            }
+        }
+        #endregion
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410788' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 4, 2018 at 7:25 AM">Aug 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410788' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/410788/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-410805" class="message" data-author="Kuba85">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuba85" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuba85</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thanks, but still not working <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3"
+                            alt=":(" title="Frown    :(" /> after killing npc, nothing happens <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":("
+                            title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuba85</a>,</span>
+                        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410805' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 4, 2018 at 11:01 AM">Aug 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410805' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/410805/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-410857" class="message" data-author="Kuba85">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuba85" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuba85</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">After killing Scientist i have that error: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnEntityDeath' on plugin 'Execute v1.0.4' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.Execute.OnEntityDeath (BaseCombatEntity entity, HitInfo hitInfo) [0x00007] in &lt;7055eabc1c4d479bae6fe14cbb288dd8&gt;:0
+  at Oxide.Plugins.Execute.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00061] in &lt;7055eabc1c4d479bae6fe14cbb288dd8&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00079] in &lt;e5ac390771dc411395a594de571775c7&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x000d8] in &lt;fc2b4388d9974d719a0972b08cea0f17&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00060] in &lt;fc2b4388d9974d719a0972b08cea0f17&gt;:0 </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuba85</a>,</span>
+                        <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410857' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 4, 2018 at 8:52 PM">Aug 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-second-command-30-seconds-after-first.31375/#post-410857' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/410857/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

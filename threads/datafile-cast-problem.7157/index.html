@@ -1,0 +1,347 @@
+---
+layout: forums
+title: 'Solved - DataFile cast problem?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/datafile-cast-problem.7157/' | prepend: site.baseurl }}">DataFile cast problem?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">PedraozauM</a>, <a href="{{ '/threads/datafile-cast-problem.7157/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 5, 2015 at 2:00 PM">Mar 5, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-71138" class="message" data-author="PedraozauM">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PedraozauM" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PedraozauM</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey guys,<br />
+                        <br /> I&#039;m getting desperate, I don&#039;t know why this happens, but I cant cast back from the datafile.<br /> This is the class that I&#039;m trying to load back from
+                        file:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Hunt
+{
+    public class RPGInfo
+    {
+        public RPGInfo(string steamId)
+        {
+            SteamId = steamId;
+            Level = 1;
+            Experience = 0;
+            SkillPoints = new List&lt;SkillPoints&gt;();
+            LastSaved = DateTime.UtcNow;
+        }        public bool AddExperience(float xp)
+        {
+            Experience += xp;
+            if (Experience &gt;= RequiredExperience())
+            {
+                Level++;
+                return true;
+            }
+            return false;
+        }        public float RequiredExperience()
+        {
+            return (float)(Math.Log10(Level + 1) * 1000);
+        }        public override String ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(&quot;======HUNT RPG======&quot;);
+            sb.AppendLine(String.Format(&quot;SteamId: {0}&quot;, SteamId));
+            sb.AppendLine(String.Format(&quot;Level: {0}&quot;, Level));
+            sb.AppendLine(String.Format(&quot;XP: {0}/{1}&quot;, Experience, RequiredExperience()));
+            sb.AppendLine(&quot;====================&quot;);
+            return sb.ToString();
+        }        public string SteamId { get; set; }
+        public int Level { get; set; }
+        public float Experience { get; set; }
+        public List&lt;SkillPoints&gt; SkillPoints { get; set; }
+        public DateTime LastSaved { get; set; }    }
+    public class SkillPoints
+    {
+        public Skill Skill { get; set; }
+        public int points { get; set; }    }
+    public class Skill
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+    }}</pre>{% endraw %}
+                        </div>And this is the code to do that:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;HuntRPG Plugin&quot;, &quot;SW&quot;, 0.1)]
+    class HuntRPG : RustPlugin
+    {
+        private DynamicConfigFile RPGConfig;
+        private bool Changed;        void OnServerInitialized()
+        {
+            LoadRPG();
+        }        private void LoadRPG()
+        {
+            RPGConfig = Interface.GetMod().DataFileSystem.GetDatafile(&quot;Hunt_Data&quot;);
+        }        private void SaveRPG()
+        {
+            Interface.GetMod().DataFileSystem.SaveDatafile(&quot;Hunt_Data&quot;);
+        }        private RPGInfo RPGInfo(BasePlayer player)
+        {
+            string steamId = SteamId(player);
+            var rpg_info = new RPGInfo(steamId);
+            if (RPGConfig[steamId] == null)
+            {
+                RPGConfig[steamId] = rpg_info;
+                SaveRPG();
+            }
+            else
+            {
+                rpg_info = (RPGConfig[steamId]) as RPGInfo;
+                if (rpg_info == null)
+                {
+                    SendReply(player, &quot;Oh shit, really?&quot;);
+                    rpg_info = new RPGInfo(steamId);
+                }
+            }            return rpg_info;
+        }        private string SteamId(BasePlayer player)
+        {
+            return player.userID.ToString();
+        }        [ChatCommand(&quot;ficha&quot;)]
+        private void cmdFicha(BasePlayer player, string command, string[] args)
+        {
+            SendReply(player, RPGInfo(player).ToString());
+        }    }</pre>{% endraw %}
+                        </div>I know is a lot of code to read, but I&#039;ve tried to use this method (Reneb - Kits) and the (Factions - LFG) method as well. Not sure why that happens.<br /> Oh, just
+                        so you know this code works if the server is not restarted, I mean, it saves and loads from the file. But if I restart the server, it just cant load again from the file.
+                        =[<br />
+                        <br /> Any ideas?<br /> Thank You<br /> [DOUBLEPOST=1425564034,1425529620][/DOUBLEPOST]Ok, so I didn&#039;t found out the reason, but I managed to get it working using the
+                        Factions method.<br /> Here is the code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private const string DataFileName = &quot;Hunt_Data&quot;;
+        private Dictionary&lt;string, RPGInfo&gt; RPGConfig;        void OnServerInitialized()
+        {
+            Interface.GetMod().DataFileSystem.GetDatafile(DataFileName);
+            Interface.GetMod().DataFileSystem.SaveDatafile(DataFileName);
+        }        void Init()
+        {
+            RPGConfig = new Dictionary&lt;string, RPGInfo&gt;();
+        }        void Loaded()
+        {
+            LoadRPG();
+        }        private void LoadRPG()
+        {
+            RPGConfig = Interface.GetMod().DataFileSystem.ReadObject&lt;Dictionary&lt;string,RPGInfo&gt;&gt;(DataFileName);
+        }        private void SaveRPG()
+        {
+            Interface.GetMod().DataFileSystem.WriteObject&lt;Dictionary&lt;string, RPGInfo&gt;&gt;(DataFileName, RPGConfig);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PedraozauM</a>,</span>
+                        <a href="{{ '/threads/datafile-cast-problem.7157/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Mar 5, 2015 at 2:00 PM">Mar
+                                5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datafile-cast-problem.7157/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/71138/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-71163" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">ah you got it already, gave it a short try <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.Rustusing System;
+using System.Collections.Generic;
+using System.Text;
+using Oxide.Core;
+using Oxide.Core.Configuration;namespace Oxide.Plugins
+{
+    [Info(&quot;HuntRPG Plugin&quot;, &quot;SW&quot;, 0.1)]
+    internal class HuntRPG : RustPlugin
+    {
+        private Dictionary&lt;string, RPGInfo&gt; RPGInfos;
+        private bool Changed;        private void OnServerInitialized()
+        {
+            LoadRPG();
+        }        private void LoadRPG()
+        {
+            try
+            {
+                RPGInfos = Interface.GetMod().DataFileSystem.ReadObject&lt;Dictionary&lt;string, RPGInfo&gt;&gt;(&quot;Hunt_Data&quot;);
+            }
+            catch (Exception)
+            {
+                RPGInfos = new Dictionary&lt;string, RPGInfo&gt;();
+            }
+        }        private void SaveRPG()
+        {
+            Interface.GetMod().DataFileSystem.WriteObject(&quot;Hunt_Data&quot;, RPGInfos);
+        }        private RPGInfo GetRPGInfo(BasePlayer player)
+        {
+            string steamId = SteamId(player);
+            var rpg_info = new RPGInfo(steamId);
+            if (!RPGInfos.ContainsKey(steamId) || RPGInfos[steamId] == null)
+            {
+                RPGInfos[steamId] = rpg_info;
+                SaveRPG();
+            }
+            else
+            {
+                rpg_info = RPGInfos[steamId];
+                if (rpg_info == null)
+                {
+                    SendReply(player, &quot;Oh shit, really?&quot;);
+                    rpg_info = new RPGInfo(steamId);
+                }
+            }            return rpg_info;
+        }        private string SteamId(BasePlayer player)
+        {
+            return player.userID.ToString();
+        }        [ChatCommand(&quot;ficha&quot;)]
+        private void cmdFicha(BasePlayer player, string command, string[] args)
+        {
+            SendReply(player, GetRPGInfo(player).ToString());
+        }        class RPGInfo
+        {
+            public RPGInfo(string steamId)
+            {
+                SteamId = steamId;
+                Level = 1;
+                Experience = 0;
+                SkillPoints = new List&lt;SkillPoints&gt;();
+                LastSaved = DateTime.UtcNow;
+            }            public bool AddExperience(float xp)
+            {
+                Experience += xp;
+                if (Experience &gt;= RequiredExperience())
+                {
+                    Level++;
+                    return true;
+                }
+                return false;
+            }            public float RequiredExperience()
+            {
+                return (float)(Math.Log10(Level + 1) * 1000);
+            }            public override String ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(&quot;======HUNT RPG======&quot;);
+                sb.AppendLine(String.Format(&quot;SteamId: {0}&quot;, SteamId));
+                sb.AppendLine(String.Format(&quot;Level: {0}&quot;, Level));
+                sb.AppendLine(String.Format(&quot;XP: {0}/{1}&quot;, Experience, RequiredExperience()));
+                sb.AppendLine(&quot;====================&quot;);
+                return sb.ToString();
+            }            public string SteamId { get; set; }
+            public int Level { get; set; }
+            public float Experience { get; set; }
+            public List&lt;SkillPoints&gt; SkillPoints { get; set; }
+            public DateTime LastSaved { get; set; }        }
+        class SkillPoints
+        {
+            public Skill Skill { get; set; }
+            public int points { get; set; }        }
+        class Skill
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+        }    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/datafile-cast-problem.7157/#post-71163' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 5, 2015 at 2:10 PM">Mar 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datafile-cast-problem.7157/#post-71163' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/71163/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-71413" class="message" data-author="PedraozauM">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PedraozauM" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PedraozauM</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Now I get it, for some reason the JSON reader cant read properties with private set (o.0).<br /> Im gonna make a
+                        suggestion to the oxider devs to make a JSON Hanlder that uses replections to get private properties and stuff, and besides that to add an Attribute to mark properties that
+                        doesnt need to be serialized. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PedraozauM</a>,</span>
+                        <a href="{{ '/threads/datafile-cast-problem.7157/#post-71413' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 6, 2015 at 5:27 PM">Mar 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datafile-cast-problem.7157/#post-71413' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/71413/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

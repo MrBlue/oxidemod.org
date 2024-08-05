@@ -1,0 +1,356 @@
+---
+layout: forums
+title: 'Calling command from another plugin?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/calling-command-from-another-plugin.31037/' | prepend: site.baseurl }}">Calling command from another plugin?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">gogolon</a>, <a href="{{ '/threads/calling-command-from-another-plugin.31037/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 2, 2018 at 7:31 PM">Jul 2,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-406582" class="message" data-author="gogolon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="gogolon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">gogolon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello!<br /> I&#039;ve got 2 plugins. I want to call a command defined in the 1st one from the 2nd one. <br />
+                        <br /> In 1st plugin (Hurtworld):<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ConsoleCommand(&quot;wipeobj&quot;)]
+        void cmdwipe(PlayerSession session, string command, string[] args)
+       </pre>{% endraw %}
+                        </div>In 2nd plugin (Covalence)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>server.RunCommand(&quot;wipeobj&quot;);</pre>{% endraw %}
+                        </div>The error says that server is not defined, so I tried to use this instead:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ConsoleManager.Instance.ExecuteCommand(&quot;wipeobj&quot;);</pre>{% endraw %}
+                        </div>But it says &quot;unknown command: wipeobj&quot;. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">gogolon</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:31 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406582/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406583" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">There is no such thing as &quot;server.RunCommand&quot; in Oxide, only &quot;server.Command&quot; and only for
+                        Covalence plugins. &quot;server&quot; is only available if you have the correct references and your plugin is of type CovalencePlugin. Alternately, if your plugin is a
+                        HurtworldPlugin, then you can use covalence.Server.Command instead.<br />
+                        <br /> If the plugin registering the command is a Covalence plugin, then [ConsoleCommand] is not a valid attribute so the command wouldn&#039;t be registered, and the args you
+                        are using are also not valid for a Covalence plugin command. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406583' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:40 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406583' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406583/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406584" class="message" data-author="gogolon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="gogolon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">gogolon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">ok, so how to call a hurtworld plugin command from covalence plugin? <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">gogolon</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406584' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:42 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406584' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406584/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406585" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="gogolon">
+                            <aside>
+                                <div class="attribution type">gogolon said: <a href="#post-406584" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">ok, so how to call a hurtworld plugin command from covalence plugin?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ve provided examples above and further explanation. If &quot;wipeobj&quot; comes back as an invalid command though, you aren&#039;t registering it. It doesn&#039;t
+                        matter the type of plugin for command calling, the command just has to exist. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406585' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:45 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406585' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406585/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406586" class="message" data-author="gogolon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="gogolon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">gogolon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I am, but in the second script, which is Hurtworld Plugin. It works when you call it from the game. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">gogolon</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406586' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:45 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406586' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406586/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406591" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="gogolon">
+                            <aside>
+                                <div class="attribution type">gogolon said: <a href="#post-406586" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I am, but in the second script, which is Hurtworld Plugin. It works when you call it from the game.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Without seeing your code, it&#039;s hard to really help you. I can tell you though that the attribute isn&#039;t being used properly though, as console commands do not
+                        have a player object attached to them. Any command that expects a player won&#039;t be able to be ran by the server itself. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406591' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:52 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406591' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406591/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406592" class="message" data-author="gogolon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="gogolon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">gogolon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">So, what is the correct attribute? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">gogolon</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406592' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 7:55 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406592' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406592/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406593" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="gogolon">
+                            <aside>
+                                <div class="attribution type">gogolon said: <a href="#post-406592" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">So, what is the correct attribute?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Pretty sure we don&#039;t have any for HurtworldPlugin right now, only the [Command] for CovalencePlugin. Any game-specific commands would have to be manually registered
+                        using the cmd library. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406593' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 2, 2018 at 8:00 PM">Jul 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-command-from-another-plugin.31037/#post-406593' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/406593/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

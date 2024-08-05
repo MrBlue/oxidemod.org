@@ -1,0 +1,353 @@
+---
+layout: forums
+title: 'Read data from another plugin?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/read-data-from-another-plugin.11510/' | prepend: site.baseurl }}">Read data from another plugin?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">FireBurst</a>, <a href="{{ '/threads/read-data-from-another-plugin.11510/' | prepend: site.baseurl }}"><span class="DateTime" title="Sep 3, 2015 at 6:05 AM">Sep 3,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-125563" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi. I try to read a value inside a datafile of another plugin but don&#039;t know how to check it. Plugin has
+                        code to create data:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        class StoredData
+        {
+            public Dictionary&lt;string, ProfileInfo&gt; ProfileDatabase = new Dictionary&lt;string, ProfileInfo&gt;();
+        }
+   
+        class ProfileInfo
+        {
+            public string UserId;
+            public string Name;
+            public int Level;            public ProfileInfo() { }            public ProfileInfo(BasePlayer player)
+            {
+                UserId = player.userID.ToString();
+                Name = player.displayName;
+                Level = 1;
+           
+            }
+        }
+        StoredData storedData;</pre>{% endraw %}
+                        </div>In my new plugin I try to make a IF condition like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ProfileInfo info = storedData.ProfileDatabase[player.userID.ToString()];if (info.Level == 1) return true;</pre>{% endraw %}
+                        </div>That works if data is from the same plugin. How can I use same type of code if it&#039;s another plugin? I know about<br /> [PluginReference]<br /> Plugin
+                        Languages;<br />
+                        <br /> I found a line <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object playerData = Profile.Call(&quot;GetUserData&quot;, player.userID.ToString());</pre>{% endraw %}
+                        </div>Is it well used? if plugin name is Profile?<br />
+                        <br /> but im confused <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        [DOUBLEPOST=1441256713,1441164804][/DOUBLEPOST]Only thing I find to read data from external plugin is economy which use lua (yay..). I dont know if I can use the same syntax as
+                        that LuaFunction and my plugins are all cs.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private Dictionary&lt;string, LuaFunction&gt; EconomyApi = new Dictionary&lt;string, LuaFunction&gt;();
+        void OnServerInitialized()
+        {
+            InitializeTable();
+            if (!Economics)
+            {
+                PrintWarning(&quot;Economics plugin not found. &quot; + this.Name + &quot;will not function!&quot;);
+                return;
+            }
+            var apiFuncs = Economics.Call(&quot;GetEconomyAPI&quot;) as LuaTable;
+            foreach (KeyValuePair&lt;object, object&gt; method in apiFuncs)
+            {
+                var value = method.Value as LuaFunction;
+                if (value != null) EconomyApi.Add(method.Key.ToString(), value);
+            }
+        }</pre>{% endraw %}
+                        </div>How do I convert that lua call to csharp? Anyone knows the answer? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 6:05 AM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125563/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-125832" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You shouldn&#039;t have to call the other plugin at all, just read the datafile the same you would read the
+                        datafile for your own plugin. The only difference would be that you&#039;d call the other plugin&#039;s file by name when reading it.<br />
+                        <br />
+                        <a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Configuration/ConfigFile.cs#L20" target="_blank" class="externalLink">Oxide/ConfigFile.cs at master ·
+                            OxideMod/Oxide · GitHub</a><br />
+                        <a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Configuration/DynamicConfigFile.cs#L33" target="_blank" class="externalLink">Oxide/DynamicConfigFile.cs at
+                            master · OxideMod/Oxide · GitHub</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125832' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 6:08 AM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125832' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125832/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-125833" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok thanks ill have a look. Do you know one plugins that read an external datafile? I could read and learn from
+                        it. I kinda just saw the Plugin.Call functions or that Lua Table from economics :S <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125833' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 6:32 AM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125833' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125833/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-125836" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="FireBurst">
+                            <aside>
+                                <div class="attribution type">FireBurst said: <a href="#post-125833" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok thanks ill have a look. Do you know one plugins that read an external datafile? I could read and learn from it. I kinda just saw the
+                                        Plugin.Call functions or that Lua Table from economics :S</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I don&#039;t know any off hand, sorry. The Plugin.Call, Plugin.Exists, and other methods like that are more for calling specific functions in other plugins. It&#039;d be
+                        easier just to read the config directly I think. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125836' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 6:35 AM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125836' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125836/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-125855" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> reading the configs YES<br /> reading the data NO<br /> because most plugins save data only on server save <br />
+                        so if you read data before a server save you will have out dated data in the data file.<br /> [DOUBLEPOST=1441268552][/DOUBLEPOST]that&#039;s why it&#039;s better to call the
+                        plugin and request for the data <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125855' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 9:22 AM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125855' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125855/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-125909" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Call the plugin using call function and using a void that returns a value right? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125909' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 3, 2015 at 3:31 PM">Sep 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-125909' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/125909/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-126579" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="FireBurst">
+                            <aside>
+                                <div class="attribution type">FireBurst said: <a href="#post-125909" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Call the plugin using call function and using a void that returns a value right?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>A void does not return anything. It will need to be of the type you want to return. For example string. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-126579' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 5, 2015 at 12:22 PM">Sep 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/read-data-from-another-plugin.11510/#post-126579' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/126579/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

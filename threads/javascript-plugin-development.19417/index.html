@@ -1,0 +1,721 @@
+---
+layout: forums
+title: 'JavaScript plugin development'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/javascript-plugin-development.19417/' | prepend: site.baseurl }}">JavaScript plugin development</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheDoctorEbil</a>, <a href="{{ '/threads/javascript-plugin-development.19417/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 10, 2016 at 12:23 PM">Jul 10,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-226698" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi, I own a small server and would like to make a stats plugin written in JavaScript. I started out by reading
+                        the documentation and trying out cool print() commands. Then from a couple of forum posts here I got the methods to send chat message replies for commands and managed to write
+                        some code related to that.<br />
+                        <br /> So my primary aim was to find who did the longest kill and show it to users when they type in a command. I got all the event listeners right but the data structures were
+                        nowhere to be found and using JSON.stringify(arguments) gave nothing. So I managed to write a custom call hook in the DeathNotes plugin to manually wrap their processed data
+                        and send it as a json string.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>plugins.CallHook(&quot;OnDeathNoticeMsg&quot;, newData.JSON.Replace(Environment.NewLine, &quot;&quot;));</pre>{% endraw %}
+                        </div>So that lead me to write the following small plugin which just records the longest kill someone made.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var DistanceData = {
+    longest: {
+        victim: {},
+        attacker: {},
+        reason: 0,
+        damageType: &quot;&quot;,
+        weapon: &quot;&quot;,
+        attachments: [],
+        bodypart: &quot;&quot;,
+        distance: 0
+    }
+}, longestKill = function () {
+    return &quot;Longest kill by &lt;color=#C4FF00&gt;&quot; + DistanceData.longest.attacker.name + &quot;&lt;/color&gt; at &lt;color=#C4FF00&gt;&quot; + Math.round(DistanceData.longest.distance) + &quot;m&lt;/color&gt; using a &lt;color=#C4FF00&gt;&quot; + DistanceData.longest.weapon + &quot;&lt;/color&gt;&quot;;
+}, sendMessageToPlayer = function (player, message) {
+    rust.SendChatMessage(player, &quot;KappaStats&quot;, message, &quot;0&quot;);
+}, KappaStats = {
+    Title: &quot;KappaStats&quot;,
+    Author: &quot;&quot;,
+    Version: V(0, 0, 1),
+    Init: function () {
+        print(&quot;KappaStats: Init&quot;);
+    },
+    OnServerInitialized: function () {
+        command.AddChatCommand(&quot;kappastats&quot;, this.Plugin, &quot;killStats&quot;);
+        print(&quot;KappaStats: &quot; + Object.keys(this).join(&quot;, &quot;));
+    },
+    killStats: function (player, cmd, args) {
+        sendMessageToPlayer(player, longestKill());
+    },
+    OnDeathNoticeMsg: function (data) {
+        try {
+            data = JSON.parse(data);
+            if (data.distance &gt;= DistanceData.longest.distance) {
+                DistanceData.longest = data;
+            }
+        } catch (err) {
+            print(JSON.stringify(err));
+        }
+    }
+};</pre>{% endraw %}
+                        </div>Now I want to extend this to a better one and possibly remove the dependency on DeathNotes. As someone else pointed out, I went to install JustDecompile but didn&#039;t
+                        because it asks me to signup. I then tried a free decompiler but searching for the object types and method names give me nothing(or I&#039;m doing it wrong, which is more
+                        likely). I do not even know the basics of C# but I speak JS fluently. Please give me some directions. I just really don&#039;t like shady installers(you can&#039;t convince me
+                        otherwise, please understand). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 12:23 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226698/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226704" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you&#039;re looking to decompile stuff and not looking to install Visual Studio and other big software, try
+                        ILSpy, I&#039;ve been using it for a while.<br /> It&#039;s open source.<br /> I&#039;ve also installed a Reflexil mod for ILSpy.<br /> Installing ILSpy is as simple as
+                        unzipping the binaries archive. Modding it with Reflexil is as simple as copying the DLLs into the ILSpy directory.<br />
+                        <br /> In regards to removing the dependency, just read the source code of DeathNotes on how it retrieves the distance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226704' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 12:45 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226704' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226704/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226709" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Haha yes, I actually did use ILSpy, but my C# reading skills are horrible(just started with it). I&#039;ve been
+                        doing JS for so long that typed languages makes me scared now. Will read more on C# and return later. Meanwhile if you could tell me how to get the argument data structures for
+                        an Oxide event listener it would be so great! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226709' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 12:57 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226709' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226709/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226712" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoctorEbil">
+                            <aside>
+                                <div class="attribution type">TheDoctorEbil said: <a href="#post-226709" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Haha yes, I actually did use ILSpy, but my C# reading skills are horrible(just started with it). I&#039;ve been doing JS for so long that typed
+                                        languages makes me scared now. Will read more on C# and return later. Meanwhile if you could tell me how to get the argument data structures for an Oxide event
+                                        listener it would be so great!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Check the type name (e.g. BasePlayer) and enter it into the search function of ILSpy after loading the DLL. You can open the search function via View &gt; Search and
+                        selecting &quot;Search for: Type&quot; on the right of the search input bar. Enter BasePlayer, the selector should return the BasePlayer type. Double click it and the source
+                        will get decompiled for you to view. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226712' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 1:08 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226712' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226712/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226722" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ah yes got them. So I should be looking at the C# types from documentation and use the public properties defined
+                        in it I suppose? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226722' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 1:39 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226722' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226722/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226724" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoctorEbil">
+                            <aside>
+                                <div class="attribution type">TheDoctorEbil said: <a href="#post-226722" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ah yes got them. So I should be looking at the C# types from documentation and use the public properties defined in it I suppose?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can use whatever is public in any of those types or any of the properties of these types. Doesn&#039;t matter whether it&#039;s an attribute or a method.<br /> You
+                        can obviously access static methods or attributes of any other type as well (e.g. ConVar.Server), as long as you import them (not sure how it&#039;s handled in the JS
+                        extension).<br /> Here&#039;s a list of things that Oxide exposes: <a href="http://oxidemod.org/threads/classes.18519/#post-213198" class="internalLink">Classes | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226724' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 1:47 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226724' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226724/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226741" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I saw this fragment in one of the examples here: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var global = importNamespace(&quot;&quot;);
+print(global.BasePlayer.activePlayerList.Count);</pre>{% endraw %}
+                        </div>Anything related? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226741' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 2:25 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226741' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226741/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226750" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoctorEbil">
+                            <aside>
+                                <div class="attribution type">TheDoctorEbil said: <a href="#post-226741" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I saw this fragment in one of the examples here:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>var global = importNamespace(&quot;&quot;);
+print(global.BasePlayer.activePlayerList.Count);</pre>{% endraw %}
+                                        </div>Anything related?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>No clue, sorry. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226750' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 2:58 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226750' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226750/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226785" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I don&#039;t recommend using JS for plugin development, the reason is it apparently can&#039;t store the player
+                        steamids directly because of the way JS treats numbers. I ran into this issue myself in testing when I was writing js plugins and found no reasonable solution googling.
+                        Here&#039;s more on it.<br />
+                        <br />
+                        <a href="http://oxidemod.org/threads/javascript-plugin-reference.17745/#post-202086" class="internalLink">JavaScript plugin reference | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 10, 2016 at 4:03 PM">Jul 10, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226785' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 3:58 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226785' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226785/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226786" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-226785" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I don&#039;t recommend using JS for plugin development, the reason is it apparently can&#039;t store the player steamids directly seeing as
+                                        they&#039;re too big. And trying you&#039;ll end up with wrong numbers.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d have to use a library helper provided by Oxide to convert them from a ulong to a string. Rust also provides a string in most instances as well via
+                        player.UserIDString. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226786' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 4:00 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226786' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226786/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226790" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-226785" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I don&#039;t recommend using JS for plugin development, the reason is it apparently can&#039;t store the player steamids directly because of the
+                                        way JS treats numbers. I ran into this issue myself in testing when I was writing js plugins and found no reasonable solution googling. Here&#039;s more on
+                                        it.<br />
+                                        <br />
+                                        <a href="http://oxidemod.org/threads/javascript-plugin-reference.17745/#post-202086" class="internalLink">JavaScript plugin reference | Oxide</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>To extend on this: JavaScript and Lua both had the brilliant idea to represent all numbers as doubles, which causes loads of problems. Doubles have limited precision -
+                        and steam ids are too large to be stored precisely.<br /> As Wulf mentioned, you can convert every ID to strings and then work with that.<br />
+                        <br /> That being said, the lack of plugins using JavaScript, Python (and arguably to some extent Lua as well) makes it harder to get into plugin development, because there are
+                        less examples. I think in that sense, JavaScript and Python are only useful to more experienced devs. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226790' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 4:07 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226790' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226790/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226826" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Why do we have to store it as a number? It&#039;s a unique value right and unless we do some arithmetic on it,
+                        can&#039;t it be just a string?<br />
+                        <br /> Was thinking of making some documentation along with my plugin and some sort of a library/wrapper for doing these kinds of stuff. I&#039;m sure we can utilize build
+                        scripts/tools to automate the conversion of SteamIDs. Gonna re-write this in ES6 and see if I can match the type names that you see in C#<br />
+                        <br /> P.s. the pain of handling real numbers in JavaScript is real... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226826' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 5:21 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226826' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226826/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226837" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoctorEbil">
+                            <aside>
+                                <div class="attribution type">TheDoctorEbil said: <a href="#post-226826" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Why do we have to store it as a number? It&#039;s a unique value right and unless we do some arithmetic on it, can&#039;t it be just a
+                                        string?<br />
+                                        <br /> Was thinking of making some documentation along with my plugin and some sort of a library/wrapper for doing these kinds of stuff. I&#039;m sure we can
+                                        utilize build scripts/tools to automate the conversion of SteamIDs. Gonna re-write this in ES6 and see if I can match the type names that you see in C#<br />
+                                        <br /> P.s. the pain of handling real numbers in JavaScript is real...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There&#039;s no real benefit of using JS for oxide plugin development only downsides, and this is coming from someone who uses JS tremendously with websites and server
+                        side via node.js. I didn&#039;t know C# a week ago, but looking at enough plugin sources, decompiling some .net dll&#039;s and playing around got me writing some pretty
+                        in-depth plugins that my friends are excited about. I google anything I get stumped on and it usually provides answers. Wulf mentioned in the release notes that C# plugins
+                        compile to practically native as well, so you get that extra execution speed. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226837' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 5:40 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226837' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226837/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226843" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You don&#039;t have to store it as a number. Storing it as a number is merely more efficient.<br /> Storing it as
+                        a string takes around 48 or 60 bytes (depending on the arch), while storing it as a long takes 8 bytes.<br /> Comparing two strings is O(n), while comparing two longs is
+                        O(1).<br /> In addition to that accessing strings likely results in a cache miss, while accessing numbers normally doesn&#039;t.<br />
+                        <br /> There is a library, atleast for Rust (see: <a href="https://github.com/OxideMod/Oxide/blob/develop/Games/Unity/Oxide.Game.Rust/Libraries/Rust.cs" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide/Rust.cs at develop · OxideMod/Oxide · GitHub</a>).<br /> There certainly isn&#039;t a need for build scripts/tools (why?). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226843' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 5:47 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226843' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226843/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226846" class="message" data-author="TheDoctorEbil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoctorEbil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoctorEbil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ah yes I understand that while writing plugins we should make it as efficient as possible but I wans&#039;t
+                        planning on making it public or release it here(just a small plugin for private use). This is like my first try in modding a game, never done it before. I&#039;ve been doing JS
+                        all my life so it felt a lot easier to implement it using what I know. I do own a Windows phone so learning C# is not really a bummer after all. Let me see if I can do some
+                        real OOP <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                        <br /> Build scripts to generate the final concatenated .js plugin file that may be developed using mock classes(my plan was to create those for argument types) in an IDE and
+                        also cases where we need to use external libraries to handle long-ints?<br />
+                        <br /> p.s. death to typed languages! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoctorEbil</a>,</span>
+                        <a href="{{ '/threads/javascript-plugin-development.19417/#post-226846' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 6:07 PM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/javascript-plugin-development.19417/#post-226846' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226846/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

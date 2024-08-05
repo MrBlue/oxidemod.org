@@ -1,0 +1,248 @@
+---
+layout: forums
+title: 'Not an Issue - Csharp plugin.Name is always baseplugin if call inside class initialization function'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixBlue">Not an Issue</span> <a
+            href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/' | prepend: site.baseurl }}">Csharp plugin.Name is always baseplugin if call
+            inside class initialization function</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">AlexALX_[rus-ua]</a>, <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/' | prepend: site.baseurl }}"><span
+                class="DateTime" title="May 4, 2015 at 7:28 AM">May 4, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-85087" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">While working with localization library i found possible bug with oxide in csharp plugins. Variable plugin.Name is
+                        baseplugin if call inside class initialization function. Here example with logs:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System.Linq;
+using Oxide.Core;
+using Oxide.Core.Libraries;
+using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;Test C#&quot;, &quot;AlexALX&quot;, &quot;0.0.1&quot;)]
+    public class Test : RustPlugin
+    {
+        public Test()
+        {
+            Puts(&quot;Class init: &quot;+this.Name);
+        }
+      
+        [HookMethod(&quot;Init&quot;)]
+        void Init()
+        {
+            Puts(&quot;Init hook: &quot;+this.Name);
+        }  
+    }
+  
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 9:31 AM [Info] Test was compiled successfully in 140ms
+[Oxide] 9:31 AM [Info] Unloaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 9:31 AM [Info] Class init: baseplugin
+[Oxide] 9:31 AM [Info] Loaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 9:31 AM [Info] Init hook: Test</pre>{% endraw %}
+                        </div>Not sure if it can be called like &quot;bug&quot; or so, but still reporting, if its not bug then sorry. Also i can just add warning/error in this case for my
+                        localization library if function called before plugin inited. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 4, 2015 at 7:38 AM">May 4, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 4, 2015 at 7:28 AM">May 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/85087/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85188" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Does not seems to be a bug, constructor is called earlier than initialization of the plugin.<br />
+                        <br /> I would advise not to use constructors, or at least use it just for simple things such as initialization of fields, arrays, collections or so.<br /> Avoid using
+                        constructors for accessing the game API or Oxide API and you will be fine. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85188' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 4, 2015 at 3:28 PM">May 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85188' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/85188/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85231" class="message" data-author="bawNg">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bawNg" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bawNg</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Constructors should not be used by plugins at all. You can use the Loaded hook instead. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bawNg</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85231' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 4, 2015 at 4:57 PM">May 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85231' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/85231/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85478" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hm, then here is question - how to detect that C# plugin already loaded? I mean not in plugin itself, and in
+                        library if it have only Plugin argument. By calling something like if (plugin.Name==&quot;baseplugin&quot;) i think is stupid, but i can&#039;t find any &quot;IsLoaded&quot;
+                        variable or so in Csharp plugin class itself. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85478' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 5, 2015 at 1:06 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-85478' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/85478/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-88922" class="message" data-author="cenk">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cenk" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cenk</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="bawNg">
+                            <aside>
+                                <div class="attribution type">bawNg said: <a href="#post-85231" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Constructors should not be used by plugins at all. You can use the Loaded hook instead.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>dude I am trying to reach to you private conversation but it&#039;s failed <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cenk</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-88922' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 15, 2015 at 12:31 PM">May 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-name-is-always-baseplugin-if-call-inside-class-initialization-function.8174/#post-88922' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/88922/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

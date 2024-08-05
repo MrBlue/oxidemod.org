@@ -1,0 +1,413 @@
+---
+layout: forums
+title: 'Creating a prefab/entity with world model?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/' | prepend: site.baseurl }}">Creating a prefab/entity with world model?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Xianith</a>, <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/' | prepend: site.baseurl }}"><span class="DateTime" title="May 2, 2017 at 4:00 AM">May 2,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-320206" class="message" data-author="Xianith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Xianith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Xianith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m trying to spawn in the laptop model as a placeable object, but I&#039;m not finding the asset for
+                        it.<br />
+                        <br /> I&#039;ve tried these thus far:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>assets/prefabs/resource/targeting computer/targeting_computer.worldmodel.prefab
+assets/prefabs/resource/targeting computer/targeting_computer.item.prefab
+assets/prefabs/resource/targeting_computer.item.prefab</pre>{% endraw %}
+                        </div>I&#039;m calling these assets via GameManager.server.CreateEntity() but it keeps getting NullRefrenceExceptions. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Xianith</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 2, 2017 at 4:00 AM">May 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/320206/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320249" class="message" data-author="EnigmaticDragon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EnigmaticDragon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EnigmaticDragon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You could also do something like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>DroppedItem worldModel = ItemManager.CreateByItemID(1490499512).Drop(player.transform.position, Vector3.zero).GetComponent&lt;DroppedItem&gt;();// if you don't want the laptop to move
+worldModel.GetComponent&lt;Rigidbody&gt;().isKinematic = true;
+worldModel.GetComponent&lt;Rigidbody&gt;().useGravity = false;// if you don't want players to pick it up
+worldModel.allowPickup = false;
+// no despawn
+worldModel.Invoke(&quot;IdleDestroy&quot;, float.MaxValue);</pre>{% endraw %}
+                        </div>Just replace &quot;player.transfrom.position&quot; with whatever position you want. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EnigmaticDragon</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320249' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 2, 2017 at 12:17 PM">May 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320249' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320249/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320399" class="message" data-author="Xianith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Xianith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Xianith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">That works! Only thing now is I&#039;m trying to spawn it on top of a chest when I place the chest. I also want to
+                        destroy the laptop once the chest has been destroyed (like when a parent ent dies, the children ent die with it).<br />
+                        <br /> I&#039;m not getting anywhere with entity.transform.position and worldModel.SetParent(entity) doesn&#039;t seem to exist. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Xianith</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320399' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 2, 2017 at 9:34 PM">May 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320399' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320399/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320521" class="message" data-author="EnigmaticDragon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EnigmaticDragon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EnigmaticDragon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Actually DroppedItem has the SetParent(BaseEntity) method, since it is derived from BaseEntity. So this should
+                        work:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+BaseEntity box; // your box
+DroppedItem worldModel; // the laptop
+[...]
+worldModel.SetParent(box);
+</pre>{% endraw %}
+                        </div>I&#039;ve tested it with this code, works for me:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[ChatCommand(&quot;laptop&quot;)]
+void Laptop(BasePlayer player, string command, string[] args)
+{
+    RaycastHit hitinfo;
+    if (Physics.Raycast(player.eyes.position, Quaternion.Euler(player.GetNetworkRotation()) * Vector3.forward, out hitinfo, 30f,
+        LayerMask.GetMask(new string[] { &quot;Construction&quot;, &quot;Terrain&quot; })))
+    {
+        BaseEntity box = GameManager.server.CreateEntity(
+            &quot;assets/prefabs/deployable/large wood storage/box.wooden.large.prefab&quot;,
+            hitinfo.point,
+            Quaternion.Euler(0, player.GetNetworkRotation().y + 180, 0));
+        box.Spawn();        DroppedItem worldModel = ItemManager.CreateByItemID(1490499512).Drop(new Vector3(0, 0.75f, 0), Vector3.zero, Quaternion.Euler(0, 180, 0)).GetComponent&lt;DroppedItem&gt;();        worldModel.SetParent(box);        // if you don't want the laptop to move
+        worldModel.GetComponent&lt;Rigidbody&gt;().isKinematic = true;
+        worldModel.GetComponent&lt;Rigidbody&gt;().useGravity = false;        // if you don't want players to pick it up
+        worldModel.allowPickup = false;
+        // no despawn
+        worldModel.Invoke(&quot;IdleDestroy&quot;, float.MaxValue);
+    }
+}
+</pre>{% endraw %}
+                        </div><b>Edit 1:</b> I just noticed that<i> &quot;worldModel.Invoke(&quot;IdleDestroy&quot;, float.MaxValue)&quot; </i>does not prevent the item from despawning...
+                        &quot;<i>worldModel.CancelInvoke(&quot;IdleDestroy&quot;)</i>&quot; doesn&#039;t seem to work either.<br />
+                        <br />
+                        <b>Edit 2: </b>Okay, this should work to prevent despawning:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>worldModel.CancelInvoke((Action)Delegate.CreateDelegate(typeof(Action), worldModel, &quot;IdleDestroy&quot;));</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 3, 2017 at 1:30 PM">May 3, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EnigmaticDragon</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320521' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 12:27 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320521' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320521/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320536" class="message" data-author="Xianith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Xianith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Xianith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Seems to work really well! Thanks! Only oddity I&#039;m noticing is that the laptop will still display the Pickup
+                        indicator and seems to have it&#039;s own mind on what rotation it would like. Is there a way to set the rotation and get rid of the pickup message? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Xianith</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320536' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 2:09 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320536' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320536/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320542" class="message" data-author="EnigmaticDragon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EnigmaticDragon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EnigmaticDragon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I don&#039;t know how to get rid of the pickup indicator or if it is possible, but if you take a look at my
+                        example above &quot;<i>Quaternion.Euler(0, 180, 0)</i>&quot; is the place to change the rotation. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EnigmaticDragon</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320542' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 2:46 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320542' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320542/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320546" class="message" data-author="Xianith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Xianith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Xianith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">A ha! I thank you for your assistance! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Xianith</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320546' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 3:03 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-320546' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320546/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-321546" class="message" data-author="Xianith">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Xianith" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Xianith</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Running into an oddity where after the box is destroyed, on the next tick the laptop respawns... I suppose I have
+                        to do something with the OnEntityDeath / kill hook <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Xianith</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-321546' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2017 at 4:33 PM">May 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-321546' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/321546/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-321734" class="message" data-author="EnigmaticDragon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EnigmaticDragon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EnigmaticDragon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Since &quot;<i>OnParentRemoved()</i>&quot; (which also resets the despawn timer) gets called for the laptop when
+                        the box is destroyed, the laptop would get despawned after some time anyway. However, if you want to destroy it immediately, try this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+{
+    if (entity.ShortPrefabName.Equals(&quot;box.wooden.large&quot;)) // &quot;woodbox_deployed&quot; for small box
+        if (entity.children?[0].ShortPrefabName.Equals(&quot;generic_world&quot;) ?? false)
+            entity.children[0].Kill();
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EnigmaticDragon</a>,</span>
+                        <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-321734' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 6, 2017 at 10:12 AM">May 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-a-prefab-entity-with-world-model.25250/#post-321734' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/321734/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

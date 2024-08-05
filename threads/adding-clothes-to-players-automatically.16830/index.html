@@ -1,0 +1,345 @@
+---
+layout: forums
+title: 'Adding clothes to players automatically?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/' | prepend: site.baseurl }}">Adding clothes to players automatically?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ios</a>, <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 22, 2016 at 10:03 AM">Mar 22,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-189474" class="message" data-author="ios">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ios" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ios</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What to change? that the clothes have been dressed at once<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerSleepEnded(BasePlayer player)
+        {
+            if (player.net.connection.authLevel &gt; 0)
+            {
+                Item item1 = ItemManager.CreateByName(&quot;mask.bandana&quot;, 1);
+                item1.skin = 10104;
+                if (item1.GetHeldEntity())
+                {
+                    item1.GetHeldEntity().skinID = 10104;
+                }
+                    player.inventory.GiveItem(item1);
+                Item item3 = ItemManager.CreateByName(&quot;tshirt.long&quot;, 1);
+                item3.skin = 10106;
+                if (item3.GetHeldEntity())
+                {
+                    item3.GetHeldEntity().skinID = 10106;
+                }
+                    player.inventory.GiveItem(item3);
+                Item item5 = ItemManager.CreateByName(&quot;pants&quot;, 1);
+                item5.skin = 10048;
+                if (item5.GetHeldEntity())
+                {
+                    item5.GetHeldEntity().skinID = 10048;
+                }
+                    player.inventory.GiveItem(item5);
+                Item item6 = ItemManager.CreateByName(&quot;shoes.boots&quot;, 1);
+                item6.skin = 10034;
+                if (item6.GetHeldEntity())
+                {
+                    item6.GetHeldEntity().skinID = 10034;
+                }
+                    player.inventory.GiveItem(item6);
+                Item item7 = ItemManager.CreateByName(&quot;burlap.gloves&quot;, 1);
+                item7.skin = 10128;
+                if (item7.GetHeldEntity())
+                {
+                    item7.GetHeldEntity().skinID = 10128;
+                }
+                    player.inventory.GiveItem(item7);
+                Item item8 = ItemManager.CreateByName(&quot;hat.boonie&quot;, 1);
+                item8.skin = 10058;
+                if (item8.GetHeldEntity())
+                {
+                    item8.GetHeldEntity().skinID = 10058;
+                }
+                    player.inventory.GiveItem(item8);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ios</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2016 at 10:03 AM">Mar 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189474/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189539" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">That looks good. Try adding this to the end and see what you get. I can&#039;t test it right now but this is a
+                        snippet I use for NPCs.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+player.SV_ClothingChanged();
+if (player.inventory is PlayerInventory)
+{
+    player.inventory.ServerUpdate(0f);
+}player.SendNetworkUpdate();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189539' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2016 at 3:50 PM">Mar 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189539' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189539/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189894" class="message" data-author="ios">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ios" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ios</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-189539" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That looks good. Try adding this to the end and see what you get. I can&#039;t test it right now but this is a snippet I use for NPCs.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+player.SV_ClothingChanged();
+if (player.inventory is PlayerInventory)
+{
+    player.inventory.ServerUpdate(0f);
+}player.SendNetworkUpdate();</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>doesn&#039;t work <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ios</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189894' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 12:00 AM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189894' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189894/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189943" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Not sure what you were doing with the HeldEntity stuff but its unnecessary since you had already set the skin
+                        above it. This works fine for me, I also added the container so its all equipped to the right spot<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> void OnPlayerSleepEnded(BasePlayer player)
+        {
+            if (player.net.connection.authLevel &gt; 0)
+            {
+                var cont = player.inventory.containerWear;
+                Item item1 = ItemManager.CreateByName(&quot;mask.bandana&quot;, 1);
+                item1.skin = 10104;             
+                player.inventory.GiveItem(item1, cont);
+                Item item3 = ItemManager.CreateByName(&quot;tshirt.long&quot;, 1);
+                item3.skin = 10106;             
+                player.inventory.GiveItem(item3, cont);
+                Item item5 = ItemManager.CreateByName(&quot;pants&quot;, 1);
+                item5.skin = 10048;             
+                player.inventory.GiveItem(item5, cont);
+                Item item6 = ItemManager.CreateByName(&quot;shoes.boots&quot;, 1);
+                item6.skin = 10034;             
+                player.inventory.GiveItem(item6, cont);
+                Item item7 = ItemManager.CreateByName(&quot;burlap.gloves&quot;, 1);
+                item7.skin = 10128;             
+                player.inventory.GiveItem(item7, cont);
+                Item item8 = ItemManager.CreateByName(&quot;hat.boonie&quot;, 1);
+                item8.skin = 10058;             
+                player.inventory.GiveItem(item8, cont);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189943' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 5:44 AM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-189943' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189943/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-190263" class="message" data-author="ios">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ios" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ios</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ios</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-190263' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2016 at 11:42 PM">Mar 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-190263' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/190263/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-190405" class="message" data-author="Rebel 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebel 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebel 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Goes in server config ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebel 2</a>,</span>
+                        <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-190405' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 25, 2016 at 7:04 AM">Mar 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-clothes-to-players-automatically.16830/#post-190405' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/190405/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

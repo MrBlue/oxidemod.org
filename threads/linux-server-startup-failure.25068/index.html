@@ -1,0 +1,166 @@
+---
+layout: forums
+title: 'Linux server startup failure'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/linux-server-startup-failure.25068/' | prepend: site.baseurl }}">Linux server startup failure</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">FireStorm78</a>, <a href="{{ '/threads/linux-server-startup-failure.25068/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 21, 2017 at 10:36 AM">Apr 21,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-317191" class="message" data-author="FireStorm78">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireStorm78" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireStorm78</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So I&#039;ve been trying out the Linux Game Server Manager (LGSM) on a linux server to host my rust server.
+                        I&#039;ve seen lots of people struggling to get their server to start since the last update where Garry added better AI. Bravo BTW. &#039;bout time ;-)<br />
+                        <br /> I&#039;ve run into the same problem as others but think I&#039;ve found the reason. UpdateNavMesh takes a long time to run. This varies by map size, complexity,
+                        processing available, memory, etc etc... Here&#039;s the catch. The LGSM rustserver script that you run to start your server has a built in monitor to check to see if the
+                        server has started yet. If it fails to detect a working rust server within 60 seconds, it stops the server and tries again. Repeatedly. Which for me is after only 27% of the
+                        UpdateNavMesh. Annoying.<br />
+                        <br /> You can see in the &quot;~/log/script/rust-server-script.log&quot; log file. For example:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Apr 21 03:11:20 rust-server: START: PASS: Started FireStorm Private Test Server
+Apr 21 03:11:20 rust-server: START: PASS: command_start.sh exiting with code: 0
+Apr 21 03:15:03 rust-server: MONITOR: INFO: Checking session: CHECKING
+Apr 21 03:15:04 rust-server: MONITOR: PASS: Checking session: OK
+Apr 21 03:15:04 rust-server: MONITOR: INFO: Querying port: gsquery.py enabled
+Apr 21 03:15:05 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 1 : QUERYING
+Apr 21 03:15:06 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 1 : ERROR: Unable to receive
+Apr 21 03:15:21 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 2 : QUERYING
+Apr 21 03:15:23 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 2 : ERROR: Unable to receive
+Apr 21 03:15:38 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 3 : QUERYING
+Apr 21 03:15:39 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 3 : ERROR: Unable to receive
+Apr 21 03:15:54 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 4 : QUERYING
+Apr 21 03:15:55 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 4 : ERROR: Unable to receive
+Apr 21 03:16:10 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 5 : QUERYING
+Apr 21 03:16:11 rust-server: MONITOR: INFO: Querying port: 192.168.0.250:28015 : 5 : ERROR: Unable to receive
+Apr 21 03:16:11 rust-server: MONITOR: ERROR: Querying port: 192.168.0.250:28015 : 5 : FAIL
+Apr 21 03:16:12 rust-server: ALERT: INFO: Sending restart alert: ERROR: Unable to receive
+Apr 21 03:16:14 rust-server: STOP: INFO: Graceful: CTRL+c
+Apr 21 03:16:14 rust-server: STOP: PASS: Graceful: CTRL+c: OK: 1 seconds
+Apr 21 03:16:15 rust-server: STOP: INFO: tmux kill-session: FireStorm Private Test Server
+Apr 21 03:16:16 rust-server: STOP: PASS: Stopped FireStorm Private Test Server
+Apr 21 03:16:18 rust-server: CHECK: INFO: Using anonymous Steam login
+Apr 21 03:16:19 rust-server: START: INFO: Rotating log files</pre>{% endraw %}
+                        </div>I&#039;m looking for ways to disable the monitoring or extend the timeout. Does anyone know this script well enough to help? I may just need to abandon using LGSM to
+                        manage my server and write my own scripts. Perhaps less is more in this case.<br />
+                        <br /> Hopefully this post also helps other admins understand why their LGSM rust servers are not starting.<br />
+                        <br /> EDIT: <br /> So I missed something. I had a cron job running every 5 minutes to monitor the server and restart if needed. The output was being merged into the log above
+                        which made me think it was part of the start function of the script when it really wasn&#039;t. Disabling the monitor job has allowed me to load my server. So to correct myself
+                        the monitor was the problem but it is not related to the start function of the script. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 22, 2017 at 7:55 AM">Apr 22, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireStorm78</a>,</span>
+                        <a href="{{ '/threads/linux-server-startup-failure.25068/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2017 at 10:36 AM">Apr 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-startup-failure.25068/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/317191/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-386698" class="message" data-author="XTREM RUST">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="XTREM RUST" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">XTREM RUST</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have exactly the same problem.<br /> I wish I could monitor my server without stopping the control of the
+                        monitor.<br />
+                        <br /> Is it possible to increase the search time of gsquery.py ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">XTREM RUST</a>,</span>
+                        <a href="{{ '/threads/linux-server-startup-failure.25068/#post-386698' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 17, 2018 at 1:32 PM">Feb 17, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-startup-failure.25068/#post-386698' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/386698/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-386931" class="message" data-author="XTREM RUST">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="XTREM RUST" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">XTREM RUST</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Nobody can monitor his server with &quot;monitor&quot; without it being restarted too fast ? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">XTREM RUST</a>,</span>
+                        <a href="{{ '/threads/linux-server-startup-failure.25068/#post-386931' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 18, 2018 at 9:54 AM">Feb 18, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-startup-failure.25068/#post-386931' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/386931/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

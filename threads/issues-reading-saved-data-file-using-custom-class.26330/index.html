@@ -1,0 +1,490 @@
+---
+layout: forums
+title: 'Issues reading saved data file using custom class'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/' | prepend: site.baseurl }}">Issues reading saved data file using custom class</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Dubz</a>, <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 13, 2017 at 12:50 AM">Jul
+                13, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-337467" class="message" data-author="Dubz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dubz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dubz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m getting JSON messages when trying to read the data on load.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to initialize plugin 'ServerStats v0.0.1' (JsonSerializationException: Unable to find a constructor to use for type Oxide.Plugins.ServerStats+PlayerStats. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path '76561198298734142.Logins', line 3, position 13.)</pre>{% endraw %}
+                        </div>Json Example<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;76561198298734142&quot;: {
+    &quot;Logins&quot;: 1,
+    &quot;LastLogin&quot;: &quot;2017/07/13 08:17:43&quot;
+  }
+}</pre>{% endraw %}
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class ServerStats : RustPlugin
+    {
+        Dictionary&lt;ulong, PlayerStats&gt; playerStats = new Dictionary&lt;ulong, PlayerStats&gt;();
+       
+        class PlayerStats
+        {
+            public int Logins;
+            public string LastLogin;
+           
+            public PlayerStats()
+            {
+            }
+            internal PlayerStats(ServerStats serverstats)
+            {
+                Logins = 1;
+                LastLogin = DateTime.Now.ToString(&quot;yyyy/MM/dd HH:mm:ss&quot;);
+            }
+        }
+        void Loaded()
+        {
+            LoadData();
+           
+            foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {
+                if (!playerStats.ContainsKey(player.userID))
+                {
+                    playerStats.Add(player.userID, new PlayerStats(this));                    SaveData();
+                }
+               
+            }        }
+       
+        void LoadData()
+        {
+            playerStats = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;ulong, PlayerStats&gt;&gt;(&quot;ServerStats/PlayerStats&quot;);
+        }
+       
+        void SaveData()
+        {
+            Interface.Oxide.DataFileSystem.WriteObject(&quot;ServerStats/PlayerStats&quot;, playerStats);
+        }
+       
+    }</pre>{% endraw %}
+                        </div>I&#039;m learning here and not sure why its not working, anyone able to point me in the right direction? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dubz</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2017 at 12:50 AM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337467/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337475" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Remove <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ServerStats serverstats</pre>{% endraw %}
+                        </div> from your constructor. I assume that&#039;s why your getting that error. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337475' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 13, 2017 at 1:35 AM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337475' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337475/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337484" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The following is just advice which I have comprised from working heavily with Oxide&#039;s data helpers. Firstly,
+                        I find it better to store a SteamID as a ulong inside the actual class then you can just make a list.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>List&lt;PlayerData&gt; players = new List&lt;PlayerData&gt;();</pre>{% endraw %}
+                        </div>Then, you can add a simple method to get them such as the following. Note, if it doesn&#039;t exist it will be null.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerData GetData(BasePlayer player) =&gt; players.FirstOrDefault(x =&gt; x.SteamID == player.userID);</pre>{% endraw %}
+                        </div>Alternatively, you could try adding it if it doesn&#039;t exist. I suppose your method may function the same but I believe mine is cleaner.<br />
+                        <br /> Edit: Also, DateTime can be serialized. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337484' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 13, 2017 at 2:52 AM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337484' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337484/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337572" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-337475" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Remove <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>ServerStats serverstats</pre>{% endraw %}
+                                        </div> from your constructor. I assume that&#039;s why your getting that error.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Doesn&#039;t matter what parameters are in the constructor, it shouldn&#039;t cause a issue for loading data<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-337484" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The following is just advice which I have comprised from working heavily with Oxide&#039;s data helpers. Firstly, I find it better to store a
+                                        SteamID as a ulong inside the actual class then you can just make a list.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>List&lt;PlayerData&gt; players = new List&lt;PlayerData&gt;();</pre>{% endraw %}
+                                        </div>Then, you can add a simple method to get them such as the following. Note, if it doesn&#039;t exist it will be null.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>PlayerData GetData(BasePlayer player) =&gt; players.FirstOrDefault(x =&gt; x.SteamID == player.userID);</pre>{% endraw %}
+                                        </div>Alternatively, you could try adding it if it doesn&#039;t exist. I suppose your method may function the same but I believe mine is cleaner.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Using a Dictionary and key to check if a value exists is faster then using Linq on a List<br />
+                        <br />
+                        <a href="https://oxidemod.org/members/127548/" class="username" data-user="127548, @Dubz">@Dubz</a> I don&#039;t have any issues loading or saving data using the code you
+                        provided above <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337572' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 13, 2017 at 12:59 PM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337572' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337572/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337662" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-337572" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Doesn&#039;t matter what parameters are in the constructor, it shouldn&#039;t cause a issue for loading data<br />
+                                        <br />
+                                        <br /> Using a Dictionary and key to check if a value exists is faster then using Linq on a List<br />
+                                        <br />
+                                        <a href="https://oxidemod.org/members/127548/" class="username" data-user="127548, @Dubz">@Dubz</a> I don&#039;t have any issues loading or saving data using
+                                        the code you provided above</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>In my opinion using a list makes it cleaner, I don&#039;t think it&#039;s a noticeable impact. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337662' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 13, 2017 at 7:21 PM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337662' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337662/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337732" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I disagree with your opinion <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7"
+                            alt=":p" title="Stick Out Tongue    :p" /><br />
+                        <br /> Case: Checking if a item exists<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Dictionary
+if(dict.ContainsKey(key))
+   return true;//List
+if (list.FirstOrDefault(x =&gt; x.var == someVar) != null)
+   return true;
+</pre>{% endraw %}
+                        </div>Case: Finding a value <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Dictionary
+Value value = null;if (dict.ContainsKey(key)) // Second Fastest
+{
+   value = dict[key];
+   // Perform code
+}
+else
+{
+   // Create new value
+}if (dict.TryGetValue(key, out value)) // Fastest
+{
+   // Value found, perform code
+}
+else 
+{
+   // Create new value
+}// List
+value = list.FirstOrDefault(x =&gt; x.var == someVar); // Slowest out of these options
+if (value != null)
+{
+   // Perform code
+}
+else
+{
+   // Create new value
+}
+</pre>{% endraw %}
+                        </div>Performance &gt; Appearance <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 13, 2017 at 10:48 PM">Jul 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337732' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337732/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337960" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kappasaurus">
+                            <aside>
+                                <div class="attribution type">Kappasaurus said: <a href="#post-337662" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I don&#039;t think it&#039;s a noticeable impact.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>&gt;&gt;&gt; <a href="https://www.dotnetperls.com/trygetvalue" target="_blank" class="externalLink  rel=" nofollow">C# TryGetValue (Get Value From Dictionary) - Dot Net
+                            Perls</a><br />
+                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337960' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 14, 2017 at 10:09 PM">Jul 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337960' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337960/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-337994" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-337960" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">&gt;&gt;&gt; <a href="https://www.dotnetperls.com/trygetvalue" target="_blank" class="externalLink  rel=" nofollow">C# TryGetValue (Get Value
+                                            From Dictionary) - Dot Net Perls</a><br />
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What about it? I use that in most of my plugins instead of accessing the value twice. Granted, that doesn&#039;t exist for lists. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337994' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 14, 2017 at 11:51 PM">Jul 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issues-reading-saved-data-file-using-custom-class.26330/#post-337994' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/337994/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

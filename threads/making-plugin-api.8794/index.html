@@ -1,0 +1,539 @@
+---
+layout: forums
+title: 'Making Plugin API'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/making-plugin-api.8794/' | prepend: site.baseurl }}">Making Plugin API</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">PaiN</a>, <a href="{{ '/threads/making-plugin-api.8794/' | prepend: site.baseurl }}"><span class="DateTime" title="May 25, 2015 at 7:29 PM">May 25, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-92574" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello again,<br />
+                        <br /> This will be my first API btw<br /> So the plugin that i will upload in some days needs an API from my other plugin &quot;AFK System&quot;<br /> I&#039;ve checked some
+                        plugins like Chat Mute and used his code for a function but i want to make the same API but for if afk= true or false..<br />
+                        <br /> For now i got only<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:IsAfk(player)
+    local targetSteamID = rust.UserIDFromPlayer(player)
+    if not afkData[targetSteamID] then
+        return false
+    end
+    if afkData[targetSteamID] then
+        afkData[targetSteamID] = false
+        datafile.SaveDataTable(afkData)
+        return false
+    end
+    if afkData[targetSteamID] then
+        afkData[targetSteamID] = true
+        datafile.SaveDataTable(afkData)
+        return true
+    end
+endfunction PLUGIN:afkData(steamID)
+    return afkData[steamID] ~= false
+endfunction PLUGIN:APIAfk(steamID)
+    if afkData[steamID] then return false end
+    afkData[steamID] = {}
+    afkData[steamID].steamID = steamID
+    table.insert(muteData, muteData[steamID])
+    datafile.SaveDataTable(afkData)
+    return true
+end
+</pre>{% endraw %}
+                        </div>What i&#039;ve created for the plugin that needs the API<br /> and error for this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+            local isAfk = AFKSystem:Call(&quot;IsAfk&quot;, targetPlayer)
+            if isAfk then
+            rust.SendChatMessage(player, self.Config.Messages.ChatPrefix, &quot;This Player is AFK!&quot;)
+            else
+            rust.SendChatMessage(player, self.Config.Messages.ChatPrefix, &quot;This Player is NOT AFK!&quot;)
+            end
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[Oxide] 9:31 PM [Error] Failed to call hook 'cmdATest' on plugin 'PaiN Test'
+File: p-test.lua Line: 80 attempt to index upvalue 'AFKSystem' (a nil value):
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (object,object[],System.Exception&amp;)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="May 25, 2015 at 7:29 PM">May
+                                25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92574/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92577" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You need to get a reference to your AFKSystem plugin.. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92577' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:33 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92577' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92577/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92579" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-92577" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You need to get a reference to your AFKSystem plugin..</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Reference.. ? The first code on my post is in my Afk System that&#039;s the reference isn&#039;t it<br />
+                        <br /> EDIT: I&#039;ve probably fixed the error give me a sec i will test it<br /> [DOUBLEPOST=1432579273][/DOUBLEPOST]Okay i fixed the error now I have the Data file with my
+                        steam id inside and its true so the my plugin should say &quot;Player is AFK&quot; but it still says &quot;is NOT AFK&quot;<br />
+                        <br /> and i&#039;m 99% that something is wrong with the API code that i wrote on my first post <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="May 25, 2015 at 7:42 PM">May 25, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92579' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:35 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92579' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92579/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92582" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-92579" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Reference.. ? The first code on my post is in my Afk System that&#039;s the reference isn&#039;t it ?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You shouldn&#039;t be making a plugin API if you don&#039;t understand how it will be called from other plugins.<br />
+                        <br /> Plugin A has methods that are exposed for plugin B to call<br />
+                        <br /> Plugin B will need to get a reference to plugin A to be able to call those exposed methods.<br />
+                        <br /> Your error is exactly what it means, you need to get a reference to your afksystem plugin before calling methods on it.<br />
+                        <br />
+                        <a href="http://oxidemod.org/threads/how-to-use-plugin-api.7883/#post-80777" class="internalLink">http://oxidemod.org/threads/how-to-use-plugin-api.7883/#post-80777</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92582' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:43 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92582' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92582/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92591" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-92582" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You shouldn&#039;t be making a plugin API if you don&#039;t understand how it will be called from other plugins.<br />
+                                        <br /> Plugin A has methods that are exposed for plugin B to call<br />
+                                        <br /> Plugin B will need to get a reference to plugin A to be able to call those exposed methods.<br />
+                                        <br /> Your error is exactly what it means, you need to get a reference to your afksystem plugin before calling methods on it.<br />
+                                        <br />
+                                        <a href="http://oxidemod.org/threads/how-to-use-plugin-api.7883/#post-80777"
+                                            class="internalLink">http://oxidemod.org/threads/how-to-use-plugin-api.7883/#post-80777</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ve got the reference its okay now 0 errors...<br />
+                        <br /> NOW i probably have something wrong in my API ... I have the Data file with my steam id inside and its true so the my plugin should say &quot;Player is AFK&quot; but it
+                        still says &quot;is NOT AFK&quot; I cant find anything wrong with my code ... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92591' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:53 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92591' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92591/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92593" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="PaiN">
+                            <aside>
+                                <div class="attribution type">PaiN said: <a href="#post-92591" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;ve got the reference its okay now 0 errors...<br />
+                                        <br /> NOW i probably have something wrong in my API ... I have the Data file with my steam id inside and its true so the my plugin should say &quot;Player is
+                                        AFK&quot; but it still says &quot;is NOT AFK&quot; I cant find anything wrong with my code ...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Post your code please <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92593' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:56 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92593' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92593/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92598" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Domestos">
+                            <aside>
+                                <div class="attribution type">Domestos said: <a href="#post-92593" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Post your code please</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>First post nothing changed just added reference to the plugin that needs the api from afksystem <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92598' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:59 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92598' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92598/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92600" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You logic is wrong here:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if afkData[targetSteamID] then
+        afkData[targetSteamID] = false
+        datafile.SaveDataTable(afkData)
+        return false
+    end
+    if afkData[targetSteamID] then
+        afkData[targetSteamID] = true
+        datafile.SaveDataTable(afkData)
+        return true
+    end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92600' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 8:01 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92600' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92600/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92604" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-92600" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You logic is wrong here:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>if afkData[targetSteamID] then
+        afkData[targetSteamID] = false
+        datafile.SaveDataTable(afkData)
+        return false
+    end
+    if afkData[targetSteamID] then
+        afkData[targetSteamID] = true
+        datafile.SaveDataTable(afkData)
+        return true
+    end</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I was sure that something is wrong here but dunno how should it go i&#039;m based on ChatMute Plugin but it has expiration and other things cannot find a good
+                        example...<br />
+                        <br /> I mean the ChatMute is a good example but not for what i need right now <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92604' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 8:06 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92604' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92604/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92607" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Write pseudocode for what you want to do and implement it, you might also want to make a flowchart before
+                        implementing you method. This is all basic stuff you should do when learning to program. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/making-plugin-api.8794/#post-92607' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 8:10 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-plugin-api.8794/#post-92607' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92607/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

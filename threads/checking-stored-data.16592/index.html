@@ -1,0 +1,428 @@
+---
+layout: forums
+title: 'Checking stored data?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/checking-stored-data.16592/' | prepend: site.baseurl }}">Checking stored data?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">w4ssup</a>, <a href="{{ '/threads/checking-stored-data.16592/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 12, 2016 at 11:57 PM">Mar 12, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-186853" class="message" data-author="w4ssup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="w4ssup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">w4ssup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">After having the plugin save the userID with some other data, how do I scan whether of not a BasePlayer uID is in
+                        the data? and if it is, how do I add another line of data into that uID section? I have tried to check other plugins as reference, but I can&#039;t figure it out. <br />
+                        <br /> ex: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+      &quot;uID&quot;: &quot;76561198015462577&quot;, //check for user
+      &quot;code&quot;: [
+        &quot;asdasdasd&quot; //add more stuff after this
+      ]
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">w4ssup</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 12, 2016 at 11:57 PM">Mar 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186853/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186855" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If its in storedData(class StoredData)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if(storedData.ClassName.ContainsKey(player.userID))
+{
+      //Your code here if he is in the storedData
+}
+else
+{
+      //Your code if he is not in the data,
+}</pre>{% endraw %}
+                        </div>If its not in storedData(just a dictionary, hash, list, etc)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if(Class.ContainsKey(player.userID))
+{
+      //If it does contain player
+}
+else
+{
+     //If it does not contain player.
+}</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1457827673][/DOUBLEPOST]For example,<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class StoredData
+{
+    public Dictionary&lt;ulong, PlayerStats&gt; Stats  = new Dictionary&lt;ulong, PlayerStats&gt;();
+    public StoredData()
+    {
+     }
+}class PlayerStats
+{
+      public string Name;
+      public PlayerStats()
+      {
+      }
+}StoredData storedData;//Add/Receive//        private void InitUserData(BasePlayer player)
+        {
+            if(!storedData.Stats.ContainsKey(player.userID))
+            {
+                storedData.Stats.Add(player.userID, new PlayerStats());
+                storedData.Stats[player.userID].Name = player.displayName;
+                SaveData();
+            }
+            else
+            {
+          
+             }
+       }void SaveData()
+{    Interface.Oxide.DataFileSystem.WriteObject(this.Title, storedData);
+}void Loaded()
+{
+      storedData = Interface.GetMod().DataFileSystem.ReadObject&lt;StoredData&gt;(this.Title);
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 13, 2016 at 12:08 AM">Mar 13, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/#post-186855' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 12:03 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/#post-186855' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186855/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186863" class="message" data-author="w4ssup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="w4ssup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">w4ssup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m getting <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>`System.Collections.Generic.List&lt;Oxide.Plugins.Promocodes.Redeemed&gt;' does not contain a definition for `ContainsKey' and no extension method `ContainsKey' of type `System.Collections.Generic.List&lt;Oxide.Plugins.Promocodes.Redeemed&gt;</pre>{% endraw %}
+                        </div><br /> IDK why it&#039;s saying that, I have the right namespace...<br />
+                        <br /> also here&#039;s my save data <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class Redeemed
+        {
+            public string uID = &quot;&quot;;
+            public List&lt;String&gt; code = new List&lt;string&gt;();
+            public Redeemed()
+            {
+            }
+            public Redeemed(BasePlayer Player, string codeRedeemed)
+            {
+                uID = Player.UserIDString;
+                code.Add(codeRedeemed);
+            }
+        }
+        class SaveData
+        {
+            public List&lt;Redeemed&gt; isRedeemed = new List&lt;Redeemed&gt;();
+            public SaveData()
+            {
+            }
+        }        SaveData data;</pre>{% endraw %}
+                        </div>and here&#039;s the checking <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (data.isRedeemed.ContainsKey(Player.UserIDString))
+            {
+                SendReply(player, &quot;Exist&quot;);
+            }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">w4ssup</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/#post-186863' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 12:56 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/#post-186863' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186863/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186865" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can&#039;t search for a key in a list<br />
+                        <br /> You would be better off using a dictionary and using the player id as the key for ease of reference to it<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class Redeemed
+        {
+            public List&lt;string&gt; code = new List&lt;string&gt;();
+            public Redeemed()
+            {
+            }
+            public Redeemed(BasePlayer Player, string codeRedeemed)
+            {
+                code.Add(codeRedeemed);
+            }
+        }
+        class SaveData
+        {
+            public Dictionary&lt;ulong, Redeemed&gt; isRedeemed = new Dictionary&lt;ulong, Redeemed&gt;();
+            public SaveData()
+            {
+            }
+        }        SaveData data;</pre>{% endraw %}
+                        </div>Or if you aren&#039;t planning on saving any data other then the list of codes you can be rid of the class and have the list in the dictionary<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SaveData data;
+        public class SaveData
+        {
+            public Dictionary&lt;ulong, List&lt;string&gt;&gt; isRedeemed = new Dictionary&lt;ulong, List&lt;string&gt;&gt;();
+            public SaveData()
+            {
+            }
+        }
+        void Function(BasePlayer player, string code)
+        {
+            if (!data.isRedeemed.ContainsKey(player.userID))
+                data.isRedeemed.Add(player.userID, new List&lt;string&gt;());
+            data.isRedeemed[player.userID].Add(code);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 13, 2016 at 1:23 AM">Mar 13, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/#post-186865' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 1:14 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/#post-186865' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186865/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186867" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Oh, didn&#039;t realize he was using a list. Do [if(storedData.isRedeemed.Contains(player.userID))]<br />
+                        [DOUBLEPOST=1457832048][/DOUBLEPOST]Of course replace &quot;storedData&quot; and &quot;isRedeemed&quot; with what your plugin needs. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/#post-186867' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 1:19 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/#post-186867' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186867/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186872" class="message" data-author="w4ssup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="w4ssup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">w4ssup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-186865" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can&#039;t search for a key in a list<br />
+                                        <br /> You would be better off using a dictionary and using the player id as the key for ease of reference to it<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>class Redeemed
+        {
+            public List&lt;string&gt; code = new List&lt;string&gt;();
+            public Redeemed()
+            {
+            }
+            public Redeemed(BasePlayer Player, string codeRedeemed)
+            {
+                code.Add(codeRedeemed);
+            }
+        }
+        class SaveData
+        {
+            public Dictionary&lt;ulong, Redeemed&gt; isRedeemed = new Dictionary&lt;ulong, Redeemed&gt;();
+            public SaveData()
+            {
+            }
+        }        SaveData data;</pre>{% endraw %}
+                                        </div>Or if you aren&#039;t planning on saving any data other then the list of codes you can be rid of the class and have the list in the dictionary<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>SaveData data;
+        public class SaveData
+        {
+            public Dictionary&lt;ulong, List&lt;string&gt;&gt; isRedeemed = new Dictionary&lt;ulong, List&lt;string&gt;&gt;();
+            public SaveData()
+            {
+            }
+        }
+        void Function(BasePlayer player, string code)
+        {
+            if (!data.isRedeemed.ContainsKey(player.userID))
+                data.isRedeemed.Add(player.userID, new List&lt;string&gt;());
+            data.isRedeemed[player.userID].Add(code);
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>that works. Thanks man. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">w4ssup</a>,</span>
+                        <a href="{{ '/threads/checking-stored-data.16592/#post-186872' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 1:48 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-stored-data.16592/#post-186872' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186872/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

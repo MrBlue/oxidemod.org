@@ -1,0 +1,209 @@
+---
+layout: forums
+title: 'Add game session list to player data does not work'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/add-game-session-list-to-player-data-does-not-work.31192/' | prepend: site.baseurl }}">Add game session list to player data does not work</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Sorrow</a>, <a href="{{ '/threads/add-game-session-list-to-player-data-does-not-work.31192/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 16, 2018 at 5:23 PM">Jul 16, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-408517" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I try to add a GameSession object to each player&#039;s logout that contains the login date, logout date and game time. Unfortunately after several tries I can&#039;t
+                        record a game session. I get an error I can&#039;t solve.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnPlayerDisconnected' on plugin 'RaidSettings v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.RaidSettings.AddLastDisconnect (BasePlayer player) [0x0005c] in &lt;7325edb6b67246efb2860f586d0e30b4&gt;:0
+  at Oxide.Plugins.RaidSettings.OnPlayerDisconnected (BasePlayer player) [0x00000] in &lt;7325edb6b67246efb2860f586d0e30b4&gt;:0
+  at Oxide.Plugins.RaidSettings.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x0012e] in &lt;7325edb6b67246efb2860f586d0e30b4&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00079] in &lt;c42b530987394b2da63b2e4218904439&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x000d8] in &lt;0f58cfbbba844942876db6036f28ac86&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00060] in &lt;0f58cfbbba844942876db6036f28ac86&gt;:0</pre>{% endraw %}
+                        </div>Here is the code that causes me problems<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void OnPlayerDisconnected(BasePlayer player)
+        {
+            AddLastDisconnect(player);
+            SaveData();
+        }        private void AddLastDisconnect(BasePlayer player)
+        {
+            var dateTime = DateTime.Now;
+            LastDisconnect lastDisconnectPlayer;
+            if (!_lastDisconnect.TryGetValue(player.userID, out lastDisconnectPlayer))
+            {
+                lastDisconnectPlayer = new LastDisconnect(player, dateTime);
+                lastDisconnectPlayer.GameSessions.Add(new LastDisconnect.GameSession(player, dateTime));
+                _lastDisconnect.Add(player.userID, lastDisconnectPlayer);
+            }
+            else
+            {
+                lastDisconnectPlayer.GameSessions.Add(new LastDisconnect.GameSession(player, dateTime));
+                lastDisconnectPlayer.lastDisconnect = DateTime.Now;
+            }
+        }class LastDisconnect
+        {
+            public readonly ulong Userid;
+            public long LastDisconnectLong;
+            public List&lt;GameSession&gt; GameSessions;            [JsonIgnore]
+            public DateTime lastDisconnect
+            {
+                private get
+                {
+                    return DateTime.FromBinary(LastDisconnectLong);
+                }                set
+                {
+                    LastDisconnectLong = value.ToBinary();
+                }
+            }            [JsonConstructor]
+            public LastDisconnect(ulong userid, long lastDisconnectLong)
+            {
+                Userid = userid;
+                LastDisconnectLong = lastDisconnectLong;
+                GameSessions = new List&lt;GameSession&gt;();
+            }            public LastDisconnect(BasePlayer player, DateTime lastDisconnect)
+            {
+                Userid = player.userID;
+                this.lastDisconnect = lastDisconnect;
+                GameSessions = new List&lt;GameSession&gt;();
+            }            [JsonIgnore]
+            private BasePlayer Player =&gt; BasePlayer.FindByID(Userid);            public bool IsConnected()
+            {
+                var player = Player;
+                return player != null &amp;&amp; player.IsConnected;
+            }            public bool IsOffline()
+            {
+                return HasMinutes(CooldownMinutes);
+            }            [JsonIgnore]
+            private double Days
+            {
+                get
+                {
+                    var ts = DateTime.Now - lastDisconnect;
+                    return ts.TotalDays;
+                }
+            }            private bool HasDays(int days)
+            {
+                return Days &gt;= days;
+            }            [JsonIgnore]
+            private double Minutes
+            {
+                get
+                {
+                    var ts = DateTime.Now - lastDisconnect;
+                    return ts.TotalMinutes;
+                }
+            }            private bool HasMinutes(int minutes)
+            {
+                return Minutes &gt;= minutes;
+            }            [JsonIgnore]
+            private double Hours
+            {
+                get
+                {
+                    var ts = DateTime.Now - lastDisconnect;
+                    return ts.TotalHours;
+                }
+            }            private bool HasHours(int hours)
+            {
+                return Hours &gt;= hours;
+            }            public class GameSession
+            {
+                public long TimePlayed;
+                public long ConnectionLong;
+                public long DeconnectionLong;                [JsonIgnore]
+                public TimeSpan timePlayed
+                {
+                    private get
+                    {
+                        return TimeSpan.FromTicks(TimePlayed);
+                    }                    set
+                    {
+                        TimePlayed = value.Ticks;
+                    }
+                }                [JsonIgnore]
+                public DateTime connection
+                {
+                    private get
+                    {
+                        return DateTime.FromBinary(ConnectionLong);
+                    }                    set
+                    {
+                        ConnectionLong = value.ToBinary();
+                    }
+                }                [JsonIgnore]
+                public DateTime deconnection
+                {
+                    private get
+                    {
+                        return DateTime.FromBinary(DeconnectionLong);
+                    }                    set
+                    {
+                        DeconnectionLong = value.ToBinary();
+                    }
+                }                [JsonConstructor]
+                public GameSession(long timePlayed, long connectionLong, long deconnectionLong)
+                {
+                    TimePlayed = timePlayed;
+                    ConnectionLong = connectionLong;
+                    DeconnectionLong = deconnectionLong;
+                }                public GameSession(BasePlayer player, DateTime dateTime)
+                {
+                    this.timePlayed = TimeSpan.FromSeconds(player.Connection.GetSecondsConnected());
+                    this.connection = player.Connection.connectionTime;
+                    this.deconnection = dateTime;
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>The code that makes me see this error is this one<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>lastDisconnectPlayer.GameSessions.Add(new LastDisconnect.GameSession(player, dateTime));</pre>{% endraw %}
+                        </div>Thanks for your help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/add-game-session-list-to-player-data-does-not-work.31192/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 16, 2018 at 5:23 PM">Jul 16, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-game-session-list-to-player-data-does-not-work.31192/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/408517/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

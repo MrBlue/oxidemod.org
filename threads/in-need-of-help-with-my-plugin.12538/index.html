@@ -1,0 +1,424 @@
+---
+layout: forums
+title: 'In need of help with my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/' | prepend: site.baseurl }}">In need of help with my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Ankawi</a>, <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 1, 2015 at 9:45 PM">Nov 1,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-140255" class="message" data-author="Ankawi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ankawi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ankawi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So I&#039;ve been working on this plugin for quite some time. The plugin is supposed to give people Ranks based
+                        on the hours they have on a server. Required dependencies would PlayTime and BetterChat. Inside the plugin, when people reach a playtime over 50 hours, they get the rank
+                        [Casual] and it sends them the permissions, 100 hours would be [Regular] and 20 hours would be [Noob]. Through betterchat, they would have to create 3 groups, called Noob,
+                        Casual, and Regular. Then edit the configs to make the permissions color_noob, etc. However it seems like it&#039;s not receiving the data value and hoursPlayed isn&#039;t
+                        working.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Name = &quot;PlayerTitles&quot;
+PLUGIN.Title = &quot;PlayerTitles&quot;
+PLUGIN.Version = V(1, 0, 0)
+PLUGIN.Description = &quot;Titles that players receive based on the number of hours they have&quot;
+PLUGIN.Author = &quot;Ankawi&quot;
+PLUGIN.ResourceID = 715function PLUGIN:Init()
+   plugin = plugins.Find(&quot;PlayTime&quot;):Call(&quot;hoursPlayed&quot;, player)
+   plugin = plugins.Find(&quot;BetterChat&quot;)
+   self:LoadDataFiles()
+ 
+   permissions = {&quot;noob&quot;, &quot;casual&quot;, &quot;regular&quot;}
+ 
+   for _, current in pairs(permissions) do
+  if not permission.PermissionExists(&quot;color_&quot; .. current) then
+  permission.RegisterPermission(&quot;color_&quot; .. current, self.Object)
+  end
+  end
+ 
+   timer.Repeat(60, 0, function()
+     self:UpdateTitles()
+   end)
+endfunction PLUGIN:LoadDefaultConfig()
+ 
+  self.Config.Messages = {}
+  self.Config.Messages.RegularRank = self.Config.Messages.RegularRank or &quot;You have been ranked up to [Regular]&quot;
+  self.Config.Messages.CasualRank = self.Config.Messages.CasualRank or &quot;You have been ranked up to [Casual]&quot;
+  self.Config.Messages.NoobRank = self.Config.Messages.NoobRank or &quot;You have been ranked up to [Noob]&quot;
+  self:SaveConfig()
+endfunction FindPlayer(searchedName, player)
+   local players = global.BasePlayer.activePlayerList:GetEnumerator()
+   local matchingPlayers = {}
+ 
+   while players:MoveNext() do
+     if string.match(string.lower(players.Current), string.lower(searchedName)) then
+       table.insert(matchingPlayers, players.Current)
+     end
+   end
+ 
+   if matchingPlayers.Length == 1 then
+     return matchingPlayers[0]
+   
+   elseif matchingPlayers.Length &gt; 1 then
+     rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+   
+     for _, name in pairs(matchingPlayers) do
+       rust.SendChatMessage(player, name)
+     end
+     return nil
+   
+   elseif matchingPlayers == 0 then
+     rust.SendChatMessage(player, &quot;No matching player has been found&quot;)
+     return nil
+   end
+endfunction PLUGIN:UpdateTitles()   if hoursPlayed &gt; 20 then
+     rust.SendChatMessage(player,rust.SendChatMessage.NoobRank)
+     permission.GrantUserPermission(userid, &quot;color_noob&quot;)
+   
+   elseif hoursPlayed &gt; 50 then
+     rust.SendChatMessage(player,rust.SendChatMessage.CasualRank)
+     permission.GrantUserPermission(userid, &quot;color_casual&quot;)    elseif hoursPlayed &gt; 100 then
+     rust.SendChatMessage(player,rust.SendChatMessage.RegularRank)
+     permission.GrantUserPermission(userid, &quot;color_regular&quot;)
+   end
+endfunction PLUGIN:LoadDataFiles()
+  dataTable = datafile.GetDataTable(&quot;PlayTime&quot;) or {}
+endfunction PLUGIN:SaveDataFiles()
+   datafile.SaveDataTable(&quot;PlayTime&quot;)
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Nov 1, 2015 at 10:05 PM">Nov 1, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ankawi</a>,</span>
+                        <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 1, 2015 at 9:45 PM">Nov 1, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/140255/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-140272" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Firstly, don&#039;t set variables without global, else use &quot;self.&quot; prefixing. If you don&#039;t do one
+                        of these, the variables will likely bleed over into other plugins if they try to use the same thing, and ultimately could break critical variables.<br />
+                        <br /> Secondly, do not use PLUGIN.Name, it&#039;s redundant and is set automatically by Oxide based on your PLUGIN.Title.<br />
+                        <br /> Thirdly, you are trying to set multiple plugin references to the same variable (plugins, global bad). This basically makes the first time you set it pointless, and will
+                        likely give you errors if you try to use it later with a call that doesn&#039;t exist.<br />
+                        <br /> Lastly, if you take a look in your oxide/logs or console, you&#039;ll probably see some error spam from trying to call variables that don&#039;t exist.<br />
+                        <br /> Some reading material:<br />
+                        <ul>
+                            <li><a href="http://www.lua.org/pil/4.2.html" target="_blank" class="externalLink">Programming in Lua : 4.2</a><br />
+                            </li>
+                            <li><a href="http://www.lua.org/pil/14.2.html" target="_blank" class="externalLink">Programming in Lua : 14.2</a></li>
+                        </ul>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140272' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 1, 2015 at 11:01 PM">Nov 1, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140272' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/140272/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-140274" class="message" data-author="Ankawi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ankawi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ankawi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+PLUGIN.Title = &quot;PlayerTitles&quot;
+PLUGIN.Version = V(1, 0, 0)
+PLUGIN.Description = &quot;Titles that players receive based on the number of hours they have&quot;
+PLUGIN.Author = &quot;Ankawi&quot;function PLUGIN:Init()
+  self.PlayTime = plugins.Find(&quot;PlayTime&quot;)
+  self.BetterChat = plugins.Find(&quot;BetterChat&quot;)
+   
+  self:LoadDataFiles()
+   
+  self:UpdateTitles()
+   
+  self.updateTimer = timer.Repeat(60, 0, function()
+  self:UpdateTitles()
+  end)
+endfunction PLUGIN:Unloaded()
+  self.updateTimer.Destroy()
+endfunction PLUGIN:LoadDefaultConfig()
+  self.Config = self.Config or {}
+   
+  self.Config.Noob = self.Config.Noob or {}
+  self.Config.Noob.Permission = self.Config.Noob.Permission or &quot;color_noob&quot;
+  self.Config.Noob.Playtime = self.Config.Noob.Playtime or 20
+   
+  self.Config.Casual = self.Config.Casual or {}
+  self.Config.Casual.Permission = self.Config.Casual.Permission or &quot;color_casual&quot;
+  self.Config.Casual.Playtime = self.Config.Casual.Playtime or 40
+   
+  self.Config.Advanced = self.Config.Advanced or {}
+  self.Config.Advanced.Permission = self.Config.Advanced.Permission or &quot;color_advanced&quot;
+  self.Config.Advanced.Playtime = self.Config.Advanced.Playtime or 60
+   
+  self:SaveConfig()
+endfunction FindPlayer(searchedName, player)
+  local players = global.BasePlayer.activePlayerList:GetEnumerator()
+  local matchingPlayers = {}
+   
+  while players:MoveNext() do
+  if string.match(string.lower(players.Current), string.lower(searchedName)) then
+  table.insert(matchingPlayers, players.Current)
+  end
+  end
+   
+  if matchingPlayers.Length == 1 then
+  return matchingPlayers[0]
+   
+  elseif matchingPlayers.Length &gt; 1 then
+  rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+   
+  for _, name in pairs(matchingPlayers) do
+  rust.SendChatMessage(player, name)
+  end
+  return nil
+   
+  elseif matchingPlayers == 0 then
+  rust.SendChatMessage(player, &quot;No matching player has been found&quot;)
+  return nil
+  end
+endfunction PLUGIN:UpdateTitles()
+  for test, group in pairs(self.Config) do
+  rust.BroadcastChat(tostring(test) .. &quot; | &quot; .. group.Permission .. &quot; : &quot; .. group.Playtime)
+  end
+endfunction PLUGIN:LoadDataFiles()
+  self.dataTable = datafile.GetDataTable(&quot;PlayTime&quot;) or {}
+endfunction PLUGIN:SaveDataFiles()
+  datafile.SaveDataTable(&quot;PlayTime&quot;)
+end
+</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1446421091][/DOUBLEPOST]Now what I need to do is implement a way so that my plugin can read the data of the plugin PlayTime and to apply the permission.<br />
+                        [DOUBLEPOST=1446428081,1446420539][/DOUBLEPOST]<a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> what type of code would I need to
+                        use in order to grab the data from Playtime and implement into my plugin so when players have a playtime of over 20m they get [Noob] or well the permission color_noob.<br />
+                        [DOUBLEPOST=1446533845][/DOUBLEPOST]I&#039;ve been trying to try and get the data from the plugin PlayTime in order to implement it into my plugin, but I&#039;m not sure what
+                        the code is for lua. I&#039;ve tried declaring the variable, but it keeps saying Playtime as a nil value.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+PLUGIN.Title = &quot;PlayerTitles&quot;
+PLUGIN.Version = V(1, 0, 0)
+PLUGIN.Description = &quot;Titles that players receive based on the number of hours they have&quot;
+PLUGIN.Author = &quot;Ankawi&quot;function PLUGIN:Init()
+  self.PlayTime = plugins.Find(&quot;PlayTime&quot;)
+  self.BetterChat = plugins.Find(&quot;BetterChat&quot;)
+   
+  self:LoadDataFiles()
+   
+  self:UpdateTitles()
+   
+  self.updateTimer = timer.Repeat(60, 0, function()
+  self:UpdateTitles()
+  end)
+endfunction PLUGIN:Unloaded()
+  self.updateTimer.Destroy()
+endfunction PLUGIN:LoadDefaultConfig()
+  self.Config = self.Config or {}
+   
+  self.Config.Noob = self.Config.Noob or {}
+  self.Config.Noob.Permission = self.Config.Noob.Permission or &quot;color_noob&quot;
+  self.Config.Noob.Playtime = self.Config.Noob.Playtime or 20
+   
+  self.Config.Casual = self.Config.Casual or {}
+  self.Config.Casual.Permission = self.Config.Casual.Permission or &quot;color_casual&quot;
+  self.Config.Casual.Playtime = self.Config.Casual.Playtime or 40
+   
+  self.Config.Regular = self.Config.Regular or {}
+  self.Config.Regular.Permission = self.Config.Regular.Permission or &quot;color_regular&quot;
+  self.Config.Regular.Playtime = self.Config.Regular.Playtime or 60
+   
+   self.Config.Pro = self.Config.Pro or {}
+   self.Config.Pro.Permission = self.Config.Pro.Permission or &quot;color_pro&quot;
+   self.Config.Pro.Playtime = self.Config.Pro.Playtime or 100
+   
+   self.Config.Messages = self.Config.Messages or {}
+   self.Config.Messages.NoobRankUp = self.Config.Messages.NoobRankUp or &quot;You ranked up to [Noob]&quot;
+   self.Config.Messages.CasualRankUp = self.Config.Messages.CasualRankUp or &quot;You ranked up to [Casual]&quot;
+   self.Config.Messages.RegularRankUp = self.Config.Messages.RegularRankUp or &quot;You ranked up to [Regular]&quot;
+   self.Config.Messages.ProRankUp = self.Config.Messages.ProRankUp or &quot;You have been ranked up to [Pro]&quot;
+   
+  self:SaveConfig()
+endfunction FindPlayer(searchedName, player)
+  local players = global.BasePlayer.activePlayerList:GetEnumerator()
+  local matchingPlayers = {}
+   
+  while players:MoveNext() do
+  if string.match(string.lower(players.Current), string.lower(searchedName)) then
+  table.insert(matchingPlayers, players.Current)
+  end
+  end
+   
+  if matchingPlayers.Length == 1 then
+  return matchingPlayers[0]
+   
+  elseif matchingPlayers.Length &gt; 1 then
+  rust.SendChatMessage(player, &quot;Multiple matching players have been found:&quot;)
+   
+  for _, name in pairs(matchingPlayers) do
+  rust.SendChatMessage(player, name)
+  end
+  return nil
+   
+  elseif matchingPlayers == 0 then
+  rust.SendChatMessage(player, &quot;No matching player has been found&quot;)
+  return nil
+  end
+endfunction PLUGIN:UpdateTitles()
+  for test, group in pairs(self.Config) do
+  rust.BroadcastChat(tostring(test) .. &quot; | &quot; .. group.Permission .. &quot; : &quot; .. group.Playtime)
+   end
+   
+   if hoursPlayed &gt;= 20 then
+     GrantUserPermission(userid, &quot;color_noob&quot;)
+   
+   elseif hoursPlayed &gt;= 40 then
+     GrantUserPermission(userid, &quot;color_casual&quot;)
+   
+   elseif hoursPlayed &gt;= 60 then
+     GrantUserPermission(userid, &quot;color_regular&quot;)
+     
+   elseif hoursPlayed &gt;= 100 then
+     GrantUserPermission(userid, &quot;color_pro&quot;)
+     return
+   end
+endfunction PLUGIN:LoadDataFiles()
+  self.dataTable = datafile.GetDataTable(&quot;PlayerTitles&quot;)
+endfunction PLUGIN:SaveDataFiles()
+  datafile.SaveDataTable(&quot;PlayerTitles&quot;)
+end
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ankawi</a>,</span>
+                        <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140274' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2015 at 6:57 AM">Nov 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140274' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/140274/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-140705" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> As I mentioned to you on Steam, you can&#039;t really call a random variable, only hooks. Since the PlayTime
+                        plugin doesn&#039;t actually return anything in any of its hooks for you to use, there&#039;s no way to get what you want from it directly. The only way you can get the data
+                        would be to read the .json file for it directly (not recommended), or request some &quot;API&quot; methods be added to return the data you&#039;d like. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140705' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 3, 2015 at 9:56 PM">Nov 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/in-need-of-help-with-my-plugin.12538/#post-140705' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/140705/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

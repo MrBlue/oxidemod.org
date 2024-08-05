@@ -1,0 +1,162 @@
+---
+layout: forums
+title: 'Solved - Foreach loop stuck by player.inventory.GiveItem()'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/' | prepend: site.baseurl }}">Foreach loop stuck by
+            player.inventory.GiveItem()</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Pant0uflard</a>, <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 6, 2016 at 9:20 AM">Jul 6, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-222959" class="message" data-author="Pant0uflard">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pant0uflard" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pant0uflard</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi !<br />
+                        <br /> I&#039;ve got some troubles by using a foreach loop and the player.inventory.GiveItem() function. <br />
+                        <br /> Here&#039;s my foreach loop :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach (Item item in loot.inventory.itemList)
+                    {
+                        SendReply(player, &quot;next item : &quot;);
+                        player.inventory.GiveItem(item);                        SendReply(player, item.info.displayName.english);
+                    }</pre>{% endraw %}
+                        </div>&quot;Loot&quot; is a storageContainer.<br />
+                        <br /> The purpose of this loop is to give back all items to player before the box that contains them is destroyed.<br />
+                        <br /> I don&#039;t understand why but each time this loop is called she&#039;s stuck right after the first item.<br />
+                        <br /> I.E : I put an Assault Rifle and a Water Bottle in the box, I click on the button to destroy the box, the result in the chat will be :<br />
+                        <br /> next item :<br /> Assault Rifle <br />
+                        <br /> And that&#039;s all, no water bottle and the code I got after this loop isn&#039;t read too.<br />
+                        <br /> I got others loop like this one but whitout the player.inventory.GiveItem() function and they work well btw.<br />
+                        <br />
+                        <br /> Do you know what could be the root of this issue ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pant0uflard</a>,</span>
+                        <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 6, 2016 at 9:20 AM">Jul 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222959/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222964" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It&#039;s most likely because the list is being modifying while it&#039;s looping. (The item is being removed
+                        from the container and put in another) Try either:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach (Item item in loot.inventory.itemList.ToArray())
+</pre>{% endraw %}
+                        </div>Or:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+for (int i = 0; i &lt; loot.inventory.itemList.Count; i++)
+{
+var item = loot.inventory.itemList[i];
+}
+</pre>{% endraw %}
+                        </div>I&#039;d recommend the latter, since it&#039;s probably faster, but both should work. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/#post-222964' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 6, 2016 at 9:31 AM">Jul 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/#post-222964' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222964/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222978" class="message" data-author="Pant0uflard">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pant0uflard" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pant0uflard</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Should have think about the modified list, it&#039;s obvious now ...<br />
+                        <br /> Well, the first one work perfectly but the second one still give me the same issue so I&#039;ll keep the first one ^^<br />
+                        <br /> Thanks a lot ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pant0uflard</a>,</span>
+                        <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/#post-222978' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 6, 2016 at 9:58 AM">Jul 6, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/foreach-loop-stuck-by-player-inventory-giveitem.19232/#post-222978' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222978/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

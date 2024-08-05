@@ -1,0 +1,271 @@
+---
+layout: forums
+title: 'Not an Issue - CSharp plugin fails to reload if make error in constructor class'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixBlue">Not an Issue</span> <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/' | prepend: site.baseurl }}">CSharp plugin
+            fails to reload if make error in constructor class</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">AlexALX_[rus-ua]</a>, <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="May 7, 2015 at 6:29 AM">May 7, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-86286" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">So like title says - if accidentally create error in constructor class then plugin fail to load (its ok), but
+                        after that you can&#039;t reload/unload this plugin anymore until restart server. Its sometimes annoying. I know you said &quot;constructor class shouldn&#039;t be used in
+                        plugin&quot;, but for basic stuff it still can be used, and if error happens - you can&#039;t reload it anymore.<br />
+                        <br /> Heres example, you need first load it in normal way, and after it sucessfully loaded uncomment line what create error - only in this case you will get this
+                        problem.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;namespace Oxide.Plugins
+{
+  [Info(&quot;Test C#&quot;, &quot;AlexALX&quot;, &quot;0.0.1&quot;)]
+  public class Test : RustPlugin
+  {
+     private Dictionary&lt;int,string&gt; dict = new Dictionary&lt;int,string&gt;();
+   
+  public Test()
+  {
+  //Puts(&quot;Class init: &quot;+dict[0]); // just simple way to get error, error can be just anything
+  }
+   
+  void Loaded()
+  {
+  Puts(&quot;Init hook.&quot;);
+  }   
+  }
+   
+}
+</pre>{% endraw %}
+                        </div>Here log:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 8:32 AM [Info] Test was compiled successfully in 164ms
+[Oxide] 8:32 AM [Info] Loaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 8:32 AM [Info] Init hook.
+[Oxide] 8:32 AM [Info] Test was compiled successfully in 131ms
+[Oxide] 8:32 AM [Info] Unloaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 8:32 AM [Error] Unable to load Test. System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+  at System.Collections.Generic.Dictionary`2[System.Int32,System.String].get_Item (Int32 key) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Test..ctor () [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper managed-to-native) System.Reflection.MonoCMethod:InternalInvoke (object,object[],System.Exception&amp;)
+  at System.Reflection.MonoCMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 8:32 AM [Info] Rolling back plugin to last good version: Test
+[Oxide] 8:32 AM [Info] Loaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 8:32 AM [Info] Init hook.
+[Oxide] 8:32 AM [Info] Test was compiled successfully in 161ms
+[Oxide] 8:32 AM [Info] Unloaded plugin Test C# v0.0.1 by AlexALX
+[Oxide] 8:32 AM [Debug] Plugin is already being loaded: Test
+&gt; oxide.reload Test
+[Oxide] 8:32 AM [Debug] Reload requested for plugin which is already reloading: Test</pre>{% endraw %}
+                        </div>Also will say that this happens only after latest changes with csharp compiling etc, because when i working with old oxide (because had problems on linux) even if there
+                        was error plugin still can be reloaded after. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 7, 2015 at 6:29 AM">May 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/86286/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-86287" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">To quote <a href="https://oxidemod.org/members/15663/" class="username" data-user="15663, @bawNg">@bawNg</a>
+                        :<br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="bawNg">
+                            <aside>
+                                <div class="attribution type">bawNg said: <a href="#post-85231" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Constructors should not be used by plugins at all. You can use the Loaded hook instead.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86287' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 7, 2015 at 6:33 AM">May 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86287' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/86287/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-86288" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">As i already said yes i know, but isn&#039;t it actually bug now because its break plugin loading? If i&#039;m (or
+                        someone else) using it for some reason, it still shouldn&#039;t break reloading at all. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86288' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 7, 2015 at 6:35 AM">May 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86288' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/86288/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-86289" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="AlexALX_[rus-ua]">
+                            <aside>
+                                <div class="attribution type">AlexALX_[rus-ua] said: <a href="#post-86288" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">As i already said yes i know, but isn&#039;t it actually bug now because its break plugin loading? If i&#039;m (or someone else) using it for
+                                        some reason, it still shouldn&#039;t break loading at all.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You shouldn&#039;t even be using it for that to be honest because the constructor runs before the core is able to load the plugins. The Loaded() &quot;hook&quot; was
+                        added to do that, you could also use Init() to run code as soon as the plugin is loaded. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86289' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 7, 2015 at 6:39 AM">May 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86289' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/86289/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-86291" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Isn&#039;t there can be added simple catch in code where is plugin loader trying to create plugin class and if it
+                        was errored just stop load and don&#039;t break reloading? It shouldn&#039;t be too hard to fix it actually, i don&#039;t see any reason why this can&#039;t be fixed at all,
+                        even if it &quot;shouldn&#039;t used&quot;. Just like you don&#039;t understand why i&#039;m using it at all, i don&#039;t understand why not fix it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86291' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="May 7, 2015 at 6:43 AM">May 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-plugin-fails-to-reload-if-make-error-in-constructor-class.8252/#post-86291' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/86291/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

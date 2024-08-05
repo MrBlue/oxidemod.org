@@ -1,0 +1,276 @@
+---
+layout: forums
+title: 'Timer.repeat just dont understand'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/' | prepend: site.baseurl }}">Timer.repeat just dont understand</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Toaster</a>, <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 23, 2015 at 12:30 PM">Oct 23,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-138253" class="message" data-author="Toaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Toaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Toaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i know pain has something like this but this must be just for radiation so its diff purpose for me<br />
+                        <br /> im getting somewhere im just stuck on the timer command keeps giving all sorts of diff errors<br />
+                        <br /> i know its not good or the best but i like the idea<br /> id like to add a config file that alows to change the rotation times but i cant get this working<br /> u may
+                        luagh cause im sure youd find this a funny crap piece of work but i realy want to make it work<br />
+                        <br /> im no dev but im trying to learn<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;
+namespace Oxide.Plugins
+{
+[Info(&quot;RadiationRotation&quot;, &quot;Toaster&quot;, 0.1, ResourceId = xxx)]
+[Description(&quot;Rotate Radiation 0/1 every (x) seconds.&quot;)]
+class RadiationRotation : RustPlugin{
+timer.Repeat(10, 0,radiation 1() =&gt; PrintToChat(&quot;radiation on!&quot;));
+private void SaveCommand(ConsoleSystem.Arg arg)
+{
+{
+timer.Repeat(10, 0,radiation 0() =&gt; PrintToChat(&quot;radiation off!&quot;));
+private void SaveCommand(ConsoleSystem.Arg arg)
+{}
+}
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Oct 23, 2015 at 3:48 PM">Oct 23, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Toaster</a>,</span>
+                        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 23, 2015 at 12:30 PM">Oct 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/138253/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-138298" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> There may be a way to do this with less code, but as a working example... filename RadRotate.cs:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;RadRotate&quot;, &quot;Toaster&quot;, 0.1, ResourceId = 0)]
+    [Description(&quot;Toggle radiation every (x) seconds.&quot;)]
+    class RadRotate : RustPlugin
+    {
+        void OnServerInitialized()
+        {
+            var radiation = true;
+            timer.Repeat(10, 0, () =&gt;
+            {
+                if (!radiation)
+                {
+                    radiation = true;
+                    ConsoleSystem.Run.Server.Normal(&quot;server.radiation&quot;, radiation.ToString());
+                    PrintToChat(&quot;Radiation is on!&quot;);
+                    Puts(&quot;Radiation is on!&quot;);
+                    return;
+                }
+                if (radiation)
+                {
+                    radiation = false;
+                    ConsoleSystem.Run.Server.Normal(&quot;server.radiation&quot;, radiation.ToString());
+                    PrintToChat(&quot;Radiation is off!&quot;);
+                    Puts(&quot;Radiation is off!&quot;);
+                    return;
+                }
+            });
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited: <span class="DateTime" title="Oct 23, 2015 at 4:56 PM">Oct 23, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138298' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 23, 2015 at 4:33 PM">Oct 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138298' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/138298/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-138330" class="message" data-author="Toaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Toaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Toaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> thank you so much for the reply i have a question though im slowly learning about all these c# things so i too
+                        can create plugins<br />
+                        <br /> which value changes the timer<br />
+                        <br /> and can i put this on oxide plugins when ive got it working so anyone can use it <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Toaster</a>,</span>
+                        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138330' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 23, 2015 at 5:56 PM">Oct 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138330' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/138330/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-138335" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Toaster">
+                            <aside>
+                                <div class="attribution type">Toaster said: <a href="#post-138330" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">thank you so much for the reply i have a question though im slowly learning about all these c# things so i too can create plugins<br />
+                                        <br /> which value changes the timer<br />
+                                        <br /> and can i put this on oxide plugins when ive got it working so anyone can use it</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The &#039;10&#039; is the timer amount in seconds, the &#039;0&#039; is the number of repeats (infinite is 0.)<br />
+                        <br /> I&#039;d recommend getting a bit more familiar with it before releasing a plugin so that you&#039;re able to maintain it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138335' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 23, 2015 at 6:01 PM">Oct 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138335' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/138335/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-138336" class="message" data-author="Toaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Toaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Toaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> wil do il test it and play with it until i can understand every part of it i just dont know where to get
+                        information i need really only place i found was the api for rust and that is still little confusing to me but il learn as much as i can might just take a while <br />
+                        <br /> once again thank you so much this does make things easier my father in law knows c# so il have him explain more for me step by step <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Toaster</a>,</span>
+                        <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138336' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 23, 2015 at 6:06 PM">Oct 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/timer-repeat-just-dont-understand.12393/#post-138336' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/138336/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

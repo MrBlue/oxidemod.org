@@ -1,0 +1,278 @@
+---
+layout: forums
+title: 'New Countdown and InputField CUI components'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/' | prepend: site.baseurl }}">New Countdown and InputField CUI components</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">miRror</a>, <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 15, 2017 at 12:34 AM">Apr 15,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-315174" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>/*
+* Basic example to use CountDown and InputField
+*
+* Countdown: /ui.countdown
+* InputField: /ui.inputfield
+*
+*/using Oxide.Game.Rust.Cui;namespace Oxide.Plugins
+{
+    [Info(&quot;CommunityUI&quot;, &quot;miRror&quot;, &quot;1.0.0&quot;)]    public class CommunityUI : RustPlugin
+    {
+        private string uiCountDown = @&quot;
+        [{
+            &quot;&quot;name&quot;&quot;: &quot;&quot;uiCountDown&quot;&quot;,
+            &quot;&quot;components&quot;&quot;:
+            [
+                {
+                    &quot;&quot;type&quot;&quot;: &quot;&quot;CountDown&quot;&quot;,
+                    &quot;&quot;align&quot;&quot;: &quot;&quot;MiddleCenter&quot;&quot;,                
+                    &quot;&quot;wrapperText&quot;&quot;: &quot;&quot;Left %TIME_LEFT% seconds&quot;&quot;,
+                    &quot;&quot;timeLeft&quot;&quot;: &quot;&quot;10&quot;&quot;,                
+                    &quot;&quot;fontSize&quot;&quot;: &quot;&quot;30&quot;&quot;,
+                    &quot;&quot;font&quot;&quot;: &quot;&quot;RobotoCondensed-Bold.ttf&quot;&quot;,                
+                    &quot;&quot;color&quot;&quot;: &quot;&quot;0 0.7 0.5 1&quot;&quot;,
+                    &quot;&quot;command&quot;&quot;: &quot;&quot;cui.test&quot;&quot;
+                },
+                {
+                    &quot;&quot;type&quot;&quot;:&quot;&quot;RectTransform&quot;&quot;,
+                    &quot;&quot;anchormin&quot;&quot;: &quot;&quot;0 0&quot;&quot;,
+                    &quot;&quot;anchormax&quot;&quot;: &quot;&quot;1 1&quot;&quot;
+                }
+            ]
+        }]&quot;;        private string uiInputField = @&quot;
+        [{
+            &quot;&quot;name&quot;&quot;: &quot;&quot;uiInputField&quot;&quot;,
+            &quot;&quot;parent&quot;&quot;: &quot;&quot;Overlay&quot;&quot;,
+            &quot;&quot;components&quot;&quot;:
+            [
+                {
+                     &quot;&quot;type&quot;&quot;: &quot;&quot;UnityEngine.UI.Image&quot;&quot;,
+                     &quot;&quot;material&quot;&quot;: &quot;&quot;assets/icons/greyout.mat&quot;&quot;,
+                     &quot;&quot;color&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.97&quot;&quot;,
+                },
+                {
+                    &quot;&quot;type&quot;&quot;: &quot;&quot;RectTransform&quot;&quot;,
+                    &quot;&quot;anchormin&quot;&quot;: &quot;&quot;0.4 0.45&quot;&quot;,
+                    &quot;&quot;anchormax&quot;&quot;: &quot;&quot;0.6 0.55&quot;&quot;
+                },
+                {
+                    &quot;&quot;type&quot;&quot;: &quot;&quot;NeedsCursor&quot;&quot;
+                }
+            ]
+        },    
+        {
+            &quot;&quot;parent&quot;&quot;: &quot;&quot;uiInputField&quot;&quot;,
+            &quot;&quot;components&quot;&quot;:
+            [
+                {
+                    &quot;&quot;type&quot;&quot;:&quot;&quot;UnityEngine.UI.Text&quot;&quot;,
+                    &quot;&quot;text&quot;&quot;:&quot;&quot;Enter message...&quot;&quot;,
+                    &quot;&quot;fontSize&quot;&quot;: 30,
+                    &quot;&quot;align&quot;&quot;: &quot;&quot;MiddleCenter&quot;&quot;,
+                },        
+                {
+                    &quot;&quot;type&quot;&quot;: &quot;&quot;InputField&quot;&quot;,
+                    &quot;&quot;command&quot;&quot;: &quot;&quot;yourcommand &quot;&quot;,
+                },
+                {
+                    &quot;&quot;type&quot;&quot;:&quot;&quot;RectTransform&quot;&quot;,
+                    &quot;&quot;anchormin&quot;&quot;: &quot;&quot;0 0&quot;&quot;,
+                    &quot;&quot;anchormax&quot;&quot;: &quot;&quot;1 1&quot;&quot;
+                }
+            ]
+        }]&quot;;
+    
+    
+        private void Unload()
+        {
+            foreach(BasePlayer player in BasePlayer.activePlayerList)
+            {
+                CuiHelper.DestroyUi(player, &quot;uiCountDown&quot;);
+                CuiHelper.DestroyUi(player, &quot;uiInputField&quot;);
+            }                
+        }
+    
+        [ChatCommand(&quot;ui.countdown&quot;)]
+        private void cmdChatCountdown(BasePlayer player, string command, string[] args)
+        {
+            CuiHelper.DestroyUi(player, &quot;uiCountDown&quot;);
+            CuiHelper.AddUi(player, uiCountDown);
+        }        [ChatCommand(&quot;ui.inputfield&quot;)]
+        private void cmdChatInputField(BasePlayer player, string command, string[] args)
+        {
+            CuiHelper.DestroyUi(player, &quot;uiInputField&quot;);
+            CuiHelper.AddUi(player, uiInputField);
+        }    
+    }
+}</pre>{% endraw %}
+                        </div>But InputField does not worked. Who made a mistake? Component developer or i in my plugin.<br />
+                        <br /> See more: <a href="https://github.com/Facepunch/rust-community" target="_blank" class="externalLink  rel=" nofollow">GitHub - Facepunch/rust-community: Community Entity
+                            to fill Server Side modder requests</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 15, 2017 at 1:43 AM">Apr 15, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 15, 2017 at 12:34 AM">Apr 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/315174/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-315177" class="message" data-author="mTrX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mTrX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mTrX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Awesome! Oh sorry didn&#039;t see they do not work. Gonna try it out. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mTrX</a>,</span>
+                        <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315177' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 15, 2017 at 12:41 AM">Apr 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315177' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/315177/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-315229" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> That PR was pretty old, so would be surprised if it worked 100%. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315229' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 15, 2017 at 1:27 AM">Apr 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315229' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/315229/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-315250" class="message" data-author="miRror">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="miRror" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">miRror</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-315229" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That PR was pretty old, so would be surprised if it worked 100%.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It seems that its just not finished<br />
+                        <a href="http://dl3.joxi.net/drive/2017/04/15/0003/0441/229817/17/81ce910fbe.png" target="_blank" class="externalLink  rel="
+                            nofollow">http://dl3.joxi.net/drive/2017/04/15/0003/0441/229817/17/81ce910fbe.png</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">miRror</a>,</span>
+                        <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315250' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 15, 2017 at 1:41 AM">Apr 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-countdown-and-inputfield-cui-components.24961/#post-315250' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/315250/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

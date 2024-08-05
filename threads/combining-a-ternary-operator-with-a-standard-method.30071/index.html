@@ -1,0 +1,168 @@
+---
+layout: forums
+title: 'Solved - Combining a ternary operator with a standard method?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/' | prepend: site.baseurl }}">Combining a ternary operator with a
+            standard method?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Sepshun</a>, <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 4, 2018 at 6:10 AM">Apr 4, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-393864" class="message" data-author="Sepshun">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sepshun" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sepshun</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Bear with me, I know I&#039;m doing something exceptionally wrong. So I&#039;m trying to alter the <a
+                            href="http://oxidemod.org/plugins/nogivenotices.2336/" class="internalLink">NoGiveNotices</a> plugin, I use this to avoid that one guy screaming &quot;ADMIN
+                        ABUSE!!!11!11!&quot; when I spawn in 5k wood to build a community structure, but I&#039;d also like to output into a log file what the player spawned in, as my moderators have
+                        access to this and I&#039;d like to be able to check a log file and occasionally make sure they&#039;re not abusing it.<br />
+                        <br /> I have experience in programming, but not C# or Oxide at all, so I&#039;ve got two methods here, the original and mine that logs it to a file. Problem is it&#039;s
+                        polluting the namespace and the one to log it doesn&#039;t seem to run. Is there any way I could combine these two and still get the desired results?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Block Message
+class NoGiveNotices : RustPlugin
+{
+    object OnServerMessage(string m, string n) =&gt; m.Contains(&quot;gave&quot;) &amp;&amp; n == &quot;SERVER&quot; ? (object)true : null;
+}
+    
+    
+// Log
+class LogGiveNotices : RustPlugin
+{
+     object OnServerMessage(string m, string n) {
+        if (m.Contains(&quot;gave&quot;) &amp;&amp; n == &quot;SERVER&quot;) {
+            LogToFile(&quot;gives&quot;, $&quot;[{System.DateTime.Now}]&quot; + m, this);
+        }
+        return null;
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sepshun</a>,</span>
+                        <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 4, 2018 at 6:10 AM">Apr 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/393864/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-393865" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">There&#039;s no need to have multiple classes like that, just combine it under a single class using the existing
+                        hook.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class NoGiveNotices : RustPlugin
+{
+     object OnServerMessage(string message, string name)
+    {
+        if (message.Contains(&quot;gave&quot;) &amp;&amp; name == &quot;SERVER&quot;)
+        {
+            LogToFile(&quot;gives&quot;, $&quot;[{System.DateTime.Now}]&quot; + message, this);
+            return true;
+        }        return null;
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/#post-393865' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 4, 2018 at 6:12 AM">Apr 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/#post-393865' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/393865/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-393867" class="message" data-author="Sepshun">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sepshun" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sepshun</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">It works! Thanks so much! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sepshun</a>,</span>
+                        <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/#post-393867' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 4, 2018 at 6:29 AM">Apr 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/combining-a-ternary-operator-with-a-standard-method.30071/#post-393867' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/393867/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

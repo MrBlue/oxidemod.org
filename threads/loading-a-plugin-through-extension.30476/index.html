@@ -1,0 +1,288 @@
+---
+layout: forums
+title: 'Solved - Loading a plugin through extension'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/loading-a-plugin-through-extension.30476/' | prepend: site.baseurl }}">Loading a plugin through extension</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">pinkstink</a>, <a href="{{ '/threads/loading-a-plugin-through-extension.30476/' | prepend: site.baseurl }}"><span class="DateTime" title="May 4, 2018 at 7:09 AM">May 4,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-398997" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi All,<br />
+                        <br /> I&#039;m trying to load a plugin through an extension, I have gotten it to work in many different ways but I&#039;m currently running into a warning error being spat
+                        out;<br />
+                        <br /> Unable to call hook directly: OnPluginLoaded(Oxide.Core.Plugins.Plugin)<br />
+                        <br /> This will happen for every hook.<br /> The message originates in Oxide.CSharp.dll: Oxide.Plugins.CSharpPlugin when DirectCallHook returns false within method
+                        InvokeMethod.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public virtual bool DirectCallHook(string name, out object ret, object[] args)
+        {
+            ret = null;
+            return false;
+        }</pre>{% endraw %}
+                        </div>This method is not overridden anywhere throughout it&#039;s inheritance. <br />
+                        <br /> I did notice that in the CompiledAssembly Class(Same Namespace) there is a method called PatchAssembly, this method contains, during it&#039;s iteration over
+                        TypeDefinitions<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>DirectCallMethod directCallMethod = new DirectCallMethod(assemblyDefinition.MainModule, typeDefinition);</pre>{% endraw %}
+                        </div>The constructor of DirectCallMethod is seemingly responsible for either Overriding the DirectCallHook function but the further I follow this rabbit hole the further
+                        I&#039;m struggling to believe the complexity required to simple load a plugin that&#039;s defined within my assembly.<br />
+                        <br /> On a side note, all I want to do is access the oxide hooks that are provided within the plugin, so if there&#039;s an easier way to do that, no worries.<br />
+                        <br /> I really want to avoid having a Plugin that references my extension as a library and would like to just drop a single assembly into a rust server and have it work.<br />
+                        <br /> I have attempted to replicate other examples of my desired implementation but still unable to figure out this error.<br />
+                        <br /> Any help will be appreciated, thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:09 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/398997/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398998" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you are trying to have a plugin inside of the extension, look at every part of Oxide, it is all extensions
+                        with a plugin inside. You can find the source on or GitHub with around 20 or so examples. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-398998' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:10 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-398998' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398998/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398999" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-398998" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Why are you trying to load another plugin from an extension?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Simply to access the hooks provided to plugins.<br />
+                        <br /> Is there an alternative way to access these through an extension? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-398999' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:12 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-398999' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398999/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-399000" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="pinkstink">
+                            <aside>
+                                <div class="attribution type">pinkstink said: <a href="#post-398999" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Simply to access the hooks provided to plugins.<br />
+                                        <br /> Is there an alternative way to access these through an extension?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Please see my updated post. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399000' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:12 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399000' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/399000/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-399001" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you, Will do. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399001' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:13 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399001' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/399001/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-399013" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-399000" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Please see my updated post.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Got it working, used the Rust extension as a template.<br />
+                        <br /> Thanks again! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399013' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 7:50 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/loading-a-plugin-through-extension.30476/#post-399013' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/399013/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

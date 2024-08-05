@@ -1,0 +1,195 @@
+---
+layout: forums
+title: 'Error after reloading plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/error-after-reloading-plugin.11419/' | prepend: site.baseurl }}">Error after reloading plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Norn</a>, <a href="{{ '/threads/error-after-reloading-plugin.11419/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 29, 2015 at 8:22 AM">Aug 29, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-124488" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve recently been trying to code plugins in c sharp instead of lua.<br />
+                        <br /> I can create a data file that looks as such:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+{
+  &quot;WMDatabase&quot;: {
+    &quot;76561198078138369&quot;: {
+      &quot;UserId&quot;: &quot;76561198078138369&quot;,
+      &quot;Name&quot;: &quot;Norn&quot;,
+      &quot;Money&quot;: 1050,
+      &quot;Balance&quot;: 100,
+      &quot;Created&quot;: 1440820861,
+      &quot;LastSeen&quot;: 1440820886
+    }
+  },
+  &quot;WMBanks&quot;: {
+    &quot;1467328013&quot;: {
+      &quot;bankID&quot;: 1467328013,
+      &quot;X&quot;: 1279.59985,
+      &quot;Y&quot;: 16.0658646,
+      &quot;Z&quot;: 795.136536
+    }
+  }
+}
+</pre>{% endraw %}
+                        </div>which works perfectly fine when created dynamically and stored ingame but when I reload the plugin and try to load the data again it throws this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[Oxide] 5:01 AM [Error] Failed to call hook 'OnServerInitialized' on plugin 'WorldManager v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+[Oxide] 5:01 AM [Debug]   at System.UInt64.ToString () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.WorldManager+PlayerInfo..ctor (.BasePlayer player) [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper dynamic-method) Oxide.Plugins.WorldManager/PlayerInfo:Void .ctor(BasePlayer) (object[])
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateObjectUsingCreatorWithParameters (Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonObjectContract contract, Newtonsoft.Json.Serialization.JsonProperty containerProperty, Newtonsoft.Json.Serialization.ObjectConstructor`1 creator, System.String id) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateNewObject (Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonObjectContract objectContract, Newtonsoft.Json.Serialization.JsonProperty containerMember, Newtonsoft.Json.Serialization.JsonProperty containerProperty, System.String id, System.Boolean&amp; createdFromNonDefaultCreator) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateObject (Newtonsoft.Json.JsonReader reader, System.Type objectType, Newtonsoft.Json.Serialization.JsonContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerMember, System.Object existingValue) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateValueInternal (Newtonsoft.Json.JsonReader reader, System.Type objectType, Newtonsoft.Json.Serialization.JsonContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerMember, System.Object existingValue) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.PopulateDictionary (IDictionary dictionary, Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonDictionaryContract contract, Newtonsoft.Json.Serialization.JsonProperty containerProperty, System.String id) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>All I have is:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        private void OnServerInitialized()
+        {
+            LoadData();
+        }
+        private void LoadData()
+        {
+            //DataFile = Interface.GetMod().DataFileSystem.GetDatafile(file);
+            //var playerConfig = ReadFromData&lt;Dictionary&lt;ulong, PlayerInfo&gt;&gt;(&quot;WMDatabase&quot;) ?? new Dictionary&lt;ulong, PlayerInfo&gt;();
+            //var bankConfig = ReadFromData&lt;Dictionary&lt;int, BankInfo&gt;&gt;(&quot;WMBanks&quot;) ?? new Dictionary&lt;int, BankInfo&gt;();
+            storedData = Interface.GetMod().DataFileSystem.ReadObject&lt;StoredData&gt;(file);
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 29, 2015 at 7:32 PM">Aug 29, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/error-after-reloading-plugin.11419/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 29, 2015 at 8:22 AM">Aug 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-after-reloading-plugin.11419/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/124488/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-124540" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Add an empty constructor to both BankInfo and PlayerInfo <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/error-after-reloading-plugin.11419/#post-124540' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 29, 2015 at 1:54 PM">Aug 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-after-reloading-plugin.11419/#post-124540' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/124540/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-124591" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-124540" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Add an empty constructor to both BankInfo and PlayerInfo</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Then when creating new PlayerInfo I must create another function that sets the data instead? I shall give it a go <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br /> [DOUBLEPOST=1440873133][/DOUBLEPOST]Solved, thanks Mughisi for the solution. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/error-after-reloading-plugin.11419/#post-124591' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 29, 2015 at 6:29 PM">Aug 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/error-after-reloading-plugin.11419/#post-124591' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/124591/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

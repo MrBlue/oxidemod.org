@@ -1,0 +1,250 @@
+---
+layout: forums
+title: 'MStats error: (.Planner planner, UnityEngine.GameObject component)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/' | prepend: site.baseurl }}">MStats error: (.Planner planner, UnityEngine.GameObject component)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Tunnleram</a>, <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Aug 5, 2017 at 2:40 AM">Aug 5, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-342581" class="message" data-author="Tunnleram">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tunnleram" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tunnleram</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m getting this error with my stats plugin:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(21:35:13) | at Oxide.Plugins.MStats.OnEntityBuilt (.Planner planner, UnityEngine.GameObject component) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.MStats.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>It appears to be related to:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityBuilt(Planner planner, GameObject component) {
+            Vector3 pos = planner.GetOwnerPlayer().GetEstimatedWorldPosition();
+            string name = component.ToBaseEntity().ShortPrefabName;
+            if(component.ToBaseEntity() is BuildingBlock) {
+                name = ((BuildingBlock)component.ToBaseEntity()).blockDefinition.info.name.english;
+            }
+            executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (@0,@1,@2,@3,@4,@5)&quot;, planner.GetOwnerPlayer().userID, name, pos.x, pos.y, pos.z, getDateTime());
+        }</pre>{% endraw %}
+                        </div>Can anyone guide me towards what the issue might be? Was the object&#039;s name changed or something?<br />
+                        <br /> Thanks in advance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 5, 2017 at 3:02 AM">Aug 5, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tunnleram</a>,</span>
+                        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 5, 2017 at 2:40 AM">Aug 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/342581/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-342585" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You are assuming that a BasePlayer (GetOwnerPlayer()) will always exist for one, which may not always be the
+                        case, so adding some null checking would be wise. ToBaseEntity() may also potentially be null as well, but you can test and see with some debugging and null checking. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342585' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 5, 2017 at 3:03 AM">Aug 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342585' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/342585/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-342587" class="message" data-author="Tunnleram">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tunnleram" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tunnleram</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The mod author abandoned this MStats mod so I just tweak it. Oh, and I don&#039;t know C, but I try <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Would it be something like this for handling the first part? I&#039;m not sure if I have the syntax right, but I get the general idea.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityBuilt(Planner planner, GameObject component) {
+            if (!BasePlayer(GetOwnerPlayer()) == null)
+            {
+            Vector3 pos = planner.GetOwnerPlayer().GetEstimatedWorldPosition();
+            string name = component.ToBaseEntity().ShortPrefabName;
+            }
+            if(component.ToBaseEntity() is BuildingBlock) {
+                name = ((BuildingBlock)component.ToBaseEntity()).blockDefinition.info.name.english;
+            executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (@0,@1,@2,@3,@4,@5)&quot;, planner.GetOwnerPlayer().userID, name, pos.x, pos.y, pos.z, getDateTime());
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tunnleram</a>,</span>
+                        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342587' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 5, 2017 at 3:13 AM">Aug 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342587' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/342587/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-342591" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnEntityBuilt(Planner planner, GameObject component)
+{
+    var player = planner.GetOwnerPlayer();
+    var buildingBlock = component.ToBaseEntity() as BuildingBlock;    if (player != null &amp;&amp; buildingBlock != null)
+    {
+        var pos = player.GetEstimatedWorldPosition();
+        var name = buildingBlock.blockDefinition.info.name.english;
+        executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (@0,@1,@2,@3,@4,@5)&quot;, player.userID, name, pos.x, pos.y, pos.z, getDateTime());
+    }
+ }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342591' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 5, 2017 at 3:24 AM">Aug 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342591' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/342591/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-342592" class="message" data-author="Tunnleram">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tunnleram" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tunnleram</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you very much. I will digest this. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tunnleram</a>,</span>
+                        <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342592' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 5, 2017 at 3:41 AM">Aug 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mstats-error-planner-planner-unityengine-gameobject-component.26670/#post-342592' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/342592/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

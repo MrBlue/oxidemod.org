@@ -1,0 +1,382 @@
+---
+layout: forums
+title: 'Anti-DDoS solution for Rust'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/' | prepend: site.baseurl }}">Anti-DDoS solution for Rust</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">not777</a>, <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 16, 2016 at 11:44 AM">Feb 16,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-177316" class="message" data-author="not777">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="not777" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">not777</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">For a while I administer a large server with online up to 150 people.<br /> It has been decrease the flow of
+                        network traffic while decreasing the amount of incoming data packets if server online increasing for over 80 people.<br />
+                        <img src="https://oxidemod.org/attachments/22_49_ddos_off_on_off-jpeg.18192/" alt="22_49_ddos_off_on_off.jpeg" class="bbCodeImage LbImage" />
+                        <br /> I have analyzed some packets in this flow.<br /> most are found, UDP packets:<br /> (60 bytes) - server info check<br /> (160 bytes) - steam player connection
+                        establish<br />
+                        <br /> first one have small body size and need small (80-120 bytes) and undemanding to network resources answer from server<br /> second, more demanding to network, load the
+                        server CPU and requires significant delay in response, about (1000 + bytes)<br />
+                        <br /> It seems that we need to make connections and respond to them in the first place =/<br />
+                        <br /> how we can bypass that?<br />
+                        <br /> The first thing that came to mind - is to filter incoming UDP connections<br /> but then we cut off a request to the server availability and game data from players
+                        ?!?!<br /> And second, game server uses Windows server, we need iptables or linux kernel for shaping IP protocols and network packets.<br />
+                        <br /> Ok, and I do that:<br />
+                        <br /> 1. Setup Hyper-V on our Windows 2008 Server.<br /> 2. Add VyOS router virtual machine on the same with game server IP network.<br /> 3. Add NAT rule in VyOS to forward
+                        game port to router external port.<br /> 4. With runing game server Add VyOS router IP to the Next default Windows gateway.<br /> 5. Change temporarily Windows router table to
+                        put all traffic from game IP to router IP (without delete old entry!)<br />
+                        <br /> So, now We have:<br /> All first UDP connections will go to our old server IP, but windows routing table resend answer from another gateway and new IP from VyOS router.
+                        And connected player communication go to new IP (DDoS bot does not require confirmation).<br /> So we divided the primary incoming connections with all game traffic<br />
+                        <br /> sorry for my lack of professionalism<br /> but it works! =)<br />
+                        <br /> P.S. After server reboot We need repeat 4-5 articles. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 16, 2016 at 2:15 PM">Feb 16, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">not777</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2016 at 11:44 AM">Feb 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/177316/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177455" class="message" data-author="Cheeze">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Cheeze" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Cheeze</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">We need to try this but it&#039;s a bit over my head<br /> [DOUBLEPOST=1455666541,1455648518][/DOUBLEPOST]Any
+                        chance you could do a clearer guide on this for us? Major DDOS issues right now on OVH.... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Cheeze</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-177455' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2016 at 11:49 PM">Feb 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-177455' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/177455/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-177647" class="message" data-author="not777">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="not777" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">not777</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">DDoS attacks continue, but it does not have so much effect on the server<br /> I will try to write a detailed
+                        guide in the coming days<br /> a lot of work =/<br />
+                        <br /> some links:<br />
+                        <a href="https://exchangelab.wordpress.com/2014/06/02/setting-up-vyos-for-hyper-v-2012-r2-or-windows-8-8-1/" target="_blank" class="externalLink  rel=" nofollow">Setting up
+                            VyOS for Hyper-V 2012 (R2) or Windows 8 (8.1)</a><br />
+                        <a href="http://vyos.net/wiki/User_Guide" target="_blank" class="externalLink  rel=" nofollow">User Guide - VyOS</a><br />
+                        <a href="https://technet.microsoft.com/en-us/library/cc770746(v=ws.10).aspx" target="_blank" class="externalLink  rel=" nofollow">Manage the IPv4 Routing Table</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Feb 18, 2016 at 8:02 AM">Feb 18, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">not777</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-177647' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 17, 2016 at 7:17 AM">Feb 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-177647' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/177647/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-324011" class="message" data-author="RAI">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RAI" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RAI</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Cheeze">
+                            <aside>
+                                <div class="attribution type">Cheeze said: <a href="#post-177455" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">We need to try this but it&#039;s a bit over my head<br /> [DOUBLEPOST=1455666541,1455648518][/DOUBLEPOST]Any chance you could do a clearer guide
+                                        on this for us? Major DDOS issues right now on OVH....</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you find a solution can you help me too? I&#039;m using OVH too and the attacks are still ongoing, it&#039;s been a week now. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RAI</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324011' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2017 at 8:34 PM">May 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324011' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/324011/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-324081" class="message" data-author="maxaki">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="maxaki" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">maxaki</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="RAI">
+                            <aside>
+                                <div class="attribution type">RAI said: <a href="#post-324011" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you find a solution can you help me too? I&#039;m using OVH too and the attacks are still ongoing, it&#039;s been a week now.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This thread is old. OVH has a Rust Anti DDoS protection now that works very well. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">maxaki</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324081' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 14, 2017 at 1:03 AM">May 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324081' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/324081/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-324085" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="RAI">
+                            <aside>
+                                <div class="attribution type">RAI said: <a href="#post-324011" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you find a solution can you help me too? I&#039;m using OVH too and the attacks are still ongoing, it&#039;s been a week now.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Best to talk with your host then <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324085' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 14, 2017 at 1:19 AM">May 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324085' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/324085/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-324277" class="message" data-author="RAI">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RAI" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RAI</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="maxaki">
+                            <aside>
+                                <div class="attribution type">maxaki said: <a href="#post-324081" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">This thread is old. OVH has a Rust Anti DDoS protection now that works very well.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m using their regular dedicated server right now, is the ddos protection on their gaming server worth it? because when I ordered mine their game servers are not
+                        available in singapore yet. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RAI</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324277' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 14, 2017 at 7:54 PM">May 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324277' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/324277/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-324595" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="RAI">
+                            <aside>
+                                <div class="attribution type">RAI said: <a href="#post-324277" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m using their regular dedicated server right now, is the ddos protection on their gaming server worth it? because when I ordered mine
+                                        their game servers are not available in singapore yet.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you are using an external host where you have no control over the network, it&#039;s either none or some protection. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324595' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 16, 2017 at 1:31 PM">May 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/anti-ddos-solution-for-rust.15802/#post-324595' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/324595/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

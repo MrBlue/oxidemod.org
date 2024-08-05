@@ -1,0 +1,517 @@
+---
+layout: forums
+title: 'Config InvalidCastException Dictionary&lt;int, List&lt;string&gt;&gt;'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/' | prepend: site.baseurl }}">Config InvalidCastException Dictionary&lt;int, List&lt;string&gt;&gt;</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">JoeSheep</a>, <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Mar 15, 2017 at 4:31 PM">Mar 15, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-308049" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi!<br />
+                        <br /> I produce this in the config:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+  &quot;Test&quot;: {
+    &quot;Test List&quot;: {
+      &quot;1&quot;: [
+        &quot;{playername} Test 1.&quot;,
+        &quot;{playername} Test 1.&quot;,
+        &quot;{playername} Test 1.&quot;
+      ],
+      &quot;2&quot;: [
+        &quot;{playername} Test 2.&quot;,
+        &quot;{playername} Test 2.&quot;,
+        &quot;{playername} Test 2.&quot;
+      ]
+    },
+  },
+</pre>{% endraw %}
+                        </div>With the code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        public static List&lt;string&gt; Alist = new List&lt;string&gt;
+        {
+            &quot;{playername} Test 1.&quot;,
+            &quot;{playername} Test 1.&quot;,
+            &quot;{playername} Test 1.&quot;
+        };
+        public static List&lt;string&gt; Blist = new List&lt;string&gt;
+        {
+            &quot;{playername} Test 2.&quot;,
+            &quot;{playername} Test 2.&quot;,
+            &quot;{playername} Test 2.&quot;
+        };        public Dictionary&lt;int, List&lt;string&gt;&gt; TestList { get; private set; } = new Dictionary&lt;int, List&lt;string&gt;&gt;
+        {
+            {1, Alist},
+            {2, Blist},
+        };        private T GetConfig&lt;T&gt;(string category, string setting, T defaultValue)
+        {
+            var data = Config[category] as Dictionary&lt;string, object&gt;;
+            object value;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[category] = data;
+                ConfigUpdated = true;
+            }
+            if (data.TryGetValue(setting, out value))
+            {
+                return (T)Convert.ChangeType(value, typeof(T)); //**Error is thrown here**.
+            }
+            value = defaultValue;
+            data[setting] = value;
+            ConfigUpdated = true;
+            return (T)Convert.ChangeType(value, typeof(T));
+        }        private void LoadConfig()
+        {
+            TestList = GetConfig(&quot;Test&quot;, &quot;Test List&quot;, TestList);
+        }        void OnServerInitialized()
+        {
+            LoadConfig();
+        }
+</pre>{% endraw %}
+                        </div>And when the plugin is reloaded and it tries to read that from the config it produces the following error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Failed to call hook 'OnServerInitialized' on plugin 'GUIAnnouncements v1.21.68' (InvalidCastException: Value is not a convertible object: System.Collections.Generic.Dictionary`2[System.String,System.Object] to System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.List`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]])
+</pre>{% endraw %}
+                        </div>I&#039;m sure the fix is quite simple but my brain is failing me at the moment, so any help is greatly appreciated.<br />
+                        <br /> Thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 15, 2017 at 4:36 PM">Mar 15, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2017 at 4:31 PM">Mar 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308049/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308096" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What does typeof(T) print? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308096' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2017 at 8:20 PM">Mar 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308096' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308096/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308107" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-308096" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What does typeof(T) print?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>typeof(T) prints:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+System.Collections.Generic.Dictionary`2[System.Int32,System.Collections.Generic.List`1[System.String]]
+</pre>{% endraw %}
+                        </div>I also did object value:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+System.Collections.Generic.Dictionary`2[System.String,System.Object]
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308107' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2017 at 9:17 PM">Mar 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308107' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308107/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308111" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Convert.ChangeType is presumably just a shallow conversion, i.e. it converts the type of the value, but not the
+                        type of each of the values stored in that value. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308111' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2017 at 9:26 PM">Mar 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308111' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308111/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308113" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-308111" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Convert.ChangeType is presumably just a shallow conversion, i.e. it converts the type of the value, but not the type of each of the values stored
+                                        in that value.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What would be the best way to go about converting the values stored within which supposedly would be the items in the list? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308113' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 15, 2017 at 9:38 PM">Mar 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308113' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308113/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308335" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Would I need to &quot;manually&quot; rebuild the object which in this case is a dictionary containing lists as
+                        values, into a new dictionary and set it to the variable I am using my code to read from? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308335' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 16, 2017 at 7:11 PM">Mar 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308335' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308335/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308689" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Would Oxide&#039;s DynamicConfigFile.cs be able to handle that cast? I can&#039;t even remember why I stopped
+                        using it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308689' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 17, 2017 at 6:07 PM">Mar 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308689' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308689/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308697" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I had this same issue also for a while, but now I just create a wrapper class to contain the data dictionaries in
+                        my plugins and just do a ReadObject/WriteObject to load/save the config. The casting/type assignment seems to work fine that way. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308697' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 17, 2017 at 6:18 PM">Mar 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-308697' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308697/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309010" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ignignokt84">
+                            <aside>
+                                <div class="attribution type">ignignokt84 said: <a href="#post-308697" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I had this same issue also for a while, but now I just create a wrapper class to contain the data dictionaries in my plugins and just do a
+                                        ReadObject/WriteObject to load/save the config. The casting/type assignment seems to work fine that way.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I had a look at yours and that seems to work brilliantly, however I was really aiming for a config rework in my next update to make it a bit easier to understand, so the
+                        GetConfig(&quot;Category&quot;, &quot;Setting&quot;) was working great for that.<br />
+                        <br /> I ended up with the following to get what I wanted though:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>       public Dictionary&lt;int, List&lt;object&gt;&gt; newPlayerAnnouncementsList { get; private set; } = new Dictionary&lt;int, List&lt;object&gt;&gt;
+        {
+            {1, new List&lt;object&gt;{ &quot;1st Join {playername} New player announcement 1.&quot;, &quot;1st Join {playername} New player announcement 2.&quot;, &quot;1st Join {playername} New player announcement 3.&quot; } },
+            {2, new List&lt;object&gt;{ &quot;2nd Join {playername} New player announcement 1.&quot;, &quot;2nd Join {playername} New player announcement 2.&quot;, &quot;2nd Join {playername} New player announcement 3.&quot; } },
+            {3, new List&lt;object&gt;{ &quot;3rd Join {playername} New player announcement 1.&quot;, &quot;3rd Join {playername} New player announcement 2.&quot;, &quot;3rd Join {playername} New player announcement 3.&quot; } },
+        };        private void LoadGUIAnnouncementsConfig()
+        {
+            newPlayerAnnouncementsList = GetConfig(&quot;New Player Announcements&quot;, &quot;Announcements List (Show On This Many Joins : List To Show)&quot;, newPlayerAnnouncementsList);
+        }        private T GetConfig&lt;T&gt;(string category, string setting, T defaultValue)
+        {
+            var data = Config[category] as Dictionary&lt;string, object&gt;;
+            object value;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[category] = data;
+                ConfigUpdated = true;
+            }
+            if (data.TryGetValue(setting, out value))
+            {
+//Added this if statement
+                if (setting == &quot;Announcements List (Show On This Many Joins : List To Show)&quot;)
+                {
+                    var keyType = typeof(T).GetGenericArguments()[0];
+                    var valueType = typeof(T).GetGenericArguments()[1];
+                    var dict = (IDictionary)Activator.CreateInstance(typeof(T));
+                    foreach (var key in ((IDictionary)value).Keys)
+                    {
+                        dict.Add(Convert.ChangeType(key, keyType), Convert.ChangeType(((IDictionary)value)[key], valueType));
+                    }
+                    return (T)dict;
+                }
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+            value = defaultValue;
+            data[setting] = value;
+            ConfigUpdated = true;
+            return (T)Convert.ChangeType(value, typeof(T));
+        }//Used later for changing the list to strings
+        private List&lt;string&gt; ConvertObjectListToString(object value)
+        {
+            if (value is List&lt;object&gt;)
+            {
+                List&lt;object&gt; list = (List&lt;object&gt;)value;
+                List&lt;string&gt; strings = list.Select(s =&gt; (string)s).ToList();
+                return strings;
+            }
+            else return (List&lt;string&gt;)value;
+        }        void OnServerInitialized()
+        {
+            LoadGUIAnnouncementsConfig();
+        }
+</pre>{% endraw %}
+                        </div>The if statement I got from Oxide&#039;s Config.ConvertValue method which I initially tried calling, but for some reason could never get it to actually go through to the
+                        dictionary conversion part. I also tried changing the value (list) in the foreach part to string there but it would just fail and not give me any errors so I just handle that
+                        later instead and changed the list in my dictionary to objects.<br />
+                        <br /> (I also can&#039;t seem to change this thread to solved for some reason) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-309010' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 18, 2017 at 10:44 PM">Mar 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/config-invalidcastexception-dictionary-int-list-string.24487/#post-309010' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/309010/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

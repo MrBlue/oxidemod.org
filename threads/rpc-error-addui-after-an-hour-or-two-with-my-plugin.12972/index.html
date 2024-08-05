@@ -1,0 +1,1224 @@
+---
+layout: forums
+title: 'RPC Error: addui after an hour or two with my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/' | prepend: site.baseurl }}">RPC Error: addui after an hour or two with my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Tuntenfisch</a>, <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Nov 28, 2015 at 9:44 PM">Nov 28, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-146474" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So one user, actually 2 but we&#039;ll focus on one user, who has used my plugin &quot;KillFeed&quot; has
+                        reported the following, regarding the <i>RPC Error: addui</i>:<br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ruby">
+                            <aside>
+                                <div class="attribution type">Ruby said: <a href="#post-146468" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                                            <aside>
+                                                <div class="attribution type">Tuntenfisch said: <a href="#post-146462" class="AttributionLink">&uarr;</a>
+                                                </div>
+                                                <blockquote class="quoteContainer">
+                                                    <div class="quote">When does it occur?</div>
+                                                    <div class="quoteExpand">Click to expand...</div>
+                                                </blockquote>
+                                            </aside>
+                                        </div>I do not know, load the plugin, passed an hour or two, and began to kick all players.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Basically the plugin seems to kick everyone with the reason: <i>RPC Error: addui</i><br /> Since <i>RPC Error: addui</i> doesn&#039;t really tell you anything specific
+                        <b>and</b> it only seems to happen after an hour or two, I&#039;m really struggling to fix this.<br />
+                        <br /> The user above also said that it does happen less often on <i>version 1.6.0</i> than on <i>version 1.6.1</i>, though the only significant difference between those two is
+                        the following:<br />
+                        <br />
+                        <i><b>« </b>version 1.6.0 <b>»</b></i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private static IEnumerator WaitForRequest(string shortname, string url)
+            {
+                WWW www = new WWW(url);                yield return www;                string fileID = FileStorage.server.Store(www.bytes, FileStorage.Type.png, uint.MaxValue).ToString();                if (!fileIDs.ContainsKey(shortname))
+                {
+                    fileIDs.Add(shortname, fileID);
+                }
+                else
+                {
+                    fileIDs[shortname] = fileID;
+                }
+            }</pre>{% endraw %}
+                        </div><i><b>« </b>version 1.6.1 <b>»</b></i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private static IEnumerator WaitForRequest(string shortname, string url)
+            {
+                WWW www = new WWW(url);                yield return www;                if (string.IsNullOrEmpty(www.error))
+                {
+                    string fileID = FileStorage.server.Store(www.bytes, FileStorage.Type.png, CommunityEntity.ServerInstance.net.ID).ToString();                    if (!fileIDs.ContainsKey(shortname))
+                    {
+                        fileIDs.Add(shortname, fileID);
+                    }
+                    else
+                    {
+                        fileIDs[shortname] = fileID;
+                    }
+                }
+            }</pre>{% endraw %}
+                        </div>I&#039;m mainly referring to the third parameter that is passed into the <i>FileStorage.server.Store(...)</i> function<br />
+                        <br /> So basically I don&#039;t know what the issue is, the problem described by the user never occurs on my local server, so I have a hard time reproducing anything.
+                        Furthermore, though this might be unrelated, I don&#039;t even know what I should pass into the third parameter of the <i>FileStorage.server.Store(...) </i>function.<br />
+                        <br /> I know it&#039;s asking much that someone takes some time to look over my plugin, but if someone knows how to fix this and could tell me, I would be more than happy.
+                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <br />
+                        <i><b>« </b>version 1.6.0 <b>»</b></i><br />
+                        <a href="http://oxidemod.org/plugins/kill-feed.1433/download?version=7516" class="internalLink">http://oxidemod.org/plugins/kill-feed.1433/download?version=7516</a><br />
+                        <br />
+                        <i><b>« </b>version 1.6.0 <b>»</b></i><br />
+                        <a href="http://oxidemod.org/plugins/kill-feed.1433/download?version=7519" class="internalLink">http://oxidemod.org/plugins/kill-feed.1433/download?version=7519</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 28, 2015 at 9:44 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146474/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146488" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> An addui rpc error will happen if the JSON sent over the wire is not valid JSON. Try exporting the json and
+                        validating it using <a href="http://jsonlint.com/" target="_blank" class="externalLink">JSONLint - The JSON Validator.</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146488' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 28, 2015 at 10:28 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146488' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146488/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146491" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-146488" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">An addui rpc error will happen if the JSON sent over the wire is not valid JSON. Try exporting the json and validating it using <a
+                                            href="http://jsonlint.com/" target="_blank" class="externalLink  rel=" nofollow">JSONLint - The JSON Validator.</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The JSON that is sent over the wire is valid according to the link you provided, so that can&#039;t be an issue, especially because it only happens after an hour or two
+                        and I yet have to experience that error myself.<br />
+                        <br /> The only thing I can think of is that at some point shit get&#039;s fucked up and the JSON contains a component with a name that is already drawn and hence it throws the
+                        <i>RPC Error: addui</i>, but then again why would this only happen after an hour or two... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146491' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 28, 2015 at 10:43 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146491' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146491/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146492" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-146491" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The JSON that is sent over the wire is valid according to the link you provided, so that can&#039;t be an issue, especially because it only
+                                        happens after an hour or two and I yet have to experience that error myself.<br />
+                                        <br /> The only thing I can think of is that at some point shit get&#039;s fucked up and the JSON contains a component with a name that is already drawn and
+                                        hence it throws the <i>RPC Error: addui</i>, but then again why would this only happen after an hour or two...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It may be valid JSON, but it may not meet the format that the Rust CUI wants. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146492' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 28, 2015 at 10:47 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146492' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146492/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146493" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-146492" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It may be valid JSON, but it may not meet the format that the Rust CUI wants.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>So here&#039;s the JSON template:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[
+    {
+        &quot;name&quot;: &quot;{0} feedEntry&quot;,
+        &quot;parent&quot;: &quot;HUD&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;sprite&quot;: &quot;assets/content/textures/generic/fulltransparent.tga&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.RawImage&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;%%&quot;,
+                                &quot;anchormax&quot;: &quot;%%&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} initiator&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{initiator}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleLeft&quot;,
+                                &quot;color&quot;: &quot;{initiator color}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} hitBone&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{hitBone}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleRight&quot;,
+                                &quot;color&quot;: &quot;1.0 1.0 0.0 1.0&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;0.0 0.0&quot;,
+                                &quot;anchormax&quot;: &quot;{bone anchormax}&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} weapon&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;sprite&quot;: &quot;assets/content/textures/generic/fulltransparent.tga&quot;,
+                                &quot;png&quot;: &quot;{weaponID}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.RawImage&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;{weapon anchormin}&quot;,
+                                &quot;anchormax&quot;: &quot;{weapon anchormax}&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} distance&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{distance}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleLeft&quot;,
+                                &quot;color&quot;: &quot;1.0 1.0 0.0 1.0&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;{distance anchormin}&quot;,
+                                &quot;anchormax&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} hitEntity&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{hitEntity}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleRight&quot;,
+                                &quot;color&quot;: &quot;{hitEntity color}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    }
+]</pre>{% endraw %}
+                        </div>Obviously this wouldn&#039;t be a valid JSON but that&#039;s no big deal, because it&#039;s a template and things like {fadeOut value}, {fadeIn value}, {hitEntity}, etc.
+                        will <b>all</b> be replaced with their proper values and it does work. It never kicked me on my local server because of <i>RPC Error: addui</i>. But for some reason that user
+                        report that my plugin does throw that error after an hour or two.<br />
+                        <br /> The process of replacing all those values above doesn&#039;t change over time, but apparently the resulting JSONs change over time. So either some special cases cause
+                        the JSON to become invalid or, well, I don&#039;t know. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Nov 28, 2015 at 11:03 PM">Nov 28, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146493' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 28, 2015 at 10:58 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146493' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146493/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146496" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-146493" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">So here&#039;s the JSON template:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[
+    {
+        &quot;name&quot;: &quot;{0} feedEntry&quot;,
+        &quot;parent&quot;: &quot;HUD&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;sprite&quot;: &quot;assets/content/textures/generic/fulltransparent.tga&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.RawImage&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;%%&quot;,
+                                &quot;anchormax&quot;: &quot;%%&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} initiator&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{initiator}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleLeft&quot;,
+                                &quot;color&quot;: &quot;{initiator color}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} hitBone&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{hitBone}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleRight&quot;,
+                                &quot;color&quot;: &quot;1.0 1.0 0.0 1.0&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;0.0 0.0&quot;,
+                                &quot;anchormax&quot;: &quot;{bone anchormax}&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} weapon&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;sprite&quot;: &quot;assets/content/textures/generic/fulltransparent.tga&quot;,
+                                &quot;png&quot;: &quot;{weaponID}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.RawImage&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;{weapon anchormin}&quot;,
+                                &quot;anchormax&quot;: &quot;{weapon anchormax}&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} distance&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{distance}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleLeft&quot;,
+                                &quot;color&quot;: &quot;1.0 1.0 0.0 1.0&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;anchormin&quot;: &quot;{distance anchormin}&quot;,
+                                &quot;anchormax&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    },
+    {
+        &quot;name&quot;: &quot;{0} hitEntity&quot;,
+        &quot;parent&quot;: &quot;{0} feedEntry&quot;,
+        &quot;fadeOut&quot;: {fadeOut value},
+        &quot;components&quot;: [
+                            {
+                                &quot;color&quot;: &quot;0.0 0.0 0.0 1.0&quot;,
+                                &quot;distance&quot;: &quot;1.0 1.0&quot;,
+                                &quot;type&quot;: &quot;UnityEngine.UI.Outline&quot;
+                            },
+                            {
+                                &quot;text&quot;: &quot;{hitEntity}&quot;,
+                                &quot;fontSize&quot;: {fontSize},
+                                &quot;font&quot;: &quot;{font}&quot;,
+                                &quot;align&quot;: &quot;MiddleRight&quot;,
+                                &quot;color&quot;: &quot;{hitEntity color}&quot;,
+                                &quot;fadeIn&quot;: {fadeIn value},
+                                &quot;type&quot;: &quot;UnityEngine.UI.Text&quot;
+                            },
+                            {
+                                &quot;type&quot;: &quot;RectTransform&quot;
+                            }
+                        ]
+    }
+]</pre>{% endraw %}
+                                        </div>Obviously this wouldn&#039;t be a valid JSON but that&#039;s no big deal, because it&#039;s a template and things like {fadeOut value}, {fadeIn value},
+                                        {hitEntity}, etc. will <b>all</b> be replaced with their proper values and it does work. It never kicked me on my local server because of <i>RPC Error:
+                                            addui</i>. But for some reason that user report that my plugin does throw that error after an hour or two.<br />
+                                        <br /> The process of replacing all those values above doesn&#039;t change over time, but apparently the resulting JSONs change over time. So either some
+                                        special cases cause the JSON to become invalid or, well, I don&#039;t know.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I don&#039;t know about that, I use the RustCui helper from Oxide. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146496' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 28, 2015 at 11:16 PM">Nov 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146496' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146496/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146499" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-146496" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I don&#039;t know about that, I use the RustCui helper from Oxide.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Okay I switched over to RustCui helper to create my template:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>internal static string GetDefaultKillFeedEntry()
+            {
+                CuiElementContainer container = new CuiElementContainer();                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} feedEntry&quot;,
+                    Parent = &quot;HUD/Overlay&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiRawImageComponent
+                        {
+                            Sprite = &quot;assets/content/textures/generic/fulltransparent.tga&quot;
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = &quot;%{anchormin}%&quot;,
+                            AnchorMax = &quot;%{anchormax}%&quot;
+                        }
+                    }
+                });
+                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} initiator&quot;,
+                    Parent = &quot;{0} feedEntry&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiTextComponent
+                        {
+                            Text = &quot;{initiator}&quot;,
+                            Font = font,
+                            FontSize = fontSize,
+                            Align = TextAnchor.MiddleLeft,
+                            Color = &quot;{initiator color}&quot;,
+                            FadeIn = fadeIn,
+                        },
+                        new CuiOutlineComponent
+                        {
+                            Distance = &quot;1.0 1.0&quot;,
+                            Color = &quot;0.0 0.0 0.0 1.0&quot;
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = &quot;0.0 0.0&quot;,
+                            AnchorMax = &quot;1.0 1.0&quot;
+                        }
+                    }
+                });
+                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} hitBone&quot;,
+                    Parent = &quot;{0} feedEntry&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiTextComponent
+                        {
+                            Text = &quot;{hitBone}&quot;,
+                            Font = font,
+                            FontSize = fontSize,
+                            Align = TextAnchor.MiddleRight,
+                            Color = &quot;1.0 1.0 0.0 1.0&quot;,
+                            FadeIn = fadeIn,
+                        },
+                        new CuiOutlineComponent
+                        {
+                            Distance = &quot;1.0 1.0&quot;,
+                            Color = &quot;0.0 0.0 0.0 1.0&quot;
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = &quot;0.0 0.0&quot;,
+                            AnchorMax = 0.5f - iconHalfWidth + &quot; 1.0&quot;
+                        }
+                    }
+                });
+                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} weapon&quot;,
+                    Parent = &quot;{0} feedEntry&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiRawImageComponent
+                        {
+                            Sprite = &quot;assets/content/textures/generic/fulltransparent.tga&quot;,
+                            Png = &quot;{weaponID}&quot;,
+                            FadeIn = fadeIn
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = 0.5f - iconHalfWidth + &quot; &quot; + (0.5f - iconHalfHeight),
+                            AnchorMax = 0.5f + iconHalfWidth + &quot; &quot; + (0.5f + iconHalfHeight),
+                        }
+                    }
+                });
+                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} distance&quot;,
+                    Parent = &quot;{0} feedEntry&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiTextComponent
+                        {
+                            Text = &quot;{distance}&quot;,
+                            Font = font,
+                            FontSize = fontSize,
+                            Align = TextAnchor.MiddleLeft,
+                            Color = &quot;1.0 1.0 0.0 1.0&quot;,
+                            FadeIn = fadeIn,
+                        },
+                        new CuiOutlineComponent
+                        {
+                            Distance = &quot;1.0 1.0&quot;,
+                            Color = &quot;0.0 0.0 0.0 1.0&quot;
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = 0.5f + iconHalfWidth + &quot; 0.0&quot;,
+                            AnchorMax = &quot;1.0 1.0&quot;,
+                        }
+                    }
+                });
+                container.Add(new CuiElement
+                {
+                    Name = &quot;{0} hitEntity&quot;,
+                    Parent = &quot;{0} feedEntry&quot;,
+                    FadeOut = fadeOut,
+                    Components =
+                    {
+                        new CuiTextComponent
+                        {
+                            Text = &quot;{hitEntity}&quot;,
+                            Font = font,
+                            FontSize = fontSize,
+                            Align = TextAnchor.MiddleRight,
+                            Color = &quot;{hitEntity color}&quot;,
+                            FadeIn = fadeIn,
+                        },
+                        new CuiOutlineComponent
+                        {
+                            Distance = &quot;1.0 1.0&quot;,
+                            Color = &quot;0.0 0.0 0.0 1.0&quot;
+                        },
+                        new CuiRectTransformComponent
+                        {
+                            AnchorMin = &quot;0.0 0.0&quot;,
+                            AnchorMax = &quot;1.0 1.0&quot;
+                        }
+                    }
+                });
+                return container.ToJson();
+            }</pre>{% endraw %}
+                        </div>Is there an easy way of manipulating a specific component contained in a CuiElementContainer, such as the CuiRectTransformComponent? Keeping a reference from the start
+                        isn&#039;t going to work in my case (i think?) because I want the user to define the number of <i>containers </i>(=entries).<br />
+                        <br /> Edit: I&#039;m still manipulating the JSON string to move each container (=entry) down. So it didn&#039;t actually solve my initial problem (i think?). Heck, I
+                        don&#039;t even know WTF the problem is exactly... <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146499' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 1:00 AM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146499' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146499/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146520" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The CuiHelper is not meant to generate the template for you. It should completely replace the usage of json. So
+                        in your case you havn&#039;t changed anything by using the helper.<br /> Rpc error sounds like an invalid value otherwise it wouldn&#039;t create an error at client side which
+                        disconnects the user. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146520' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 5:33 AM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146520' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146520/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146578" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-146520" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The CuiHelper is not meant to generate the template for you. It should completely replace the usage of json. So in your case you havn&#039;t
+                                        changed anything by using the helper.<br /> Rpc error sounds like an invalid value otherwise it wouldn&#039;t create an error at client side which disconnects
+                                        the user.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m aware that I didn&#039;t really change anything, but then again as far as I can see CuiHelper doesn&#039;t check if the values of each CuiElement are valid
+                        before it converts them to JSON and sends it to the server. So even if I would completely switch to CuiHelper I could still plug in wrong string values here and there that
+                        would result in a <i>RPC Error: addui</i> or am I missing something?<br /> [DOUBLEPOST=1448824166,1448816579][/DOUBLEPOST]Not sure if I should make a new thread for this or
+                        not, but why is the <i>string</i> <i>reason</i> provided by the Hook <i>OnPlayerDisconnected(BasePlayer player, string reason)</i> just saying &quot;Disconnected&quot; when a
+                        player gets disconnected because of <i>RPC Error: addui</i>? That&#039;s rather non-descriptive. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 7:09 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146578' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146578/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146595" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-146578" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m aware that I didn&#039;t really change anything, but then again as far as I can see CuiHelper doesn&#039;t check if the values of each
+                                        CuiElement are valid before it converts them to JSON and sends it to the server. So even if I would completely switch to CuiHelper I could still plug in wrong
+                                        string values here and there that would result in a <i>RPC Error: addui</i> or am I missing something?<br /> [DOUBLEPOST=1448824166,1448816579][/DOUBLEPOST]Not
+                                        sure if I should make a new thread for this or not, but why is the <i>string</i> <i>reason</i> provided by the Hook <i>OnPlayerDisconnected(BasePlayer player,
+                                            string reason)</i> just saying &quot;Disconnected&quot; when a player gets disconnected because of <i>RPC Error: addui</i>? That&#039;s rather
+                                        non-descriptive.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The reason is provided by either plugins or Rust&#039;s default. If it&#039;s just saying &quot;Disconnected&quot;, then that&#039;s the reason Rust has setup. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146595' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 7:10 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146595' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146595/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146597" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-146595" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The reason is provided by either plugins or Rust&#039;s default. If it&#039;s just saying &quot;Disconnected&quot;, then that&#039;s the reason
+                                        Rust has setup.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hmm, the server console does show &quot;... disconnecting: RPC Error: addui&quot; if you get disconnected because of <i>RPC Error: addui</i>. So it does seem like the
+                        server knows the reason. Is there any way to check if a disconnect was caused by <i>RPC Error: addui</i>, then? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146597' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 7:15 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146597' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146597/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146599" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-146597" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hmm, the server console does show &quot;... disconnecting: RPC Error: addui&quot; if you get disconnected because of <i>RPC Error: addui</i>. So
+                                        it does seem like the server knows the reason. Is there any way to check if a disconnect was caused by <i>RPC Error: addui</i>, then?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m not sure, probably not since the server is just sending the RPC and the client interprets it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146599' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 7:19 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146599' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146599/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146602" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-146599" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not sure, probably not since the server is just sending the RPC and the client interprets it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I think the following function in the <i>BasePlayer</i> class handles the <i>RPC Error: addui</i>:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void Kick(string reason)
+    {
+        if (!this.IsConnected())
+        {
+            return;
+        }
+        Net.sv.Kick(this.net.connection, reason);
+    }</pre>{% endraw %}
+                        </div>Just a guess, but if it does, then maybe a hook for that function would be a nice!<br />
+                        <br /> Thanks to you and the other users who answered my question, btw. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146602' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 7:25 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146602' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146602/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146622" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> the reason in your case is &quot;RPC Error: addui&quot; which you got from client...you could check the client
+                        logs for the full stacktrace to know what is going on...or log your json to verify what is wrong in the case someone disconnected...<br /> And after a short look at your plugin
+                        i&#039;d recommend to call AddUI RPC with an json array instead of every single element you want to add...and yeah since you are creating your json string by hand there can go
+                        alot of stuff wrong... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146622' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 9:05 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146622' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146622/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-146633" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-146622" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">the reason in your case is &quot;RPC Error: addui&quot; which you got from client...you could check the client logs for the full stacktrace to
+                                        know what is going on...or log your json to verify what is wrong in the case someone disconnected...<br /> And after a short look at your plugin i&#039;d
+                                        recommend to call AddUI RPC with an json array instead of every single element you want to add...and yeah since you are creating your json string by hand there
+                                        can go alot of stuff wrong...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How would I go about calling AdddUI RPC with a JSON array? I&#039;m kind of lost... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146633' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 29, 2015 at 10:13 PM">Nov 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rpc-error-addui-after-an-hour-or-two-with-my-plugin.12972/#post-146633' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/146633/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

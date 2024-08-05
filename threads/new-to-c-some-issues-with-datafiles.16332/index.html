@@ -1,0 +1,588 @@
+---
+layout: forums
+title: 'New to C#, some issues with datafiles'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/' | prepend: site.baseurl }}">New to C#, some issues with datafiles</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Capadillo</a>, <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 3, 2016 at 6:33 AM">Mar 3,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-183578" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey guys, I am trying to learn c# to do my plugin in rather then LUA. So forgive me if this is an easy answer and
+                        I&#039;m missing it.<br />
+                        <br /> In LUA we can just load the info directly from the datafile without extra handling of the data, it doesn&#039;t seem to be the same for c#.<br />
+                        <br /> I&#039;m saving the dataFile by using:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void SaveData(){
+var dataFile = Interface.GetMod ().DataFileSystem.GetDatafile (this.Title);
+dataFile[&quot;whitelist&quot;]= whitelist;
+Interface.GetMod ().DataFileSystem.SaveDatafile (this.Title);
+}
+</pre>{% endraw %}
+                        </div>(where whitelist is Dictionary&lt;string, List&lt;string&gt;&gt;)<br />
+                        <br /> The problem is I don&#039;t know how to use what I get from:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var dataFile = Interface.GetMod ().DataFileSystem.GetDatafile (this.Title);</pre>{% endraw %}
+                        </div>when trying to load it back into my &quot;whitelist&quot; variable.<br />
+                        <br /> Can someone help point me in the right direction?<br />
+                        <br /> EDIT: Just playing around with it and I managed to get this working:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void LoadData() {
+            var dataFile = Interface.GetMod ().DataFileSystem.GetDatafile (this.Title);
+            var whitelistData = (Dictionary&lt;string, object&gt;)Convert.ChangeType(dataFile[&quot;whitelist&quot;], typeof(Dictionary&lt;string, object&gt;));
+            foreach (KeyValuePair&lt;string, object&gt; wld in whitelistData) {
+                var wldValue = (List&lt;object&gt;)Convert.ChangeType(wld.Value, typeof(List&lt;object&gt;));
+                Puts(&quot;Player: {0}&quot;, wld.Key);
+                for (int i = 0; i &lt; wldValue.Count; i++) {
+                    Puts(&quot;Allowed: {0}&quot;, wldValue[i]);
+                }
+            }
+            Interface.GetMod ().DataFileSystem.SaveDatafile (this.Title);
+        }</pre>{% endraw %}
+                        </div>Is it the best way to do this? Obviously instead of Puts() I would be adding this to my variable. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 3, 2016 at 7:05 AM">Mar 3, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 3, 2016 at 6:33 AM">Mar 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/183578/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-183711" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class SomeData
+{
+...
+}SomeData data = new SomeData();Interface.Oxide.DataFileSystem.WriteObject(filename, data);
+data = Interface.Oxide.DataFileSystem.ReadObject&lt;SomeData&gt;(filename);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-183711' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 3, 2016 at 7:06 PM">Mar 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-183711' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/183711/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-184172" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> These are some simplified methods I&#039;ve written. Just put them into your code.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void LoadData&lt;T&gt;(ref T data, string filename = &quot;?&quot;) =&gt; data = Core.Interface.Oxide.DataFileSystem.ReadObject&lt;T&gt;(filename == &quot;?&quot; ? this.Title : $&quot;{this.Title}/{filename}&quot;);void SaveData&lt;T&gt;(ref T data, string filename = &quot;?&quot;) =&gt; Core.Interface.Oxide.DataFileSystem.WriteObject(filename == &quot;?&quot; ? this.Title : $&quot;{this.Title}/{filename}&quot;, data);</pre>{% endraw %}
+                        </div>Example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+List&lt;ulong&gt; steamIDs = new List&lt;ulong&gt;();void Loaded() =&gt; LoadData(ref steamIDs);void OnPlayerInit(BasePlayer player)
+{
+        if(!steamIDs.Contains(player.userID))
+        {
+                steamIDs.Add(player.userID);
+                SaveData(ref steamIDs);
+        }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-184172' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 4, 2016 at 5:28 PM">Mar 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-184172' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/184172/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185132" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-184172" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">These are some simplified methods I&#039;ve written. Just put them into your code.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+void LoadData&lt;T&gt;(ref T data, string filename = &quot;?&quot;) =&gt; data = Core.Interface.Oxide.DataFileSystem.ReadObject&lt;T&gt;(filename == &quot;?&quot; ? this.Title : $&quot;{this.Title}/{filename}&quot;);void SaveData&lt;T&gt;(ref T data, string filename = &quot;?&quot;) =&gt; Core.Interface.Oxide.DataFileSystem.WriteObject(filename == &quot;?&quot; ? this.Title : $&quot;{this.Title}/{filename}&quot;, data);</pre>{% endraw %}
+                                        </div>Example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+List&lt;ulong&gt; steamIDs = new List&lt;ulong&gt;();void Loaded() =&gt; LoadData(ref steamIDs);void OnPlayerInit(BasePlayer player)
+{
+        if(!steamIDs.Contains(player.userID))
+        {
+                steamIDs.Add(player.userID);
+                SaveData(ref steamIDs);
+        }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Just a couple of quick questions LaserHydra:<br />
+                        <br /> Does the =&gt; (for LoadData()) work in the same principal as putting what follows in {}?<br /> And the else clause of the inline read/write object; is that creating a
+                        folder in the data directory under the name of the plugin title?<br />
+                        <br /> Lastly, this bit is what throws me a little as I still don&#039;t have a full grasp of c#. In your example if I change the steamIDs to something like:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Dictionary&lt;ulong, List&lt;ulong&gt;&gt; steamIDs = new Dictionary&lt;ulong, List&lt;ulong&gt;&gt;();</pre>{% endraw %}
+                        </div>will that still work/save as i would expect it to?<br />
+                        <br /> In either case I love that you gave an example of how it could be used in practice. It makes it so much easier to understand for those just starting with c#. Thank you!
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 7, 2016 at 12:28 AM">Mar 7, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185132' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 12:09 AM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185132' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185132/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185143" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Capadillo">
+                            <aside>
+                                <div class="attribution type">Capadillo said: <a href="#post-185132" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Does the =&gt; (for LoadData()) work in the same principal as putting what follows in {}?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>In this case &quot;=&gt;&quot; is used as part of a &quot;Lambda Expression&quot;. You can read up on it here: <a
+                            href="https://msdn.microsoft.com/en-us/library/bb397687.aspx" target="_blank" class="externalLink  rel=" nofollow">Lambda Expressions (C# Programming Guide)</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Capadillo">
+                            <aside>
+                                <div class="attribution type">Capadillo said: <a href="#post-185132" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">And the else clause of the inline read/write object; is that creating a folder in the data directory under the name of the plugin title?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yes it will!<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Capadillo">
+                            <aside>
+                                <div class="attribution type">Capadillo said: <a href="#post-185132" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Lastly, this bit is what throws me a little as I still don&#039;t have a full grasp of c#. In your example if I change the steamIDs to something
+                                        like:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Dictionary&lt;ulong, List&lt;ulong&gt;&gt; steamIDs = new Dictionary&lt;ulong, List&lt;ulong&gt;&gt;();</pre>{% endraw %}
+                                        </div>will that still work/save as i would expect it to?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It depends on what actually you want to do, but if the data contained in the data file can be converted into the Dictionary&lt;ulong, List&lt;ulong&gt;&gt; type then it
+                        should work. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185143' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 12:47 AM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185143' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185143/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185177" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-185143" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It depends on what actually you want to do, but if the data contained in the data file can be converted into the Dictionary&lt;ulong,
+                                        List&lt;ulong&gt;&gt; type then it should work.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I would redo part of my plugin so it reflected that type when it saves. I was initially using strings but ulong wojld likely be a little more beneficial.<br />
+                        <br /> Thank you for the response, and patience, Tuntenfisch! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185177' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 3:26 AM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185177' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185177/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185274" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Capadillo">
+                            <aside>
+                                <div class="attribution type">Capadillo said: <a href="#post-185177" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I would redo part of my plugin so it reflected that type when it saves. I was initially using strings but ulong wojld likely be a little more
+                                        beneficial.<br />
+                                        <br /> Thank you for the response, and patience, Tuntenfisch! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                                            title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>One thing I noticed is that if you save a ulong value to the configuration file and then later try to read it you might get an InvalidCastException because for some
+                        reason the ulong get&#039;s interpreted as a string and you can&#039;t just convert a string to a ulong. It might be the case that I&#039;m doing something wrong but I just
+                        wanted to give a heads-up for you. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185274' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 3:17 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185274' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185274/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185321" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-185274" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">One thing I noticed is that if you save a ulong value to the configuration file and then later try to read it you might get an
+                                        InvalidCastException because for some reason the ulong get&#039;s interpreted as a string and you can&#039;t just convert a string to a ulong. It might be the
+                                        case that I&#039;m doing something wrong but I just wanted to give a heads-up for you.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>We were talking about datafiles and not config files <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /> Datafiles should work fine. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185321' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 6:02 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185321' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185321/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185323" class="message" data-author="Tuntenfisch">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tuntenfisch" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tuntenfisch</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-185321" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">We were talking about datafiles and not config files <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                                            title="Stick Out Tongue    :p" /> Datafiles should work fine.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m aware of that, just wanted to give him a heads-up. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tuntenfisch</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185323' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 6:05 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185323' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185323/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185399" class="message" data-author="Capadillo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Capadillo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Capadillo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-185274" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">One thing I noticed is that if you save a ulong value to the configuration file and then later try to read it you might get an
+                                        InvalidCastException because for some reason the ulong get&#039;s interpreted as a string and you can&#039;t just convert a string to a ulong. It might be the
+                                        case that I&#039;m doing something wrong but I just wanted to give a heads-up for you.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Tuntenfisch">
+                            <aside>
+                                <div class="attribution type">Tuntenfisch said: <a href="#post-185323" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m aware of that, just wanted to give him a heads-up.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the heads up anyway! Though the only thing I&#039;ll likely use the config for is to set a variable slash command. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Capadillo</a>,</span>
+                        <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185399' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 8:29 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-to-c-some-issues-with-datafiles.16332/#post-185399' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/185399/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

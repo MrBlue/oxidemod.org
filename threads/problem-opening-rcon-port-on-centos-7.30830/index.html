@@ -1,0 +1,249 @@
+---
+layout: forums
+title: 'Solved - Problem opening RCON port on CentOS 7'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/' | prepend: site.baseurl }}">Problem opening RCON port on CentOS 7</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">Niickles™</a>, <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 12, 2018 at 9:40 AM">Jun 12,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-404078" class="message" data-author="Niickles™">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Niickles™" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Niickles™</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> hello,<br /> as of right now im trying to setup rust server, I first did this with firewall disabled and I was
+                        able to connect to the server through the Rusty rcon panel. now I decided to enable the firewall and open up the ports for security reasons. I masked Firewalld and unmasked
+                        iptables, I tried opening the ports using<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+iptables -A INPUT -p tcp -s {my_ip} -m tcp --dport 28015 -j ACCEPT
+iptables -A INPUT -p tcp -s {my_ip} -m tcp --dport 28016 -j ACCEPT</pre>{% endraw %}
+                        </div>but whenever I do<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+nmap {my_ip} -p 1-28016
+</pre>{% endraw %}
+                        </div>it returns the following<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Starting Nmap 6.40 ( http://nmap.org ) at 2018-06-12 04:36 EDT
+Nmap scan report
+Host is up (0.000010s latency).
+Not shown: 28013 closed ports
+PORT      STATE SERVICE
+22/tcp    open  ssh
+80/tcp    open  http
+28016/tcp open  unknownNmap done: 1 IP address (1 host up) scanned in 1.33 seconds
+</pre>{% endraw %}
+                        </div>I&#039;ve tried to run multiple commands but none of those helped me in opening the ports.<br /> does anyone have an idea or encountered the same issue? thanks in advance
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 12, 2018 at 9:53 AM">Jun 12, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Niickles™</a>,</span>
+                        <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2018 at 9:40 AM">Jun 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/404078/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404171" class="message" data-author="kenna">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kenna" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kenna</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> # Rust server uses UDP, Rcon uses TCP<br /> firewall-cmd --zone=public --add-port=28015/udp --permanent<br />
+                        firewall-cmd --zone=public --add-port=28016/tcp --permanent<br />
+                        <br /> firewall-cmd --reload<br />
+                        <br /> # iptables<br />
+                        <br /> iptables -A INPUT -p udp --dport 28016 -m udp -j ACCEPT<br /> iptables -A INPUT -p tcp --dport 28016 -m tcp -j ACCEPT<br />
+                        <br /> If you are not familiar with none of them, i find the easy to use is firewall-cmd on centos.<br />
+                        <br /> if it still does not work (iptables) you need to send the output (iptables -L). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 12, 2018 at 8:24 PM">Jun 12, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kenna</a>,</span>
+                        <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404171' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2018 at 6:54 PM">Jun 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404171' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404171/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404190" class="message" data-author="nimdasys">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="nimdasys" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">nimdasys</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Add the -sU parameter to scan UDP ports.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>nmap &lt;serverIP&gt; -sU -p 28015</pre>{% endraw %}
+                        </div>You probably don&#039;t want to include &quot;-s {my_ip}&quot; unless its your intention to only allow that single IP through the firewall.<br />
+                        <br /> This should work: <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> iptables -A INPUT -p udp --dport 28015 -j ACCEPT
+ iptables -A INPUT -p tcp --dport 28016 -j ACCEPT</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 12, 2018 at 8:29 PM">Jun 12, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">nimdasys</a>,</span>
+                        <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404190' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2018 at 8:17 PM">Jun 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404190' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404190/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404217" class="message" data-author="Niickles™">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Niickles™" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Niickles™</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="kenna">
+                            <aside>
+                                <div class="attribution type">kenna said: <a href="#post-404171" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"># Rust server uses UDP, Rcon uses TCP<br /> firewall-cmd --zone=public --add-port=28015/udp --permanent<br /> firewall-cmd --zone=public
+                                        --add-port=28016/tcp --permanent<br />
+                                        <br /> firewall-cmd --reload<br />
+                                        <br /> # iptables<br />
+                                        <br /> iptables -A INPUT -p udp --dport 28016 -m udp -j ACCEPT<br /> iptables -A INPUT -p tcp --dport 28016 -m tcp -j ACCEPT<br />
+                                        <br /> If you are not familiar with none of them, i find the easy to use is firewall-cmd on centos.<br />
+                                        <br /> if it still does not work (iptables) you need to send the output (iptables -L).</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you very much, this actually worked out and now my server is functioning properly!<br /> [DOUBLEPOST=1528835677][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote"
+                            data-author="nimdasys">
+                            <aside>
+                                <div class="attribution type">nimdasys said: <a href="#post-404190" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Add the -sU parameter to scan UDP ports.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>nmap &lt;serverIP&gt; -sU -p 28015</pre>{% endraw %}
+                                        </div>You probably don&#039;t want to include &quot;-s {my_ip}&quot; unless its your intention to only allow that single IP through the firewall.<br />
+                                        <br /> This should work:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre> iptables -A INPUT -p udp --dport 28015 -j ACCEPT
+ iptables -A INPUT -p tcp --dport 28016 -j ACCEPT</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you for your reply but the 1st reply worked out for me, thanks for your effort! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Niickles™</a>,</span>
+                        <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404217' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2018 at 9:33 PM">Jun 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/problem-opening-rcon-port-on-centos-7.30830/#post-404217' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404217/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

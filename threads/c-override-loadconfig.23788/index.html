@@ -1,0 +1,264 @@
+---
+layout: forums
+title: 'C#: Override LoadConfig'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/c-override-loadconfig.23788/' | prepend: site.baseurl }}">C#: Override LoadConfig</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">deusprox</a>, <a href="{{ '/threads/c-override-loadconfig.23788/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 15, 2017 at 4:56 AM">Feb 15, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-297661" class="message" data-author="deusprox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="deusprox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">deusprox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m trying to add a Config to one of my plugins and had a bit of trouble finding the right stuff how to do
+                        it. That&#039;s why I looked in the LustyMap Plugin and tried out their approach and it worked. I still wanted to improve more &amp; removed unnecessary methods while
+                        overriding the default ones.<br /> I ended up with this code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        // Overwrite all three virtual methods for read/write configuration file
+        protected override void SaveConfig() =&gt; Config.WriteObject(pluginConfig, true);
+        protected override void LoadConfig() =&gt; pluginConfig = Config.ReadObject&lt;PluginConfig&gt;();
+        protected override void LoadDefaultConfig()  // Creates default configuration file
+        {
+            var defaultConfig = new PluginConfig
+            {
+                ...
+            };
+            Config.WriteObject(defaultConfig, true);
+        }</pre>{% endraw %}
+                        </div>Everytime I try to load it i get following error: &quot;(NullReferenceException: Object reference not set to an instance of an object&quot;. When I rename or comment out
+                        the &quot;LoadConfig&quot; line it loads fine. Why can&#039;t i override this function when it&#039;s virtual? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">deusprox</a>,</span>
+                        <a href="{{ '/threads/c-override-loadconfig.23788/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 4:56 AM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-override-loadconfig.23788/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/297661/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297663" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Sounds like your PluginConfig object is not setup properly or doesn&#039;t contain anything. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/c-override-loadconfig.23788/#post-297663' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 5:02 AM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-override-loadconfig.23788/#post-297663' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/297663/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297670" class="message" data-author="deusprox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="deusprox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">deusprox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Okay I created a small example to better understand whats happening:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Plugins;
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using Oxide.Game.Rust.Libraries.Covalence;
+using Oxide.Core.Libraries.Covalence;
+using System.Text;
+using Newtonsoft.Json.Linq;namespace Oxide.Plugins
+{
+    [Info(&quot;Fail&quot;, &quot;DeusProx&quot;, &quot;0.1.1&quot;, ResourceId = 0000)]
+    [Description(&quot;FailCase for LoadConfig&quot;)]
+    public class Fail : RustPlugin
+    {        private PluginConfig pluginConfig;        #region Hooks
+        void Loaded()
+        {
+            Debug.Log(&quot;[Fail] Loading Config File&quot;);
+            //LoadConfig();
+            LoadConfig2();
+        }
+        #endregion        #region Configuration
+        class PluginConfig
+        {
+            public General General { get; set; }
+        }
+        class General
+        {
+            public string ChatPrefix { get; set; }
+            public bool UsePermission { get; set; }
+            public string PermissionName { get; set; }
+        }        // Overwrite all three virtual methods for read/write configuration file
+        //protected override void SaveConfig() =&gt; Config.WriteObject(pluginConfig, true);
+        //protected override void LoadConfig() =&gt; pluginConfig = Config.ReadObject&lt;PluginConfig&gt;();
+        protected void LoadConfig2() =&gt; pluginConfig = Config.ReadObject&lt;PluginConfig&gt;();
+        protected override void LoadDefaultConfig()  // Creates default configuration file
+        {
+            Debug.Log(&quot;[Fail] Creating Config File&quot;);
+            var defaultConfig = new PluginConfig
+            {
+                General = new General
+                {
+                    ChatPrefix = &quot;&lt;color=cyan&gt;[Fail]&lt;/color&gt;&quot;,
+                    UsePermission = false,
+                    PermissionName = &quot;share&quot;
+                }
+            };
+            Debug.Log(&quot;[Fail] &quot; + defaultConfig.General.ChatPrefix);
+            Debug.Log(&quot;[Fail] &quot; + defaultConfig.General.UsePermission);
+            Debug.Log(&quot;[Fail] &quot; + defaultConfig.General.PermissionName);
+            Config.WriteObject(defaultConfig, true);
+        }
+        #endregion
+     }
+}</pre>{% endraw %}
+                        </div>This code works fine!<br />
+                        <br /> Strange Thing A: When I comment in the &quot;protected override void SaveConfig()&quot;-line my config file will only contain &quot;null&quot;.<br /> Strange Thing B:
+                        When I comment in the &quot;protected override void LoadConfig()&quot;-line I will <b>always</b> get &quot;NullReferenceException: Object reference not set to an instance of an
+                        object&quot;. Doesn&#039;t matter whether I use the SaveConfig-line or not.<br />
+                        <br /> So I thought i could overwrite them because the Definition given by VS2015 showed that they are virtual but it seems that this was a very very very bad idea and they
+                        somehow won&#039;t work when I override them. Would be nice to have this somewehere with a big warning if i&#039;m guessing right here. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">deusprox</a>,</span>
+                        <a href="{{ '/threads/c-override-loadconfig.23788/#post-297670' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 5:31 AM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-override-loadconfig.23788/#post-297670' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/297670/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297738" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">When you override a method, you&#039;re basically just replacing the functionality that happens normally in the
+                        original method.<br />
+                        <br /> I&#039;d suggest with a more simplistic config file method to start with though. Example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+namespace Oxide.Plugins
+{
+    [Info(&quot;ConfigExample&quot;, &quot;Wulf/lukespragg&quot;, &quot;0.1.0&quot;)]
+    [Description(&quot;Just a basic config example&quot;)]
+    class ConfigExample : RustPlugin
+    {
+        protected override void LoadDefaultConfig()
+        {
+            Config[&quot;Example String&quot;] = &quot;Hello world&quot;;
+            Config[&quot;Example Bool&quot;] = true;
+        }        void Init()
+        {
+            Puts((string)Config[&quot;Example String&quot;]);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>You can advance from there using helpers that allow you to cache the config entries in variables, automatically convert to a specific type, etc. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/c-override-loadconfig.23788/#post-297738' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 3:52 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-override-loadconfig.23788/#post-297738' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/297738/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,272 @@
+---
+layout: forums
+title: 'Change core code to fix moving large groups of items?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/' | prepend: site.baseurl }}">Change core code to fix moving large groups of items?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">AnExiledGod</a>, <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 12, 2015 at 11:27 PM">Jun 12, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-98632" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">My max stack size on many of the items on my server is 100,000. This wasn&#039;t an issue till the latest update.
+                        <br />
+                        <br /> Now, it wont allow stacks above the size of 65,536, after about 3 hours of looking, I found the issue.<br />
+                        <br /> The issue is found on PlayerInventory.cs line 120. split_Amount is type UInt16, which maxes out at 65,536.<br />
+                        <br /> My question now is, is there anyway I can change this, or get around this somehow? Just changing it to UInt32 should fix all my problems and make me and my players happy
+                        again.<br />
+                        <br /> Please help me solve this, I&#039;d be eternally grateful. Just need to know how I can change this without changing the core code, or hell, if I have to change the core
+                        code, tell me how to recompile it (if I can) and I will for my server. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2015 at 11:27 PM">Jun 12, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/98632/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-98636" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">this shouldn&#039;t be possible since the client uses the same code, if you change it for your server the client
+                        still wouldn&#039;t allow it...<br />
+                        <br /> but i can&#039;t see any UInt16 in that file? i&#039;ve searched for split_Amount and found only one in the Item class...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public Item SplitItem(int split_Amount)
+{
+    Assert.Test(split_Amount &gt; 0, &quot;split_Amount &lt;= 0&quot;);
+    if (split_Amount &gt;= this.amount)
+    {
+        return null;
+    }
+    Item splitAmount = this;
+    splitAmount.amount = splitAmount.amount - split_Amount;
+    Item item = ItemManager.CreateByItemID(this.info.itemid, 1, false);
+    item.amount = split_Amount;
+    this.MarkDirty();
+    return item;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-98636' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 12, 2015 at 11:43 PM">Jun 12, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-98636' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/98636/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-98671" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Alright, not sure how I&#039;m seeing this code then. Eitherway, is there anyway to fix this issue, does anyone
+                        have an idea? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-98671' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 13, 2015 at 2:24 AM">Jun 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-98671' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/98671/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-99093" class="message" data-author="ShadowEvil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ShadowEvil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ShadowEvil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://nf.nci.org.au/facilities/software/Matlab/techdoc/ref/uint16.html" target="_blank" class="externalLink  rel="
+                            nofollow">https://nf.nci.org.au/facilities/software/Matlab/techdoc/ref/uint16.html</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ShadowEvil</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99093' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 14, 2015 at 8:34 AM">Jun 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99093' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99093/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-99140" class="message" data-author="AnExiledGod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AnExiledGod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AnExiledGod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ShadowEvil">
+                            <aside>
+                                <div class="attribution type">ShadowEvil said: <a href="#post-99093" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://nf.nci.org.au/facilities/software/Matlab/techdoc/ref/uint16.html" target="_blank" class="externalLink  rel="
+                                            nofollow">https://nf.nci.org.au/facilities/software/Matlab/techdoc/ref/uint16.html</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That doesn&#039;t help me. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AnExiledGod</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99140' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 14, 2015 at 11:24 AM">Jun 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99140' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99140/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-99321" class="message" data-author="ShadowEvil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ShadowEvil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ShadowEvil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">No but it explains how much a uint16 can hold and not hold. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /> The max you can split is the size of uint16 There is no way to fix that because it&#039;s
+                        client sided as well... Client splits it... Sends packet of split information... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ShadowEvil</a>,</span>
+                        <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99321' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 14, 2015 at 9:49 PM">Jun 14, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/change-core-code-to-fix-moving-large-groups-of-items.9388/#post-99321' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99321/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

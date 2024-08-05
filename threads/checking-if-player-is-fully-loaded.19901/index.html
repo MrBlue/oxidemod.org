@@ -1,0 +1,252 @@
+---
+layout: forums
+title: 'Solved - Checking if player is fully loaded?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/' | prepend: site.baseurl }}">Checking if player is fully loaded?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">Sionn</a>, <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 25, 2016 at 1:45 AM">Jul 25,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-234957" class="message" data-author="Sionn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sionn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sionn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi Guys,<br />
+                        <br /> I have a timer that loops and gathers info from all players. One of the methods called is GetLocation(player). This works until a new player joins. The player has no
+                        location when they join the server (presumable as they haven&#039;t spawned in yet).<br />
+                        <br /> How can I check that each player in the loop has fully spawned so that I don&#039;t call GetLocation() and cause an error?<br />
+                        <br /> Current code for your reference:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void sendLocationLoop()
+        {
+            // IF no players online then no need to bother
+            var playerSessions = GameManager.Instance.GetSessions().Values;
+            timer.Repeat(10f, 0, () =&gt;
+            {
+                if (playerSessions.Count() &gt; 0)
+                {
+                    var playerLocData = new Dictionary&lt;string, string&gt;();
+                    var players = new List&lt;PlayerSession&gt;();                    foreach (var player in GameManager.Instance.GetSessions().Values)
+                    {
+                        players.Add(player);
+                    }                    foreach (var player in players)
+                    {
+                       var payload = new PlayerInfo
+                       {
+                                player_name = player.Name,
+                                player_location = GetLocation(player)
+                       };
+                       playerLocData.Add(player.SteamId.ToString(), JsonConvert.SerializeObject(payload));
+                    }                    PrintWarning(JsonConvert.SerializeObject(playerLocData));
+                    playerLocData.Clear();
+                    players.Clear();
+                }            });        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sionn</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2016 at 1:45 AM">Jul 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234957/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-234971" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can check if player.transform is null perhaps, else player.transform.position maybe. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-234971' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2016 at 2:54 AM">Jul 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-234971' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/234971/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-235047" class="message" data-author="Sionn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sionn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sionn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thanks. You narrowed it down for me.<br /> It was actually <b>WorldPlayerEntity</b> that hadn&#039;t been set when
+                        calling GetLocation so checking for a null value in that resolved the issue.<br />
+                        <br /> Like so:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+                    foreach (var player in GameManager.Instance.GetSessions().Values)
+                    {
+                       // PrintWarning(player.WorldPlayerEntity.transform.position.ToString(&quot;G4&quot;));
+                        if (player.WorldPlayerEntity != null) players.Add(player);
+                    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sionn</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235047' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2016 at 7:59 AM">Jul 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235047' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/235047/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-235510" class="message" data-author="Noviets">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Noviets" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Noviets</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Why not use session.isLoaded? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Noviets</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235510' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 26, 2016 at 9:54 AM">Jul 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235510' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/235510/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-235554" class="message" data-author="Sionn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sionn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sionn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Noviets">
+                            <aside>
+                                <div class="attribution type">Noviets said: <a href="#post-235510" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Why not use session.isLoaded?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Simply because I never knew that one existed <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br /> Cheers
+                        mate. Another method to add to my arsenal <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sionn</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235554' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 26, 2016 at 1:00 PM">Jul 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-fully-loaded.19901/#post-235554' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/235554/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

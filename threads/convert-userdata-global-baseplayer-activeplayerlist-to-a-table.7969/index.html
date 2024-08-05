@@ -1,0 +1,244 @@
+---
+layout: forums
+title: 'Solved - Convert userdata global.BasePlayer.activePlayerList to a table'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/' | prepend: site.baseurl }}">Convert userdata
+            global.BasePlayer.activePlayerList to a table</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">LaserHydra</a>, <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 25, 2015 at 11:21 AM">Apr 25, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-82345" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">How do I convert the userdata gloabl.BasePlayer.activePlayerList to a table?<br /> As what I want to do, seems
+                        like it doesn&#039;t work with userdata like this.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+local targetPlayer = global.BasePlayer.activePlayerList[math.random(1, #global.BasePlayer.activePlayerList)]
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 25, 2015 at 11:21 AM">Apr 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/82345/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82368" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">For what you are attempting to do there you really don&#039;t need the activePlayerList to be a table. The list is
+                        a List&lt;BasePlayer&gt; (more information on lists: <a href="https://msdn.microsoft.com/en-us/library/6sh2ey19%28v=vs.110%29.aspx" target="_blank" class="externalLink  rel="
+                            nofollow">https://msdn.microsoft.com/en-us/library/6sh2ey19(v=vs.110).aspx</a>). This list uses a numeric key for all the values so you can easily get a BasePlayer from the
+                        list by specifying a key between square brackets.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local target = global.BasePlayer.activePlayerList[0]</pre>{% endraw %}
+                        </div>As it is a List and because of the methods that were made available through the lua bindings you can use the property fields and methods that are available for Lists in
+                        C#. This way you can just get the amount of values in that list by getting the Count property:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local onlinePlayerCount = global.BasePlayer.activePlayerList.Count</pre>{% endraw %}
+                        </div>Now that you know this you should be able to fix the code you have posted originally and rewrite that to something that works with a minor modification without using a
+                        table <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82368' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 25, 2015 at 12:36 PM">Apr 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82368' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/82368/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82382" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well im not, propably I failed like hell but i&#039;ve come up with this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local target = global.BasePlayer.activePlayerList[0]
+            local onlinePlayerCount = global.BasePlayer.activePlayerList.Count
+            local targetPlayer = target[math.random(1, onlinePlayerCount)]</pre>{% endraw %}
+                        </div>but now it only gives me the number of the user in the list (i guess). What I would need is the displayName. Let me guess, I failed? ^_^ <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82382' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 25, 2015 at 1:40 PM">Apr 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82382' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/82382/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82383" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I thought you said you knew VB.. Yeah I&#039;m just going to Nope out of this one. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82383' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 25, 2015 at 1:42 PM">Apr 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82383' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/82383/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82384" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-82383" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I thought you said you knew VB.. Yeah I&#039;m just going to Nope out of this one.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I said I startet with VB and I kinda knew some stuff. But its also some time ago when I worked with it last time so well whatever ^^<br />
+                        [DOUBLEPOST=1429965921][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-82383" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I thought you said you knew VB.. Yeah I&#039;m just going to Nope out of this one.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>okay nevermind, I got it. Damn stupid failure. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82384' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 25, 2015 at 1:44 PM">Apr 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/convert-userdata-global-baseplayer-activeplayerlist-to-a-table.7969/#post-82384' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/82384/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

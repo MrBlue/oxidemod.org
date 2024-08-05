@@ -1,0 +1,490 @@
+---
+layout: forums
+title: 'Removing collisions between objects?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/removing-collisions-between-objects.27440/' | prepend: site.baseurl }}">Removing collisions between objects?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/removing-collisions-between-objects.27440/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 8, 2017 at 10:02 PM">Oct 8,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-355146" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Heyo!<br /> Just being cureous - is there a reliable way to remove collisions between some objects? I&#039;m not
+                        very familliar with Unity, but the first thign I&#039;ve tryed - Physics.IgnoreCollision(Collider, Collider, true);<br /> But that didn&#039;t work out.<br /> It looks like
+                        some entities in the world doesn&#039;t even have collider component in them. only in childs.<br /> I was working with OnHammerHit, using hitentity as the target.<br /> First
+                        attempt use to look like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            if(info.HitEntity == null)
+            {
+                PrintWarning(&quot;No entity found&quot;);
+                return;
+            }
+            var playercol = player.GetComponent&lt;Collider&gt;();
+            if(playercol == null)
+            {
+                PrintWarning(&quot;Player dosn't have collider!&quot;);
+                return;
+            }
+           
+           var entitycol= info.HitEntity.GetComponent&lt;Collider&gt;();
+            if(playercol == null)
+            {
+                PrintWarning(&quot;Entitydosn't have collider!&quot;);
+                return;
+            }
+            Physics.IgnoreCollision(playercol, entitycol, true);
+            PrintWarning(&quot;Done!&quot;);
+        }</pre>{% endraw %}
+                        </div>Aaaand... didn&#039;t work out. As I sai above - some items doesn&#039;t have Collider at all. Workbench, for example.<br /> But even if the item has collider - that does
+                        nothing. So in my mind if I hit a chair with hammer - I&#039;m able to walk thro it. But nope - i can&#039;t.<br /> Another idea was almost the same, but getting all collider
+                        in child of entity:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            if(info.HitEntity == null)
+            {
+                PrintWarning(&quot;No entity found&quot;);
+                return;
+            }
+            var playercol = player.GetComponent&lt;Collider&gt;();
+            if(playercol == null)
+            {
+                PrintWarning(&quot;Player dosn't have collider!&quot;);
+                return;
+            }
+            var cols = info.HitEntity.GetComponentsInChildren&lt;Collider&gt;();
+            PrintWarning($&quot;Entity has {cols.Count()} colliders: {string.Join(&quot;\n&quot;, cols.Select(p =&gt; p.name).ToArray())}&quot;);
+            foreach(var col in cols)
+            {
+                Physics.IgnoreCollision(col, playercol, true);
+            }
+            PrintWarning(&quot;Done!&quot;);
+        }</pre>{% endraw %}
+                        </div>Still doesn&#039;t work. Even setting entity colliders IsTrigger to true does absolutly nothing....<br /> Any ideas would be really appriciated! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2017 at 10:02 PM">Oct 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/355146/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355183" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve played around with this same idea before - I concluded at the time that it isn&#039;t possible. From
+                        what I had seen, I determined that at least part of the collision handling is done on the client-side. You could possibly disable networking between the entities, thus
+                        &quot;hiding&quot; it from your client, but then you&#039;d not be able to see whatever it is you&#039;re walking through... but this is theoretical - I haven&#039;t tested it
+                        at all... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355183' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 12:39 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355183' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355183/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355185" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Most things use RigidBodies, maybe try playing around with those instead. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355185' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 12:41 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355185' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355185/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355198" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Try doing something like this to get the collider, seems to work (at least on some things?) for me:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+entity.transform.GetComponentInChildrenIncludeDisabled&lt;Collider&gt;()
+</pre>{% endraw %}
+                        </div>EDIT: Also, on any entity of type BaseCombatEntity you can use _collider which seems to work when .GetComponent doesn&#039;t. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355198' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 1:39 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355198' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355198/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355242" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for all your replies. Gonna try both - from rigitbodies and _collider (No, really, there is a var for
+                        this? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie12" alt="o_O" title="Er... what?    o_O" /> didn&#039;t notice) and let you guys know.<br />
+                        <a href="https://oxidemod.org/members/121961/" class="username" data-user="121961, @ignignokt84">@ignignokt84</a>, I think you are right, but there must be a way to send the
+                        info to the client..... I&#039;ll post here if I&#039;ll find the solution.<br /> [DOUBLEPOST=1507542095][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="Ryan">
+                            <aside>
+                                <div class="attribution type">Ryan said: <a href="#post-355185" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Most things use RigidBodies, maybe try playing around with those instead.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Also - I was unable to make RigidBodiy work... for some reason ApplyForce, for example give me error.... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355242' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 10:40 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355242' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355242/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355253" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So far - this way of getting collider seems to be working:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+            Collider entitycol = null;
+            if(entity is BaseCombatEntity)
+            {
+                PrintWarning(&quot;First way&quot;);
+                entitycol = ((BaseCombatEntity)entity)._collider;
+            }
+            if(entitycol == null)
+            {
+                PrintWarning(&quot;Second way&quot;);
+                entitycol = entity.transform.GetComponentInChildrenIncludeDisabled&lt;Collider&gt;();
+            }</pre>{% endraw %}
+                        </div>But what now? This code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+            Physics.IgnoreCollision(playercol, entitycol, true);
+            player.SendNetworkUpdateImmediate();
+            entity.SendNetworkUpdateImmediate();</pre>{% endraw %}
+                        </div>Still doesn&#039;t work.... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355253' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 12:09 PM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355253' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355253/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355691" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Sup? No one has an idea?<br /> I&#039;m gonna look thro the client assembly, maybe I&#039;ll found something
+                        there. Will post here if there would be anything usefull. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355691' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 11, 2017 at 2:19 PM">Oct 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-355691' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355691/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361841" class="message" data-author="GonzoTheThird">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GonzoTheThird" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GonzoTheThird</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Did you find a solution?<br /> I have the same problem. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GonzoTheThird</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-361841' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 30, 2017 at 9:47 AM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-361841' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361841/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361892" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Still nothing. No idea how this can be realized. Looks like the info about removing collision is not being send
+                        to the player, and I&#039;m out of ideas right now. ALso don&#039;t have enought time, so...<br /> Not yet =( <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-361892' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 30, 2017 at 3:13 PM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-361892' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361892/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400344" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-355242" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for all your replies. Gonna try both - from rigitbodies and _collider (No, really, there is a var for this? <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie12" alt="o_O" title="Er... what?    o_O" /> didn&#039;t notice) and let you guys
+                                        know.<br />
+                                        <a href="https://oxidemod.org/members/121961/" class="username" data-user="121961, @ignignokt84">@ignignokt84</a>, I think you are right, but there must be a
+                                        way to send the info to the client..... I&#039;ll post here if I&#039;ll find the solution.<br /> [DOUBLEPOST=1507542095][/DOUBLEPOST]<br /> Also - I was unable
+                                        to make RigidBodiy work... for some reason ApplyForce, for example give me error....</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>what did you have for RigidBodiy <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-400344' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 13, 2018 at 10:06 AM">May 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-collisions-between-objects.27440/#post-400344' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400344/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

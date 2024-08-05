@@ -1,0 +1,222 @@
+---
+layout: forums
+title: 'Preventing sign updates for admin?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/' | prepend: site.baseurl }}">Preventing sign updates for admin?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CombatTag</a>, <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 16, 2016 at 4:39 PM">Dec 16,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-276992" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I recently started to give players on my server the BasePlayer.PlayerFlags.IsAdmin flag and I learned that they
+                        are now allowed to paint on any sign they want. To fix this I started by hooking into CanUpdateSign which fixed them from actually changing the sign, but on their client it
+                        appears that they changed it unless they leave the networking range and come back in so that a new version of the sign is sent to the client. I am attempting to use
+                        sign.SendNetworkUpdate, but the image on the sign doesn&#039;t seem to be updated unless they leave the network range and come back. Just wondering what the correct way to do
+                        this is because the Signage.cs class uses <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+this.SendNetworkUpdate(BasePlayer.NetworkQueue.Update);
+</pre>{% endraw %}
+                        </div> when the sign is updated.<br />
+                        <br /> My code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object CanUpdateSign(BasePlayer player, Signage sign)
+{
+if (player.net?.connection?.authLevel &gt; 0) return null;
+timer.Once(1, () =&gt;
+{
+sign.SendNetworkUpdate();
+});return false;
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2016 at 4:39 PM">Dec 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/276992/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-277051" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I looked around and it does seem nearly impossible to get it to force update on the client... The best idea I
+                        have so far, which is really a workaround, is to teleport the player out of the network range and back in, but that&#039;s not ideal. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277051' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2016 at 8:15 PM">Dec 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277051' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/277051/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-277059" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yeah that&#039;s what I was afraid of I guess I will look into what about going out of networking range makes it
+                        work. I also may be able to send a fake destroy packet to the client and then sent a packet to create the sign again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277059' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2016 at 9:15 PM">Dec 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277059' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/277059/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-277063" class="message" data-author="Werkrat">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Werkrat" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Werkrat</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Did you try OnSignUpdate? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Werkrat</a>,</span>
+                        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277063' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2016 at 9:26 PM">Dec 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277063' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/277063/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-277064" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I will try, but it&#039;s not a matter of the hook being called because it is. The image for the sign is not
+                        changed when the player attempts to change it which is the intended behavior, but it appears to the person attempting to change it that it has. What I want to do is send an
+                        updated version of that image to the client who tried to change the sign so it doesn&#039;t look like they were able to change it. I could be missing something so I will try
+                        anyways to see what happens. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277064' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2016 at 9:34 PM">Dec 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/preventing-sign-updates-for-admin.22513/#post-277064' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/277064/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,887 @@
+---
+layout: forums
+title: 'LUA: Remove item from inventory'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/' | prepend: site.baseurl }}">LUA: Remove item from inventory</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">insane8472</a>, <a href="{{ '/threads/lua-remove-item-from-inventory.11286/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 23, 2015 at 12:31 AM">Aug 23,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-122658" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have searched and do not know of any lua plugin that does what I need to study it. I have a loop through
+                        players inventory looking for item name with x stack, when found, I would like to remove it from their inventory. This is where I am stuck, I find the item stack but can&#039;t
+                        remove it. Any help or guidance in the right direction is much appreciated. Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 12:31 AM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122658/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122682" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You should be able to call the method <i>Remove </i>on the item.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void Remove(float fTime)
+{
+    if (this.removeTime &lt;= 0f)
+    {
+        foreach (ItemMod mod in this.info.itemMods)
+        {
+            mod.OnRemove(this);
+        }
+        this.onCycle = null;
+        this.removeTime = Time.time + fTime;
+        this.OnDirty = null;
+        this.position = -1;
+        if (this.isServer)
+        {
+            ItemManager.RemoveItem(this, fTime);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>So you&#039;ll most likely need something like this in lua: (untested)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>...
+foundItem:Remove(0)
+...</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122682' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 1:56 AM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122682' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122682/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122787" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-122682" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You should be able to call the method <i>Remove </i>on the item.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>public void Remove(float fTime)
+{
+    if (this.removeTime &lt;= 0f)
+    {
+        foreach (ItemMod mod in this.info.itemMods)
+        {
+            mod.OnRemove(this);
+        }
+        this.onCycle = null;
+        this.removeTime = Time.time + fTime;
+        this.OnDirty = null;
+        this.position = -1;
+        if (this.isServer)
+        {
+            ItemManager.RemoveItem(this, fTime);
+        }
+    }
+}</pre>{% endraw %}
+                                        </div>So you&#039;ll most likely need something like this in lua: (untested)<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>...
+foundItem:Remove(0)
+...</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I had found something like player. Inventory:Take(item) <br /> There was a second arg but i forgot it. It worked totally fine for me. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122787' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 2:49 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122787' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122787/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122803" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for the replies. Laser&#039;s reply is the closest I have gotten to getting it working. Still not quite
+                        there yet. Do you still have the lua script you had working? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122803' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 3:57 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122803' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122803/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122808" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-122787" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I had found something like player. Inventory:Take(item)<br /> There was a second arg but i forgot it. It worked totally fine for me.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Take was changed a while back and does no longer take a single item to remove and is used for crafting to remove a list of items.<br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-122803" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for the replies. Laser&#039;s reply is the closest I have gotten to getting it working. Still not quite there yet. Do you still have the
+                                        lua script you had working?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Did you actually try to use Remove(float fTime)? Remove works perfectly for what you need, you just grab the Item object you want to remove and call Remove(0)<br /> Below
+                        example will remove one stack of Wood from your inventory when you run /test. <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Title = &quot;Lua Tests&quot;
+PLUGIN.Version = V(9, 9, 9)
+PLUGIN.Description = &quot;Lua test plugin&quot;
+PLUGIN.Author = &quot;Mughisi&quot;function PLUGIN:Init()    
+    command.AddChatCommand(&quot;test&quot;,  self.Plugin, &quot;cmdTest&quot;)
+endfunction PLUGIN:cmdTest( player, cmd, args )
+    local item = player.inventory:FindItemID(3655341)
+    item:Remove(0)
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122808' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 4:16 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122808' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122808/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122829" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks, I see what I did wrong. Trying to get the item id from the name instead of the id itself. The
+                        &quot;0&quot; in Remove, does this indicate the slot? Trying to remove a specific stack of x instead of a random stack. Thanks again. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Aug 23, 2015 at 4:49 PM">Aug 23, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122829' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 4:40 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122829' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122829/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122833" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-122829" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks, I see what I did wrong. Trying to get the item id from the name instead of the id itself. The &quot;0&quot; in Remove, does this indicate
+                                        the slot? Trying to remove a specific stack of x instead of a random stack. Thanks again.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>0 is the time, which should be 0, to remove a specific item stack just search the inventory for that item, there are multiple ways to do that, I just used the easiest
+                        thing there is for an example on how the remove actually works. <br /> I can recommend using a tool like .NET Reflector or Telerik JustDecompile to browse the
+                        Assembly-CSharp.dll to get to know the available fields, structs, methods, ... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122833' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 4:47 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122833' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122833/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122836" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for all the help. I will check out the decompiled dll information. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122836' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 4:51 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122836' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122836/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122841" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-122803" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for the replies. Laser&#039;s reply is the closest I have gotten to getting it working. Still not quite there yet. Do you still have the
+                                        lua script you had working?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Search for PlayerInventory and check the Take method. I used it in CSharp but I think you should br able to use it in LUA too. I can post you an example code in the next
+                        hours.<br /> [DOUBLEPOST=1440348826][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-122808" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Take was changed a while back and does no longer take a single item to remove and is used for crafting to remove a list of items.<br />
+                                        <br /> Did you actually try to use Remove(float fTime)? Remove works perfectly for what you need, you just grab the Item object you want to remove and call
+                                        Remove(0)<br /> Below example will remove one stack of Wood from your inventory when you run /test.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>PLUGIN.Title = &quot;Lua Tests&quot;
+PLUGIN.Version = V(9, 9, 9)
+PLUGIN.Description = &quot;Lua test plugin&quot;
+PLUGIN.Author = &quot;Mughisi&quot;function PLUGIN:Init()   
+    command.AddChatCommand(&quot;test&quot;,  self.Plugin, &quot;cmdTest&quot;)
+endfunction PLUGIN:cmdTest( player, cmd, args )
+    local item = player.inventory:FindItemID(3655341)
+    item:Remove(0)
+end</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I don&#039;t think so, its still working. I used it in a shop plugin. Its currently running on a server. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122841' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 5:52 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122841' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122841/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122842" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-122841" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Search for PlayerInventory and check the Take method. I used it in CSharp but I think you should br able to use it in LUA too. I can post you an
+                                        example code in the next hours.<br /> [DOUBLEPOST=1440348826][/DOUBLEPOST]<br /> I don&#039;t think so, its still working. I used it in a shop plugin. Its
+                                        currently running on a server.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Of course it still works, but it is slower than Remove, especially from Lua as it takes a List&lt;Item&gt; which isn&#039;t easily created in Lua. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122842' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 5:55 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122842' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122842/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122844" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-122842" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Of course it still works, but it is slower than Remove, especially from Lua as it takes a List&lt;Item&gt; which isn&#039;t easily created in
+                                        Lua.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ye you are propably right with that. Just saying it works. I used it in CSharp. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122844' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 5:56 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122844' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122844/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122846" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-122844" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ye you are propably right with that. Just saying it works. I used it in CSharp.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I never said it doesn&#039;t work <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> I just said it takes a
+                        List and not a single item ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122846' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 5:58 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122846' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122846/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122847" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-122846" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I never said it doesn&#039;t work <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                                        I just said it takes a List and not a single item ^^</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I did not remember that fully. Gonna check my code again <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122847' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 6:00 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122847' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122847/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122959" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok, I loop the inventory, find the stack with x amount of wood that I want to remove, but I cannot figure out
+                        even with the dll decompiled how to remove that stack. It still removes a random stack. Since they all have the same itemid, trying to compare the name returned
+                        &quot;Item.woodx##...&quot; is always the same. I know im probably missing someting simple. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122959' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2015 at 12:50 AM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122959' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122959/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122974" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-122959" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, I loop the inventory, find the stack with x amount of wood that I want to remove, but I cannot figure out even with the dll decompiled how to
+                                        remove that stack. It still removes a random stack. Since they all have the same itemid, trying to compare the name returned &quot;Item.woodx##...&quot; is
+                                        always the same. I know im probably missing someting simple.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>With the :Take method you can specify the amount of taken items. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122974' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2015 at 2:32 AM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-122974' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/122974/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123058" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I tried take but keep getting invalid arguments to method. I have the list, id and amount unless the list is
+                        wrong in some way. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123058' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2015 at 10:38 AM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123058' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/123058/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123070" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-123058" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I tried take but keep getting invalid arguments to method. I have the list, id and amount unless the list is wrong in some way.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Try <i>Take(nil, &lt;id_here&gt;, &lt;amount_here&gt;)</i>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123070' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2015 at 11:07 AM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123070' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/123070/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123074" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well, thats that. Thanks for the help. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> [DOUBLEPOST=1440440837,1440412116][/DOUBLEPOST]How would I go about removing a blueprint? I can get
+                        the flags of items to determine if it is a blueprint but they have the same name and id as the item they provide.<br /> [DOUBLEPOST=1440587793][/DOUBLEPOST]I have tried all I
+                        know or what could possibly work. I can get the position of a BP, but how do I remove it? Is it possible to remove a specific slot? I know X amount can be removed and items
+                        once found with an itemid, but they have the same ids. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123074' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 26, 2015 at 12:16 PM">Aug 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lua-remove-item-from-inventory.11286/#post-123074' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/123074/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

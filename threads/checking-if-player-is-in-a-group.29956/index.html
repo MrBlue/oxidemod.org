@@ -1,0 +1,263 @@
+---
+layout: forums
+title: 'Solved - Checking if player is in a group?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/' | prepend: site.baseurl }}">Checking if player is in a group?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">mikzael</a>, <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 24, 2018 at 8:36 PM">Mar 24,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-392533" class="message" data-author="mikzael">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mikzael" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mikzael</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> So im trying to write a simple plugin that will change the players name color on chat to orange IF they belong to the &quot;vip&quot; groups. (groups being managed by
+                        oxide).<br />
+                        <br /> Before looking at the code remeber that the group &quot;vip&quot; already exists.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    class vipColor : RustPlugin
+    {
+        //intercepts the chat message
+        object OnPlayerChat(ConsoleSystem.Arg arg)
+        {
+            BasePlayer player = (BasePlayer)arg.Connection.player;
+            string Message = arg.GetString(0);
+            
+            if (string.IsNullOrEmpty(Message)) return false;            // place here the function to get the groups of player
+            // Groups = getGroups(player)            if (Groups.Contains(&quot;vip&quot;))
+                rust.BroadcastChat($&quot;&lt;color=#ffa500&gt;{player.displayName}&lt;/color&gt;&quot;, Message, player.UserIDString);            Puts($&quot;{player.displayName}: {Message}&quot;);            return true;
+        }
+    }</pre>{% endraw %}
+                        </div>So im just missing the function that actually gets the groups that the player belongs to.<br />
+                        <br /> Im sorry idont know any C# and i dont have any experience working with oxide plugins, so maybe this is very simple and basic but i cant find any doc about working with
+                        groups and i cant find a plugin that solves this.<br />
+                        <br /> Regards. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mikzael</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2018 at 8:36 PM">Mar 24, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/392533/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-392546" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey,<br /> You can go through existing groups<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach (var group in permission.GetGroups())
+{
+}</pre>{% endraw %}
+                        </div>and/or you can go through the members of a group<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach (var user in permission.GetUsersInGroup(&quot;vip&quot;))
+{
+}
+</pre>{% endraw %}
+                        </div>I&#039;m not sure if you can go through a list of groups by player, but you combine both of these for the same result.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach (var group in permission.GetGroups())
+{
+    foreach (var user in permission.GetUsersInGroup(&quot;vip&quot;))
+    {
+    }
+}</pre>{% endraw %}
+                        </div>I think you could do<br /> if (permission.GetUsersInGroup(&quot;vip&quot;).Contains(player));<br /> but I haven&#039;t checked. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392546' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 24, 2018 at 10:24 PM">Mar 24, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392546' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/392546/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-392552" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Use better chat plugin <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392552' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 25, 2018 at 12:18 AM">Mar 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392552' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/392552/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-392570" class="message" data-author="serezhadelaet">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="serezhadelaet" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">serezhadelaet</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br /> Oxide provides his own Player&#039;s class for easily do what you want to.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (player.IPlayer.BelongsToGroup(&quot;vip&quot;))
+    rust.BroadcastChat($&quot;&lt;color=#ffa500&gt;{player.displayName}&lt;/color&gt;&quot;, Message, player.UserIDString);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">serezhadelaet</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392570' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 25, 2018 at 4:40 AM">Mar 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392570' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/392570/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-392577" class="message" data-author="mikzael">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mikzael" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mikzael</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="serezhadelaet">
+                            <aside>
+                                <div class="attribution type">serezhadelaet said: <a href="#post-392570" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">if (player.IPlayer.BelongsToGroup(&quot;vip&quot;))</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This works prerfectly... Thank you so much, im forever in your debt <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mikzael</a>,</span>
+                        <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392577' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 25, 2018 at 6:30 AM">Mar 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-if-player-is-in-a-group.29956/#post-392577' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/392577/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

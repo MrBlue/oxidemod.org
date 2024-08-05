@@ -1,0 +1,782 @@
+---
+layout: forums
+title: 'Getting container type?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-container-type.29017/' | prepend: site.baseurl }}">Getting container type?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Sorrow</a>, <a href="{{ '/threads/getting-container-type.29017/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 13, 2018 at 12:08 PM">Jan 13, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-379299" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi,<br />
+                        <br /> I am currently trying to retrieve the container type during the OnItemAddedToContainer event to prevent players from searching for the blueprint of certain objects (AK,
+                        Bolt).<br />
+                        <br /> I tried a lot of things without success.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, 0.1)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private void OnItemResearch(ResearchTable table, Item targetItem, BasePlayer player)
+        {
+            if (player == null) return;            if(targetItem.ToString().Contains(&quot;rifle.ak&quot;))
+            {
+                targetItem.MoveToContainer(player.inventory.containerMain);
+            }
+            Puts(targetItem.ToString());
+        }        private void OnItemAddedToContainer(ItemContainer container, Item item, BasePlayer player)
+        {
+            Puts(&quot;1: &quot; + container.uid.ToString());
+            Puts(&quot;2: &quot; + container.ToString());
+            Puts(&quot;3: &quot; + container.GetType());
+            Puts(&quot;4: &quot; + container.FindContainer(container.uid));
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>And the result is :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[BlockItemResearch] 1: 3563
+[BlockItemResearch] 2: ItemContainer
+[BlockItemResearch] 3: ItemContainer
+[BlockItemResearch] 4: ItemContainer</pre>{% endraw %}
+                        </div>Can you help me to find the container type?<br />
+                        <br /> Thanks a lot. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 12:08 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379299/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-379301" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello Sorrow,<br />
+                        <br /> Correct me if I&#039;m wrong but for what I can see you are attempting to block the items from being researched by not allowing them to be put in the research table
+                        container.<br />
+                        <br /> You can achieve this by making use of the CanMoveItem hook (documented here: <a href="http://docs.oxidemod.org/rust/#canmoveitem" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide API for Rust</a>)<br /> Here is also a small example to block the Assault Rifle and Bolt Action Rifle to be put into the research
+                        table:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, 0.1)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;
+        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = playerLoot.FindContainer(targetContainerId);
+            // Try to cast the entity owner of the container to ResearchTable. This will return a ResearchTable object if the owner is indeed a research table, otherwise this will be null.
+            ResearchTable researchTable = (ResearchTable)targetContainer.entityOwner;            if (researchTable == null)
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }            // The item is being put in a research table. Check if we allow this item to be researched!
+            string itemShortname = item.info.shortname;
+            if (itemBlacklist.Contains(itemShortname))
+            {
+                // The item is blacklisted, don't allow it to be put in the container!
+                return false;
+            }            // This is another item so we can let the game decide what needs to happen.
+            return null;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-379301' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 12:26 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-379301' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379301/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-379317" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you very much for your answer, it helps me a lot!<br /> After discussions with the players of my server, we
+                        asked if it was possible to have the same behavior as a m249?<br />
+                        <br />
+                        <a href="https://cdn.discordapp.com/attachments/386297780341178373/401738116139843589/unknown.png" target="_blank" class="externalLink  rel="
+                            nofollow">https://cdn.discordapp.com/attachments/386297780341178373/401738116139843589/unknown.png</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-379317' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 2:05 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-379317' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379317/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-379326" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sorrow">
+                            <aside>
+                                <div class="attribution type">Sorrow said: <a href="#post-379317" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thank you very much for your answer, it helps me a lot!<br /> After discussions with the players of my server, we asked if it was possible to
+                                        have the same behavior as a m249?<br />
+                                        <br />
+                                        <a href="https://cdn.discordapp.com/attachments/386297780341178373/401738116139843589/unknown.png" target="_blank" class="externalLink  rel="
+                                            nofollow">https://cdn.discordapp.com/attachments/386297780341178373/401738116139843589/unknown.png</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can easily edit the above example to include more items by adding more shortnames of the item you want to block to the itemBlacklist list. For a full list of items
+                        and their shortnames you can view the item list we have available in the documentation: <a href="http://docs.oxidemod.org/rust/#item-list" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide API for Rust</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-379326' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 2:51 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-379326' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379326/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-379337" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes I know and thank you lot for this work. I was just asking if we could reproduce the default rust behavior
+                        when we put a m249 in the ResearchTable <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-379337' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 3:19 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-379337' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379337/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-379338" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sorrow">
+                            <aside>
+                                <div class="attribution type">Sorrow said: <a href="#post-379337" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes I know and thank you lot for this work. I was just asking if we could reproduce the default rust behavior when we put a m249 in the
+                                        ResearchTable <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ah like that, well, the above example will just block the ak and the bolt and will reproduce the default rust behavior for all other items. (That is where the return null
+                        is for) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-379338' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 13, 2018 at 3:25 PM">Jan 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-379338' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/379338/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-380796" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks your code works fine but i have few error in console :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(02:13:23) | Failed to call hook 'CanMoveItem' on plugin 'BlockItemResearch v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.BlockItemResearch.CanMoveItem (.Item item, .PlayerInventory playerLoot, UInt32 targetContainerId, Int32 targetSlot) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.BlockItemResearch.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, 0.1)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;,
+            &quot;metal.facemask&quot;,
+            &quot;metal.plate.torso&quot;        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = playerLoot.FindContainer(targetContainerId);
+            // Try to cast the entity owner of the container to ResearchTable. This will return a ResearchTable object if the owner is indeed a research table, otherwise this will be null.
+            ResearchTable researchTable = (ResearchTable)targetContainer.entityOwner;            if (researchTable == null)
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }            // The item is being put in a research table. Check if we allow this item to be researched!
+            string itemShortname = item.info.shortname;
+            if (itemBlacklist.Contains(itemShortname))
+            {
+                BasePlayer player = item.GetOwnerPlayer();
+                // The item is blacklisted, don't allow it to be put in the container!
+                PrintToChat(player, &quot;Tu croyais vraiment qu'avec des bouts de feraille t'allais pouvoir crafter รงa ? Va l'acheter chez &lt;color=orange&gt;l'Armurier&lt;/color&gt; !&quot;);
+                return false;
+            }            // This is another item so we can let the game decide what needs to happen.
+            return null;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-380796' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2018 at 1:19 AM">Jan 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-380796' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/380796/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-380908" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sorrow">
+                            <aside>
+                                <div class="attribution type">Sorrow said: <a href="#post-380796" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks your code works fine but i have few error in console :<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>(02:13:23) | Failed to call hook 'CanMoveItem' on plugin 'BlockItemResearch v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.BlockItemResearch.CanMoveItem (.Item item, .PlayerInventory playerLoot, UInt32 targetContainerId, Int32 targetSlot) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.BlockItemResearch.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                                        </div><br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using System;
+using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, 0.1)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;,
+            &quot;metal.facemask&quot;,
+            &quot;metal.plate.torso&quot;        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = playerLoot.FindContainer(targetContainerId);
+            // Try to cast the entity owner of the container to ResearchTable. This will return a ResearchTable object if the owner is indeed a research table, otherwise this will be null.
+            ResearchTable researchTable = (ResearchTable)targetContainer.entityOwner;            if (researchTable == null)
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }            // The item is being put in a research table. Check if we allow this item to be researched!
+            string itemShortname = item.info.shortname;
+            if (itemBlacklist.Contains(itemShortname))
+            {
+                BasePlayer player = item.GetOwnerPlayer();
+                // The item is blacklisted, don't allow it to be put in the container!
+                PrintToChat(player, &quot;Tu croyais vraiment qu'avec des bouts de feraille t'allais pouvoir crafter รงa ? Va l'acheter chez &lt;color=orange&gt;l'Armurier&lt;/color&gt; !&quot;);
+                return false;
+            }            // This is another item so we can let the game decide what needs to happen.
+            return null;
+        }
+    }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>In some cases an item does not have an owner player so you want to get the BasePlayer from PlayerLoot instead. If I&#039;m not mistaken you should be able to use the
+                        following:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BasePlayer player = playerLoot.GetComponent&lt;BasePlayer&gt;();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-380908' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2018 at 5:02 PM">Jan 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-380908' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/380908/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-380923" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How is this right? Obviously I don&#039;t have any mistakes in the console. But I couldn&#039;t make the mistake
+                        when I wanted to.<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, 0.1)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;,
+            &quot;metal.facemask&quot;,
+            &quot;metal.plate.torso&quot;        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            BasePlayer player = null;
+            if (playerLoot == null)
+            {
+                return null;
+            }
+            else
+            {
+                player = playerLoot.GetComponent&lt;BasePlayer&gt;();
+            }           
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = playerLoot.FindContainer(targetContainerId);
+            // Try to cast the entity owner of the container to ResearchTable. This will return a ResearchTable object if the owner is indeed a research table, otherwise this will be null.
+            ResearchTable researchTable = (ResearchTable)targetContainer.entityOwner;            if (researchTable == null)
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }            // The item is being put in a research table. Check if we allow this item to be researched!
+            string itemShortname = item.info.shortname;
+            if (itemBlacklist.Contains(itemShortname))
+            {
+                if (player != null)
+                {
+                    PrintToChat(player, &quot;Tu croyais vraiment qu'avec des bouts de feraille t'allais pouvoir crafter รงa ? Va l'acheter chez &lt;color=orange&gt;l'Armurier&lt;/color&gt; !&quot;);
+                }
+                // The item is blacklisted, don't allow it to be put in the container!
+                return false;
+            }            // This is another item so we can let the game decide what needs to happen.
+            return null;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>Thank you =) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 20, 2018 at 9:36 PM">Jan 20, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-380923' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2018 at 6:24 PM">Jan 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-380923' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/380923/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-380963" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Same error :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-380963' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 20, 2018 at 9:35 PM">Jan 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-380963' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/380963/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-381455" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I solved the problem like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;
+using System.ComponentModel;namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, &quot;0.1.2&quot;)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;,
+            &quot;metal.facemask&quot;,
+            &quot;metal.plate.torso&quot;        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = playerLoot.FindContainer(targetContainerId);
+        
+            if (!targetContainer.entityOwner.ToString().Contains(&quot;researchtable&quot;))
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }        
+            // The item is being put in a research table. Check if we allow this item to be researched!
+            string itemShortname = item.info.shortname;
+            if (itemBlacklist.Contains(itemShortname))
+            {
+                BasePlayer player = playerLoot.GetComponent&lt;BasePlayer&gt;();
+                PrintToChat(player, &quot;Tu croyais vraiment qu'avec des bouts de feraille t'allais pouvoir crafter รงa ? Va l'acheter chez &lt;color=orange&gt;l'Armurier&lt;/color&gt; !&quot;);
+                // The item is blacklisted, don't allow it to be put in the container!
+                return false;
+            }            // This is another item so we can let the game decide what needs to happen.
+            return null;
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>But why didn&#039;t it work?<br />
+                        <br /> Edit : Error <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(12:18:35) | twila[2981458/2604679] was killed by Sadness[2549514/76561198228115720]
+(12:18:41) | Failed to call hook 'CanMoveItem' on plugin 'BlockItemResearch v0.1.2' (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.BlockItemResearch.CanMoveItem (.Item item, .PlayerInventory playerLoot, UInt32 targetContainerId, Int32 targetSlot) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.BlockItemResearch.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+(12:18:51) | [Death Notes] helene tué par Sadness
+ Pistolet semi-automatique à 5.37m
+ Impact : Avant-bras droit
+(12:18:51) | helene[2981484/5971875] was killed by Sadness[2549514/76561198228115720]</pre>{% endraw %}
+                        </div>Edit 2:<br /> The error appears after MoveItem Box -&gt; Inventory<br />
+                        <br /> Edit 3:<br /> After a lot of debugging I got to this<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;namespace Oxide.Plugins
+{
+    [Info(&quot;BlockItemResearch&quot;, &quot;Sorrow&quot;, &quot;0.1.2&quot;)]
+    [Description(&quot;Block Item Research&quot;)]    class BlockItemResearch : RustPlugin
+    {
+        private List&lt;string&gt; itemBlacklist = new List&lt;String&gt;
+        {
+            &quot;rifle.ak&quot;,
+            &quot;rifle.bolt&quot;,
+            &quot;metal.facemask&quot;,
+            &quot;metal.plate.torso&quot;        };        private object CanMoveItem(Item item, PlayerInventory playerLoot, uint targetContainerId, int targetSlot)
+        {
+            // Find the container object the player is attempting to move an item to.
+            ItemContainer targetContainer = (ItemContainer)playerLoot.FindContainer(targetContainerId);            if (targetContainer.entityOwner is ResearchTable)
+            {
+                // The item is being put in a research table. Check if we allow this item to be researched!
+                string itemShortname = item.info.shortname;
+                if (itemBlacklist.Contains(itemShortname))
+                {
+                    BasePlayer player = playerLoot.GetComponent&lt;BasePlayer&gt;();
+                    PrintToChat(player, &quot;Tu croyais vraiment qu'avec des bouts de ferraille t'allais pouvoir crafter รงa ? Va l'acheter chez &lt;color=orange&gt;l'Armurier&lt;/color&gt; !&quot;);
+                    // The item is blacklisted, don't allow it to be put in the container!
+                    return false;
+                } else
+                {
+                    return null;
+                }
+            } else
+            {
+                // Target isn't a research table so we don't want to do anything here
+                return null;
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>Edit 4: No same error again and again <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /><br /> After loot
+                        TreasureBox i have this error in my console<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(01:45:09) | Failed to call hook 'CanMoveItem' on plugin 'BlockItemResearch v0.1.2' (NullReferenceException: Object reference not set to an instance of an object)at Oxide.Plugins.BlockItemResearch.CanMoveItem (.Item item, .PlayerInventory playerLoot, UInt32 targetContainerId, Int32 targetSlot) [0x00000] in &lt;filename unknown&gt;:0at Oxide.Plugins.BlockItemResearch.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0at Oxide.Plugins.CSharpPlugin.InvokeMethod (Oxide.Core.Plugins.HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0at Oxide.Core.Plugins.Plugin.CallHook (System.String hook, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 24, 2018 at 12:51 AM">Jan 24, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/getting-container-type.29017/#post-381455' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 23, 2018 at 9:44 AM">Jan 23, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-container-type.29017/#post-381455' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381455/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

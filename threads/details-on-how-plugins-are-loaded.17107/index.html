@@ -1,0 +1,229 @@
+---
+layout: forums
+title: 'Details on how plugins are loaded'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/' | prepend: site.baseurl }}">Details on how plugins are loaded</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rakeki</a>, <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 3, 2016 at 3:19 PM">Apr 3,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-192824" class="message" data-author="Rakeki">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rakeki" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rakeki</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello guys,<br />
+                        <br /> I am calling a hook which returns a bool depending on if a dictionary contains a specific key(BasePlayer)<br />
+                        <br /> (Here is the hook)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private bool isInGame(BasePlayer player)
+        {
+            Dictionary&lt;BasePlayer, GGPlayer&gt; _players = players;
+            if (player == null || _players == null) return false;
+            if (_players.ContainsKey(player)) return true;            return false;
+        }</pre>{% endraw %}
+                        </div>Here is my check<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [PluginReference(&quot;Gp&quot;)]
+        Plugin Gp;        bool GetPlayerInGame(BasePlayer player)
+        {
+            if (Gp.IsLoaded)
+            {
+                object GetPlayerInGame = Gp?.Call(&quot;isInGame&quot;, player);
+                return (bool)GetPlayerInGame;
+            }
+            return false;
+        }</pre>{% endraw %}
+                        </div>Now when ever Gp isnt running this returns an error, when its running it works, looks like its failing to get the dictionary info. any ideas? I tried checking if the
+                        plugin is loaded first however this doesn&#039;t work. I am guessing the fact the plugin is compiled on the spot it causing issues here. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 3, 2016 at 4:49 PM">Apr 3, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rakeki</a>,</span>
+                        <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 3:19 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192824/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192856" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I don&#039;t think it&#039;s an issue with how the plugin is loaded. Are you getting compile errors, or just
+                        errors during use?<br />
+                        <br /> Also, what is the purpose of the isInGame function? Rust already has a player.IsConnected() function. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192856' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 5:18 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192856' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192856/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192861" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-192856" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I don&#039;t think it&#039;s an issue with how the plugin is loaded. Are you getting compile errors, or just errors during use?<br />
+                                        <br /> Also, what is the purpose of the isInGame function? Rust already has a player.IsConnected() function.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s a Gamemode, meaning it is for checking if the player has joined that game. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192861' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 5:29 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192861' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192861/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192877" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If its a gamemode and you want to check if a player is in it I just use a list or a class with MonoBehaviour.
+                        Examples:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public List&lt;BasePlayer&gt; ActivePlayers = new List&lt;BasePlayer&gt;();if(ActivePlayers.Contains(player))
+{
+//Does contain
+}
+else
+{
+//Does not contain
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private List&lt;MichaelPlayers&gt; MMPlayers = new List&lt;MichaelPlayers&gt;();      class MichaelPlayers : MonoBehaviour
+        {
+            public BasePlayer player;
+            public Team team = Team.Player;
+            public int deaths = 0;
+            public int wins = 0;
+            public int kills = 0;
+        }
+        enum Team
+        {
+            Micheal,
+            Player
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1459702240][/DOUBLEPOST]The second version of it is mostly used for team based things like TDM or MichealMyers(Which I am creating <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192877' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 5:49 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/details-on-how-plugins-are-loaded.17107/#post-192877' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192877/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

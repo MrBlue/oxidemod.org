@@ -1,0 +1,581 @@
+---
+layout: forums
+title: 'Solved - CSharp: WebRequest'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/csharp-webrequest.7210/' | prepend: site.baseurl }}">CSharp: WebRequest</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">iDyn</a>, <a href="{{ '/threads/csharp-webrequest.7210/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 9, 2015 at 7:20 PM">Mar 9, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-72048" class="message" data-author="iDyn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iDyn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iDyn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Having troubles triggering a basic Get request and not entirely sure if I&#039;m doing something wrong or the
+                        extension isn&#039;t yet compatible. I&#039;m wanting to send a request to the URL and read the response.<br />
+                        <br /> These code snippets compile fine in the plugin and produce no error when being called - they simply don&#039;t output anything. I found a thread after searching and
+                        tried variations of it: <a href="http://oxidemod.org/threads/equivalent-to-webclient-downloadstring-in-c.6801/#post-66690"
+                            class="internalLink">http://oxidemod.org/threads/equivalent-to-webclient-downloadstring-in-c.6801/#post-66690</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+WebRequests.GetWebrequest pWeb = new WebRequests.GetWebrequest(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}, {1}&quot;, code, response), this);
+pWeb.Process();========var pWeb = new WebRequests.GetWebrequest(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}: {1}&quot;, code, response), this);     
+pWeb.Process();========WebRequests pWeb = new WebRequests();
+pWeb.EnqueueGet(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}, {1}&quot;, code, response), this);</pre>{% endraw %}
+                        </div>Using Google as an example - doesn&#039;t work on any specified URL. The code is being ported from a LUA plugin where it worked okay (via EnqueueGet). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iDyn</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Mar 9, 2015 at 7:20 PM">Mar 9,
+                                2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72048/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72052" class="message" data-author="Bombardir">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bombardir" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bombardir</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">don&#039;t know will it work on oxide or not, but u can try:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Net;
+using System.IO;
+...
+private static string GetRequest(string url)
+{
+    WebResponse response = WebRequest.Create(url).GetResponse();
+    StreamReader reader = new StreamReader(response.GetResponseStream());
+    string content = reader.ReadToEnd();
+    reader.Close();
+    response.Close();
+    return content;
+}void SomeFunction()
+{
+    string req = GetRequest(&quot;http://oxidemod.org&quot;);
+}
+</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1425930230][/DOUBLEPOST]Also u can use Unity: <a href="http://docs.unity3d.com/ScriptReference/WWW.html" target="_blank" class="externalLink  rel="
+                            nofollow">http://docs.unity3d.com/ScriptReference/WWW.html</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bombardir</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72052' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 7:41 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72052' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72052/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72059" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You&#039;d need to use the Oxide webrequests API. See <a href="http://docs.oxidemod.org/#web-requests"
+                            target="_blank" class="externalLink">http://docs.oxidemod.org/#web-requests</a> and <a
+                            href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs" target="_blank"
+                            class="externalLink">https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs</a>. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72059' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:26 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72059' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72059/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72064" class="message" data-author="Bombardir">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bombardir" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bombardir</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-72059" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;d need to use the Oxide webrequests API. See <a href="http://docs.oxidemod.org/#web-requests" target="_blank" class="externalLink  rel="
+                                            nofollow">http://docs.oxidemod.org/#web-requests</a> and <a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs"
+                                            target="_blank" class="externalLink  rel=" nofollow">https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs</a>.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Just to know. Can we use <b>System.Net </b>and <b>System.IO</b> or it&#039;s blacklisted? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bombardir</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72064' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:30 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72064' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72064/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72066" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Bombardir">
+                            <aside>
+                                <div class="attribution type">Bombardir said: <a href="#post-72064" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just to know. Can we use <b>System.Net </b>and <b>System.IO</b> or it&#039;s blacklisted?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Ext.CSharp/CompilablePlugin.cs#L31" target="_blank"
+                            class="externalLink">https://github.com/OxideMod/Oxide/blob/master/Oxide.Ext.CSharp/CompilablePlugin.cs#L31</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72066' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:30 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72066' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72066/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72067" class="message" data-author="Bombardir">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bombardir" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bombardir</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-72066" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Ext.CSharp/CompilablePlugin.cs#L31" target="_blank" class="externalLink  rel="
+                                            nofollow">https://github.com/OxideMod/Oxide/blob/master/Oxide.Ext.CSharp/CompilablePlugin.cs#L31</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh, okay... Thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bombardir</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72067' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:31 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72067' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72067/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72074" class="message" data-author="iDyn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iDyn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iDyn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-72059" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;d need to use the Oxide webrequests API. See <a href="http://docs.oxidemod.org/#web-requests" target="_blank" class="externalLink  rel="
+                                            nofollow">http://docs.oxidemod.org/#web-requests</a> and <a href="https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs"
+                                            target="_blank" class="externalLink  rel=" nofollow">https://github.com/OxideMod/Oxide/blob/master/Oxide.Core/Libraries/WebRequests.cs</a>.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That&#039;s what I&#039;m trying to do as per the 3 code snippets posted above. Do you have a <i>working </i>CSharp example? I&#039;m porting this over from LUA where it
+                        worked fine - as I said. I could be being stupid and not implementing it correct. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iDyn</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72074' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:42 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72074' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72074/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72078" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="iDyn">
+                            <aside>
+                                <div class="attribution type">iDyn said: <a href="#post-72074" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That&#039;s what I&#039;m trying to do as per the 3 code snippets posted above. Do you have a <i>working </i>CSharp example? I&#039;m porting
+                                        this over from LUA where it worked fine - as I said. I could be being stupid and not implementing it correct.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d have to use it essentially the same way I believe. I don&#039;t know of any examples though. <a href="https://oxidemod.org/members/15663/" class="username"
+                            data-user="15663, @bawNg">@bawNg</a> is wanting to wrap it for C# plugins eventually as well. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72078' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:46 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72078' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72078/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72079" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">just a small example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Interface.GetMod().GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;).EnqueueGet(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}, {1}&quot;, code, response), this);
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72079' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:48 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72079' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72079/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72080" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-72079" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">just a small example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Interface.GetMod().GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;).EnqueueGet(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}, {1}&quot;, code, response), this);
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks, helpful as always! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72080' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:49 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72080' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72080/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72081" class="message" data-author="iDyn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iDyn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iDyn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-72079" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">just a small example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Interface.GetMod().GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;).EnqueueGet(&quot;http://www.google.com&quot;, (code, response) =&gt; Puts(&quot;{0}, {1}&quot;, code, response), this);
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Perfect - worked fine! Didn&#039;t think to call it like that but it makes sense.<br />
+                        <br /> Get that put into the CSharp examples! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie6" alt=":cool:" title="Cool    :cool:" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iDyn</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-72081' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 9, 2015 at 8:50 PM">Mar 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-72081' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72081/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-90038" class="message" data-author="cyberhof">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cyberhof" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cyberhof</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I did it, but the answer comes in the console all the code page. And in response to convey not all code pages such
+                        as &quot;ok&quot; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cyberhof</a>,</span>
+                        <a href="{{ '/threads/csharp-webrequest.7210/#post-90038' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 18, 2015 at 1:44 PM">May 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/csharp-webrequest.7210/#post-90038' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/90038/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

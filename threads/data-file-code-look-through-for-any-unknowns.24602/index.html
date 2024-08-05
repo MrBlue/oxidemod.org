@@ -1,0 +1,96 @@
+---
+layout: forums
+title: 'Data File - Code Look Through for any unknowns?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/data-file-code-look-through-for-any-unknowns.24602/' | prepend: site.baseurl }}">Data File - Code Look Through for any unknowns?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DylanSMR</a>, <a href="{{ '/threads/data-file-code-look-through-for-any-unknowns.24602/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 22, 2017 at 9:50 PM">Mar
+                22, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-309776" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just wanted to provide a small little snippet of code for any developers that need assistance on creating a data
+                        file. I&#039;ve commented on nearly every line for your convenience. There are hundreds of plugins to look at on the website if you want to take a closer look.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>StoredData storedData; //Initalizing a reference for StoredData. So we can access the data within the class whenever we need without having to keep referencing it. This can be static if needed!
+//static StoredData storedData - An example of a static version of the above
+public class StoredData{ //Our main class. This is what we will store to the .json file!
+    public int playerCount; //An exampe of an integer data type
+    public bool booleanExample; //An example of a bool/boolean type
+    public float damageperhit; //An example of a floating point data type/(float)
+    public Dictionary&lt;ulong, DataClass&gt; players = new Dictionary&lt;ulong, DataClass&gt;(); //An example of a dictionary with a key(ulong) and a value of a class/data array
+    public Dictionay&lt;int, int&gt; numbers = new Dictionary&lt;int, int&gt;(); //An example of a dictionary with an int as a key and a value
+    public List&lt;int&gt; numb = new List&lt;int&gt;(); //An example of a list with the data type of int
+} //Ends our classpublic class DataClass{ //This is a class we are storing within a dictionary. This will save to data as defined above.
+    //this is where you can really store whatever you want. For example player items, player health, player damage overtime, whenever you want. Even XYZ cords :D
+} //Ends our class
+public void SaveData() =&gt; Interface.Oxide.DataFileSystem.WriteObject(&quot;data file name here&quot;, storedData); //This is where we save our data
+//The first string is the file.json name. You should do either this.Title or a name related to your plugin so your users can see it. The second value is what we are saving. In this case we are saving 'StoredData' which we created above. Using our reference to it!
+public void LoadData(){ //Our function we are using to load data
+    //The first value(storedData) is our reference to our main class we are using to save data. In our case storedData;
+    //The second value within the &lt;&gt; is our actual class name. Which is what we are refering to, to save our data and what not(so StoredData in our case)
+    //The last value which is a string is our 'Data File Name'.
+    storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;data file name here&quot;);
+    //Note, this can be done within void Loaded() or void Init(). Either will work for our example.
+}
+//Example of using it within a init statement:
+void Init() =&gt; storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;data file name here&quot;); //Simply directing init to this statement. It can still be done within the curly brackets.
+int GetPlayerCount(){ //A function that returns player count in user data
+    var count = storedData.playerCount; //This is how we access our data. We are simply using our reference to dig within the class and grab the int playerCount;
+    return count; //Returns the playerCount defined in storedData
+}
+void AddToPlayerCount(int x){ //We will be adding x to the player count with this function
+    storedData.playerCount += x; //We add (x) to the player count in storedData
+    SaveData(); //This is where we save our data so we can use it later
+    //This will work the same with flat out setting it, dividing, subtracting, etc.
+}
+void CreateNewPlayerEntry(BasePlayer player){ //Here we will create a new data entry for the dictionary(players)
+    if(storedData.players.ContainsKey(player.userID) return; //We are asking if the dictionary does contain this ID already. IF it does simply return and dont go forward.
+    storedData.players.Add(player.userID, new DataClass()); //Adds a key to storedData.players called player.userID(your Steam 64 ID) - Then adds a new DataClass() type.
+    SaveData(); //Saves the data
+}</pre>{% endraw %}
+                        </div><b>Note: </b>This is mainly to help avoid those, &quot;how do I create a data file&quot; threads. Hopefully this should help out a tad bit <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/data-file-code-look-through-for-any-unknowns.24602/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2017 at 9:50 PM">Mar 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/data-file-code-look-through-for-any-unknowns.24602/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309776/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,387 @@
+---
+layout: forums
+title: 'Solved - Getting skin name from item?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/getting-skin-name-from-item.24083/' | prepend: site.baseurl }}">Getting skin name from item?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">sami37</a>, <a href="{{ '/threads/getting-skin-name-from-item.24083/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 25, 2017 at 5:03 PM">Feb 25, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-301483" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello everyone,<br />
+                        <br /> I am trying to get skin name from an item but i don&#039;t get it, i just try the following code, but it won&#039;t give me the correct name of the applyed skin (<a
+                            href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>)<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Item item = ItemManager.CreateByName(&quot;pistol.semiauto&quot;, 1, 10087);
+if (item != null)
+{
+    if (item.info.skins?.Length &gt; 0) 
+       Puts(item.info.skins[0].name);
+}</pre>{% endraw %}
+                        </div>This code give me &quot;assets/content/workshop/......&quot;<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Item item = ItemManager.CreateByName(&quot;pistol.semiauto&quot;, 1, 10087);
+if (item != null)
+{
+    if (item.info.skins?.Length &gt; 0) 
+       Puts(item.info.skins[0].name);
+}</pre>{% endraw %}
+                        </div>skin 10087 should be &quot;Contamination Pistol&quot; aka <a href="http://docs.oxidemod.org/rust/#semi-automatic-pistol-pistol-semiauto" target="_blank"
+                            class="externalLink  rel=" nofollow">See Oxide API</a><br /> but it return me Polymer SAP skin name<br />
+                        <br /> Can someone have a tips about it? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2017 at 5:03 PM">Feb 25, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/301483/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-301519" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well. Since there are multiple values within item.info.skins you would have to search and find which one matches.
+                        For the semi there is four or so, [0,1,2,3] so if you just loop through that and match the ID&#039;s then it should work.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    item.skin = 10087;
+                    for(var i = 0; i &lt; item.info.skins.Length; i++){
+                        if(item.info.skins[i].id == Convert.ToInt32(item.skin)){
+                             Puts(&quot;Skin Name: &quot;+item.info.skins[i].name);
+                             break;
+                        }
+                        continue;
+                    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301519' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2017 at 6:19 PM">Feb 25, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301519' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/301519/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-301556" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-301519" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well. Since there are multiple values within item.info.skins you would have to search and find which one matches. For the semi there is four or
+                                        so, [0,1,2,3] so if you just loop through that and match the ID&#039;s then it should work.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>                    item.skin = 10087;
+                    for(var i = 0; i &lt; item.info.skins.Length; i++){
+                        if(item.info.skins[i].id == Convert.ToInt32(item.skin)){
+                             Puts(&quot;Skin Name: &quot;+item.info.skins[i].name);
+                             break;
+                        }
+                        continue;
+                    }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>already try and both skins/skins2 give shitty info<br />
+                        <br /> 18:05 [Info] [Giveaway] assets/content/workshop/skin/pistol.semi/red shine/skin.semiautopistol.redshine.itemskin.asset<br /> 18:05 [Info] [Giveaway]
+                        assets/content/workshop/skin/pistol.semi/semiauto pistol reaper note/skin.semiautopistol.reapernotepistol.itemskin.asset<br /> 18:05 [Info] [Giveaway]
+                        assets/content/workshop/skin/pistol.semi/contamination pistol/skin.semiautopistol.contaminationpistol.itemskin.asset<br /> 18:05 [Info] [Giveaway]
+                        assets/content/workshop/skin/pistol.semi/halloween bat/skin.semiautopistol.halloweenbat.itemskin.asset<br />
+                        <br /> 18:06 [Info] [Giveaway] Polymer SAP<br /> 18:06 [Info] [Giveaway] Polymer SAP<br /> 18:06 [Info] [Giveaway] Paint Rush SAP<br /> 18:06 [Info] [Giveaway] Golden Leaf
+                        SAP<br /> 18:06 [Info] [Giveaway] Salt Shaker SAP<br /> 18:06 [Info] [Giveaway] Tehno Pistol<br /> 18:06 [Info] [Giveaway] LCD Marine Sidearm<br /> 18:06 [Info] [Giveaway]
+                        Nightmare<br /> 18:06 [Info] [Giveaway] Desert Hunter<br /> 18:06 [Info] [Giveaway] Poseidon Semi Auto Pistol<br /> 18:06 [Info] [Giveaway] Ol&#039; Greasy<br /> [/CODE] <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301556' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2017 at 8:18 PM">Feb 25, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301556' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/301556/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-301558" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Getting the english name is fairly easy: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>item.info.skins[0].invItem.displayName.english;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301558' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2017 at 8:19 PM">Feb 25, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301558' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/301558/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-301563" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-301558" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Getting the english name is fairly easy: <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>item.info.skins[0].invItem.displayName.english;</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Got it, but it seem the oxide docs isn&#039;t uptodate<br />
+                        <br /> Nvm, i also have to check for id.<br /> thanks for help <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301563' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2017 at 8:28 PM">Feb 25, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-301563' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/301563/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-303304" class="message" data-author="Ideal">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ideal" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ideal</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/109529/" class="username" data-user="109529, @sami37">@sami37</a> Could you release the code how you did it? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ideal</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-303304' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 2, 2017 at 5:12 PM">Mar 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-303304' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/303304/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-303306" class="message" data-author="sami37">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sami37" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sami37</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ideal">
+                            <aside>
+                                <div class="attribution type">Ideal said: <a href="#post-303304" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/109529/" class="username" data-user="109529, @sami37">@sami37</a> Could you release the code how you did
+                                        it?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Item item = ItemManager.CreateByName(name, Convert.ToInt32(info.Value), skin);
+if (item != null)
+{
+     var itemName = item.info.displayName.translated;
+     if (item.info.skins?.Length &gt; 0)
+     {
+           for (var si = 0; si &lt; item.info.skins.Length; si++)
+           {
+                if (item.info.skins[si].id == (int) skin)
+                {
+                      itemName += &quot; (&quot; + item.info.skins[si].invItem.displayName.english + &quot; skin)&quot;;
+                 }
+             }
+      }
+      SendReply(player,
+      string.Format(
+                lang.GetMessage(&quot;ItemList&quot;, this, player.UserIDString),
+                itemName, info.Value));
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sami37</a>,</span>
+                        <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-303306' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 2, 2017 at 5:17 PM">Mar 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-skin-name-from-item.24083/#post-303306' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/303306/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

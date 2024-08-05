@@ -1,0 +1,752 @@
+---
+layout: forums
+title: 'Solved - What have happened to the AI of scientists?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/' | prepend: site.baseurl }}">What have happened to the AI of
+            scientists?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Rekt
+            Ross</a>, <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 4, 2018 at 10:56 AM">Aug 4,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-410803" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So before the recent bandit update, I was able to spawn scientists, set their min- and max roam range etc. and
+                        they would roam around the position I spawned them on.<br />
+                        <br /> Now they disregard what I set and all run towards the same destination.<br /> I know is that they did not do that before the recent update.<br /> I have tried messing
+                        around with the NavAgent without any succes.<br />
+                        <br /> All I want is to spawn scientists at a certain position and have them to roam around that position.<br /> I know it is possible with timers etc. but I would just see if
+                        there is a more lightweight solution out there.<br />
+                        <br /> For code I just do like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var scientist = (Scientist)GameManager.server.CreateEntity(&quot;assets/prefabs/npc/scientist/scientist.prefab&quot;, new Vector3(position.x, position.y, position.z));
+scientist.Stats.MinRoamRange = zone.MinRoamRange;
+scientist.Stats.MaxRoamRange = zone.MaxRoamRange;
+scientist.Spawn();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 4, 2018 at 10:56 AM">Aug 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/410803/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-410833" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Update: Now I used the bandits instead and made some patrol queue where it periodically sets the destination of
+                        the different bots.<br /> Now I get tons of nullpointers, something with the method `OnAiQuestion` which is triggered when a bot targets me.<br />
+                        <br /> I&#039;m not that much into this rust AI stuff but did they really change a lot behind the scenes for the recent update?<br />
+                        <br /> Anyway, here is the nullpointer I&#039;m getting:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>NullReferenceException: Object reference not set to an instance of an object
+  at NPCPlayerApex.OnAiQuestion (NPCPlayerApex source, Rust.Ai.AiQuestion_ShareEnemyTarget question) [0x000a7] in &lt;25ffce0737144c53a960ec645231697e&gt;:0
+  at Scientist.AskQuestion (Rust.Ai.AiQuestion_ShareEnemyTarget question, System.Collections.Generic.List`1[Rust.Ai.AiAnswer_ShareEnemyTarget]&amp; answers) [0x0002c] in &lt;25ffce0737144c53a960ec645231697e&gt;:0
+  at Rust.Ai.SharePlayerTargetComm.Execute (Rust.Ai.PlayerTargetContext c) [0x00018] in &lt;25ffce0737144c53a960ec645231697e&gt;:0
+  at Apex.AI.ActionBase`1[TContext].Apex.AI.IAction.Execute (Apex.AI.IAIContext context) [0x00001] in &lt;7bc5c1faa2af4095bd4b5e00ae6066c5&gt;:0
+  at Apex.AI.CompositeAction.Execute (Apex.AI.IAIContext context) [0x0001e] in &lt;7bc5c1faa2af4095bd4b5e00ae6066c5&gt;:0
+  at Apex.AI.Components.UtilityAIClient.Execute () [0x00071] in &lt;7bc5c1faa2af4095bd4b5e00ae6066c5&gt;:0
+  at NPCPlayerApex.TickSensorySystem () [0x000be] in &lt;25ffce0737144c53a960ec645231697e&gt;:0
+  at NPCPlayerApex.Apex.LoadBalancing.ILoadBalanced.ExecuteUpdate (System.Single deltaTime, System.Single nextInterval) [0x00038] in &lt;25ffce0737144c53a960ec645231697e&gt;:0
+  at Apex.LoadBalancing.LoadBalancedQueue.Update () [0x000ab] in &lt;bb0a7f1370d1429d8f5843f17f216f71&gt;:0
+  at Apex.LoadBalancing.LoadBalancerComponent.Update () [0x00006] in &lt;bb0a7f1370d1429d8f5843f17f216f71&gt;:0
+ 
+(Filename: &lt;25ffce0737144c53a960ec645231697e&gt; Line: 0)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-410833' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 4, 2018 at 3:45 PM">Aug 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-410833' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/410833/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411019" class="message" data-author="Pois0n">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Pois0n" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Pois0n</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ross, you&#039;re not alone in this issue. <a href="https://oxidemod.org/members/186761/" class="username"
+                            data-user="186761, @tatoforever">@tatoforever</a> found a temp fix that I believe many people have been using (including myself) which is to set the communication radius on
+                        the NPCPlayerApex to zero.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            var botapex = entity.GetComponent&lt;NPCPlayerApex&gt;();
+            botapex.CommunicationRadius = 0f;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Pois0n</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411019' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 6, 2018 at 6:07 PM">Aug 6, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411019' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411019/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411044" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ah okay, thanks mate! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411044' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 6, 2018 at 9:43 PM">Aug 6, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411044' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411044/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411057" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Is that the fix ? How do I apply it? and on what? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411057' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 6, 2018 at 11:21 PM">Aug 6, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411057' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411057/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411089" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It might be the fix for bandits - have not tried it tho. Could work with normal scientists too but I have not
+                        experienced nullpointers thrown from them. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411089' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 10:32 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411089' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411089/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411090" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rekt Ross">
+                            <aside>
+                                <div class="attribution type">Rekt Ross said: <a href="#post-411089" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It might be the fix for bandits - have not tried it tho.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>So that error is a bandit thing? <br />
+                        <br /> Cause that crap spams my rcon with null exceptions and that error is outputted to the output log. Lags my server alot <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411090' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 10:35 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411090' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411090/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411094" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Do you have self-spawned bots? It was the case for me with slef-spawned bots. The error went away when I killed
+                        the bots. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411094' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 11:43 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411094' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411094/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411095" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rekt Ross">
+                            <aside>
+                                <div class="attribution type">Rekt Ross said: <a href="#post-411094" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Do you have self-spawned bots? It was the case for me with slef-spawned bots. The error went away when I killed the bots.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have Botspawn and ZombieHorde.<br />
+                        <br /> Both auto spawn bots<br /> I&#039;m guessing these are self spawned? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411095' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 11:45 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411095' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411095/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411096" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes, I do not have a problem with BotSpawn myself but idk about ZombieHorde. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411096' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 11:49 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411096' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411096/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411097" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rekt Ross">
+                            <aside>
+                                <div class="attribution type">Rekt Ross said: <a href="#post-411096" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes, I do not have a problem with BotSpawn myself but idk about ZombieHorde.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I can take each out and test to see which one causing the issue if so <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411097' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 11:51 AM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411097' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411097/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411099" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes, please report back after. And are you also using BotSpawn to spawn scientists? I’m only spawning murderers
+                        from that plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411099' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 12:01 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411099' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411099/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411100" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rekt Ross">
+                            <aside>
+                                <div class="attribution type">Rekt Ross said: <a href="#post-411099" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes, please report back after. And are you also using BotSpawn to spawn scientists? I’m only spawning murderers from that plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Actually I have it spawning both. Scientists at monuments, and biomes, and murders with air drops.<br />
+                        <br /> When I get home from work, I&#039;ll test it and then let you know. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411100' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 12:08 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411100' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411100/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411102" class="message" data-author="Flaer">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Flaer" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Flaer</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I also have spam in the console with NullReferenceException on the murderers spawn. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Flaer</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411102' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 12:18 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411102' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411102/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411104" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Krazy J">
+                            <aside>
+                                <div class="attribution type">Krazy J said: <a href="#post-411100" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Actually I have it spawning both. Scientists at monuments, and biomes, and murders with air drops.<br />
+                                        <br /> When I get home from work, I&#039;ll test it and then let you know. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1"
+                                            alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Cool!<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Flaer">
+                            <aside>
+                                <div class="attribution type">Flaer said: <a href="#post-411102" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I also have spam in the console with NullReferenceException on the murderers spawn.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How are you spawning the murderers? Through your own plugin or some public known? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411104' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 12:20 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411104' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411104/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411125" class="message" data-author="Krazy J">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Krazy J" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Krazy J</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rekt Ross">
+                            <aside>
+                                <div class="attribution type">Rekt Ross said: <a href="#post-411104" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Cool!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I haven&#039;t seen the error at all and the two plugins are still in.. Still getting crappy performance though. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Krazy J</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411125' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 3:28 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411125' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411125/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-411156" class="message" data-author="Rekt Ross">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rekt Ross" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rekt Ross</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Krazy J">
+                            <aside>
+                                <div class="attribution type">Krazy J said: <a href="#post-411125" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I haven&#039;t seen the error at all and the two plugins are still in.. Still getting crappy performance though.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well, there has always been issues with bots and performance :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rekt Ross</a>,</span>
+                        <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411156' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2018 at 9:34 PM">Aug 7, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/what-have-happened-to-the-ai-of-scientists.31388/#post-411156' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/411156/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

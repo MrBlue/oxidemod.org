@@ -1,0 +1,177 @@
+---
+layout: forums
+title: 'Request - OnCardSwiped Hook (Rust)'
+breadcrumbs:
+ - "Feature Suggestions": "/forums/feature-suggestions.6/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Request</span> <a href="{{ '/threads/oncardswiped-hook-rust.30756/' | prepend: site.baseurl }}">OnCardSwiped Hook (Rust)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/feature-suggestions.6/' | prepend: site.baseurl }}">Feature Suggestions</a>' started by <a class="username"
+            dir="auto">Slydelix</a>, <a href="{{ '/threads/oncardswiped-hook-rust.30756/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 8, 2018 at 5:05 PM">Jun 8, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-402836" class="message" data-author="Slydelix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slydelix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slydelix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Would it be possible to add this for the update coming out today, possibly object so we can prevent doors from
+                        getting opened<br />
+                        <br />
+                        <br />
+                        <br /> (CardReader class)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void ServerCardSwiped(BaseEntity.RPCMessage msg)
+    {
+        if (!base.IsPowered())
+        {
+            return;
+        }
+        if (Vector3Ex.Distance2D(msg.player.transform.position, base.transform.position) &gt; 1f)
+        {
+            return;
+        }
+        if (base.IsInvoking(new Action(this.GrantCard)) || base.IsInvoking(new Action(this.FailCard)))
+        {
+            return;
+        }
+        uint num = msg.read.UInt32();
+        Keycard keycard = BaseNetworkable.serverEntities.Find(num) as Keycard;
+        Effect.server.Run(this.swipeEffect.resourcePath, this.audioPosition.position, Vector3.up, msg.player.net.connection, false);
+        if (keycard != null)
+        {
+            Item item = keycard.GetItem();
+            if (item == null || keycard.accessLevel != this.accessLevel || item.conditionNormalized &lt;= 0f)
+            {
+                base.Invoke(new Action(this.FailCard), 0.5f);
+            }
+            else
+            {
+         
+                if (Interface.CallHook(&quot;OnCardSwiped&quot;, this, msg.player) != null)
+                {
+                     return;
+                }
+                base.Invoke(new Action(this.GrantCard), 0.5f);
+                item.LoseCondition(1f);
+            }
+        }
+    }</pre>{% endraw %}
+                        </div>Edit: possible mistakes because I did this in a text editor<br /> Edit 2: Possibly multiple hooks, one at the top for when player swipes and 2 for when the swipe was
+                        &quot;successful&quot; (opens doors) and when it was not <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 8, 2018 at 5:33 PM">Jun 8, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slydelix</a>,</span>
+                        <a href="{{ '/threads/oncardswiped-hook-rust.30756/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 8, 2018 at 5:05 PM">Jun 8, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/oncardswiped-hook-rust.30756/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/402836/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-406774" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Or keep it simple...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// CardReader
+[global::BaseEntity.RPC_Server, global::BaseEntity.RPC_Server.IsVisible(3f)]
+public void ServerCardSwiped(global::BaseEntity.RPCMessage msg)
+{
+    if (!base.IsPowered())
+    {
+        return;
+    }
+    if (Vector3Ex.Distance2D(msg.player.transform.position, base.transform.position) &gt; 1f)
+    {
+        return;
+    }
+    if (base.IsInvoking(new Action(this.GrantCard)) || base.IsInvoking(new Action(this.FailCard)))
+    {
+        return;
+    }
+    uint uid = msg.read.UInt32();
+    global::Keycard keycard = global::BaseNetworkable.serverEntities.Find(uid) as global::Keycard;
+    global::Effect.server.Run(this.swipeEffect.resourcePath, this.audioPosition.position, Vector3.up, msg.player.net.connection, false);
+    if (keycard != null)
+    {
+        if (Interface.CallHook(&quot;OnCardSwiped&quot;, new object[]
+        {
+            this,
+            keycard,
+            msg.player
+        }) != null)
+        {
+            return;
+        }
+        global::Item item = keycard.GetItem();
+        if (item != null &amp;&amp; keycard.accessLevel == this.accessLevel &amp;&amp; item.conditionNormalized &gt; 0f)
+        {
+            base.Invoke(new Action(this.GrantCard), 0.5f);
+            item.LoseCondition(1f);
+            return;
+        }
+        base.Invoke(new Action(this.FailCard), 0.5f);
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/oncardswiped-hook-rust.30756/#post-406774' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 4, 2018 at 12:18 PM">Jul 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/oncardswiped-hook-rust.30756/#post-406774' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/406774/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

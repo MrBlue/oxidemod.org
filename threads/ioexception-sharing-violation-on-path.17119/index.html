@@ -1,0 +1,340 @@
+---
+layout: forums
+title: 'IOException: Sharing violation on path'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/' | prepend: site.baseurl }}">IOException: Sharing violation on path</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">Werkrat</a>, <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 3, 2016 at 10:57 PM">Apr 3,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-192990" class="message" data-author="Werkrat">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Werkrat" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Werkrat</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Using native Linux server &amp; oxide, I get this error after a couple days. The plugin doesn&#039;t matter,
+                        I&#039;ve removed other plugins that get this error and it always comes back to a different plugin. It looks like Oxide is leaving files open. I get this after every server
+                        save.<br />
+                        <br /> I clipped this after -nographics just because it&#039;s server specific run settings, but you still see the PID for RustDedicated<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>steam@virtual1:~$ ps aux | grep RustDedicatedsteam    11313 70.0 27.5 6857224 4284268 ?     Sl   Apr01 2766:53 ./RustDedicated -batchmode -nographics</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>steam@virtual1:~$ ls -l /proc/11313/fd | grep oxidel-wx------ 1 steam steam 64 Apr  3 22:32 0 -&gt; /home/steam/rust/server/my_server_identity/oxide/data/Godmode.json
+lrwx------ 1 steam steam 64 Apr  3 22:32 12 -&gt; /home/steam/rust/server/my_server_identity/oxide/data/rustio/db.sqlite</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+steam@virtual1:~$ lsof | grep oxideRustDedic 11313 25798      steam    0w      REG    253,1         0  1778613 /home/steam/rust/server/my_server_identity/oxide/data/Godmode.json
+RustDedic 11313 25798      steam   12u      REG    253,1    247808  1778887 /home/steam/rust/server/my_server_identity/oxide/data/rustio/db.sqlite
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Error] Failed to call hook 'OnServerSave' on plugin 'Godmode v2.0.1' (IOException: Sharing violation on path /home/steam/rust/server/my_server_identity/oxide/data/Godmode.json)</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>16:56 [Error] Failed to call hook 'OnServerSave' on plugin 'Godmode v2.0.1' (IOException: Sharing violation on path /home/steam/rust/server/my_server_identity/oxide/data/Godmode.json)
+16:56 [Debug]   at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, Boolean anonymous, FileOptions options) [0x00000] in &lt;filename unknown&gt;:0
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share) [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream:.ctor (string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare)
+  at System.IO.StreamWriter..ctor (System.String path, Boolean append, System.Text.Encoding encoding, Int32 bufferSize) [0x00000] in &lt;filename unknown&gt;:0
+  at System.IO.StreamWriter..ctor (System.String path, Boolean append, System.Text.Encoding encoding) [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper remoting-invoke-with-check) System.IO.StreamWriter:.ctor (string,bool,System.Text.Encoding)
+  at System.IO.File.WriteAllText (System.String path, System.String contents, System.Text.Encoding encoding) [0x00000] in &lt;filename unknown&gt;:0
+  at System.IO.File.WriteAllText (System.String path, System.String contents) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Configuration.DynamicConfigFile.WriteObject[StoredData] (Oxide.Plugins.StoredData config, Boolean sync, System.String filename) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.DataFileSystem.WriteObject[StoredData] (System.String name, Oxide.Plugins.StoredData Object, Boolean sync) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Godmode.SaveData () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Godmode.OnServerSave () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Godmode.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Werkrat</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 10:57 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192990/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192998" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It&#039;s a general Linux error that means something is accessing that file at the same time as far as I know,
+                        which could be anything on the system. It could be the file is open somewhere, or the file is being used by something at the moment when it tried to use it in OnServerSave.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-192998' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:09 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-192998' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/192998/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193000" class="message" data-author="Werkrat">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Werkrat" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Werkrat</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> do plugins handle closing the files themselves after a read/write? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Werkrat</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193000' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:09 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193000' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193000/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193006" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Werkrat">
+                            <aside>
+                                <div class="attribution type">Werkrat said: <a href="#post-193000" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> do plugins handle closing the files themselves
+                                        after a read/write?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>As far as I know files are only open when they are being read/written to by Oxide or plugins. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193006' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:15 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193006' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193006/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193007" class="message" data-author="Werkrat">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Werkrat" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Werkrat</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It&#039;s open to RustDedicated. It looks like Oxide doesn&#039;t close the file after a read/write and gets the
+                        error when it tries to access it again. Maybe something to do with the max open file limit, not sure. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Werkrat</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193007' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:18 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193007' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193007/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193009" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Werkrat">
+                            <aside>
+                                <div class="attribution type">Werkrat said: <a href="#post-193007" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s open to RustDedicated. It looks like Oxide doesn&#039;t close the file after a read/write and gets the error when it tries to access it
+                                        again. Maybe something to do with the max open file limit, not sure.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It might be, I&#039;ll pass it by the others and see. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193009' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:21 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193009' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193009/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-193016" class="message" data-author="Werkrat">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Werkrat" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Werkrat</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Alright thanks, seems fine if I restart daily but I wanted to get the error and see if you guys could work a fix
+                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Werkrat</a>,</span>
+                        <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193016' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 3, 2016 at 11:38 PM">Apr 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ioexception-sharing-violation-on-path.17119/#post-193016' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/193016/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

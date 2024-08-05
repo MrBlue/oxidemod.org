@@ -1,0 +1,354 @@
+---
+layout: forums
+title: 'Rust Legacy - Storage logging'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Rust Legacy</span> <a href="{{ '/threads/storage-logging.8100/' | prepend: site.baseurl }}">Storage logging</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">PreFiX</a>, <a href="{{ '/threads/storage-logging.8100/' | prepend: site.baseurl }}"><span class="DateTime" title="May 1, 2015 at 6:09 AM">May 1, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-84004" class="message" data-author="PreFiX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PreFiX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PreFiX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Using playerdatabase (not oxmin anymore).... local GetDeployableObjectownerID = util.GetFieldGetter(
+                        Rust.DeployableObject, &quot;ownerID&quot;, true ) this one starts with error tho.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Title = &quot;Wood storages logs&quot;
+PLUGIN.Description = &quot;Logs who hit crates&quot;
+PLUGIN.Author = &quot;Mughisi&quot;
+PLUGIN.Version = &quot;0.1&quot;local crateNames = {}function PLUGIN:PostInit()
+    crateNames[&quot;WoodBoxLarge(Clone)&quot;] = &quot;Large Wood Storage&quot;
+    crateNames[&quot;WoodBox(Clone)&quot;]      = &quot;Wood Storage Box&quot;
+    crateNames[&quot;SmallStash(Clone)&quot;]   = &quot;Small Stash&quot;
+    crateNames[&quot;Furnace(Clone)&quot;]      = &quot;Furnace&quot;
+endlocal GetDeployableObjectownerID = util.GetFieldGetter( Rust.DeployableObject, &quot;ownerID&quot;, true )function PLUGIN:OnHurt( takedamage, damage )
+-- Check if it's a deployable component.
+    local deployableComponent = takedamage.GameObject:GetComponent(&quot;DeployableObject&quot;)    if ( not deployableComponent ) then
+        return
+    end    if ( takedamage.idMain.Name ~= &quot;WoodBoxLarge(Clone)&quot; and takedamage.idMain.Name ~= &quot;WoodBox(Clone)&quot; and takedamage.idMain.Name ~= &quot;SmallStash(Clone)&quot; and takedamage.idMain.Name ~= &quot;Furnace(Clone)&quot; ) then
+        return
+    end
+  
+    local weapon
+    if(damage.extraData) then
+        weapon = damage.extraData.dataBlock.name
+    end
+    if( weapon) then
+        weapon = weapon
+    else
+        weapon = &quot;Nežinoma&quot;
+    end    if ( not string.find( tostring( damage.attacker.id ), &quot;(EnvDecay)&quot; ) ) then
+        local crateName     = takedamage.idMain.Name
+        local cratePosition = deployableComponent.transform.position
+        local crateID       = self:GrabUniqueID( deployableComponent )
+        local crateOwnerID  = tostring( GetDeployableObjectownerID( deployableComponent ) )            if ( damage.attacker.client ) then
+            local attacker    = damage.attacker.client.netUser
+            local attackerID  = rust.GetUserID( damage.attacker.client.netUser )
+            local attackerPos = damage.attacker.client.netUser.playerClient.lastKnownPosition
+            local distance    = self:DistanceBetweenLocations( cratePosition, attackerPos )
+            local owner       = &quot;&quot;
+          
+            self.dataFile = util.GetDatafile(&quot;oxmin&quot;)
+            local txt = self.dataFile:GetText()
+            if (txt ~= &quot;&quot;) then
+                self.data = json.decode(txt)
+            else
+                self.data = {}
+                self.data.Users = {}
+            end
+            local steamid = self:ToSteamID64( rust.CommunityIDToSteamID( tonumber(crateOwnerID) ) )
+            ownerDetails = self:GetUserDetailsByCommunityId(crateOwnerID)            --if ( self.filePlayerList.content[crateOwnerID] ) then
+            --    owner = self.filePlayerList.content[crateOwnerID].currentName
+            --else
+            --owner = crateID
+            --end            local message     = attacker.displayName .. &quot; [&quot; .. tostring( rust.GetLongUserID( attacker ) ) .. &quot;] damaged a &quot; .. crateNames[crateName] .. &quot; owned by &quot; .. ownerDetails.Name .. &quot; [ &quot;.. steamid ..&quot; ] from &quot; .. math.floor( distance ) .. &quot;m. su &quot; .. weapon .. &quot;&quot;  
+            --rust.BroadcastChat(message)
+            print( message )
+            end
+                    
+    end
+endfunction PLUGIN:GetUserDetailsByCommunityId(communityId)
+    local details = self.data.Users[&quot;&quot;..communityId]
+    if(details) then
+        return details
+    end
+    return nil
+endfunction PLUGIN:ToSteamID64(steamID)
+    local A,B
+    local id = steamID:split(&quot;:&quot;)
+    if tonumber(id[2]) &gt; tonumber(id[3]) then
+        A = id[3]
+        B = id[2]
+    else
+        A = id[2]
+        B = id[3]
+    end
+    id = (((B * 2) + A) + 1197960265728)
+    id = &quot;7656&quot; .. id
+    return id
+endfunction PLUGIN:GrabUniqueID( item )
+    return string.sub( tostring( item ), ( string.find( tostring( item ), &quot;: &quot;) + 2 ) )
+endfunction PLUGIN:DistanceBetweenLocations(p1, p2)
+    return math.sqrt(math.pow(p1.x - p2.x,2) + math.pow(p1.y - p2.y,2) + math.pow(p1.z - p2.z,2))
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PreFiX</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="May 1, 2015 at 6:09 AM">May 1,
+                                2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/84004/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-97911" class="message" data-author="OUTCAST">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="OUTCAST" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">OUTCAST</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If it helps, 1.18 version, <a href="http://oxidemod.org/plugins/clip-clap.520/"
+                            class="internalLink">Here!</a><br />
+                        <br /> Good Luck. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">OUTCAST</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-97911' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 11, 2015 at 6:19 PM">Jun 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-97911' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/97911/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-97916" class="message" data-author="PreFiX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PreFiX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PreFiX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I was using <a href="http://pastebin.com/B7KBPsUK" target="_blank" class="externalLink  rel="
+                            nofollow">http://pastebin.com/B7KBPsUK on Oxide 1.8</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PreFiX</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-97916' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 11, 2015 at 6:29 PM">Jun 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-97916' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/97916/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-117043" class="message" data-author="nuttys">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="nuttys" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">nuttys</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi<br />
+                        <br /> I was wondering if there is a way to add a looter plugin<br />
+                        <br /> that allows you to /prod and see who looted the boxes how many hours ago etc<br />
+                        <br /> No way to tell who glitched inside someones base otherwise<br />
+                        <br /> Best regards <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">nuttys</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-117043' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2015 at 2:29 PM">Aug 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-117043' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/117043/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-117232" class="message" data-author="Titanium 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Titanium 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Titanium 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <i>Yes, thats what is needed currently.</i>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Titanium 2</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-117232' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2015 at 6:33 PM">Aug 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-117232' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/117232/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-118994" class="message" data-author="nuttys">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="nuttys" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">nuttys</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> anyone able to recode it /looter from oxide 1.8? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">nuttys</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-118994' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 11, 2015 at 5:53 PM">Aug 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-118994' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/118994/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-158810" class="message" data-author="virobeast">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="virobeast" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">virobeast</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> We need a plugin to see who looted boxes for hackraid checking. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">virobeast</a>,</span>
+                        <a href="{{ '/threads/storage-logging.8100/#post-158810' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 3, 2016 at 5:42 AM">Jan 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/storage-logging.8100/#post-158810' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/158810/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

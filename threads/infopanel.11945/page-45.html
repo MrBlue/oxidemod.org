@@ -1,0 +1,1445 @@
+---
+layout: forums
+title: 'InfoPanel | Page 45'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="resourceInfo">
+    <div class="resourceImage">
+        <img src="https://avatars0.githubusercontent.com/u/14957982?v=4" alt="" class="resourceIcon" />
+    </div>
+    <div class="resourceDesc">
+        <h1><a href="{{ '/threads/infopanel.11945/' | prepend: site.baseurl }}">InfoPanel</a></h1>
+        <p class="tagLine muted">Moved</p>
+        <p class="downloadCount">Total Downloads: 55,749 - First Release: <span class="DateTime" title="Sep 25, 2015 at 5:05 PM">Sep 25, 2015</span> - Last Update: <span class="DateTime"
+                title="Mar 13, 2018 at 10:07 AM">Mar 13, 2018</span>
+        </p>
+        <div class="rating">
+            <div class="rating">
+                <dl>
+                    <dt class="prompt muted"></dt>
+                    <dd>
+                        <span class="ratings">
+                            <span class="star"></span>
+                        </span>
+                        <span class="RatingValue"><span class="Number" itemprop="average">5</span>/<span itemprop="best">5</span>,</span>
+                        <span class="Hint">160 likes</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="resourceTabs">
+    <ul class="tabs">
+        <li class="resourceTabDescription ">
+            <a href="plugins/infopanel.1356/">Overview</a>
+        </li>
+        <li class="resourceTabUpdates ">
+            <a href="plugins/infopanel.1356/updates">Updates (19)</a>
+        </li>
+        <li class="resourceTabHistory ">
+            <a href="plugins/infopanel.1356/history">Version History</a>
+        </li>
+    </ul>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="45" data-range="2" data-start="43" data-end="47" data-last="154" data-sentinel="{{sentinel}}" data-baseurl="threads/infopanel.11945/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/infopanel.11945/page-44' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/infopanel.11945/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/infopanel.11945/page-43' | prepend: site.baseurl }}" class="">43</a>
+                    <a href="{{ '/threads/infopanel.11945/page-44' | prepend: site.baseurl }}" class="">44</a>
+                    <a href="{{ '/threads/infopanel.11945/page-45' | prepend: site.baseurl }}" class="currentPage ">45</a>
+                    <a href="{{ '/threads/infopanel.11945/page-46' | prepend: site.baseurl }}" class="">46</a>
+                    <a href="{{ '/threads/infopanel.11945/page-47' | prepend: site.baseurl }}" class="">47</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/infopanel.11945/page-154' | prepend: site.baseurl }}" class="">154</a>
+            <a href="{{ '/threads/infopanel.11945/page-46' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-188339" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{ using System;
+using System.Collections.Generic;using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;ApiTest&quot;, &quot;Ghosst&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;OnlinePlayers Counter.&quot;)]
+    public class ApiTest : RustPlugin
+    {        Timer CounterTimer;
+        Timer BlinkTimer;
+        Timer RandPTimer;        int Count = 0;
+        bool IsActive = true;        string RandomPlayerID;        bool RandomPlayername = false;
+        bool Blinker = false;
+        bool CounterP = false;        List&lt;string&gt; Panels = new List&lt;string&gt; { &quot;BlinkPanel&quot;, &quot;CounterPanel&quot;, &quot;RandomPlayernamePanel&quot; };        [PluginReference]
+        Plugin InfoPanel;
+        void Loaded()
+        {
+            if(InfoPanel)
+            {
+                InfoPanelInit();
+            }
+        }        void OnPluginLoaded(Plugin InfoPanel)
+        {
+            if (InfoPanel.Title == &quot;InfoPanel&quot;)
+            {
+                InfoPanelInit();
+            }
+        }        public void InfoPanelInit()
+        {
+            //Send Panel names to the infopanel.
+            InfoPanel.Call(&quot;SendPanelInfo&quot;, &quot;ApiTest&quot;, Panels);            AddRandomPlayerNamePanel();
+            AddBlinkPanel();
+            AddCounterPanel();            if (CounterTimer == null &amp; CounterP)
+            {
+                CounterTimer = timer.Repeat(5, 0, () =&gt; Counter());
+            }            if (BlinkTimer == null &amp; Blinker)
+            {
+                BlinkTimer = timer.Repeat(5, 0, () =&gt; Blink());
+            }            if (RandPTimer == null &amp; RandomPlayername)
+            {
+                RandPTimer = timer.Repeat(5, 0, () =&gt; RandomPlayer());
+            }
+    
+        }        /// &lt;summary&gt;
+        /// Load the panel
+        /// &lt;/summary&gt;
+        public void AddRandomPlayerNamePanel()
+        {
+            RandomPlayername = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RndPlayerNameCfg);
+        }        /// &lt;summary&gt;
+        /// Load the panel.
+        /// Show the panel everyone.
+        /// &lt;/summary&gt;
+        public void AddBlinkPanel()
+        {
+            Blinker = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;, BlinkPCfg);
+            InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+        }        /// &lt;summary&gt;
+        /// Load the panel.
+        /// Show the panel everyone.
+        /// &lt;/summary&gt;
+        public void AddCounterPanel()
+        {
+            CounterP = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;, CounterPCfg);
+            InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;);
+        }        /// &lt;summary&gt;
+        /// Hide or show the panel
+        /// &lt;/summary&gt;
+        public void Blink()
+        {
+            if(IsActive)
+            {
+                IsActive = false;
+                InfoPanel.Call(&quot;HidePanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+            }
+            else
+            {
+                IsActive = true;
+                InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+            }
+        }        /// &lt;summary&gt;
+        /// Refresh the counter to every active player.
+        /// &lt;/summary&gt;
+        public void Counter()
+        {
+            Count += 5;            if (InfoPanel &amp;&amp; CounterP)
+            {
+                InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;CounterPanelText&quot;, &quot;Content&quot;, Count.ToString());
+                InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;CounterPanelText&quot;, &quot;FontColor&quot;, &quot;0.6 0.1 0.1 1&quot;);
+                InfoPanel.Call(&quot;RefreshPanel&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;);
+            }
+        }        /// &lt;summary&gt;
+        /// Show his name to a random player. But just only for him.
+        /// &lt;/summary&gt;
+        public void RandomPlayer()
+        {
+            if(RandomPlayerID != null)
+                InfoPanel.Call(&quot;HidePanel&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RandomPlayerID);            if(BasePlayer.activePlayerList.Count &gt; 0)
+            {                var rand = new System.Random();
+                BasePlayer player = BasePlayer.activePlayerList[rand.Next(BasePlayer.activePlayerList.Count)];
+                RandomPlayerID = player.UserIDString;                if (InfoPanel &amp;&amp; RandomPlayername)
+                {
+                    InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanelText&quot;, &quot;Content&quot;, player.displayName, RandomPlayerID);
+                    InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanelText&quot;, &quot;FontColor&quot;, &quot;0.2 0.3 0.5 1&quot;, RandomPlayerID);
+                    InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RandomPlayerID);
+                }
+            }
+    
+        }        /*
+            Example Configs. Theres is no required option.
+        */        string RndPlayerNameCfg = @&quot;
+        {
+            &quot;&quot;Autoload&quot;&quot;: false,
+            &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+            &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+            &quot;&quot;Available&quot;&quot;: true,
+            &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.4&quot;&quot;,
+            &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+            &quot;&quot;Width&quot;&quot;: 0.07,
+            &quot;&quot;Height&quot;&quot;: 0.95,
+            &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0 0 0.005&quot;&quot;,
+            &quot;&quot;Order&quot;&quot;: 0,
+            &quot;&quot;Image&quot;&quot;: {
+              &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+              &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+              &quot;&quot;Available&quot;&quot;: true,
+              &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.3&quot;&quot;,
+              &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+              &quot;&quot;Height&quot;&quot;: 0.8,
+              &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0.05 0.1 0.05&quot;&quot;,
+              &quot;&quot;Order&quot;&quot;: 1,
+              &quot;&quot;Url&quot;&quot;: &quot;&quot;http://i.imgur.com/dble6vf.png&quot;&quot;,
+              &quot;&quot;Width&quot;&quot;: 0.22
+            },   
+            &quot;&quot;Text&quot;&quot;: {
+              &quot;&quot;Align&quot;&quot;: &quot;&quot;MiddleCenter&quot;&quot;,
+              &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+              &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+              &quot;&quot;Available&quot;&quot;: true,
+              &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.3&quot;&quot;,
+              &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+              &quot;&quot;FontColor&quot;&quot;: &quot;&quot;1 1 1 1&quot;&quot;,
+              &quot;&quot;FontSize&quot;&quot;: 14,
+              &quot;&quot;Content&quot;&quot;: &quot;&quot;APITest Bottom&quot;&quot;,
+              &quot;&quot;Height&quot;&quot;: 1.0,
+              &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0 0 0&quot;&quot;,
+              &quot;&quot;Order&quot;&quot;: 2,
+              &quot;&quot;Width&quot;&quot;: 0.63
+            },
+        }&quot;;        string BlinkPCfg = @&quot;{}&quot;;        string CounterPCfg = @&quot;
+        {
+            &quot;&quot;Dock&quot;&quot;: &quot;&quot;TopPanel&quot;&quot;,
+            &quot;&quot;Text&quot;&quot;: {
+                &quot;&quot;Content&quot;&quot;: &quot;&quot;APITest Top&quot;&quot;
+            }
+        }&quot;;
+    }
+}}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188339' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 3:09 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188339' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188339/permalink">#881</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188342" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-188339" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>{ using System;
+using System.Collections.Generic;using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;ApiTest&quot;, &quot;Ghosst&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;OnlinePlayers Counter.&quot;)]
+    public class ApiTest : RustPlugin
+    {        Timer CounterTimer;
+        Timer BlinkTimer;
+        Timer RandPTimer;        int Count = 0;
+        bool IsActive = true;        string RandomPlayerID;        bool RandomPlayername = false;
+        bool Blinker = false;
+        bool CounterP = false;        List&lt;string&gt; Panels = new List&lt;string&gt; { &quot;BlinkPanel&quot;, &quot;CounterPanel&quot;, &quot;RandomPlayernamePanel&quot; };        [PluginReference]
+        Plugin InfoPanel;
+        void Loaded()
+        {
+            if(InfoPanel)
+            {
+                InfoPanelInit();
+            }
+        }        void OnPluginLoaded(Plugin InfoPanel)
+        {
+            if (InfoPanel.Title == &quot;InfoPanel&quot;)
+            {
+                InfoPanelInit();
+            }
+        }        public void InfoPanelInit()
+        {
+            //Send Panel names to the infopanel.
+            InfoPanel.Call(&quot;SendPanelInfo&quot;, &quot;ApiTest&quot;, Panels);            AddRandomPlayerNamePanel();
+            AddBlinkPanel();
+            AddCounterPanel();            if (CounterTimer == null &amp; CounterP)
+            {
+                CounterTimer = timer.Repeat(5, 0, () =&gt; Counter());
+            }            if (BlinkTimer == null &amp; Blinker)
+            {
+                BlinkTimer = timer.Repeat(5, 0, () =&gt; Blink());
+            }            if (RandPTimer == null &amp; RandomPlayername)
+            {
+                RandPTimer = timer.Repeat(5, 0, () =&gt; RandomPlayer());
+            }
+   
+        }        /// &lt;summary&gt;
+        /// Load the panel
+        /// &lt;/summary&gt;
+        public void AddRandomPlayerNamePanel()
+        {
+            RandomPlayername = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RndPlayerNameCfg);
+        }        /// &lt;summary&gt;
+        /// Load the panel.
+        /// Show the panel everyone.
+        /// &lt;/summary&gt;
+        public void AddBlinkPanel()
+        {
+            Blinker = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;, BlinkPCfg);
+            InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+        }        /// &lt;summary&gt;
+        /// Load the panel.
+        /// Show the panel everyone.
+        /// &lt;/summary&gt;
+        public void AddCounterPanel()
+        {
+            CounterP = (bool)InfoPanel.Call(&quot;PanelRegister&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;, CounterPCfg);
+            InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;);
+        }        /// &lt;summary&gt;
+        /// Hide or show the panel
+        /// &lt;/summary&gt;
+        public void Blink()
+        {
+            if(IsActive)
+            {
+                IsActive = false;
+                InfoPanel.Call(&quot;HidePanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+            }
+            else
+            {
+                IsActive = true;
+                InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;BlinkPanel&quot;);
+            }
+        }        /// &lt;summary&gt;
+        /// Refresh the counter to every active player.
+        /// &lt;/summary&gt;
+        public void Counter()
+        {
+            Count += 5;            if (InfoPanel &amp;&amp; CounterP)
+            {
+                InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;CounterPanelText&quot;, &quot;Content&quot;, Count.ToString());
+                InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;CounterPanelText&quot;, &quot;FontColor&quot;, &quot;0.6 0.1 0.1 1&quot;);
+                InfoPanel.Call(&quot;RefreshPanel&quot;, &quot;ApiTest&quot;, &quot;CounterPanel&quot;);
+            }
+        }        /// &lt;summary&gt;
+        /// Show his name to a random player. But just only for him.
+        /// &lt;/summary&gt;
+        public void RandomPlayer()
+        {
+            if(RandomPlayerID != null)
+                InfoPanel.Call(&quot;HidePanel&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RandomPlayerID);            if(BasePlayer.activePlayerList.Count &gt; 0)
+            {                var rand = new System.Random();
+                BasePlayer player = BasePlayer.activePlayerList[rand.Next(BasePlayer.activePlayerList.Count)];
+                RandomPlayerID = player.UserIDString;                if (InfoPanel &amp;&amp; RandomPlayername)
+                {
+                    InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanelText&quot;, &quot;Content&quot;, player.displayName, RandomPlayerID);
+                    InfoPanel.Call(&quot;SetPanelAttribute&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanelText&quot;, &quot;FontColor&quot;, &quot;0.2 0.3 0.5 1&quot;, RandomPlayerID);
+                    InfoPanel.Call(&quot;ShowPanel&quot;, &quot;ApiTest&quot;, &quot;RandomPlayernamePanel&quot;, RandomPlayerID);
+                }
+            }
+   
+        }        /*
+            Example Configs. Theres is no required option.
+        */        string RndPlayerNameCfg = @&quot;
+        {
+            &quot;&quot;Autoload&quot;&quot;: false,
+            &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+            &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+            &quot;&quot;Available&quot;&quot;: true,
+            &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.4&quot;&quot;,
+            &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+            &quot;&quot;Width&quot;&quot;: 0.07,
+            &quot;&quot;Height&quot;&quot;: 0.95,
+            &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0 0 0.005&quot;&quot;,
+            &quot;&quot;Order&quot;&quot;: 0,
+            &quot;&quot;Image&quot;&quot;: {
+              &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+              &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+              &quot;&quot;Available&quot;&quot;: true,
+              &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.3&quot;&quot;,
+              &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+              &quot;&quot;Height&quot;&quot;: 0.8,
+              &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0.05 0.1 0.05&quot;&quot;,
+              &quot;&quot;Order&quot;&quot;: 1,
+              &quot;&quot;Url&quot;&quot;: &quot;&quot;http://i.imgur.com/dble6vf.png&quot;&quot;,
+              &quot;&quot;Width&quot;&quot;: 0.22
+            },  
+            &quot;&quot;Text&quot;&quot;: {
+              &quot;&quot;Align&quot;&quot;: &quot;&quot;MiddleCenter&quot;&quot;,
+              &quot;&quot;AnchorX&quot;&quot;: &quot;&quot;Left&quot;&quot;,
+              &quot;&quot;AnchorY&quot;&quot;: &quot;&quot;Bottom&quot;&quot;,
+              &quot;&quot;Available&quot;&quot;: true,
+              &quot;&quot;BackgroundColor&quot;&quot;: &quot;&quot;0.1 0.1 0.1 0.3&quot;&quot;,
+              &quot;&quot;Dock&quot;&quot;: &quot;&quot;BottomPanel&quot;&quot;,
+              &quot;&quot;FontColor&quot;&quot;: &quot;&quot;1 1 1 1&quot;&quot;,
+              &quot;&quot;FontSize&quot;&quot;: 14,
+              &quot;&quot;Content&quot;&quot;: &quot;&quot;APITest Bottom&quot;&quot;,
+              &quot;&quot;Height&quot;&quot;: 1.0,
+              &quot;&quot;Margin&quot;&quot;: &quot;&quot;0 0 0 0&quot;&quot;,
+              &quot;&quot;Order&quot;&quot;: 2,
+              &quot;&quot;Width&quot;&quot;: 0.63
+            },
+        }&quot;;        string BlinkPCfg = @&quot;{}&quot;;        string CounterPCfg = @&quot;
+        {
+            &quot;&quot;Dock&quot;&quot;: &quot;&quot;TopPanel&quot;&quot;,
+            &quot;&quot;Text&quot;&quot;: {
+                &quot;&quot;Content&quot;&quot;: &quot;&quot;APITest Top&quot;&quot;
+            }
+        }&quot;;
+    }
+}}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m not sure what that is, but that isn&#039;t the plugin&#039;s config file. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188342' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 3:17 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188342' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188342/permalink">#882</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188343" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-188342" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not sure what that is, but that isn&#039;t the plugin&#039;s config file.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Strange. Im pulling that from oxide&gt;config&gt;InfoPanel.json<br />
+                        <br /> Should I just delete the json and cs files and start a fresh install of InfoPanel? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188343' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 3:18 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188343' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188343/permalink">#883</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188346" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-188343" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Strange. Im pulling that from oxide&gt;config&gt;InfoPanel.json<br />
+                                        <br /> Should I just delete the json and cs files and start a fresh install of InfoPanel?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yes, the file you had wasn&#039;t a .json file either, it was a plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188346' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 4:01 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188346' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188346/permalink">#884</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188423" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-188346" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes, the file you had wasn&#039;t a .json file either, it was a plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I ended up just deleting all the InfoPanel files and doing a clean install. Had some weird icons last night (white blocks with red question marks) but this morning its
+                        all loading fine. <br />
+                        <br /> I read on the last page that you change the messages on InfoPanel in the LANG folder. Looking at our FTP, there is no InfoPanel file in oxide&gt;lang. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie12" alt="o_O" title="Er... what?    o_O" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188423' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 1:13 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188423' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188423/permalink">#885</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188426" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-188423" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I ended up just deleting all the InfoPanel files and doing a clean install. Had some weird icons last night (white blocks with red question
+                                        marks) but this morning its all loading fine.<br />
+                                        <br /> I read on the last page that you change the messages on InfoPanel in the LANG folder. Looking at our FTP, there is no InfoPanel file in oxide&gt;lang.
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie12" alt="o_O" title="Er... what?    o_O" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Are you sure you are using the latest version of it? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188426' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 1:25 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188426' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188426/permalink">#886</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188434" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-188426" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Are you sure you are using the latest version of it?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, downloaded it fresh last night just in case. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188434' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 1:37 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188434' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188434/permalink">#887</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188608" class="message" data-author="WhompMaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="WhompMaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">WhompMaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Just did a fresh install. got this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 3:17 PM [Error] InfoPanel v0.9.3: Failed to load config file (is the config file corrupt?) (After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Error] Failed to initialize plugin 'InfoPanel v0.9.3' (JsonReaderException: After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Debug]   at Newtonsoft.Json.JsonTextReader.ParsePostValue () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonReader.ReadAsStringInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadAsString () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.ReadForType (Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonContract contract, Boolean hasConverter) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.PopulateList (IList list, Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonArrayContract contract, Newtonsoft.Json.Serialization.JsonProperty containerProperty, System.String id) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 3:17 PM [Info] Unloaded plugin InfoPanel v0.9.3 by Ghosst
+[Oxide] 3:17 PM [Info] No previous version to rollback plugin: InfoPanel</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 18, 2016 at 11:01 PM">Mar 18, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">WhompMaster</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188608' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 10:17 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188608' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188608/permalink">#888</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188617" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="WhompMaster">
+                            <aside>
+                                <div class="attribution type">WhompMaster said: <a href="#post-188608" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just did a fresh install. got this<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Oxide] 3:17 PM [Error] InfoPanel v0.9.3: Failed to load config file (is the config file corrupt?) (After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Error] Failed to initialize plugin 'InfoPanel v0.9.3' (JsonReaderException: After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Debug]   at Newtonsoft.Json.JsonTextReader.ParsePostValue () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonReader.ReadAsStringInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadAsString () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.ReadForType (Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonContract contract, Boolean hasConverter) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.PopulateList (IList list, Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonArrayContract contract, Newtonsoft.Json.Serialization.JsonProperty containerProperty, System.String id) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 3:17 PM [Info] Unloaded plugin InfoPanel v0.9.3 by Ghosst
+[Oxide] 3:17 PM [Info] No previous version to rollback plugin: InfoPanel</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What host are you using? Did you edit anything? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188617' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 11:01 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188617' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188617/permalink">#889</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188623" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="WhompMaster">
+                            <aside>
+                                <div class="attribution type">WhompMaster said: <a href="#post-188608" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just did a fresh install. got this<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Oxide] 3:17 PM [Error] InfoPanel v0.9.3: Failed to load config file (is the config file corrupt?) (After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Error] Failed to initialize plugin 'InfoPanel v0.9.3' (JsonReaderException: After parsing a value an unexpected character was encountered: &quot;. Path 'Messages[0]', line 34, position 5.)
+[Oxide] 3:17 PM [Debug]   at Newtonsoft.Json.JsonTextReader.ParsePostValue () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonReader.ReadAsStringInternal () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.JsonTextReader.ReadAsString () [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.ReadForType (Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonContract contract, Boolean hasConverter) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.PopulateList (IList list, Newtonsoft.Json.JsonReader reader, Newtonsoft.Json.Serialization.JsonArrayContract contract, Newtonsoft.Json.Serialization.JsonProperty containerProperty, System.String id) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 3:17 PM [Info] Unloaded plugin InfoPanel v0.9.3 by Ghosst
+[Oxide] 3:17 PM [Info] No previous version to rollback plugin: InfoPanel</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Can you upload the InfoPanel.json from the config folder and the InfoPanel_db.json from the data folder so it can be checked <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188623' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 11:16 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188623' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188623/permalink">#890</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188631" class="message" data-author="WhompMaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="WhompMaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">WhompMaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Didn&#039;t edit the code, only the json file. here are the codes <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="InfoPanel.json">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/infopanel-json.19401/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/infopanel-json.19401/" target="_blank">InfoPanel.json</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>8.9 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>31</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="attachment" title="InfoPanel_db.json">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/infopanel_db-json.19402/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/infopanel_db-json.19402/" target="_blank">InfoPanel_db.json</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>21 bytes</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>37</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">WhompMaster</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188631' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 11:31 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188631' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188631/permalink">#891</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188635" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="WhompMaster">
+                            <aside>
+                                <div class="attribution type">WhompMaster said: <a href="#post-188631" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Didn&#039;t edit the code, only the json file. here are the codes</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Here is your fixed file you forgot the , after &quot;THIS IS DARKTOPIA!!!!&quot; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="InfoPanel.json">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/infopanel-json.19403/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/infopanel-json.19403/" target="_blank">InfoPanel.json</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>8.9 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>70</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188635' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 11:39 PM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188635' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188635/permalink">#892</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188639" class="message" data-author="WhompMaster">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="WhompMaster" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">WhompMaster</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Lifesaver, thanks!! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">WhompMaster</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-188639' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 19, 2016 at 12:06 AM">Mar 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-188639' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188639/permalink">#893</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189339" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok, Ive been fighting with changing the messages on InfoPanel for a week now and I&#039;m ready to scream!<br />
+                        <br /> .cs and .json files are attached, I THINK I&#039;m editing the json correctly but the messages are not updating. It still has the stupid LEEEEEEEROY JENKINS there.
+                        I&#039;ve completely removed InfoPanel and performed a fresh install about 5 times and I give up!<br />
+                        <br /> Each time, I download a fresh copy of the json file and edit that and re-add via FireFTP.<br />
+                        <br /> Help! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="InfoPanel.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/infopanel-cs.19492/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/infopanel-cs.19492/" target="_blank">InfoPanel.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>91.2 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>35</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="attachment" title="InfoPanel.json">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/infopanel-json.19493/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/infopanel-json.19493/" target="_blank">InfoPanel.json</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>9.2 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>41</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189339' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:01 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189339' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189339/permalink">#894</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189341" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-189339" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, Ive been fighting with changing the messages on InfoPanel for a week now and I&#039;m ready to scream!<br />
+                                        <br /> .cs and .json files are attached, I THINK I&#039;m editing the json correctly but the messages are not updating. It still has the stupid LEEEEEEEROY
+                                        JENKINS there. I&#039;ve completely removed InfoPanel and performed a fresh install about 5 times and I give up!<br />
+                                        <br /> Each time, I download a fresh copy of the json file and edit that and re-add via FireFTP.<br />
+                                        <br /> Help!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The messages are in oxide/lang, you do not edit them in the plugin directly. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189341' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:23 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189341' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189341/permalink">#895</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189343" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-189341" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The messages are in oxide/lang, you do not edit them in the plugin directly.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There is no InfoPanel file under lang.<br />
+                        <br />
+                        <img src="proxy.php?image=http%3A%2F%2Fi.imgur.com%2FUspCF9c.png&amp;hash=f53a64a4c1e1251fc4dc68f1f22f64f8" class="bbCodeImage LbImage" alt="[&#x200B;IMG]"
+                            data-url="http://i.imgur.com/UspCF9c.png" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189343' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:40 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189343' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189343/permalink">#896</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189345" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-189343" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">There is no InfoPanel file under lang.<br />
+                                        <br />
+                                        <img src="proxy.php?image=http%3A%2F%2Fi.imgur.com%2FUspCF9c.png&amp;hash=f53a64a4c1e1251fc4dc68f1f22f64f8" class="bbCodeImage LbImage" alt="[&#x200B;IMG]"
+                                            data-url="http://i.imgur.com/UspCF9c.png" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hmm, I guess it still uses the config for it. Did you reload the plugin after making the changes? Did you validate it first before reloading? A single missing comma or
+                        other wrongly formatted entries will cause it to reset to default. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189345' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:48 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189345' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189345/permalink">#897</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189347" class="message" data-author="JCfromTB">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JCfromTB" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JCfromTB</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-189345" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hmm, I guess it still uses the config for it. Did you reload the plugin after making the changes? Did you validate it first before reloading? A
+                                        single missing comma or other wrongly formatted entries will cause it to reset to default.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>While new to Oxide and Rust Admin&#039;ing, I thought I was a fairly savvy guy before this! I&#039;ve tried everything and made sure to include the same amount of spaces
+                        in every line as the default messages. Im literally only changing the 3-4 lines in the &quot;messages&quot; area of the code.<br />
+                        <br /> My last effort will be to try and load the json file from Reply #892 to see if that loads. It apparently works for the that user! <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JCfromTB</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189347' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:54 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189347' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189347/permalink">#898</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189348" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-189347" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">While new to Oxide and Rust Admin&#039;ing, I thought I was a fairly savvy guy before this! I&#039;ve tried everything and made sure to include
+                                        the same amount of spaces in every line as the default messages. Im literally only changing the 3-4 lines in the &quot;messages&quot; area of the code.<br />
+                                        <br /> My last effort will be to try and load the json file from Reply #892 to see if that loads. It apparently works for the that user!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>JSON is a bit finicky. Was the previous file you attached your modified version? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189348' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 7:59 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189348' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189348/permalink">#899</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189349" class="message" data-author="Resistance">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Resistance" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Resistance</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JCfromTB">
+                            <aside>
+                                <div class="attribution type">JCfromTB said: <a href="#post-189339" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, Ive been fighting with changing the messages on InfoPanel for a week now and I&#039;m ready to scream!<br />
+                                        <br /> .cs and .json files are attached, I THINK I&#039;m editing the json correctly but the messages are not updating. It still has the stupid LEEEEEEEROY
+                                        JENKINS there. I&#039;ve completely removed InfoPanel and performed a fresh install about 5 times and I give up!<br />
+                                        <br /> Each time, I download a fresh copy of the json file and edit that and re-add via FireFTP.<br />
+                                        <br /> Help!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Did you reload the plugin after you done the changes in the config <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Resistance</a>,</span>
+                        <a href="{{ '/threads/infopanel.11945/page-45#post-189349' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 8:04 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/infopanel.11945/page-45#post-189349' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/189349/permalink">#900</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="45" data-range="2" data-start="43" data-end="47" data-last="154" data-sentinel="{{sentinel}}" data-baseurl="threads/infopanel.11945/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/infopanel.11945/page-44' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/infopanel.11945/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/infopanel.11945/page-43' | prepend: site.baseurl }}" class="">43</a>
+                    <a href="{{ '/threads/infopanel.11945/page-44' | prepend: site.baseurl }}" class="">44</a>
+                    <a href="{{ '/threads/infopanel.11945/page-45' | prepend: site.baseurl }}" class="currentPage ">45</a>
+                    <a href="{{ '/threads/infopanel.11945/page-46' | prepend: site.baseurl }}" class="">46</a>
+                    <a href="{{ '/threads/infopanel.11945/page-47' | prepend: site.baseurl }}" class="">47</a>
+                </span></span> <a class="PageNavNext ">&rarr;</a>
+            <a href="{{ '/threads/infopanel.11945/page-154' | prepend: site.baseurl }}" class="">154</a>
+            <a href="{{ '/threads/infopanel.11945/page-46' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

@@ -1,0 +1,155 @@
+---
+layout: forums
+title: 'Inventory broken after using :Kill()'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/inventory-broken-after-using-kill.12285/' | prepend: site.baseurl }}">Inventory broken after using :Kill()</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">mvrb</a>, <a href="{{ '/threads/inventory-broken-after-using-kill.12285/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 15, 2015 at 2:48 PM">Oct 15,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-136396" class="message" data-author="mvrb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mvrb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mvrb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve been trying to clear either main, wear or belt and not the whole inventory.<br />
+                        <br /> I used <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.containerBelt:Kill()</pre>{% endraw %}
+                        </div>But I am now unable to move items to my belt and wear inventory - even after suiciding and reconnecting.<br />
+                        <br /> Is there any way to reset my character/inventory without deleting anything but my own player data?<br />
+                        <br /> I THINK I saw <a href="https://oxidemod.org/members/24296/" class="username" data-user="24296, @Mughisi">@Mughisi</a> mention a fix for this once, but I wasn&#039;t able
+                        to find it while searching.<br />
+                        <br /> Thanks in advance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mvrb</a>,</span>
+                        <a href="{{ '/threads/inventory-broken-after-using-kill.12285/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 15, 2015 at 2:48 PM">Oct 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/inventory-broken-after-using-kill.12285/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/136396/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-136409" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This is the C# used to initialize the containerBelt in PlayerInventory.Initialize().<br />
+                        <br /> You can use this code below.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.containerBelt = new ItemContainer();
+player.inventory.containerBelt.SetFlag(ItemContainer.Flag.IsPlayer, true);
+player.inventory.containerBelt.SetFlag(ItemContainer.Flag.Belt, true);</pre>{% endraw %}
+                        </div>Or you can attempt to simply re-initialize your inventory (also C#)..<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.ServerInit(player)</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1444919737][/DOUBLEPOST]Looking into player.inventory.Strip(), the following code is used to clean out the belt<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>this.containerBelt.Clear();
+ItemManager.DoRemoves();</pre>{% endraw %}
+                        </div>You may or may not need the DoRemoves call, I don&#039;t know. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/inventory-broken-after-using-kill.12285/#post-136409' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 15, 2015 at 3:31 PM">Oct 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/inventory-broken-after-using-kill.12285/#post-136409' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/136409/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-136413" class="message" data-author="mvrb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mvrb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mvrb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I was able to fix my inventory using:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.ServerIplayer.inventory.ServerInit(player)nit(player)</pre>{% endraw %}
+                        </div>Thank you very much! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mvrb</a>,</span>
+                        <a href="{{ '/threads/inventory-broken-after-using-kill.12285/#post-136413' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 15, 2015 at 3:39 PM">Oct 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/inventory-broken-after-using-kill.12285/#post-136413' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/136413/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

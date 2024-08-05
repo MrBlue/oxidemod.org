@@ -1,0 +1,292 @@
+---
+layout: forums
+title: 'Getting player name with steamID in OnPlayerChat?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/' | prepend: site.baseurl }}">Getting player name with steamID in OnPlayerChat?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rebajas</a>, <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 4, 2017 at 1:17 PM">Jan
+                4, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-281339" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Quick question I hope.<br />
+                        <br /> I&#039;m trying to get the player name from OnPlayerChat - the syntax I want is the name with steamID like:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>playername[0123456/7656123456789]</pre>{% endraw %}
+                        </div>I tried:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>string player = (BasePlayer)arg.connection.player;</pre>{% endraw %}
+                        </div>But I get an error about converting to string, if I leave as a BasePlayer I get a recursive error in my JSON serialization (sorry, can&#039;t remember exact
+                        wording).<br />
+                        <br /> Is there a quick way to get this?<br />
+                        <br /> Thanks, as always, for any help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br />
+                        <br /> Tony. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 4, 2017 at 1:35 PM">Jan 4, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 4, 2017 at 1:17 PM">Jan 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281339/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-281342" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> More detail of how I&#039;m using this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerChat(ConsoleSystem.Arg arg) {        BasePlayer player = (BasePlayer)arg.connection.player;
+        string playerName = arg.connection.player;
+        // string playerName = player.displayName;
+        // var playerName = player;
+        Vector3 location = player.transform.position;        string chat = arg.GetString(0, &quot;&quot;);       chat = Uri.EscapeDataString(chat);       chatLog.Add(new {
+           Timestamp = nowTimestamp,
+           Player = playerName,
+           Chat = chat,
+           LocationX = location.x,
+           LocationY = location.y,
+           LocationZ = location.z
+       });...
+</pre>{% endraw %}
+                        </div>Then this is used in another function:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void SendLog() {    var serializedChatLog = JsonConvert.SerializeObject(chatLog);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281342' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jan 4, 2017 at 2:02 PM">Jan 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281342' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281342/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-281360" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rebajas">
+                            <aside>
+                                <div class="attribution type">Rebajas said: <a href="#post-281342" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">More detail of how I&#039;m using this:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnPlayerChat(ConsoleSystem.Arg arg) {        BasePlayer player = (BasePlayer)arg.connection.player;
+        string playerName = arg.connection.player;
+        // string playerName = player.displayName;
+        // var playerName = player;
+        Vector3 location = player.transform.position;        string chat = arg.GetString(0, &quot;&quot;);       chat = Uri.EscapeDataString(chat);       chatLog.Add(new {
+           Timestamp = nowTimestamp,
+           Player = playerName,
+           Chat = chat,
+           LocationX = location.x,
+           LocationY = location.y,
+           LocationZ = location.z
+       });...
+</pre>{% endraw %}
+                                        </div>Then this is used in another function:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>public void SendLog() {    var serializedChatLog = JsonConvert.SerializeObject(chatLog);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;re trying to cast the entire BasePlayer object to a string. If you only want the name, it&#039;s available under player.displayName. The Steam ID is also
+                        available from player.UserIDString and player.userID (ulong). If you want that exact format from the first post, that would the BasePlayer object as a string I believe. You
+                        won&#039;t be able to store the entire BasePlayer object in JSON though without casting it to string. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281360' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jan 4, 2017 at 3:18 PM">Jan 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281360' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281360/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-281417" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> For now I have built the string up using displayName and UserIDString - it works for my purposes but feels a bit
+                        hacky.<br />
+                        <br /> If you think this is a reasonable approach then I&#039;ll move onto more important things <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7"
+                            alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281417' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jan 4, 2017 at 6:32 PM">Jan 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281417' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281417/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-281496" class="message" data-author="EinTime">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EinTime" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EinTime</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerChat(ConsoleSystem.Arg arg)
+        {            BasePlayer player = arg.Player();
+            string playerName = player.displayName;
+            Vector3 location = player.transform.position;
+            string chat = arg.ArgsStr;            chatLog.Add(new
+            {
+                Timestamp = nowTimestamp,
+                Player = playerName,
+                Chat = chat,
+                LocationX = location.x,
+                LocationY = location.y,
+                LocationZ = location.z
+            });
+        }</pre>{% endraw %}
+                        </div>Would this work?<br /> [DOUBLEPOST=1483570949][/DOUBLEPOST]if you need more information about the player in your chatlog list you could also add in their ulong id:
+                        player.userID <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EinTime</a>,</span>
+                        <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281496' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jan 4, 2017 at 11:01 PM">Jan 4, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-name-with-steamid-in-onplayerchat.22803/#post-281496' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281496/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

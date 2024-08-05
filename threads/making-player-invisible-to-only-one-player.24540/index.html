@@ -1,0 +1,219 @@
+---
+layout: forums
+title: 'Making player invisible to only one player?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/' | prepend: site.baseurl }}">Making player invisible to only one player?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">SkwiD</a>, <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 18, 2017 at 4:06 AM">Mar 18,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-308825" class="message" data-author="SkwiD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SkwiD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SkwiD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m wondering if I can make a player invisible to only one specific player, but be visible to everyone else.
+                        Is there any way I could do this? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SkwiD</a>,</span>
+                        <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2017 at 4:06 AM">Mar 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/308825/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308829" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes, take a look at the Vanish plugin of mine for an example. It involves the CanNetworkTo hook. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-308829' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2017 at 4:21 AM">Mar 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-308829' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308829/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-308835" class="message" data-author="mTrX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mTrX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mTrX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>object CanNetworkTo(BaseNetworkable entity_to_stream, BasePlayer player_to_receive_data)
+        {
+            BasePlayer player_to_stream = entity_to_stream.gameObject.ToBaseEntity().ToPlayer();
+            if(!player_to_stream.IsValid()) return null; // Make sure to get the player from the entity and check if it's valid
+            if(player_to_receive_data.displayName.Equals(&quot;Your custom checks here ...&quot;))
+                return false; // Return non null so the callback will cancel the default procedur
+            return null; // If nothing happens, return nothing so the callback can continue to proceed normally
+        }</pre>{% endraw %}
+                        </div>You also need to send a fake entity destroy packet to all clients except yourself.<br />
+                        <br /> Made this function from the Vanish plugin. You might still want to add linked or parented entites on your player and destroy them aswell.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void MakeInvisible(BasePlayer Player, bool State)
+        {
+            if(State)
+            {
+                Invisible.Add(Player);
+                var connections = new List&lt;Connection&gt;();
+                foreach(var basePlayer in Utils.GetPlayers())
+                {
+                    if(Player == basePlayer || !basePlayer.IsConnected) continue;
+                    connections.Add(basePlayer.net.connection);
+                }                if(Net.sv.write.Start()) // Try catch?
+                {
+                    Net.sv.write.PacketID(Network.Message.Type.EntityDestroy);
+                    Net.sv.write.EntityID(Player.net.ID);
+                    Net.sv.write.UInt8((byte)BaseNetworkable.DestroyMode.None);
+                    Net.sv.write.Send(new SendInfo(connections));
+                }
+                var item = Player.GetActiveItem();
+                if(item?.GetHeldEntity() != null &amp;&amp; Net.sv.write.Start())
+                {
+                    Net.sv.write.PacketID(Network.Message.Type.EntityDestroy);
+                    Net.sv.write.EntityID(item.GetHeldEntity().net.ID);
+                    Net.sv.write.UInt8((byte)BaseNetworkable.DestroyMode.None);
+                    Net.sv.write.Send(new SendInfo(connections));
+                }
+            }
+            else
+            {
+                Invisible.Remove(Player);
+                Player.SendNetworkUpdate();
+                Player.GetActiveItem()?.GetHeldEntity()?.SendNetworkUpdate();
+            }
+        }</pre>{% endraw %}
+                        </div><br /> Should work, didn&#039;t test it. This won&#039;t remove attached entities on your player.<br /> I don&#039;t know if<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>entity_to_stream.gameObject.ToBaseEntity().ToPlayer();</pre>{% endraw %}
+                        </div>Is faster than<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>entity_to_stream as BasePlayer;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mTrX</a>,</span>
+                        <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-308835' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2017 at 5:58 AM">Mar 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-308835' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/308835/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309056" class="message" data-author="SkwiD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SkwiD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SkwiD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you <a href="https://oxidemod.org/members/204790/" class="username" data-user="204790, @mTrX">@mTrX</a> !
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SkwiD</a>,</span>
+                        <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-309056' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 19, 2017 at 4:33 AM">Mar 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-player-invisible-to-only-one-player.24540/#post-309056' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/309056/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

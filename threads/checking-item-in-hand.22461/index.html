@@ -1,0 +1,188 @@
+---
+layout: forums
+title: 'Checking item in hand'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/checking-item-in-hand.22461/' | prepend: site.baseurl }}">Checking item in hand</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Nathan
+            3</a>, <a href="{{ '/threads/checking-item-in-hand.22461/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 13, 2016 at 5:41 PM">Dec 13, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-276325" class="message" data-author="Nathan 3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathan 3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathan 3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I post a lot recently but I really want to get my plugin working <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)
+        {
+            if (entity is BuildingBlock)
+            {
+                var block = entity as BuildingBlock;                if (block == null)
+                    return;                if (block.grade == BuildingGrade.Enum.Wood)
+                    hitInfo.damageTypes.Scale(Rust.DamageType.Slash, 4);
+                if (block.grade == BuildingGrade.Enum.Stone)
+                    hitInfo.damageTypes.Scale(Rust.DamageType.Slash, 80);            }            if (entity is Door)
+                hitInfo.damageTypes.Scale(Rust.DamageType.Slash, 5);            else return;
+        }</pre>{% endraw %}
+                        </div>I am using OnEntityTakeDamage and I want to check if the user is using a salvaged.sword when hitting a wall, I have tried multiple different combinations and I either get
+                        Null Reference errors or method takes 0 arguments.<br />
+                        <br /> I altered the below code that Kayzor posted... but I couldn&#039;t get it to work.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>bool checkItem(BasePlayer player, string command, string[] args)
+        {
+            Item item = player.GetActiveItem();
+            if (item != null)
+            {
+                var weapon = item.GetHeldEntity() as BaseProjectile;
+                if (weapon != null &amp;&amp; weapon.Equals(&quot;salvaged.sword&quot;))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }</pre>{% endraw %}
+                        </div>I wanted to use checkItem to check if the active item is salvaged.sword and then<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (block.grade == BuildingGrade.Enum.Wood &amp;&amp; checkItem())
+hitInfo.damageTypes.Scale(Rust.DamageType.Slash, 4);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathan 3</a>,</span>
+                        <a href="{{ '/threads/checking-item-in-hand.22461/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 13, 2016 at 5:41 PM">Dec 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-item-in-hand.22461/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/276325/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-276328" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What against checking it direct from the hitinfo?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>hitInfo.Weapon?.GetItem().info.shortname</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/checking-item-in-hand.22461/#post-276328' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 13, 2016 at 6:02 PM">Dec 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-item-in-hand.22461/#post-276328' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/276328/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-276329" class="message" data-author="Nathan 3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathan 3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathan 3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-276328" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What against checking it direct from the hitinfo?<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>hitInfo.Weapon?.GetItem().info.shortname</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I wasn&#039;t sure you could do that, I will give that a shot now! Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathan 3</a>,</span>
+                        <a href="{{ '/threads/checking-item-in-hand.22461/#post-276329' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 13, 2016 at 6:03 PM">Dec 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-item-in-hand.22461/#post-276329' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/276329/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

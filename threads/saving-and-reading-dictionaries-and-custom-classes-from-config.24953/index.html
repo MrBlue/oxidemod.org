@@ -1,0 +1,386 @@
+---
+layout: forums
+title: 'Saving and reading dictionaries and custom classes from config'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/' | prepend: site.baseurl }}">Saving and reading dictionaries and custom classes from config</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 14, 2017 at 6:56 PM">Apr 14, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-314956" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello everyone!<br /> I&#039;ve run into a strange problem - I can&#039;t proparly save and ready
+                        dictionaries and my own custom classes form the Config.<br /> Here is what I&#039;m trying to do:<br /> I have something like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+    private Dictionary&lt;string, string&gt; dict1;
+    private Dictionary&lt;string, string&gt; dict2;</pre>{% endraw %}
+                        </div>And what I wanted is to save it to the config and read it back.<br /> This is the code I&#039;m using to get data in\out of config:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void GetConfig&lt;T&gt;(string Key, ref T var)        {
+        if (Config[Key] != null)
+        {
+            var = (T)Convert.ChangeType(Config[Key], typeof(T));
+        }
+        Config[Key] = var;
+    }</pre>{% endraw %}
+                        </div>Fill dicts with something and trying to get it to config, and I expect it to work:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private void LoadConfigValues()
+{
+    dict1 = new Dictionary&lt;string, string&gt;()
+    {
+        [&quot;Test1&quot;] = &quot;test1&quot;,
+        [&quot;Test2&quot;] = &quot;test2&quot;    
+    }
+    dict2 = new Dictionary&lt;string, string&gt;()
+    {
+        [&quot;Test3&quot;] = &quot;test3&quot;,
+        [&quot;Test4&quot;] = &quot;test4&quot;
+    }
+    GetConfig(&quot;Dictionary 1&quot;, ref dict1);
+    Getconfig(&quot;Dictionary 2&quot;, ref dict2);
+    SaveConfig();
+}
+</pre>{% endraw %}
+                        </div>But here comes an error- <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to initialize plugin 'test v1.0.0' (InvalidCastException: Value is not a convertible object: System.Collections.Generic.Dictionary`2[System.String,System.Object] to System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]])</pre>{% endraw %}
+                        </div>So the problem is - Config[Key] returns me not Dictionary&lt;string,string&gt;, but Dictionary&lt;string,object&gt;<br /> How can I avoid it?<br />
+                        <br /> The only solution I&#039;ve found so far is doing something creepy like that:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private Dictionary&lt;string, string&gt; Dict1;
+private Dictionary&lt;string, string&gt; Dict2;private void LoadConfigValues()
+{
+    Dictionary&lt;string, object&gt; dict1 = new Dictionary&lt;string, object&gt;()
+    {
+        [&quot;Test1&quot;] = &quot;test1&quot;,
+        [&quot;Test2&quot;] = &quot;test2&quot;    
+    }
+    Dictionary&lt;string, object&gt; dict2 = new Dictionary&lt;string, object&gt;()
+    {
+        [&quot;Test3&quot;] = &quot;test3&quot;,
+        [&quot;Test4&quot;] = &quot;test4&quot;
+    }
+    GetConfig(&quot;Dictionary 1&quot;, ref dict1);
+    Getconfig(&quot;Dictionary 2&quot;, ref dict2);
+    foreach(var item in dict1)
+    {
+        Dict1.Add(item.Key, item.Value.ToString());
+    }
+    foreach(var item in dict2)
+    {
+        Dict2.Add(item.Key, item.Value.ToString());
+    }
+    SaveConfig();}
+</pre>{% endraw %}
+                        </div>And that&#039;s creepy.<br />
+                        <br />
+                        <br />
+                        <br /> About classes - that&#039;s the over question.<br /> Let&#039;s say I have a class:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>       class DnN
+    {
+        public Dictionary&lt;string, object&gt; Day { get; set; }
+        public Dictionary&lt;string, object&gt; Night { get; set; }
+        public DnN()
+        {
+            Day = new Dictionary&lt;string, object&gt;(); //Same problem as above, so this time I decided to just 
+            Night = new Dictionary&lt;string, object&gt;(); // Change Dictionaty&lt;string,float&gt; to &lt;string,object&gt;
+        }
+    }</pre>{% endraw %}
+                        </div>Is there any way to store it?<br /> [DOUBLEPOST=1492192679][/DOUBLEPOST]Also - if anyone would be able to tell me why this code works:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void GetConfig&lt;T&gt;(string Key, ref T var)
+    {
+        if (Config[Key] != null)
+        {
+            var = (T)Convert.ChangeType(Config[Key], typeof(T));
+        }
+        Config[Key] = var;
+    }</pre>{% endraw %}
+                        </div>While this(just to be able to save config into the sub directories) gives me cast error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void GetConfig&lt;T&gt;(ref T value, params object[] args)
+    {
+        List&lt;string&gt; stringArgs = (from arg in args select arg.ToString()).ToList&lt;string&gt;();
+        if (Config.Get(stringArgs.ToArray()) != null)
+        {
+            value = (T)Convert.ChangeType(Config.Get(stringArgs.ToArray()), typeof(T));
+        }
+        Config.Set(args, value);
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 14, 2017 at 6:56 PM">Apr 14, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/314956/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343048" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ooook.... for thoses who would got here - here is an example how to do so - classes.<br /> So, here is an
+                        example of saving classes to the DynamicConfigFile:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using Newtonsoft.Json;
+//Code
+private PluginConfig config; //notice that my var starts from lower case. Config - in-build var of type DynamicConfigFile with the name of the plugin.
+//Code
+#region Config
+private class PluginConfig
+{
+[JsonProperty(&quot;This is the text, that would be assossiated with the config line&quot;)]
+public string Permission;
+[JsonProperty(&quot;Is it working?&quot;)]
+public bool IsIt;
+[JsonProperty(&quot;Here is some description of this variable&quot;)]
+public DealWithIt DoYou;
+public static PluginConfig DefaultConfig()
+{
+Permission = &quot;coolplugin.use&quot;,
+IsIt = true,
+DoYou = new DealWithIt(){
+{
+    Yeah = true,
+    Nope = false
+}
+};
+}
+private class DealWithIt
+{  
+[JsonProperty(&quot;Description of sub var 1&quot;)]
+public bool Yeah;
+[JsonProperty(&quot;Description of sub var 2&quot;)]
+public bool Nope;
+}
+#endregion#region Config init
+protected override void LoadDefaultConfig()
+{
+PrintWarning(&quot;Generating default config file&quot;);
+config = PluginConfig.DefaultConfig();
+//we don't have to save config to the file yet - due to override SaveConfig function
+}
+protected override void LoadConfig()
+{
+base.LoadConfig();
+//we have loaded config file, now - reading it as the object and doing what we want wile loading config file.
+config = Config.ReadObject&lt;PluginConfig&gt;();
+permission.RegisterPermission(config.Permission, this);
+}
+protected override void SaveConfig()
+{
+//Using WriteObject to store out object to the file.
+Config.WriteObject(config);
+}
+#endregion</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343048' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 6, 2017 at 10:50 PM">Aug 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343048' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343048/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343059" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you want to save just a dictionary, or list, or any over build-in classes and objects - you can use this
+                        construction:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;string,List&lt;string&gt;&gt; mydict;
+#region Config Initialization
+protected override void LoadDefaultConfig()
+{
+PrintWarning(&quot;New config file created&quot;);
+mydict = new Dictionary&lt;string,List&lt;string&gt;&gt;()
+{
+[&quot;string 1&quot;] = new List&lt;string&gt;()
+{
+    &quot;substring 1_1&quot;,&quot;substring 1_2&quot;,&quot;substring 1_3&quot;
+},
+[&quot;string 2&quot;] = new List&lt;string&gt;()
+{
+    &quot;substring 2_1&quot;,&quot;substring 2_2&quot;,&quot;substring 2_3&quot;
+},
+}
+}
+protected override void LoadConfig()
+{
+base.LoadConfig();
+mydict = Config.ReadObject&lt;Dictionary&lt;string,List&lt;string&gt;&gt;&gt;();
+foreach(var str in mydict.Keys)
+permission.RegisterPermission(str, this);
+}
+protected override void SaveConfig()
+{
+Config.WriteObject(config);
+}
+#endregion</pre>{% endraw %}
+                        </div>For saving data you can use this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;string, bool&gt; MyDict = new Dictionary&lt;string, bool&gt;();
+private void SaveData()
+{
+Interface.Oxide.DataFileSystem.WriteObject(Title, MyDict);
+}
+void LoadData()
+{
+try
+{
+MyDict = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;string, bool&gt;&gt;(Title);
+}
+catch (Exception ex)
+{
+PrintError($&quot;Failed to load data file (is the file corrupt?) ({ex.Message})&quot;);
+MyDict = new Dictionary&lt;string, bool&gt;();
+}
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343059' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 6, 2017 at 11:18 PM">Aug 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343059' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343059/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343061" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey, <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> , why my
+                        post is awaiting for the approval? there is no even a links in there....<br /> Also - maybe you can add this to the docs? As well as the chat\console commands? Cos there is
+                        only covalence [Command] Listed there....<br /> And JsonProperty - this is something not much people know =)<br /> P.S. Ok, my mistake. link removed. Didn&#039;t notice it.
+                        This was just a copy-paste from one of my plugin)<br /> P.P.S - I didn&#039;t see the thread tools for some reason, and can&#039;t put prefix on it, so... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343061' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Aug 6, 2017 at 11:21 PM">Aug 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/saving-and-reading-dictionaries-and-custom-classes-from-config.24953/#post-343061' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343061/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

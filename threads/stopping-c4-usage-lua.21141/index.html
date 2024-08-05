@@ -1,0 +1,825 @@
+---
+layout: forums
+title: 'Stopping C4 usage? (Lua)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/stopping-c4-usage-lua.21141/' | prepend: site.baseurl }}">Stopping C4 usage? (Lua)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CrazyDoo</a>, <a href="{{ '/threads/stopping-c4-usage-lua.21141/' | prepend: site.baseurl }}"><span class="DateTime" title="Sep 23, 2016 at 12:55 PM">Sep 23, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-254093" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I need help for make a stop launch c4 in the methode &quot;OnExplosiveThrown&quot; with LUA language<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnExplosiveThrown(BasePlayer player, BaseEntity entity)
+{
+    if (entity != null &amp;&amp; entity is TimedExplosive)
+    {
+        entity.CancelInvoke(&quot;Explode&quot;);
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnExplosiveThrown(player, entity)
+    if entity ~= null then
+        if entity.prefabID == 1536803118 then  
+            entity.CancelInvoke(&quot;Explode&quot;)
+        end
+    end
+---
+---code
+---
+end</pre>{% endraw %}
+                        </div>In lua i got error,<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Error] Failed to call hook 'OnExplosiveThrown' on plugin 'aa'
+File: aa.lua Line: 20 instance method 'CancelInvoke' requires a non null target object:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 23, 2016 at 4:53 PM">Sep 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 12:55 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254093/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254145" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Try:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnExplosiveThrown(player, entity)
+    if entity ~= null then
+        if entity.prefabID == 1536803118 then  
+            entity.Kill()
+        end
+    end
+---
+---code
+---
+end</pre>{% endraw %}
+                        </div>If I understood your error correctly the error was with your &#039;CancelInvoke&#039; command. &#039;entity.Kill()&#039; will just remove the entity plus the explosion if
+                        I am correct. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254145' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 4:39 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254145' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254145/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254147" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-254145" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Try:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>function PLUGIN:OnExplosiveThrown(player, entity)
+    if entity ~= null then
+        if entity.prefabID == 1536803118 then 
+            entity.Kill()
+        end
+    end
+---
+---code
+---
+end</pre>{% endraw %}
+                                        </div>If I understood your error correctly the error was with your &#039;CancelInvoke&#039; command. &#039;entity.Kill()&#039; will just remove the entity plus
+                                        the explosion if I am correct.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks but y got this error its equal :s :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Error] Failed to call hook 'OnExplosiveThrown' on plugin 'aa v0.0.1'
+File: aa.lua Line: 22 instance method 'Kill' requires a non null target object:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254147' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 4:48 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254147' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254147/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254148" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CrazyDoo">
+                            <aside>
+                                <div class="attribution type">CrazyDoo said: <a href="#post-254147" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks but y got this error its equal :s :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Error] Failed to call hook 'OnExplosiveThrown' on plugin 'aa v0.0.1'
+File: aa.lua Line: 22 instance method 'Kill' requires a non null target object:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Lua uses nil, not null for checking. So replace the check with entity ~= nil. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254148' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 4:49 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254148' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254148/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254149" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-254148" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Lua uses nil, not null for checking. So replace the check with entity ~= nil.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s the same :&#039;( <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254149' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 4:57 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254149' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254149/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254152" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CrazyDoo">
+                            <aside>
+                                <div class="attribution type">CrazyDoo said: <a href="#post-254149" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s the same :&#039;(</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I can&#039;t imagine it being the same error. What does your code look like currently? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254152' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 4:59 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254152' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254152/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254155" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnExplosiveThrown(player, entity)
+    --print(entity.name)
+    if entity ~= nil then
+        if entity.prefabID == 1536803118 then 
+            entity.Kill()
+       end
+    end </pre>{% endraw %}
+                        </div>error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Failed to call hook 'OnExplosiveThrown' on plugin 'aa v0.0.1'
+File: aa.lua Line: 23 instance method 'Kill' requires a non null target object:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254155' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 5:04 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254155' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254155/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254156" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CrazyDoo">
+                            <aside>
+                                <div class="attribution type">CrazyDoo said: <a href="#post-254155" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>function PLUGIN:OnExplosiveThrown(player, entity)
+    --print(entity.name)
+    if entity ~= nil then
+        if entity.prefabID == 1536803118 then
+            entity.Kill()
+       end
+    end </pre>{% endraw %}
+                                        </div>error:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Failed to call hook 'OnExplosiveThrown' on plugin 'aa v0.0.1'
+File: aa.lua Line: 23 instance method 'Kill' requires a non null target object:
+  at NLua.Lua.ThrowExceptionFromError (Int32 oldTop) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaFunction.Call (System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Ext.Lua.Plugins.LuaPlugin.OnCallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>entity:Kill() is how you use it in Lua. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254156' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 5:05 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254156' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254156/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254158" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> <br />
+                        <br /> Ow THANKS its good,<br />
+                        <br /> but the item is removed on my inventory :s who to block this ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 23, 2016 at 5:37 PM">Sep 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254158' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 5:07 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254158' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254158/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254180" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Use whatever the GiveItem script is to give it back. Im not sure what it is in LUA terms. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254180' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 6:48 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254180' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254180/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254184" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-254180" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Use whatever the GiveItem script is to give it back. Im not sure what it is in LUA terms.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ok, but is impossible to cancel full event &quot;OnExplosiveThrown&quot; ?<br />
+                        <br /> No launch and no use item ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254184' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 6:59 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254184' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254184/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254185" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CrazyDoo">
+                            <aside>
+                                <div class="attribution type">CrazyDoo said: <a href="#post-254184" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, but is impossible to cancel full event &quot;OnExplosiveThrown&quot; ?<br />
+                                        <br /> No launch and no use item ?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That hook doesn&#039;t have a return, so not currently aside from the methods suggested in here so far. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254185' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 7:00 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254185' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254185/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254186" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> [DOUBLEPOST=1474653786][/DOUBLEPOST]That might be a bit iffy as thats from my auto-turret code<br />
+                        [DOUBLEPOST=1474654440][/DOUBLEPOST]Scratch that: This is much better:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.inventory.GiveItem(ItemManager.CreateByItemID(1257201758, 1));</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 23, 2016 at 7:14 PM">Sep 23, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254186' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 7:02 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254186' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254186/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254197" class="message" data-author="RedZephyr">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RedZephyr" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RedZephyr</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> May i ask why you didnt just make the crafting time like 10 hours? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RedZephyr</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254197' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 7:32 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254197' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254197/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254207" class="message" data-author="CrazyDoo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CrazyDoo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CrazyDoo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-254186" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">[DOUBLEPOST=1474653786][/DOUBLEPOST]That might be a bit iffy as thats from my auto-turret code<br /> [DOUBLEPOST=1474654440][/DOUBLEPOST]Scratch
+                                        that: This is much better:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>player.inventory.GiveItem(ItemManager.CreateByItemID(1257201758, 1));</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the code <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="RedZephyr">
+                            <aside>
+                                <div class="attribution type">RedZephyr said: <a href="#post-254197" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">May i ask why you didnt just make the crafting time like 10 hours?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Because i need to the player craft the C4, my plugin limit the spam of use c4<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-254185" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That hook doesn&#039;t have a return, so not currently aside from the methods suggested in here so far.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ok, i find :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public virtual void SetFuse(float fuseLength)
+    {
+        if (base.isServer)
+        {
+            base.CancelInvoke(&quot;Explode&quot;);
+            base.Invoke(&quot;Explode&quot;, fuseLength);
+        }
+    }</pre>{% endraw %}
+                        </div>How to use this ? is good for my need ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CrazyDoo</a>,</span>
+                        <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254207' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 23, 2016 at 8:03 PM">Sep 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/stopping-c4-usage-lua.21141/#post-254207' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/254207/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

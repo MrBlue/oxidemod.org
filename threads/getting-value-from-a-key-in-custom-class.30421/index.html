@@ -1,0 +1,434 @@
+---
+layout: forums
+title: 'Getting value from a key in custom class?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/' | prepend: site.baseurl }}">Getting value from a key in custom class?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">FireBurst</a>, <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 29, 2018 at 6:12 AM">Apr 29,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-398202" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi I&#039;ve got a file datafile and I need to read it so I can retrieve the value of a key.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerData data = Interface.Oxide.DataFileSystem.ReadObject&lt;PlayerData&gt;($&quot;DataFolder/{playerId}&quot;);</pre>{% endraw %}
+                        </div>My file contains:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;id&quot;: 76561197xxxxxx,
+  &quot;name&quot;: &quot;Playername&quot;,
+  &quot;key1string&quot;: &quot;stringvalue1&quot;,
+  &quot;key2int&quot;: intvalue2,
+  &quot;key3int&quot;: intvalue3,
+  &quot;key4string&quot;: &quot;stringvalue4&quot;
+}</pre>{% endraw %}
+                        </div>There is no {namelist} before the {&quot;id: .... } so I cannot use a list or dictionary (I suppose). Unfortunately I cannot use | data.Contains(), data.ContainsKey,
+                        data.TryGetValue() | stuffs... It seems that trying | pair.Value.data.ContainsKey(value) OR foreach (var pair in data) | don&#039;t work either. What would be the way to catch
+                        the value of a specific key?<br />
+                        <br /> I&#039;m using:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private object GetDataInfo(ulong playerId, string KEY)
+        { //basically I want this
+            if data.KEY
+            return data.KEYvalue
+      }
+</pre>{% endraw %}
+                        </div>if KEY = key1string... return &quot;stringvalue1&quot;<br />
+                        <br /> Do I have to add the whole data to a list and use the list to get pair(key/value)? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 29, 2018 at 8:51 AM">Apr 29, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 6:12 AM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/398202/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398291" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m not 100% sure what your asking for, but here is how I would suggest going about it if your wanting to
+                        store data per player.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        // Class that contains all of our information for the player
+        public class PlayerClass
+        {
+            public string name;
+            public string key1string;
+            public int key2int;
+            public int key3int;
+            public string key4string;
+        }        // Dictionary where the the key will be the userID and the value will be their data
+        public Dictionary&lt;string, PlayerClass&gt; playerData = new Dictionary&lt;string, PlayerClass&gt;();        public PlayerClass GetPlayerData(string id)
+        {
+            // Define out player data so we can use TryGetValue
+            PlayerClass data = null;
+            // Lets try and get the data based on the id
+            if (playerData.TryGetValue(id, out data))
+                return data; // We found the data, return it!
+            return null; // Uh oh, no data was found. Lets just return null. You could also create a new data set and return that here if you wanted.
+        }        public string GetPlayerName(string id)
+        {
+            // Get the data, that returns our PlayerClass. From here we just check if its null and return the name. Which is what the ? does!
+            return GetPlayerData(id)?.name;
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398291' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 6:52 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398291' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398291/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398309" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-398291" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not 100% sure what your asking for, but here is how I would suggest going about it if your wanting to store data per player.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks i&#039;ll see what I can do with that. I try to read the data file (ReadObject), should I replace<br /> PlayerClass data = null;<br /> with<br /> PlayerClass data
+                        = Interface.Oxide.DataFileSystem.ReadObject&lt;PlayerData2&gt;($&quot;DataFolder/{id}&quot;);?<br /> Or should I use a Try and Catch (find data file, if none, make new
+                        Dictionary)?<br />
+                        <br /> The current data is null, how could it find anything in there :s I&#039;m a bit confused because when i use it it always return nothing.<br />
+                        <br /> The data file is the playerid. in every data file is public string name, key1string, key2int etc. So it has to load the id of player and get whatever we want from it (in
+                        your example is the name) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398309' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 9:17 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398309' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398309/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398311" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="FireBurst">
+                            <aside>
+                                <div class="attribution type">FireBurst said: <a href="#post-398309" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks i&#039;ll see what I can do with that. I try to read the data file (ReadObject), should I replace<br /> PlayerClass data = null;<br />
+                                        with<br /> PlayerClass data = Interface.Oxide.DataFileSystem.ReadObject&lt;PlayerData2&gt;($&quot;DataFolder/{id}&quot;);?<br /> Or should I use a Try and Catch
+                                        (find data file, if none, make new Dictionary)?<br />
+                                        <br /> The current data is null, how could it find anything in there :s I&#039;m a bit confused because when i use it it always return nothing.<br />
+                                        <br /> The data file is the playerid. in every data file is public string name, key1string, key2int etc. So it has to load the id of player and get whatever we
+                                        want from it (in your example is the name)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Unless each player has a large amount of data I wouldn&#039;t suggest storing each player in their own seperate file. Instead just store all players in one file to save
+                        on performance. For my example, you would want to just load the playerData dictionary using the DataFileSystem.ReadObject in the Loaded/Init function. Example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void Loaded()
+{
+playerData = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;string, PlayerClass&gt;&gt;(&quot;PlayerData&quot;);
+}</pre>{% endraw %}
+                        </div><i>Code above was not tested, wrote this in a text editor.</i>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398311' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 9:35 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398311' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398311/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398314" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DylanSMR">
+                            <aside>
+                                <div class="attribution type">DylanSMR said: <a href="#post-398311" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Unless each player has a large amount of data I wouldn&#039;t suggest storing each player in their own seperate file. Instead just store all
+                                        players in one file to save on performance.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Okay will do that. Is 20-30 keys/values per player good? I&#039;m planning to use over 20 lines per player to store in the file. x100+ players would make it 2000+ lines
+                        in a single datafile. Is it still good for performance?<br />
+                        <br /> I see most dictionaries with a string in it (&lt;Dictionary&lt;string, PlayerClass&gt;&gt;(&quot;PlayerData&quot;)), if I plan to use int, string, ulong, double etc does
+                        it matter? sorry about that stupid question xD <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398314' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 9:43 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398314' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398314/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398318" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes, the PlayerClass can contain whatever mix of variables types you like.<br /> If there&#039;s any chance of
+                        duplicates with that string key, you might want to use ulong userID instead.<br /> Storing an entry per player, with 20 or so vars each, in one data file shouldn&#039;t cause
+                        any problem. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398318' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 10:09 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398318' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398318/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398323" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-398318" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes, the PlayerClass can contain whatever mix of variables types you like.<br /> If there&#039;s any chance of duplicates with that string key,
+                                        you might want to use ulong userID instead.<br /> Storing an entry per player, with 20 or so vars each, in one data file shouldn&#039;t cause any problem.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks alot.<br />
+                        <br /> One last thing the script works except the ?.name doesn&#039;t seem to work at all. It just returns because it finds the ID, if it does not, it simply don&#039;t return
+                        any name.<br />
+                        <br /> I want to retrieve a value from specific key<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public PlayerData GetPlayerData(string id, string key)
+        {
+            PlayerData data = Interface.Oxide.DataFileSystem.ReadObject&lt;PlayerData&gt;(&quot;data_file&quot;);
+            // Lets try and get the data based on the id            if (playerData.TryGetValue(id, out data))
+            {
+                &gt;&gt;I know following lines are incorrect but shows basically what I want
+              foreach (var pair in playerData)
+                {
+                   if (pair.Key.Contains(key)) //I want to select the key from GetPlayerData(string id, string key), is a string
+                        return pair.Value; //just want to return the value of previously selected Key
+                }
+            }
+            return null; // Uh oh, no data was found. Lets just return null. You could also create a new data set and return that here if you wanted.
+        }</pre>{% endraw %}
+                        </div>I thought going like Economics script would be easier:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private double Balance(string playerId)
+        {
+            double playerData;
+            return storedData.Balances.TryGetValue(playerId, out playerData) ? playerData : config.StartAmount;
+        }</pre>{% endraw %}
+                        </div>Except my json data doesn&#039;t have Balances:{ in front line so I must replace Balances with PlayerID. Would look something like it: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>playerData.$&quot;{id}&quot;.TryGetValue(key, out data)</pre>{% endraw %}
+                        </div>datafile is :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;765611979xxxxx&quot;: {
+  &quot;id&quot;: 765611979xxxxx,
+  &quot;name&quot;: &quot;FireBurst&quot;,
+  &quot;wood&quot;: 0,
+  &quot;stone&quot;: 10,
+......
+  }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 30, 2018 at 2:01 AM">Apr 30, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398323' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 11:02 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-value-from-a-key-in-custom-class.30421/#post-398323' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398323/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,350 @@
+---
+layout: forums
+title: 'Fixed - OnRecycleItem hook behaviour changed'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixLightGreen">Fixed</span> <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/' | prepend: site.baseurl }}">OnRecycleItem hook behaviour changed</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">wazzzup</a>, <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 28, 2018 at 5:34 PM">Apr 28,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-398132" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a><br /> current implementation of OnRecycleItem hook calling differs from previous
+                        one,<br /> should we null the Blueprint now (but we cant) instead of returning False or what ever? Why this was changed?<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        if (Interface.CallHook(&quot;OnRecycleItem&quot;, (object) this, (object) slot2) != null)
+        {
+          if (!this.HasRecyclable())
+          {
+            this.StopRecycling();
+            return;
+          }
+        }
+        else if (!((UnityEngine.Object) slot2.info.Blueprint != (UnityEngine.Object) null))
+          continue;
+</pre>{% endraw %}
+                        </div>compared to previous<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        if (Interface.CallHook(&quot;OnRecycleItem&quot;, (object) this, (object) slot2) != null)
+        {
+          if (this.HasRecyclable())
+            return;
+          this.StopRecycling();
+          return;
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 28, 2018 at 5:34 PM">Apr 28, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/398132/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398186" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It has not changed. This is the current placement of it:<br />
+                        <br />
+                        <img src="https://oxidemod.org/attachments/39ac5e6e4556f71db57b5a01ebb363b9-png.46328/" alt="39ac5e6e4556f71db57b5a01ebb363b9.png" class="bbCodeImage LbImage" />
+                        <br />
+                        <br /> If you are self-patching, you&#039;re likely using an old version of the patcher and Oxide.Core.dll. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398186' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 2:40 AM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398186' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398186/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398214" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> redownloaded github.com/OxideMod/Oxide.Rust/releases/download/2.0.3904/Oxide.Rust.zip<br />
+                        <br />
+                        <img src="https://oxidemod.org/attachments/upload_2018-4-29_10-21-39-png.46331/" alt="upload_2018-4-29_10-21-39.png" class="bbCodeImage LbImage" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398214' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 8:22 AM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398214' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398214/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398254" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ahh, right... it has a patch too. So yes, the index for the patch was off, but is now fixed. Thanks for the
+                        report! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398254' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 29, 2018 at 1:49 PM">Apr 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398254' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398254/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398882" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> sorry, but this can&#039;t be usable again (<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        if (Interface.CallHook(&quot;OnRecycleItem&quot;, (object) this, (object) slot2) != null &amp;&amp; !this.HasRecyclable())
+        {
+          this.StopRecycling();
+          return;
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398882' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2018 at 9:08 PM">May 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398882' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398882/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398884" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="wazzzup">
+                            <aside>
+                                <div class="attribution type">wazzzup said: <a href="#post-398882" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> sorry, but this can&#039;t be usable again
+                                        (<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        if (Interface.CallHook(&quot;OnRecycleItem&quot;, (object) this, (object) slot2) != null &amp;&amp; !this.HasRecyclable())
+        {
+          this.StopRecycling();
+          return;
+        }
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What is wrong about it? It&#039;s technically the same as what is in your first post, but I&#039;ll adjust it so it&#039;s exactly. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398884' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2018 at 9:10 PM">May 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398884' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398884/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-398890" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> the whole thing is that if we manipulate item in recycler manually and return false on OnRecycleItem hook,
+                        current code is not breaking execution, but checks is there any items to recycle, but it&#039;s not correct.<br /> should be as a few patches ago<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        if (Interface.CallHook(&quot;OnRecycleItem&quot;, (object) this, (object) slot2) != null)
+        {
+          if (this.HasRecyclable())
+            return;
+          this.StopRecycling();
+          return;
+        }      </pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398890' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2018 at 9:21 PM">May 3, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onrecycleitem-hook-behaviour-changed.30412/#post-398890' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/398890/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,439 @@
+---
+layout: forums
+title: 'Getting code lock information?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-code-lock-information.19878/' | prepend: site.baseurl }}">Getting code lock information?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">insane8472</a>, <a href="{{ '/threads/getting-code-lock-information.19878/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 23, 2016 at 5:34 PM">Jul 23,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-234480" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Until a recent rust update, I used to be able to use OnItemDeployed to get code lock information when placing a
+                        lock on a door, but, now I only get the door information. Is there another way to get code lock information when placed? A OnCodeLockDeployed or something similar? Thanks. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 23, 2016 at 5:34 PM">Jul 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234480/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-234500" class="message" data-author="deer_SWAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="deer_SWAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">deer_SWAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can get CodeLock via Reflection.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnItemDeployed(Deployer deployer, BaseEntity entity)
+{
+    Door door = (Door)entity;    FieldInfo info = typeof(BaseEntity).GetField(&quot;entitySlots&quot;, BindingFlags.Instance | BindingFlags.NonPublic);    EntityRef[] entitySlots = (EntityRef[])info.GetValue(door);    CodeLock codeLock = (CodeLock)entitySlots[0].Get(true);
+}</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1469296098][/DOUBLEPOST]Or just<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Door door = (Door)entity;
+CodeLock codeLock = (CodeLock)door.GetSlot(BaseEntity.Slot.Lock);</pre>{% endraw %}
+                        </div><img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">deer_SWAG</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-234500' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 23, 2016 at 6:45 PM">Jul 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-234500' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234500/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-234685" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yea..CodeLock fun <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" /><br />
+                        <br />
+                        <iframe src="https://player.vimeo.com/video/174101455" width="500" height="300" frameborder="0"></iframe>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-234685' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2016 at 4:42 AM">Jul 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-234685' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234685/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-234729" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="deer_SWAG">
+                            <aside>
+                                <div class="attribution type">deer_SWAG said: <a href="#post-234500" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can get CodeLock via Reflection.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnItemDeployed(Deployer deployer, BaseEntity entity)
+{
+    Door door = (Door)entity;    FieldInfo info = typeof(BaseEntity).GetField(&quot;entitySlots&quot;, BindingFlags.Instance | BindingFlags.NonPublic);    EntityRef[] entitySlots = (EntityRef[])info.GetValue(door);    CodeLock codeLock = (CodeLock)entitySlots[0].Get(true);
+}</pre>{% endraw %}
+                                        </div>[DOUBLEPOST=1469296098][/DOUBLEPOST]Or just<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Door door = (Door)entity;
+CodeLock codeLock = (CodeLock)door.GetSlot(BaseEntity.Slot.Lock);</pre>{% endraw %}
+                                        </div><img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the help and code, could you help me with a lua translation (yes I still use lua).<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local buildingBlock = entity:GetComponentInParent(global.Door._type)
+local lock = buildingBlock:GetComponent(&quot;BaseEntity&quot;):GetSlot(0)</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Fujikura">
+                            <aside>
+                                <div class="attribution type">Fujikura said: <a href="#post-234685" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yea..CodeLock fun <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                                        <br />
+                                        <iframe src="https://player.vimeo.com/video/174101455" width="500" height="300" frameborder="0"></iframe></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thats a cool idea, never seen or thought of that before. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-234729' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2016 at 8:22 AM">Jul 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-234729' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234729/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-234732" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-234729" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thats a cool idea, never seen or thought of that before.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>.... <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-234732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 24, 2016 at 8:44 AM">Jul 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-234732' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/234732/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-239418" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Sorry, been away. Can anyone lend some assistance with lua translations? Thanks. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-239418' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2016 at 8:21 PM">Aug 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-239418' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/239418/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-239424" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="insane8472">
+                            <aside>
+                                <div class="attribution type">insane8472 said: <a href="#post-239418" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sorry, been away. Can anyone lend some assistance with lua translations? Thanks.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Im not the best in lua but I managed to get something without any errors: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:DoStuff(player, entity)
+    local door = entity(Door)
+    local codeLock = (CodeLock)door:GetSlot(BaseEntity.Slot.Lock)
+end</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1470600649][/DOUBLEPOST]or <a href="https://oxidemod.org/members/49529/" class="username" data-user="49529, @deer_SWAG">@deer_SWAG</a> &#039;s option: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:DoStuff(player, entity)
+    local door = entity(Door)
+    local info = typeof(BaseEntity).GetField(&quot;entitySlots&quot;, BindingFlags.Instance and BindingFlags.NonPublic)
+    local entitySlots = (EntityRef)info.GetValue(door)
+    local codeLock = (CodeLock)entitySlots[0].Get(true);
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-239424' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2016 at 9:04 PM">Aug 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-239424' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/239424/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-239448" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /> Will give it a go when I get back to my computer. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-239448' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2016 at 10:54 PM">Aug 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-239448' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/239448/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-239947" class="message" data-author="insane8472">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="insane8472" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">insane8472</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m sure i&#039;m missing something simple but I keep running into these errors.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>attempt to call local 'entity' (a userdata value)
+attempt to call global 'typeof' (a nil value)</pre>{% endraw %}
+                        </div>I provide the entity information from OnItemDeployed. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">insane8472</a>,</span>
+                        <a href="{{ '/threads/getting-code-lock-information.19878/#post-239947' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 9, 2016 at 1:39 PM">Aug 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-code-lock-information.19878/#post-239947' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/239947/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,185 @@
+---
+layout: forums
+title: 'Checking of player receiving damage?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/checking-of-player-receiving-damage.28229/' | prepend: site.baseurl }}">Checking of player receiving damage?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Bear
+            9</a>, <a href="{{ '/threads/checking-of-player-receiving-damage.28229/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 19, 2017 at 7:20 PM">Nov 19, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-367895" class="message" data-author="Bear 9">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bear 9" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bear 9</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi all how to check for damage from the player? Ignore the metabolism, cold and radiation.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
+        {
+            if (!GetConfig&lt;bool&gt;(&quot;ShouldCancelOnDamage&quot;)) return;
+            if (!(entity is BasePlayer)) return;
+            BasePlayer player = entity as BasePlayer;            if (HasComponent&lt;HomeTeleporter&gt;(player))
+            {
+                player.GetComponent&lt;HomeTeleporter&gt;().CancelTeleport();
+                SendReply(player, GetMessage(&quot;YouTookDamage&quot;));
+            }
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bear 9</a>,</span>
+                        <a href="{{ '/threads/checking-of-player-receiving-damage.28229/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 19, 2017 at 7:20 PM">Nov 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-of-player-receiving-damage.28229/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/367895/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-367924" class="message" data-author="Tori1157">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tori1157" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tori1157</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;d suggest you take a look at how <a href="http://oxidemod.org/plugins/godmode.673/"
+                            class="internalLink">Godmode for Rust | Oxide</a> did it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tori1157</a>,</span>
+                        <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-367924' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 19, 2017 at 9:09 PM">Nov 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-367924' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/367924/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-369281" class="message" data-author="mspeedie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mspeedie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mspeedie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">note that BasePlayer can include NPC, specifically murders and scientist. So you might want the following check to
+                        ensure they are a player:<br /> void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo hitInfo)<br /> {<br /> if (entity != null &amp;&amp; hitInfo != null &amp;&amp; entity
+                        is BasePlayer &amp;&amp; !(entity is NPCMurderer) &amp;&amp; !(entity is NPCPlayer) &amp;&amp; hitinfo.damageTypes.Total() &gt; 0) // then this is a player who has been
+                        hit<br /> {<br /> // your code here<br /> }<br /> }<br />
+                        <br /> I believe <a href="http://oxidemod.org/plugins/n-teleportation.1832/" class="internalLink">N-Teleport</a> has code similar to what you are looking for, you might want to
+                        look at lines 747 - 767. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mspeedie</a>,</span>
+                        <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-369281' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 27, 2017 at 2:16 PM">Nov 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-369281' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/369281/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-369357" class="message" data-author="mspeedie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mspeedie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mspeedie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Here are all the hit types so you can filter on the one you want:<br /> &quot;arrow&quot;<br />
+                        &quot;bite&quot;<br /> &quot;bleeding&quot;<br /> &quot;blunt&quot;<br /> &quot;bullet&quot;<br /> &quot;cold&quot;<br /> &quot;coldexposure&quot;<br /> &quot;decay&quot;<br />
+                        &quot;drowned&quot;<br /> &quot;electricshock&quot;<br /> &quot;explosion&quot;<br /> &quot;fall&quot;<br /> &quot;generic&quot;<br /> &quot;heat&quot;<br />
+                        &quot;hunger&quot;<br /> &quot;poison&quot;<br /> &quot;radiation&quot;<br /> &quot;radiationexposure&quot;<br /> &quot;slash&quot;<br /> &quot;stab&quot;<br />
+                        &quot;suicide&quot;<br /> &quot;thirst&quot;<br />
+                        <br /> My mod lets you adjust each of these per type, if you need an example: <a href="http://oxidemod.org/plugins/damage-control.2677/" class="internalLink">Damage Control for
+                            Rust | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mspeedie</a>,</span>
+                        <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-369357' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 27, 2017 at 10:41 PM">Nov 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/checking-of-player-receiving-damage.28229/#post-369357' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/369357/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

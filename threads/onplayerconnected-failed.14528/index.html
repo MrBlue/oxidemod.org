@@ -1,0 +1,404 @@
+---
+layout: forums
+title: 'Solved - OnPlayerConnected failed'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/onplayerconnected-failed.14528/' | prepend: site.baseurl }}">OnPlayerConnected failed</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">Incisus</a>, <a href="{{ '/threads/onplayerconnected-failed.14528/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 12, 2016 at 5:54 PM">Jan 12, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-162581" class="message" data-author="Incisus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Incisus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Incisus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi all, I&#039;ve been working on an AntiCheat plugin for a couple of days now, it&#039;s been running great, out
+                        of the blue the OnPlayerConnected hook stopped working, and in some cases is crashing the server entirely.<br />
+                        <br /> At this point I know it&#039;s something incredibly dumb, I&#039;m pulling my hair out and need a second look, and perhaps some more coffee..<br />
+                        <br /> Here&#039;s the error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 12:51 PM [Error] Failed to call hook 'OnPlayerConnected' on plugin 'Ant
+Cheat v0.1.0' (NullReferenceException: Object reference not set to an instance
+f an object)
+[Oxide] 12:51 PM [Debug]   at Oxide.Plugins.AntiCheat+PlayerInfo..ctor (.Player
+ession session) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.RegisterPlayer (.PlayerSession session) [0x00000]
+n &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.OnPlayerConnected (.PlayerSession session) [0x0000
+] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.DirectCallHook (System.String name, System.Object&amp;
+ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo meth
+d, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[
+args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[
+args) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>What I do with this hook is incredibly simplistic, I add the PlayerSession to a Hash list. Any ideas?<br />
+                        <br /> Hook code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void OnPlayerConnected(PlayerSession session)
+        {            //Add the player to the list
+            RegisterPlayer(session);
+        }</pre>{% endraw %}
+                        </div>Register player code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private Hash&lt;PlayerSession, PlayerInfo&gt; player = new Hash&lt;PlayerSession, PlayerInfo&gt;();private void RegisterPlayer(PlayerSession session)
+        {
+            player.Add(session, new PlayerInfo(session));
+        }</pre>{% endraw %}
+                        </div>PlayerInfo class:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public class PlayerInfo
+        {
+            public PlayerSession session;            public bool kick;
+            public string reason;            public Vector3 location;            public long lastCheck;            public PlayerInfo(PlayerSession session)
+            {
+                this.session = session;                //Load the location
+                location = session.WorldPlayerEntity.transform.position;
+            }            public void setKick(bool kick, string reason)
+            {
+                this.kick = kick;
+                this.reason = reason;
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 12, 2016 at 6:17 PM">Jan 12, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Incisus</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 5:54 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162581/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-162607" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Depending if the user has been on the server recently or not it is possible that the WorldPlayerEntity is not yet
+                        set at the time that OnPlayerConnected runs which will cause an error on saving the location when you are creating the new PlayerInfo object. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162607' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 7:00 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162607' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162607/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-162612" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-162607" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Depending if the user has been on the server recently or not it is possible that the WorldPlayerEntity is not yet set at the time that
+                                        OnPlayerConnected runs which will cause an error on saving the location when you are creating the new PlayerInfo object.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It isn&#039;t, it would only be created in OnPlayerSpawn. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162612' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 7:14 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162612' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162612/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-162614" class="message" data-author="Incisus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Incisus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Incisus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-162612" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It isn&#039;t, it would only be created in OnPlayerSpawn.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m used to OnPlayerInit from Rust. I made the silly assumption that the entity would be made by the time OnPlayerConnected was invoked. I&#039;ll report back
+                        soon.<br /> [DOUBLEPOST=1452626473][/DOUBLEPOST]Reporting back, same outcome with OnPlayerSpawn. Is it possible the entity is created elsewhere?<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 2:18 PM [Error] Failed to call hook 'OnPlayerSpawn' on plugin 'AntiCheat
+v0.1.0' (NullReferenceException: Object reference not set to an instance of an
+object)
+[Oxide] 2:18 PM [Debug]   at Oxide.Plugins.AntiCheat+PlayerInfo..ctor (.PlayerSe
+ssion session) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.RegisterPlayer (.PlayerSession session) [0x00000] i
+n &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.OnPlayerSpawn (.PlayerSession session) [0x00000] in
+&lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.DirectCallHook (System.String name, System.Object&amp;
+ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo metho
+d, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[]
+args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[]</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Incisus</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162614' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 7:16 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162614' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162614/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-162622" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Incisus">
+                            <aside>
+                                <div class="attribution type">Incisus said: <a href="#post-162614" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m used to OnPlayerInit from Rust. I made the silly assumption that the entity would be made by the time OnPlayerConnected was invoked.
+                                        I&#039;ll report back soon.<br /> [DOUBLEPOST=1452626473][/DOUBLEPOST]Reporting back, same outcome with OnPlayerSpawn. Is it possible the entity is created
+                                        elsewhere?<br />
+                                        <br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Oxide] 2:18 PM [Error] Failed to call hook 'OnPlayerSpawn' on plugin 'AntiCheat
+v0.1.0' (NullReferenceException: Object reference not set to an instance of an
+object)
+[Oxide] 2:18 PM [Debug]   at Oxide.Plugins.AntiCheat+PlayerInfo..ctor (.PlayerSe
+ssion session) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.RegisterPlayer (.PlayerSession session) [0x00000] i
+n &lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.OnPlayerSpawn (.PlayerSession session) [0x00000] in
+&lt;filename unknown&gt;:0
+  at Oxide.Plugins.AntiCheat.DirectCallHook (System.String name, System.Object&amp;
+ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo metho
+d, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[]
+args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[]</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Hurtworld is a bit odd right now with the hook ordering, as there are a few references to players instead of just one.<br />
+                        <br /> Looking at our hooks, OnPlayerInit should actually be <i>right</i> after the player&#039;s entity is linked to their session.<br />
+                        <br />
+                        <img src="https://oxidemod.org/attachments/b48bc81d8fc3a52cb6c07a0e73ccdc20-png.16456/" alt="b48bc81d8fc3a52cb6c07a0e73ccdc20.png" class="bbCodeImage LbImage" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162622' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 7:29 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162622' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162622/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-162624" class="message" data-author="Incisus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Incisus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Incisus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-162622" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hurtworld is a bit odd right now with the hook ordering, as there are a few references to players instead of just one.<br />
+                                        <br /> Looking at our hooks, OnPlayerInit should actually be <i>right</i> after the player&#039;s entity is linked to their session.<br />
+                                        <br />
+                                        <a href="https://oxidemod.org/attachments/16456/" target="_blank">View attachment 16456</a>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I appreciate the follow up Wulf. I made my own work around, if I can avoid relying on hooks I do, saves me time in the future when devs move things around!<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                //Make sure the player entity is fully loaded, and that it's not an admin
+                if (curPlayer.session.WorldPlayerEntity != null &amp;&amp; !curPlayer.session.IsAdmin)
+                {                }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            //Init player location
+            if (curPlayer.location.x == 0 &amp;&amp; curPlayer.location.y == 0 &amp;&amp; curPlayer.location.z == 0)
+            {
+                curPlayer.location = curLocation;
+            }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Incisus</a>,</span>
+                        <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162624' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 7:35 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onplayerconnected-failed.14528/#post-162624' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162624/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

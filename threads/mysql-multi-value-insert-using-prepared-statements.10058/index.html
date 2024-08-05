@@ -1,0 +1,421 @@
+---
+layout: forums
+title: 'Solved - MySQL multi-value insert using prepared statements'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/' | prepend: site.baseurl }}">MySQL multi-value insert using
+            prepared statements</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">VVoid</a>, <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 7, 2015 at 10:37 PM">Jul 7, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-106465" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I would suggest to add such feature as multi-value inserts using prepared statements.<br /> So instead of
+                        executing 500 queries: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>INSERT INTO `table` VALUES (...);</pre>{% endraw %}
+                        </div>We can execute just one with 500 values: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>INSERT INTO `table` VALUES (...), (...), (...), (...), (...), ...;</pre>{% endraw %}
+                        </div>This is extremely useful when working with big data, takes much less time and consumes less resources. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 7, 2015 at 10:37 PM">Jul 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106465/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-106567" class="message" data-author="SweetLouHD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SweetLouHD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SweetLouHD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> correct me if i am wrong but if you are just talking about something that is normally handled in a single Sql
+                        statement then it should be possible right now.<br />
+                        <br /> C# Code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private readonly Ext.MySql.Libraries.MySql mySql = Interface.GetMod().GetLibrary&lt;Ext.MySql.Libraries.MySql&gt;();
+private Ext.MySql.Connection MySqlConnection;
+MySqlConnection = mySql.OpenDb(dbHost, dbPort, dbName, dbUsername, dbPassword);
+Sql sql = new Sql(&quot;INSERT INTO `table` VALUES (...), (...), (...), (...), (...), ...&quot;);
+mySql.Insert(sql, MySqlConnection);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SweetLouHD</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106567' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 8, 2015 at 9:42 AM">Jul 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106567' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106567/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-106581" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="SweetLouHD">
+                            <aside>
+                                <div class="attribution type">SweetLouHD said: <a href="#post-106567" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">correct me if i am wrong but if you are just talking about something that is normally handled in a single Sql statement then it should be
+                                        possible right now.<br />
+                                        <br /> C# Code<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private readonly Ext.MySql.Libraries.MySql mySql = Interface.GetMod().GetLibrary&lt;Ext.MySql.Libraries.MySql&gt;();
+private Ext.MySql.Connection MySqlConnection;
+MySqlConnection = mySql.OpenDb(dbHost, dbPort, dbName, dbUsername, dbPassword);
+Sql sql = new Sql(&quot;INSERT INTO `table` VALUES (...), (...), (...), (...), (...), ...&quot;);
+mySql.Insert(sql, MySqlConnection);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s possible, of course. But the developer is still must build the query string.<br />
+                        <br /> Just for an example, how such thing would look on Java. Not sure that something similar are present in .NET.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PreparedStatement st = con.prepareStatement(&quot;INSERT INTO `logging` VALUES (?,?,?,?);&quot;);
+Log log;
+while ((log = _logPool.poll()) != null)
+{
+st.setString(1, log.date);
+st.setShort(2, log.type);
+st.setShort(3, log.id);
+st.setInt(4, log.info);
+st.addBatch();
+}
+st.executeBatch();
+st.close();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106581' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 8, 2015 at 12:07 PM">Jul 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106581' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106581/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-106601" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> One of my test plugins, if it will help you:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.MySqlusing System.Text;using Oxide.Core;namespace Oxide.Plugins
+{
+[Info(&quot;MySqlTest&quot;, &quot;Nogrod&quot;, &quot;1.0.0&quot;)]
+internal class MySqlTest : RustPlugin
+{
+    private readonly Ext.MySql.Libraries.MySql _mySql = Interface.GetMod().GetLibrary&lt;Ext.MySql.Libraries.MySql&gt;();
+    private Ext.MySql.Connection _mySqlConnection;
+    private const string InsertData = &quot;INSERT INTO example (`data`, `data_other`) VALUES (@0, @1);&quot;;
+    private const string SelectData = &quot;SELECT `id`, `data`, `data_other` FROM example;&quot;;        private void OnServerInitialized()
+    {
+        _mySqlConnection = _mySql.OpenDb(&quot;localhost&quot;, 3306, &quot;rust&quot;, &quot;root&quot;, &quot;&quot;);            var sql = Ext.MySql.Sql.Builder.Append(@&quot;DROP TABLE IF EXISTS example;
+                            CREATE TABLE IF NOT EXISTS example (
+                                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                data VARCHAR(100),
+                                data_other INT
+                            );&quot;);            var r = new System.Random();
+        for (var i = 0; i &lt; 10; i++)
+        {
+            var rInt = r.Next();
+            sql.Append(InsertData, &quot;test&quot; + rInt, rInt);
+        }
+        _mySql.InsertAsync(sql, _mySqlConnection);            sql = Ext.MySql.Sql.Builder.Append(SelectData);
+        _mySql.QueryAsync(sql, _mySqlConnection, list =&gt;
+        {
+            if (list == null) return;
+            var sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine(&quot; id\tdata\t\tdata_other&quot;);
+            foreach (var entry in list)
+            {
+                sb.AppendFormat(&quot; {0}\t{1}\t{2}&quot;, entry[&quot;id&quot;], entry[&quot;data&quot;], entry[&quot;data_other&quot;]);
+                sb.AppendLine();
+            }
+            Puts(sb.ToString());
+        });
+    }
+}
+}</pre>{% endraw %}
+                        </div>PS: the QueryAsync currently throws an error if called right after the InsertAsync...will be fixed with the next snapshot <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106601' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 8, 2015 at 1:39 PM">Jul 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106601' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106601/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-106676" class="message" data-author="SweetLouHD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SweetLouHD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SweetLouHD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> take a look at this resource as well. it is not oxide specific so you will need to modify the declarations a
+                        little, but should lead you down the right path.<br />
+                        <br />
+                        <a href="http://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared-preparing.html" target="_blank" class="externalLink  rel="
+                            nofollow">http://dev.mysql.com/doc/connector-net/en/connector-net-programming-prepared-preparing.html</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SweetLouHD</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106676' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 8, 2015 at 7:02 PM">Jul 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106676' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106676/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-106743" class="message" data-author="thomasfn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="thomasfn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">thomasfn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ideally you should avoid constructing SQL statements whatsoever. This could be a limitation of the MySQL
+                        extension or Mono, but using DataAdatper with DataTable or DataSet means you can insert/update/select data through managed APIs without ever building a single SQL
+                        statement. Escaping strings etc is taken care of by .Net so you&#039;re going to get the best security and performance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">thomasfn</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106743' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 8, 2015 at 10:51 PM">Jul 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-106743' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/106743/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-237749" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You want to issue the sql statement &quot;START TRANSACTION&quot; before you do your mass
+                        inserts/deletes/updates the reason is because typical inserts write to the disk per one, which as you can imagine is slow for slow harddrives, and doing transactions
+                        disables the per write. After you&#039;ve finished issuing all your inserts then do &quot;COMMIT&quot;. This will write all at once and makes mass inserts tremendously
+                        fast! I did a test with thousands of inserts and it dropped the time from seconds to low milliseconds... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-237749' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 2, 2016 at 6:23 PM">Aug 2, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-237749' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/237749/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-237763" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-237749" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You want to issue the sql statement &quot;START TRANSACTION&quot; before you do your mass inserts/deletes/updates the reason is because
+                                        typical inserts write to the disk per one, which as you can imagine is slow for slow harddrives, and doing transactions disables the per write. After
+                                        you&#039;ve finished issuing all your inserts then do &quot;COMMIT&quot;. This will write all at once and makes mass inserts tremendously fast! I did a test
+                                        with thousands of inserts and it dropped the time from seconds to low milliseconds...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m pretty sure the MySQL connector does cache, the cache is probably just too small for thousands of large queries.<br /> For small insert bulks however using
+                        transactions assures database integrity. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-237763' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 2, 2016 at 7:06 PM">Aug 2, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mysql-multi-value-insert-using-prepared-statements.10058/#post-237763' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/237763/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,298 @@
+---
+layout: forums
+title: 'Solved - Modifying player attack damage'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/modifying-player-attack-damage.12096/' | prepend: site.baseurl }}">Modifying player attack damage</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">BodyweightEnergy</a>, <a href="{{ '/threads/modifying-player-attack-damage.12096/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 4, 2015 at 6:38 PM">Oct 4,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-133939" class="message" data-author="BodyweightEnergy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="BodyweightEnergy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">BodyweightEnergy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> My plugin uses OnPlayerAttack() to modify damage to 0.0 (friendly fire), which worked fine before the last Rust
+                        update of Oct 1st.<br />
+                        <br /> After that update, melee damage cannot be modified and does full damage. OnPlayerAttack() still gets called when players do melee attacks, but damage is not modified. I
+                        use <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>hitInfo.damageTypes.ScaleAll(0.0)</pre>{% endraw %}
+                        </div>I&#039;ve looked through the decompiled code (Assembly-CSharp.dll), found where OnPlayerAttack hook is detected (OnProjectileAttack). Seems like melee is not done through
+                        that anymore.<br />
+                        <br /> Is there a new recommended method to modify attack damage? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">BodyweightEnergy</a>,</span>
+                        <a href="{{ '/threads/modifying-player-attack-damage.12096/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 6:38 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-player-attack-damage.12096/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133939/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133947" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Melee damage was never done from that location. It is done from the internal hook IOnMeleeAttack which is then
+                        wrapped by OnPlayerAttack. The hook hasn&#039;t changed though.<br />
+                        <br />
+                        <img src="https://oxidemod.org/attachments/b4f4bca5b5b456090406701b964f7cb1-png.13262/" alt="b4f4bca5b5b456090406701b964f7cb1.png" class="bbCodeImage LbImage" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133947' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 6:50 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133947' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133947/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133950" class="message" data-author="BodyweightEnergy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="BodyweightEnergy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">BodyweightEnergy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-133947" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Melee damage was never done from that location. It is done from the internal hook IOnMeleeAttack which is then wrapped by OnPlayerAttack. The
+                                        hook hasn&#039;t changed though.<br />
+                                        <br />
+                                        <a href="https://oxidemod.org/attachments/13262/" target="_blank">View attachment 13262</a>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That explains why OnPlayerAttack() still gets called when doing a melee attack, but why would its damage not be modified?<br />
+                        <br /> Here&#039;s how I use it, maybe I&#039;m not using the best method:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnPlayerAttack(BasePlayer player, HitInfo hitInfo)
+        {
+            Puts(&quot;OnPlayerAttack() called.&quot;);  //for debug purposes
+            if (hitInfo.HitEntity is BasePlayer &amp;&amp; hitInfo.Initiator is BasePlayer)
+            {
+                var victimPlayer = (BasePlayer) hitInfo.HitEntity;
+                //float damageScale = 1.0f;
+                var sb = new StringBuilder();
+                if (player == null || hitInfo == null) return;
+                var attackerPlayer = (BasePlayer)hitInfo.Initiator;
+                var victimID = victimPlayer.userID;
+                var attackerID = attackerPlayer.userID;
+                if (playerTeam.ContainsKey(victimID) &amp;&amp; playerTeam.ContainsKey(attackerID)) 
+                {
+                    if (victimID != attackerID)  //Don't modify if attack is suicide
+                    {
+                        if (playerTeam[victimID] == playerTeam[attackerID]) // Modify damage if both attacker and victim are on same team
+                        {
+                            hitInfo.damageTypes.ScaleAll(damageScale);
+                            sb.Append(&quot;Friendly Fire!&quot;);
+                        }
+                    }
+                }
+                SendReply(hitInfo.Initiator as BasePlayer, sb.ToString());
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">BodyweightEnergy</a>,</span>
+                        <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133950' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 6:57 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133950' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133950/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133954" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="BodyweightEnergy">
+                            <aside>
+                                <div class="attribution type">BodyweightEnergy said: <a href="#post-133950" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That explains why OnPlayerAttack() still gets called when doing a melee attack, but why would its damage not be modified?<br />
+                                        <br /> Here&#039;s how I use it, maybe I&#039;m not using the best method:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private void OnPlayerAttack(BasePlayer player, HitInfo hitInfo)
+        {
+            Puts(&quot;OnPlayerAttack() called.&quot;);  //for debug purposes
+            if (hitInfo.HitEntity is BasePlayer &amp;&amp; hitInfo.Initiator is BasePlayer)
+            {
+                var victimPlayer = (BasePlayer) hitInfo.HitEntity;
+                //float damageScale = 1.0f;
+                var sb = new StringBuilder();
+                if (player == null || hitInfo == null) return;
+                var attackerPlayer = (BasePlayer)hitInfo.Initiator;
+                var victimID = victimPlayer.userID;
+                var attackerID = attackerPlayer.userID;
+                if (playerTeam.ContainsKey(victimID) &amp;&amp; playerTeam.ContainsKey(attackerID))
+                {
+                    if (victimID != attackerID)  //Don't modify if attack is suicide
+                    {
+                        if (playerTeam[victimID] == playerTeam[attackerID]) // Modify damage if both attacker and victim are on same team
+                        {
+                            hitInfo.damageTypes.ScaleAll(damageScale);
+                            sb.Append(&quot;Friendly Fire!&quot;);
+                        }
+                    }
+                }
+                SendReply(hitInfo.Initiator as BasePlayer, sb.ToString());
+            }
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If I remember correctly the damage is being set after the hook is called which pretty much reverts your changes to the damage. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133954' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 7:11 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133954' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133954/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-133964" class="message" data-author="BodyweightEnergy">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="BodyweightEnergy" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">BodyweightEnergy</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I think I figured it out...<br />
+                        <br /> I used OnEntityTakeDamage() previously, and that correctly assigns damage scales.<br />
+                        <br /> Then I changed it to OnPlayerAttack() and that doesnt work with melee.<br />
+                        <br />
+                        <b>For Future Reference: For modiying attacks, use OnEntityTakeDamage().</b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">BodyweightEnergy</a>,</span>
+                        <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133964' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 4, 2015 at 7:29 PM">Oct 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-player-attack-damage.12096/#post-133964' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/133964/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,311 @@
+---
+layout: forums
+title: 'Control condition in OnGather hook'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/' | prepend: site.baseurl }}">Control condition in OnGather hook</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">AlexALX_[rus-ua]</a>, <a href="{{ '/threads/control-condition-in-ongather-hook.7343/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 20, 2015 at 11:36 PM">Mar 20,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-73958" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello. I want to make some control of item condition (how fast they break) in OnGather hook (in CSharp).<br />
+                        <br /> I know that i can get/change condition using player.svActiveItem.condition. The main problem is that i cannot get value of &quot;how fast item broke&quot; with current
+                        action (for example it have different rates when you gather wood and stone in wrong weapon type).<br />
+                        <br /> I already spend few hours to trying access in some way an for example ResourceDispenser.GatherPropertyEntry Tree inside ResourceDispenser.GatherProperties class.<br />
+                        <br /> I cannot use it like usual:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ResourceDispenser.GatherPropertyEntry test = dispenser.GatherPropertyEntry().GetFromIndex(dispenser.gatherType)</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">`GatherPropertyEntry&#039;: cannot reference a type through an expression. Consider using `ResourceDispenser.GatherPropertyEntry&#039; instead
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Okay i tried this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ResourceDispenser.GatherPropertyEntry test = ResourceDispenser.GatherPropertyEntry().GetFromIndex(dispenser.gatherType)</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Expression denotes a `type&#039;, where a `variable&#039;, `value&#039; or `method group&#039; was expected</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Fine i tried even this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+      ResourceDispenser.GatherProperties gathering = new ResourceDispenser.GatherProperties();
+       ResourceDispenser.GatherPropertyEntry gatherprop = gathering.GetFromIndex(dispenser.gatherType);
+       //float gather = gatherprop.conditionLost;      
+      
+       Print(gatherprop.ToString());
+</pre>{% endraw %}
+                        </div>It compiles but when gather:<br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">(NullReferenceException: Object reference not set to an instance of an object)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Okay, last thing is shit, it really can&#039;t work because i&#039;m creating new object and not trying access exists one.<br />
+                        <br /> After looking decompiled code of server i found that this possible to get only via BaseMelee inside ResourceDispenser.DoGather function. Oxide hook actually lost startup
+                        HitInfo because it calling inside GiveResourceFromItem function where is already only BaseEntity and Dispenser only.<br />
+                        <br /> So how to get this to work? I gave up... Everything what i need is just get GatherPropertyEntry.conditionLost and better this object itself. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 20, 2015 at 11:36 PM">Mar 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/control-condition-in-ongather-hook.7343/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/73958/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-74051" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can get it from the hook, you just start from your player entity:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>entity.svActiveItem:GetHeldEntity():GetGatherInfoFromIndex(dispenser.gatherType).conditionLost</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 21, 2015 at 4:03 PM">Mar 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74051' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2015 at 12:01 PM">Mar 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74051' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/74051/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-74084" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This not work because heldentity don&#039;t constains GetGatherInfoFromIndex.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            float cond = player.svActiveItem.GetHeldEntity().GetGatherInfoFromIndex(dispenser.gatherType).conditionLost;
+           
+            Print(cond.ToString());</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Type `BaseEntity&#039; does not contain a definition for `GetGatherInfoFromIndex&#039; and no extension method `GetGatherInfoFromIndex&#039; of
+                                        type `BaseEntity&#039; could be found. Are you missing an assembly reference?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Like i said before - this function exists only inside BaseMelee what isn&#039;t available here. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74084' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2015 at 2:43 PM">Mar 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74084' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/74084/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-74086" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="AlexALX_[rus-ua]">
+                            <aside>
+                                <div class="attribution type">AlexALX_[rus-ua] said: <a href="#post-74084" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">This not work because heldentity don&#039;t constains GetGatherInfoFromIndex.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>            float cond = player.svActiveItem.GetHeldEntity().GetGatherInfoFromIndex(dispenser.gatherType).conditionLost;
+        
+            Print(cond.ToString());</pre>{% endraw %}
+                                        </div><br />
+                                        <br /> Like i said before - this function exists only inside BaseMelee what isn&#039;t available here.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I was working with lua to grab it quickly, you probably need a GetComponent for it to work properly in C#, let me have a quick look.<br />
+                        [DOUBLEPOST=1426950421][/DOUBLEPOST]Here:<br />
+                        <img src="proxy.php?image=http%3A%2F%2Fi.imgur.com%2FkEiz72S.png%3F1&amp;hash=5e97d91838084faa08fbfb03415f95b6" class="bbCodeImage LbImage" alt="[&#x200B;IMG]"
+                            data-url="http://i.imgur.com/kEiz72S.png?1" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnGather(ResourceDispenser dispenser, BaseEntity entity, Item item)
+        {
+            var player = entity as BasePlayer;
+            Item gatherItem = player.svActiveItem;
+            var meleeItem = player.svActiveItem.GetHeldEntity() as BaseMelee;
+            Puts(meleeItem.ToString());
+            var gp = meleeItem.GetGatherInfoFromIndex(dispenser.gatherType) as ResourceDispenser.GatherPropertyEntry;
+            float durabilityloss = gp.conditionLost;            Puts(&quot;Gathering!&quot;);
+            Puts($&quot; Player: {player.displayName}.&quot;);
+            Puts($&quot; Equipped item: {gatherItem.info.name}&quot;);
+            Puts($&quot; Durability loss: {durabilityloss}.&quot;);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 21, 2015 at 3:08 PM">Mar 21, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74086' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2015 at 2:54 PM">Mar 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74086' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/74086/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-74110" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thank you very much. Worked fine. I just don&#039;t know what exacly did &quot;as&quot; thing in csharp and
+                        didn&#039;t tried &quot;as BaseMelee&quot;. This is equivalent to GetComponent in lua? I&#039;m just trying to learn a bit csharp for write own plugins, for now its going good)
+                        but sometimes some problems happens and usually google help to fix it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74110' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2015 at 4:04 PM">Mar 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/control-condition-in-ongather-hook.7343/#post-74110' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/74110/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

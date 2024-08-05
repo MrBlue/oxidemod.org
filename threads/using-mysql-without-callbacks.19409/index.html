@@ -1,0 +1,439 @@
+---
+layout: forums
+title: 'Using MySQL without callbacks'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/using-mysql-without-callbacks.19409/' | prepend: site.baseurl }}">Using MySQL without callbacks</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Caffeine</a>, <a href="{{ '/threads/using-mysql-without-callbacks.19409/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 10, 2016 at 5:48 AM">Jul 10,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-226543" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Update: please read the posts below this one to note potential dangers of using MySQL in a blocking manner.<br />
+                        <br />
+                        <br />
+                        <br />
+                        <br /> If you&#039;re like me I found myself frustrated with the existing MySQL plugin examples code that used callbacks for queries, as this made my code flow messed up. So I
+                        got to poking around and it appears the Oxide MySQL extension taps into the mysql connector found at <a href="http://dev.mysql.com/downloads/connector/net/6.1.html"
+                            target="_blank" class="externalLink  rel=" nofollow">MySQL :: Download Connector/Net</a> which means we can use it directly, and without downloading any extra files!
+                        it&#039;s located at RustDedicated_Data/Managed/MySql.Data.dll<br />
+                        <br /> Here&#039;s a simply query example that I put together from looking at stackoverflow that doesn&#039;t use callbacks<br />
+                        <br /> First put this at the top<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using MySql.Data;
+using MySql.Data.MySqlClient;
+</pre>{% endraw %}
+                        </div><br /> And inside your plugin somewhere, here&#039;s some test code, you can issue the console command <b>sql</b> via rusty. It<br /> uses host = 127.0.01, database =
+                        rust, user = root, pass = abc123 and table = farmstats<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[ConsoleCommand(&quot;sql&quot;)]
+        void MySQLTest()
+        {
+            var DB = new MySqlConnection(&quot;Server=127.0.0.1; database=rust; UID=root; password=abc123&quot;);
+            DB.Open();
+       
+            var cmd = new MySqlCommand(&quot;SELECT * FROM farmstats&quot;, DB);
+       
+            var reader = cmd.ExecuteReader();
+            while(reader.Read())
+            {
+               /* this reads from the wood column, but could be anything */
+                string woodcolumn = reader.GetString(reader.GetOrdinal(&quot;wood&quot;));
+               string stonecolumn = reader.GetString(reader.GetOrdinal(&quot;stone&quot;));
+                Puts(woodcolumn);
+            }
+              DB.Close();
+        }
+</pre>{% endraw %}
+                        </div>enjoy! Also this now means you can use prepared statements for the extra speed and security, just google some examples! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 10, 2016 at 8:57 AM">Jul 10, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 5:48 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226543/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226592" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Please add that if you use this, you have to take extra measures in your plugin to protect against DDoS attacks
+                        and that it may have a huge negative impact on server performance (especially with MySQL!).<br /> Not using the Oxide API opens up a bunch of security problems, allowing
+                        players to DDoS your server by abusing the fact that <i>the entire server</i> (not just the plugin!) halts until the query is finished, allowing them to cause massive
+                        rubberbanding (for instance by spamming commands that send queries or by flooding your likely weaker MySQL db server).<br /> I just want to make sure that plugin devs know
+                        this, otherwise they&#039;ll always use non concurrent queries instead of concurrent querries for ease of use (an illusory one, I might add, because instead of worrying about
+                        simple callbacks you now have to worry about protecting against DDoS attacks, which is a bunch more complicated) and create plugins that allow attackers and angry players to
+                        easily make servers unplayable. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 10, 2016 at 8:03 AM">Jul 10, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226592' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 7:57 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226592' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226592/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226606" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-226592" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Please add that if you use this, you have to take extra measures in your plugin to protect against DDoS attacks and that it may have a huge
+                                        negative impact on server performance (especially with MySQL!).<br /> Not using the Oxide API opens up a bunch of security problems, allowing players to DDoS
+                                        your server by abusing the fact that <i>the entire server</i> (not just the plugin!) halts until the query is finished, allowing them to cause massive
+                                        rubberbanding (for instance by spamming commands that send queries or by flooding your likely weaker MySQL db server).<br /> I just want to make sure that
+                                        plugin devs know this, otherwise they&#039;ll always use non concurrent queries instead of concurrent querries for ease of use (an illusory one, I might add,
+                                        because instead of worrying about simple callbacks you now have to worry about protecting against DDoS attacks, which is a bunch more complicated) and create
+                                        plugins that allow attackers and angry players to easily make servers unplayable.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m going to put to the test your &quot;<i>the entire server</i> (not just the plugin!) halts until the query is finished&quot; statement as that doesn&#039;t sound
+                        like it would be accurate. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226606' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 8:27 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226606' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226606/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226608" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-226606" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m going to put to the test your &quot;<i>the entire server</i> (not just the plugin!) halts until the query is finished&quot; statement as
+                                        that doesn&#039;t sound like it would be accurate.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Just look at the Oxide source code and the source of the Rust server (testing instead of reading the source is inappropriate in this case).<br /> The Rust server runs on
+                        the main thread. The Rust server calls plugins and blocks until plugin calls are done and uses their return value (if it didn&#039;t block, it wouldn&#039;t be able to use the
+                        return value, also this makes a lot of things easier). This means that hook calls also execute on the main thread. If the hook calls are also executed on the main thread, then
+                        that means that your blocking query blocks the main thread.<br /> Plugins cannot run concurrently with the main thread, because plugins and the Rust server concurrently read
+                        and modify game state, meaning race conditions would otherwise occur. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226608' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 8:33 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226608' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226608/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226610" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-226606" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m going to put to the test your &quot;<i>the entire server</i> (not just the plugin!) halts until the query is finished&quot; statement as
+                                        that doesn&#039;t sound like it would be accurate.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The old oxide mysql/sqlite libs worked without the callbacks actually. The reason it changes is because of the fact that everything is executed on the main thread. And
+                        because of that huge queries or queries to an external mysql server literally stall/freeze the server for multiple seconds to minutes depending on the queey/server. I actually
+                        made a plugin back in those days for someone that made it to use callbacks before the extension was changed. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226610' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 8:36 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226610' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226610/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226614" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Put simply, Oxide just injects Interface.CallHook calls into the DLL via IL patching.<br /> Interface.CallHook
+                        calls <a href="https://github.com/OxideMod/Oxide/blob/eb1ba03bc0a76e08c638b93999c4e32ebbc7935c/Oxide.Core/Plugins/PluginManager.cs#L142" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide/PluginManager.cs at eb1ba03bc0a76e08c638b93999c4e32ebbc7935c · OxideMod/Oxide · GitHub</a> indirectly, which calls <a
+                            href="https://github.com/OxideMod/Oxide/blob/develop/Oxide.Core/Plugins/Plugin.cs#L201" target="_blank" class="externalLink  rel=" nofollow">Oxide/Plugin.cs at develop ·
+                            OxideMod/Oxide · GitHub</a> and is implemented by <a
+                            href="https://github.com/OxideMod/Oxide/blob/1919a148d3f5374638c327d4de418f281a8bd3e4/Oxide.Core/Plugins/CSPlugin.cs#L126" target="_blank" class="externalLink  rel="
+                            nofollow">Oxide/CSPlugin.cs at 1919a148d3f5374638c327d4de418f281a8bd3e4 · OxideMod/Oxide · GitHub</a>. You can see that it is also run on the main thread, because the main
+                        thread executes Interface.CallHook. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226614' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 8:39 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226614' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226614/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226618" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-226610" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The old oxide mysql/sqlite libs worked without the callbacks actually. The reason it changes is because of the fact that everything is executed
+                                        on the main thread. And because of that huge queries or queries to an external mysql server literally stall/freeze the server for multiple seconds to minutes
+                                        depending on the queey/server. I actually made a plugin back in those days for someone that made it to use callbacks before the extension was changed.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah I know Node.js being javascript is all about the callbacks, since it&#039;s mostly single threaded and just has a big loop internally to check the state on
+                        everything. In terms of databases if we&#039;re talking resource heavy queries sqlite is usually a poor choice in-general given its concurrency issues seeing as it&#039;s
+                        dealing with a simple file, and locks the db file on writes. Granted using WAL seems to help a lot. In any case I personally am going to use the blocking MySQL code I posted in
+                        sensible spots with sensible queries but i&#039;ll update my initial post indicating it&#039;s potentially dangerous to others. Another developer in a thread expressed his
+                        frustrations with the callback implementation so I kindly ask you consider allowing this thread to stay up, as this may benefit him and others. Thanks! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226618' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 8:56 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226618' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226618/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-226621" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-226618" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah I know Node.js being javascript is all about the callbacks, since it&#039;s mostly single threaded and just has a big loop internally to
+                                        check the state on everything. In terms of databases if we&#039;re talking resource heavy queries sqlite is usually a poor choice in-general given its
+                                        concurrency issues seeing as it&#039;s dealing with a simple file, and locks the db file on writes. Granted using WAL seems to help a lot. In any case I
+                                        personally am going to use the blocking MySQL code I posted in sensible spots with sensible queries but i&#039;ll update my initial post indicating it&#039;s
+                                        potentially dangerous to others. Another developer in a thread expressed his frustrations with the callback implementation so I kindly ask you consider allowing
+                                        this thread to stay up, as this may benefit him and others. Thanks!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Using it in sensible spots is probably completly fine, yeah.<br />
+                        <br /> In my opinion, for MySQL, a sensible spot would be a spot not directly called by user input (Universal hooks, timers, that kind of stuff) where the SQL query isn&#039;t
+                        too large and the code is only run rarely (e.g.: every 30s, when the plugin initializes, stuff like that).<br />
+                        <br /> Also, in regards to SQLite, I think blocking queries can be used a lot more liberally with SQLite, because the latency to a local database is mostly better than to a
+                        remote database. That being said, one should probably still refrain from using them in spots that are called very frequently (e.g. OnTick) or in spots where queries are huge.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226621' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 10, 2016 at 9:13 AM">Jul 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-mysql-without-callbacks.19409/#post-226621' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/226621/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

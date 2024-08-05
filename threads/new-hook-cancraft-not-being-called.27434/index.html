@@ -1,0 +1,461 @@
+---
+layout: forums
+title: 'New hook CanCraft not being called'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/' | prepend: site.baseurl }}">New hook CanCraft not being called</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 8, 2017 at 5:59 PM">Oct 8,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-355058" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Heyo!<br /> I&#039;ve seen that there was a new hook added - CanCraft(PlayerBlueprints bps, ItemDefinition
+                        itemDef, int skinId)<br /> But it doesn&#039;t seems to be called at all.<br /> Here is my code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void CanCraft(PlayerBlueprints bps, ItemDefinition itemDef, int skinId)
+        {
+            Puts(&quot;CanCraft new called!&quot;);
+        }</pre>{% endraw %}
+                        </div>Aaaand.... nothing. It&#039;s not being called at all.<br /> No matter what I&#039;m doing - I can even start crafting and it&#039;s not working.<br />
+                        <br /> Can it be cos we already have the hook with the same name? (Also - why creating 2 hooks with the same name?)<br /> New one:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public bool CanCraft(int itemid, int skinItemId)
+  {
+    ItemDefinition itemDefinition = ItemManager.FindItemDefinition(itemid);
+    if ((UnityEngine.Object) itemDefinition == (UnityEngine.Object) null)
+    {
+      object obj = Interface.CallHook(&quot;CanCraft&quot;, (object) this, (object) itemDefinition, (object) skinItemId);
+      if (obj is bool)
+        return (bool) obj;
+      return false;
+    }
+    return (skinItemId == 0 || this.steamInventory.HasItem(skinItemId)) &amp;&amp; (this.IsParentUnlocked(itemDefinition) &amp;&amp; (double) this.baseEntity.currentCraftLevel &gt;= (double) itemDefinition.Blueprint.workbenchLevelRequired) &amp;&amp; this.HasUnlocked(itemDefinition);
+  }</pre>{% endraw %}
+                        </div>The old one:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public bool CanCraft(ItemBlueprint bp, int amount = 1)
+  {
+    if (amount &lt; 1 || amount &gt; 9000)
+      return false;
+    object obj = Interface.CallHook(&quot;CanCraft&quot;, (object) this, (object) bp, (object) amount);
+    if (obj is bool)
+      return (bool) obj;
+    foreach (ItemAmount ingredient in bp.ingredients)
+    {
+      if (!this.DoesHaveUsableItem(ingredient.itemid, (int) ingredient.amount * amount))
+        return false;
+    }
+    return true;
+  }</pre>{% endraw %}
+                        </div>The last one seems working, but only if the player has required workbench aronud.<br /> So..... any ideas why the new one doesn&#039;t work? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2017 at 5:59 PM">Oct 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/355058/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355063" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hooks can have the same name now with different arguments, that&#039;s what the hook &#039;overloading&#039; is
+                        that <a href="https://oxidemod.org/members/24296/" class="username" data-user="24296, @Mughisi">@Mughisi</a> added.<br />
+                        <br /> I suspect one issuing ignored though, so looking into it. Could you test with each one individually please? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355063' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2017 at 6:06 PM">Oct 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355063' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355063/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355072" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-355063" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hooks can have the same name now with different arguments, that&#039;s what the hook &#039;overloading&#039; is that <a
+                                            href="https://oxidemod.org/members/24296/" class="username" data-user="24296, @Mughisi">@Mughisi</a> added.<br />
+                                        <br /> I suspect one issuing ignored though, so looking into it. Could you test with each one individually please?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I did. The new one doesn&#039;t seems to be working at all. Both at the same time - would do now.<br />
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>, have you read the latest devblog? Maybe you can help me out.<br /> They said
+                        that there is a new RPC - craftLevel<br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Some minor changes to help modders out. Spectators can now use the map, and you can send an RPC to the clients, &quot;craftLevel&quot; with any
+                                        value other than 0 and everything will be considered unlocked on the client, you won&#039;t need workbenches, and the UI won&#039;t display workbench
+                                        requirements or when an item is new.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>They are talking about that &#039;CraftLevel&quot;, but I see nothing related in the code. Attempt to use it shows this:<br /> StringPool.GetNumber - no number for string
+                        craftLevel<br /> Here is the code I&#039;m using:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [ChatCommand(&quot;test&quot;)]
+        private void cmdTest(BasePlayer player, string command, string[] args)
+        {
+            if(args.Length &lt; 1)
+            {
+                player.ChatMessage(&quot;Wrong args&quot;); return;
+            }
+            int level;
+            if(!int.TryParse(args[0], out level))
+            {
+                player.ChatMessage(&quot;Arg must be int!&quot;);
+                return;
+            }
+            player.ClientRPCPlayer(null, player, &quot;CraftLevel&quot;, level);
+        }</pre>{% endraw %}
+                        </div>Maybe I&#039;m doing something wrong? Do you have a moment to take a look? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355072' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2017 at 6:28 PM">Oct 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355072' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355072/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355075" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-355072" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I did. The new one doesn&#039;t seems to be working at all. Both at the same time - would do now.<br />
+                                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>, have you read the latest devblog? Maybe you can help me
+                                        out.<br /> They said that there is a new RPC - craftLevel<br />
+                                        <br />
+                                        <br /> They are talking about that &#039;CraftLevel&quot;, but I see nothing related in the code. Attempt to use it shows this:<br /> StringPool.GetNumber - no
+                                        number for string craftLevel<br /> Here is the code I&#039;m using:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        [ChatCommand(&quot;test&quot;)]
+        private void cmdTest(BasePlayer player, string command, string[] args)
+        {
+            if(args.Length &lt; 1)
+            {
+                player.ChatMessage(&quot;Wrong args&quot;); return;
+            }
+            int level;
+            if(!int.TryParse(args[0], out level))
+            {
+                player.ChatMessage(&quot;Arg must be int!&quot;);
+                return;
+            }
+            player.ClientRPCPlayer(null, player, &quot;CraftLevel&quot;, level);
+        }</pre>{% endraw %}
+                                        </div>Maybe I&#039;m doing something wrong? Do you have a moment to take a look?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ll take a look at the hook.<br />
+                        <br /> For the craftLevel stuff, I&#039;d suggest taking a look at NoWorkbench as I believe it makes use of it. Other than that i am not familiar with it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355075' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2017 at 6:31 PM">Oct 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355075' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355075/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355196" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Should be good in the latest snapshot (on AppVeyor), appeared to have the hook index off a bit. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355196' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 1:37 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355196' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355196/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355248" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Gonna try and let you know.<br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-355196" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Should be good in the latest snapshot (on AppVeyor), appeared to have the hook index off a bit.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There is something really broken in the lates build there - <img src="https://oxidemod.org/attachments/upload_2017-10-9_13-25-39-png.41144/"
+                            alt="upload_2017-10-9_13-25-39.png" class="bbCodeImage LbImage" />
+                        <br /> [DOUBLEPOST=1507544810][/DOUBLEPOST]Unload doesn&#039;t seems to be working as well<br /> [DOUBLEPOST=1507546262][/DOUBLEPOST]Ok, now both hooks seems to be working, but
+                        I was expecting the new one being called then the player attempt to craft something without worbench, so we can intercept it and allow players to craft it without
+                        workbench.<br />
+                        <br /> Looks like it&#039;s being handled by the client side, cos the hook doesn&#039;t even being called without workbench near it.... <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355248' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 11:25 AM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355248' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355248/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355268" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Vlad-00003">
+                            <aside>
+                                <div class="attribution type">Vlad-00003 said: <a href="#post-355248" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Gonna try and let you know.<br />
+                                        <br /> There is something really broken in the lates build there - <a href="https://oxidemod.org/attachments/41144/" target="_blank">View attachment 41144</a>
+                                        <br /> [DOUBLEPOST=1507544810][/DOUBLEPOST]Unload doesn&#039;t seems to be working as well<br /> [DOUBLEPOST=1507546262][/DOUBLEPOST]Ok, now both hooks seems to
+                                        be working, but I was expecting the new one being called then the player attempt to craft something without worbench, so we can intercept it and allow players
+                                        to craft it without workbench.<br />
+                                        <br /> Looks like it&#039;s being handled by the client side, cos the hook doesn&#039;t even being called without workbench near it....</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Commands not broken, see <a href="https://github.com/OxideMod/Oxide/commit/cf569a85927d0c809a9dea3c56194aaf35a25a8b" target="_blank" class="externalLink">Add/remove some
+                            core Oxide command aliases · OxideMod/Oxide@cf569a8 · GitHub</a>. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355268' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 2:31 PM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355268' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355268/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-355325" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> oh my... what was the main purpose of this? global.reload was interfearing with some games? Dang. That s*cks...
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355325' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 9, 2017 at 6:59 PM">Oct 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-hook-cancraft-not-being-called.27434/#post-355325' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/355325/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

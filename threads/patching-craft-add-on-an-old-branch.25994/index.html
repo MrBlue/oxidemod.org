@@ -1,0 +1,836 @@
+---
+layout: forums
+title: 'Solved - Patching craft.add on an old branch'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/' | prepend: site.baseurl }}">Patching craft.add on an old branch</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">sCrub</a>, <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 19, 2017 at 8:28 PM">Jun 19,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-332383" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve got an old 2015 rust branch that i want to host a server on, but i need someone with a basic
+                        understanding of c# and assembly editing to help me patch the craft.add command exploit. It&#039;s server sided so i&#039;ve heard its simple to patch up in the server&#039;s
+                        files. Im 99% sure its in Assembly-CSharp.dll. <br />
+                        <br /> I&#039;d do it myself if i was better at writing code lmao <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 19, 2017 at 8:28 PM">Jun 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/332383/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332385" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can accomplish this in a plugin, I helped make it for another BP server a while ago.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;namespace Oxide.Plugins
+{
+    [Info(&quot;CraftFix&quot;, &quot;Ryan&quot;, &quot;1.0.0&quot;)]    class CraftFix : RustPlugin
+    {
+        object OnServerCommand(ConsoleSystem.Arg arg)
+        {
+            if (arg.connection != null &amp;&amp; arg.cmd.namefull == &quot;craft.add&quot;)
+            {
+                int amount;
+                if (arg.GetString(1) != null &amp;&amp; int.TryParse(arg.GetString(1), out amount) &amp;&amp; amount &gt; 999)
+                {
+                    var player = arg.connection.player as BasePlayer;
+                    PrintToChat(player, &quot;You're not allowed to craft that many&quot;);
+                    ConVar.Server.Log(&quot;/oxide/logs/CraftFix.txt&quot;, $&quot;[{DateTime.Now}] {player.displayName} ({player.UserIDString}) is trying to craft {amount}x {ItemManager.CreateByItemID(int.Parse(arg.GetString(0))).info.displayName.english}&quot;);
+                    return true;
+                }
+            }
+            return null;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332385' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 19, 2017 at 8:42 PM">Jun 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332385' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332385/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332425" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well the thing is, im struggling to find a download for Oxide v2.0.1527 which is needed for that rust version.
+                        Let me know if u find it anywhere or have it laying around, or if you would wanna contact me and try do it without oxide lol. Thanks anyways buddy <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332425' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:12 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332425' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332425/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332426" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sCrub">
+                            <aside>
+                                <div class="attribution type">sCrub said: <a href="#post-332425" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well the thing is, im struggling to find a download for Oxide v2.0.1527 which is needed for that rust version. Let me know if u find it anywhere
+                                        or have it laying around, or if you would wanna contact me and try do it without oxide lol.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d have to patch it yourself using our patcher. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332426' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:13 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332426' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332426/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332427" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-332426" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;d have to patch it yourself using our patcher.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Wdym your patcher? Do you have a patcher for old versions? I&#039;ve looked around a whole lot but i haven&#039;t managed to find it, could you be an angel and link me
+                        it? Thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332427' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:18 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332427' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332427/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332428" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sCrub">
+                            <aside>
+                                <div class="attribution type">sCrub said: <a href="#post-332427" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Wdym your patcher? Do you have a patcher for old versions? I&#039;ve looked around a whole lot but i haven&#039;t managed to find it, could you
+                                        be an angel and link me it? Thanks</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can get the patcher from <a href="http://dl.bintray.com/oxidemod/builds/" target="_blank" class="externalLink">http://dl.bintray.com/oxidemod/builds/</a>, but
+                        you&#039;d need to find the old Rust.opj from around the time you want to patch for, otherwise, you&#039;d have to change a lot of stuff. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332428' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:20 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332428' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332428/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332430" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> My great mate just patched it really simple without oxide lol, anyways much thanks Wulf.<br />
+                        [DOUBLEPOST=1497918835][/DOUBLEPOST]Also Ryan, ThunderZ is better pce l8 <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332430' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:33 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332430' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332430/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332433" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sCrub">
+                            <aside>
+                                <div class="attribution type">sCrub said: <a href="#post-332430" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">My great mate just patched it really simple without oxide lol, anyways much thanks Wulf.<br /> [DOUBLEPOST=1497918835][/DOUBLEPOST]Also Ryan,
+                                        ThunderZ is better pce l8</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If he&#039;s better howcome he didn&#039;t fix it originally? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332433' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:48 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332433' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332433/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332436" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How come you couldn&#039;t figure it out but he could? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /> Jk ty anyways <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332436' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 1:57 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332436' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332436/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332444" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-332428" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can get the patcher from <a href="http://dl.bintray.com/oxidemod/builds/" target="_blank" class="externalLink  rel="
+                                            nofollow">http://dl.bintray.com/oxidemod/builds/</a>, but you&#039;d need to find the old Rust.opj from around the time you want to patch for, otherwise,
+                                        you&#039;d have to change a lot of stuff.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Where would i go to find older versions of Rust.opj? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332444' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 2:37 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332444' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332444/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332445" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sCrub">
+                            <aside>
+                                <div class="attribution type">sCrub said: <a href="#post-332444" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Where would i go to find older versions of Rust.opj?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The Oxide repo on our GitHub page. <a href="https://github.com/oxidemod/oxide" target="_blank" class="externalLink">GitHub - OxideMod/Oxide: Core mod and extensions for
+                            the Oxide mod framework.</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332445' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 2:39 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332445' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332445/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332450" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Alright i got that, but how do i get the Rust.opj for that version of rust tho? May i get your guidance please,
+                        lol. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332450' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 3:27 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332450' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332450/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332459" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sCrub">
+                            <aside>
+                                <div class="attribution type">sCrub said: <a href="#post-332450" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Alright i got that, but how do i get the Rust.opj for that version of rust tho? May i get your guidance please, lol.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Commit history. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332459' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 3:57 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-332459' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332459/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-334134" class="message" data-author="taehc i">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="taehc i" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">taehc i</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Is there some way someone can make a plugin to fix craft.add in the july 2016 branch? If so that would be a great
+                        plugin many servers and peoppe want! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">taehc i</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-334134' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 27, 2017 at 5:09 AM">Jun 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-334134' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/334134/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-334238" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="taehc i">
+                            <aside>
+                                <div class="attribution type">taehc i said: <a href="#post-334134" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Is there some way someone can make a plugin to fix craft.add in the july 2016 branch? If so that would be a great plugin many servers and peoppe
+                                        want!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you read the previous posts you&#039;d see how you can. I even posted a plugin for it here <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-334238' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 27, 2017 at 8:36 PM">Jun 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-334238' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/334238/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343204" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="taehc i">
+                            <aside>
+                                <div class="attribution type">taehc i said: <a href="#post-334134" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Is there some way someone can make a plugin to fix craft.add in the july 2016 branch? If so that would be a great plugin many servers and peoppe
+                                        want!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Late reply, i know but if you want to patch craft.add without going through the pain of getting oxide for it then ill show how. Ill post my guide here for those who might
+                        need it sometime<br />
+                        <br /> First download dnSpy: <a href="https://github.com/0xd4d/dnSpy/releases" target="_blank" class="externalLink  rel=" nofollow">Releases · 0xd4d/dnSpy · GitHub</a> &lt;-
+                        Its for editing the server assembly file<br />
+                        <br /> When you&#039;ve done that then go to ur server folder. Then go to RustDedicated_Data &gt; Managed and open Assembly-CSharp.dll with dnSpy. Hit the little arrow thing
+                        next to the assembly-csharp and then hit the arrow on &quot;-&quot;.<br />
+                        <br /> After that navigate down to &quot;ItemCrafter&quot;. Click on that. Then rightclick the void called &quot;CanCraft(ItemBlueprint)&quot; thing and hit edit method. Just
+                        delete everything from in there and paste my code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;
+using ProtoBuf;// Token: 0x02000318 RID: 792
+public partial class ItemCrafter : EntityComponent&lt;global::BasePlayer&gt;
+{
+    // Token: 0x06000E17 RID: 3607 RVA: 0x0004DA04 File Offset: 0x0004BC04
+    public bool CanCraft(ItemBlueprint bp, int amount = 1)
+    {
+        if (amount &lt; 1 || amount &gt; 9000)
+        {
+            return false;
+        }
+        foreach (ItemAmount current in bp.ingredients)
+        {
+            if (!this.DoesHaveUsableItem(current.itemid, (int)current.amount * amount))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+</pre>{% endraw %}
+                        </div>As you can see the only thing needed to add really is <br /> if (amount &lt; 1 || amount &gt; 9000)<br /> {<br /> return false;<br /> }<br />
+                        <br /> -And this exploit was in the game forever, gj facepunch LUL <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343204' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2017 at 4:53 PM">Aug 7, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343204' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343204/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343374" class="message" data-author="taehc i">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="taehc i" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">taehc i</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yo <a href="https://oxidemod.org/members/218243/" class="username" data-user="218243, @sCrub">@sCrub</a> Can you
+                        give me a hand i am trying to fix this and i am trouble with the dnspy part and changing the itemcrafter. Would mean alot!<br /> ADD MY STEAM:using System; Thank&#039;s! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">taehc i</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343374' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 8, 2017 at 5:05 AM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343374' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343374/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343450" class="message" data-author="sCrub">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sCrub" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sCrub</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> remember to do edit method not edit class. if my code doesnt work or the code for ur branch is different than
+                        mine just add in<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (amount &lt; 1 || amount &gt; 9000)
+{
+return false;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sCrub</a>,</span>
+                        <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343450' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 8, 2017 at 5:41 PM">Aug 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/patching-craft-add-on-an-old-branch.25994/#post-343450' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343450/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

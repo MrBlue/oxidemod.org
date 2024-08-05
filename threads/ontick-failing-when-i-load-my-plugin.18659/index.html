@@ -1,0 +1,192 @@
+---
+layout: forums
+title: 'Solved - OnTick failing when I load my plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/' | prepend: site.baseurl }}">OnTick failing when I load my plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Alpha
+            Toon</a>, <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 9, 2016 at 7:46 PM">Jun 9, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-214366" class="message" data-author="Alpha Toon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alpha Toon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alpha Toon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m trying to add this to gather manager instead of using it in my own plugin and OnTick seems to fail when
+                        I load the plugin.<br />
+                        <br />
+                        <a href="http://prntscr.com/beehdi" target="_blank" class="externalLink  rel=" nofollow">Screenshot</a><br />
+                        <br /> The OnTick function<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnTick()
+        {
+            if (RateMessagesEnabled)
+            {
+                dayNightCycle();
+            }
+        }</pre>{% endraw %}
+                        </div>dayNightCycle function<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void dayNightCycle()
+        {
+          
+            double currentTime = TOD_Sky.Instance.Cycle.Hour;
+          
+            if ( currentTime &gt;= sunsetHour &amp;&amp; FirstEveningCheck )
+            {
+                FirstMorningCheck = true;
+                FirstEveningCheck = false;
+                FirstNightCheck = true;                PrintToChat(string.Format(&quot;[&lt;color={ChatPrefixColor}&gt;{ChatPrefix}&lt;/color&gt;]: &lt;size={MessageSize}&gt;{NMessage}&lt;/size&gt;&quot;));
+              
+            }
+            else if ( currentTime &gt;= sunriseHour &amp;&amp; currentTime &lt; sunsetHour &amp;&amp; FirstMorningCheck )
+            {
+                FirstMorningCheck = false;
+                FirstEveningCheck = true;
+                FirstNightCheck = true;                PrintToChat(string.Format(&quot;[&lt;color={ChatPrefixColor}&gt;{ChatPrefix}&lt;/color&gt;]: &lt;size={MessageSize}&gt;{DMessage}&lt;/size&gt;&quot;));
+              
+            }
+            else if (  currentTime &lt; sunriseHour &amp;&amp; FirstNightCheck )
+            {
+                FirstMorningCheck = true;
+                FirstEveningCheck = true;
+                FirstNightCheck = false;
+              
+            }
+      
+        }</pre>{% endraw %}
+                        </div>Variables<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>sunriseHour = Convert.ToInt32(GetConfigValue(&quot;Settings&quot;, &quot;sunriseHour&quot;, &quot;5&quot;));
+            sunsetHour = Convert.ToInt32(GetConfigValue(&quot;Settings&quot;, &quot;sunsetHour&quot;, &quot;19&quot;));
+            RateMessagesEnabled = Convert.ToBoolean(GetConfigValue(&quot;Settings&quot;, &quot;RateMessages&quot;, true));</pre>{% endraw %}
+                        </div>If someone could help me with this, i&#039;d really appreciate it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 9, 2016 at 8:02 PM">Jun 9, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alpha Toon</a>,</span>
+                        <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 9, 2016 at 7:46 PM">Jun 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/214366/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-214374" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Read the following: <a href="https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx"
+                            target="_blank" class="externalLink  rel=" nofollow">https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx</a><br /> What you&#039;re trying to do is
+                        string interpolation: <a href="https://msdn.microsoft.com/en-us/library/dn961160.aspx" target="_blank" class="externalLink  rel=" nofollow">Interpolated Strings (C# and Visual
+                            Basic Reference)</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/#post-214374' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 9, 2016 at 8:20 PM">Jun 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/#post-214374' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/214374/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-214381" class="message" data-author="Alpha Toon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alpha Toon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alpha Toon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-214374" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Read the following: <a href="https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx" target="_blank"
+                                            class="externalLink  rel=" nofollow">String.Format Method (System)</a><br /> What you&#039;re trying to do is string interpolation: <a
+                                            href="https://msdn.microsoft.com/en-us/library/dn961160.aspx" target="_blank" class="externalLink  rel=" nofollow">Interpolated Strings (C# and Visual Basic
+                                            Reference)</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the help. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alpha Toon</a>,</span>
+                        <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/#post-214381' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 9, 2016 at 9:07 PM">Jun 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/ontick-failing-when-i-load-my-plugin.18659/#post-214381' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/214381/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,163 @@
+---
+layout: forums
+title: 'Rust - Crafting material overwrite'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixRed">Rust</span> <a href="{{ '/threads/crafting-material-overwrite.16720/' | prepend: site.baseurl }}">Crafting material overwrite</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">Razor14150</a>, <a href="{{ '/threads/crafting-material-overwrite.16720/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 17, 2016 at 5:18 PM">Mar 17,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-188184" class="message" data-author="Razor14150">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Razor14150" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Razor14150</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">so after looking through the addons I came across this <a href="http://oxidemod.org/threads/itemconfig.6698"
+                            class="internalLink">ItemConfig | Oxide</a> which is close to what I want but there is other things I dont want. I dont want the addon controlling my stack sizes as I
+                        already has a plug in that does that.<br />
+                        <br /> Im looking to edit just the quarry and pump jack. <br /> I want to make the quarry like:<br /> 10 Armored Doors<br /> 5 Code Locks<br /> 10k Wood<br /> 2.5k Metal
+                        Frags<br /> 1.2k Cloth<br />
+                        <br /> and the Pump jack like:<br /> 10 Armored Doors<br /> 5 Code Locks<br /> 1k HQ Metal<br /> 5k Metal Frags<br /> 10k Wood<br /> 1.2 Cloth<br /> 1 Signal Flare<br />
+                        <br /> Before someone says that pump jacks arnt in game I know. Im looking for a plugin for that but thats for another post <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Razor14150</a>,</span>
+                        <a href="{{ '/threads/crafting-material-overwrite.16720/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 17, 2016 at 5:18 PM">Mar 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-material-overwrite.16720/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188184/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188873" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Heres a example of whats possible I guess. This could be edited to work with a few other functions to fully make a
+                        plugin for this.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                                  //Item Task Stuff// //Player = crafter//
+        private object OnItemCraft(ItemCraftTask task, BasePlayer crafter)
+        {
+            //Item ID's//
+            int refined = crafter.inventory.GetAmount(374890416);
+            int wood = crafter.inventory.GetAmount(3655341);
+            int stone =  crafter.inventory.GetAmount(-892070738);
+            //Item Name Converter//          
+            var itemname = task.blueprint.targetItem.shortname.ToString();
+            //If a item is []&quot;
+            if(itemname == &quot;mining.quarry&quot;)
+            {
+                //If the player has enough items to craft it(items specified in the [IF] statement)//
+                if(refined &gt;= 5000 &amp;&amp; wood &gt;= 15000 &amp;&amp; stone &gt;= 30000)
+                {
+                    //Take refined from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, 374890416, 5000);
+                    //take wood from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, 3655341, 15000);
+                    //take stone from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, -892070738, 30000);
+                    //Tell it to craft the ITEM//
+                    return false;
+                }
+                //If player does not have enough items//
+                else
+                {
+                    //Tell them they dont have enough//
+                    SendReply(crafter, &quot;Not Enough Items!!!&quot;);
+                    //Tell it to not craft//
+                    return true;
+                }
+                return null;   
+            }
+            //If item is []&quot;
+            else if (itemname == &quot;mining.pumpjack&quot;)
+            {
+                //If the player has enough items to craft it(items specified in the [IF] statement)//
+                if(refined &gt;= 50000 &amp;&amp; wood &gt;= 150000 &amp;&amp; stone &gt;= 300000)
+                {
+                    //Take refined from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, 374890416, 50000);
+                    //take wood from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, 3655341, 150000);
+                    //take stone from inventory(amount above in if statment)//
+                    crafter.inventory.Take(null, -892070738, 300000);
+                    //Tell it to craft the ITEM//
+                    return false;
+                }
+                //If player does not have enough items.
+                else
+                {
+                    //Tell them they dont have enough//
+                    SendReply(crafter, &quot;Not Enough Items!!!&quot;);
+                    //Tell it to not craft//
+                    return true;
+                }
+                return null;   
+            }
+            //If the item is none of the above do nothing//
+            else
+            {
+                return null;
+            }   
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/crafting-material-overwrite.16720/#post-188873' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 20, 2016 at 2:02 AM">Mar 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/crafting-material-overwrite.16720/#post-188873' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188873/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

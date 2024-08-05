@@ -1,0 +1,233 @@
+---
+layout: forums
+title: 'Solved - Add items to container'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/add-items-to-container.9036/' | prepend: site.baseurl }}">Add items to container</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DroneFW</a>, <a href="{{ '/threads/add-items-to-container.9036/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 1, 2015 at 9:20 PM">Jun 1, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-95006" class="message" data-author="DroneFW">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DroneFW" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DroneFW</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi, i&#039;m trying to add items to an airdrop (removing worked before) but I&#039;m somehow missing something.
+                        I&#039;ve been using <a href="http://oxidemod.org/plugins/betterloot.828/" class="internalLink">http://oxidemod.org/plugins/betterloot.828/</a> as example and basically tried
+                        everything but apparently I&#039;m missing something. Any thoughts? This is currently the code I have.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnEntitySpawned(BaseNetworkable entity)
+        {
+            LootContainer container = entity.GetComponent&lt;LootContainer&gt;();
+            if (container == null)
+            {
+                return;
+            }            else if (container is SupplyDrop)
+            {
+                ConsoleSystem.Broadcast(&quot;chat.add&quot;, 0, &quot;Airdrop Dropped&quot;);                container.minSecondsBetweenRefresh = -1;
+                container.maxSecondsBetweenRefresh = 0;
+                container.CancelInvoke(&quot;SpawnLoot&quot;);                foreach (Item item in createItemList())
+                {
+                    item.MoveToContainer(container.inventory, -1, false);                 
+                }
+                container.inventory.MarkDirty();
+            }  private List&lt;Item&gt; createItemList()
+  {
+  List&lt;Item&gt; itemList = new List&lt;Item&gt;();
+  Item i1 = ItemManager.CreateByName(&quot;explosive.timed&quot;, 2);
+  Item i2 = ItemManager.CreateByName(&quot;rifle_ak&quot;, 1);  itemList.Add(i1);
+  itemList.Add(i2);  return itemList;
+  }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 4, 2015 at 11:28 PM">Jun 4, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DroneFW</a>,</span>
+                        <a href="{{ '/threads/add-items-to-container.9036/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 1, 2015 at 9:20 PM">Jun 1, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-items-to-container.9036/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95006/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95950" class="message" data-author="DroneFW">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DroneFW" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DroneFW</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Somehow the last update fixed it. Ended up with this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntitySpawned(BaseNetworkable entity)
+        {
+            if (entity.name == &quot;items/supply_drop&quot;)
+            {
+                LootContainer supplyDrop = entity.GetComponent&lt;LootContainer&gt;();
+                if (supplyDrop != null)
+                {
+                    supplyDrop.inventory.itemList.Clear();
+                    foreach (Item item in createItemList())
+                    {
+                        item.MoveToContainer(supplyDrop.inventory, -1, false);
+                    }
+                }
+            }
+        }        private List&lt;Item&gt; createItemList()
+        {
+            List&lt;Item&gt; itemList = new List&lt;Item&gt;();
+            Item i1 = ItemManager.CreateByName(&quot;explosive.timed&quot;, 2);
+            Item i2 = ItemManager.CreateByName(&quot;rifle_ak&quot;, 1);            itemList.Add(i1);
+            itemList.Add(i2);            return itemList;
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DroneFW</a>,</span>
+                        <a href="{{ '/threads/add-items-to-container.9036/#post-95950' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 5, 2015 at 1:28 AM">Jun 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-items-to-container.9036/#post-95950' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95950/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95972" class="message" data-author="apocdev">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="apocdev" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">apocdev</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Some code I use in my plugins that may be helpful:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        private void InsertIntoInventory(ItemContainer container, Item item)
+        {
+            if (item != null &amp;&amp; container != null &amp;&amp; item.IsValid())
+            {
+                if (!item.MoveToContainer(container))
+                {
+                    item.Drop(container.dropPosition, container.dropVelocity);
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">apocdev</a>,</span>
+                        <a href="{{ '/threads/add-items-to-container.9036/#post-95972' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 5, 2015 at 2:22 AM">Jun 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-items-to-container.9036/#post-95972' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95972/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-96116" class="message" data-author="dcode">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="dcode" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">dcode</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">The issue might have been that there&#039;d have been more items in the container&#039;s inventory than it may
+                        actually hold. The slot count you see in game isn&#039;t always the actual maximum allowed. Noticed that because you are now initially clearing the container in your latest
+                        code snippet. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">dcode</a>,</span>
+                        <a href="{{ '/threads/add-items-to-container.9036/#post-96116' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 5, 2015 at 4:29 PM">Jun 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-items-to-container.9036/#post-96116' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/96116/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

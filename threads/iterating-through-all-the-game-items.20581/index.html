@@ -1,0 +1,155 @@
+---
+layout: forums
+title: 'Iterating through all the game items?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/iterating-through-all-the-game-items.20581/' | prepend: site.baseurl }}">Iterating through all the game items?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">carny666</a>, <a href="{{ '/threads/iterating-through-all-the-game-items.20581/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 26, 2016 at 4:05 AM">Aug 26,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-245448" class="message" data-author="carny666">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="carny666" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">carny666</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How do you loop through the game items and change their properties.<br />
+                        <br /> For example I&#039;d like to loop through all the Ceiling Lights, refuel them and turn them on or off.<br />
+                        <br /> I&#039;d like to iterate through boxes as well. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">carny666</a>,</span>
+                        <a href="{{ '/threads/iterating-through-all-the-game-items.20581/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 26, 2016 at 4:05 AM">Aug 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/iterating-through-all-the-game-items.20581/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/245448/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-245451" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+var containers = GameObject.FindObjectsOfType&lt;StorageContainer&gt;();
+                for (int i = 0; i &lt; containers.Length; i++)
+                {
+                    var storage = containers[i];
+                }</pre>{% endraw %}
+                        </div>This will find all objects that are of the type StorageContainer. This includes large boxes, small boxes, lanterns, ceiling lights, etc. You can check the prefab name to
+                        see exactly what they are.<br />
+                        <br />
+                        <br /> Another way of finding these objects that is much much faster (but only allows for containers that are going to be saved, so if loot containers were caught in the above
+                        code, they won&#039;t be here I believe) and I don&#039;t think I&#039;ve ever seen used aside from myself is:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach (var entry in BaseEntity.saveList)
+            {
+                if (entry == null || entry.isDestroyed) continue;
+                var storage = entry?.GetComponent&lt;StorageContainer&gt;() ?? null;
+                if (storage == null ||  storage.inventory.itemList.Count &lt;= 0) continue;
+                for (int i = 0; i &lt; storage.inventory.itemList.Count; i++)
+                {
+                    var item = storage.inventory.itemList[i];
+                }
+            }</pre>{% endraw %}
+                        </div>Just don&#039;t modify the actual saveList directly, though I don&#039;t think you planned on doing that anyway. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/iterating-through-all-the-game-items.20581/#post-245451' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 26, 2016 at 4:15 AM">Aug 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/iterating-through-all-the-game-items.20581/#post-245451' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/245451/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-245452" class="message" data-author="carny666">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="carny666" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">carny666</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you!. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">carny666</a>,</span>
+                        <a href="{{ '/threads/iterating-through-all-the-game-items.20581/#post-245452' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 26, 2016 at 4:17 AM">Aug 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/iterating-through-all-the-game-items.20581/#post-245452' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/245452/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

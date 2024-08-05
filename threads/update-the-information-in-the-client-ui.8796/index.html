@@ -1,0 +1,144 @@
+---
+layout: forums
+title: 'Solved - Update the information in the client UI?'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/' | prepend: site.baseurl }}">Update the information in the client UI?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username" dir="auto">Kovalev
+            PWnz</a>, <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/' | prepend: site.baseurl }}"><span class="DateTime" title="May 25, 2015 at 7:53 PM">May 25, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-92590" class="message" data-author="Kovalev PWnz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kovalev PWnz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kovalev PWnz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I managed to change the price of buildings and the number of health. But the client&#039;s UI not display
+                        correctly. How to clients notify of changes?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;Building&quot;, &quot;*&quot;, &quot;1.0.0&quot;)]
+    public class Building : RustPlugin
+    {
+        ItemDefinition wood;
+        ItemDefinition stones;
+        ItemDefinition metal_fragment;        [HookMethod(&quot;OnTerrainInitialized&quot;)]
+        void EventTerrainInitialized() {
+            Construction construction = PrefabAttribute.server.Find&lt;Construction&gt;(StringPool.Get(&quot;build/foundation&quot;));
+            List&lt;ItemDefinition&gt; itemList = ItemManager.GetItemDefinitions();            foreach (ItemDefinition itemDefinition in itemList) {
+                string name = itemDefinition.shortname;
+               
+                if (name.Equals(&quot;metal_fragments&quot;)) {
+                    metal_fragment = itemDefinition;
+                } else if (name.Equals(&quot;stones&quot;)) {
+                    stones = itemDefinition;
+                } else if (name.Equals(&quot;wood&quot;)) {
+                    wood = itemDefinition;
+                }
+            }            if (wood == null || stones == null || metal_fragment == null) {
+                return;
+            }            for(int g = 0; g &lt; construction.grades.Length; g++) {
+                BuildingGrade grade = construction.grades[g].gradeBase;
+                List&lt;ItemAmount&gt; baseCost = new List&lt;ItemAmount&gt;();                if (grade.type == BuildingGrade.Enum.Twigs) {
+                    baseCost.Add(new ItemAmount(wood, 10));
+                } else if (grade.type == BuildingGrade.Enum.Wood) {
+                    baseCost.Add(new ItemAmount(wood, 100));
+                    grade.baseHealth = 200f;
+                } else if (grade.type == BuildingGrade.Enum.Stone) {
+                    baseCost.Add(new ItemAmount(wood, 100));
+                    baseCost.Add(new ItemAmount(stones, 150));
+                } else if (grade.type == BuildingGrade.Enum.Metal) {
+                    baseCost.Add(new ItemAmount(wood, 100));
+                    baseCost.Add(new ItemAmount(stones, 150));
+                    baseCost.Add(new ItemAmount(metal_fragment, 150));
+                    grade.baseHealth = 700f;
+                } else if (grade.type == BuildingGrade.Enum.TopTier) {
+                    baseCost.Add(new ItemAmount(wood, 100));
+                    baseCost.Add(new ItemAmount(stones, 150));
+                    baseCost.Add(new ItemAmount(metal_fragment, 300));
+                }                if (baseCost.Count &gt; 0) {
+                    grade.baseCost = baseCost;
+                }
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kovalev PWnz</a>,</span>
+                        <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 7:53 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/92590/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-92599" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can&#039;t, it&#039;s just not possible as the client grabs the information from local data and not from the
+                        server. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/#post-92599' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 25, 2015 at 8:00 PM">May 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/update-the-information-in-the-client-ui.8796/#post-92599' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/92599/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

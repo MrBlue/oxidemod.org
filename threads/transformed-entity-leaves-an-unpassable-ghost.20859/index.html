@@ -1,0 +1,211 @@
+---
+layout: forums
+title: 'Solved - Transformed entity leaves an unpassable &#039;ghost&#039;'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/' | prepend: site.baseurl }}">Transformed entity leaves an unpassable
+            &#039;ghost&#039;</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TeamRequem</a>, <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Sep 8, 2016 at 12:10 AM">Sep 8, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-249706" class="message" data-author="TeamRequem">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TeamRequem" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TeamRequem</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello.<br />
+                        <br /> So I am making a mod which I decide would have a wall around the player. The wall rotates towards the player in normal circumstances and that is easily achievable!<br />
+                        <br /> The functions to transform used are:<br /> - entity.transform.Translate(x, y, z) to move an entity<br /> - entity.transform.Rotate(x, y, z) to rotate<br />
+                        <br /> After doing the transformation, I call either &#039;SendNetworkUpdate()&#039; or &#039;SendNetworkImmediateUpdate(false)&#039; to reflect the changes to the
+                        client.<br />
+                        <br /> All is good, but it seems that the server &#039;remembers&#039; the initially spawned position and rotation of the object and just doesn&#039;t let go, forcing the
+                        player to go back everytime he tries to pass through the place where the object initially was, since apparently the player collides with the object (which it
+                        shouldn&#039;t).<br />
+                        <br /> I recorded a situation where initially you can see the initial state of the High External walls and then they snap to their new position (I did NOT use
+                        SendNetworkImmediateUpdate, else they would have immediately rotated). After that I go to their place and try to pass through them, but since they were rotate by 90 degrees,
+                        the holes I first try to pass through are actually the walls in &#039;ghost&#039; mode. I should be able to pass, but can&#039;t. I am certainly missing something, but have no
+                        idea what.<br />
+                        <br /> Here is the youtube video: <iframe width="500" height="300" src="https://www.youtube.com/embed/ZBiUdLKCA30?wmode=opaque" frameborder="0" allowfullscreen></iframe><br />
+                        <br /> Here is the code I use for each entity (C#):<br /> - entityName is the &#039;prefab&#039; name of the entity<br /> - entityLoc is the Vector3 representation of a point
+                        in the world<br /> - SpawnEntity returns the BaseEntity that was spawned<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BaseEntity spawnedEntity = SpawnEntity(entityName, entityLoc);
+spawnedEntity.transform.Rotate(0, 90, 0);
+spawnedEntity.TransformChanged();
+spawnedEntity.SendNetworkUpdate();</pre>{% endraw %}
+                        </div>Thank you in advance!<br />
+                        <br />
+                        <b>#Edit 1:</b> It seems that if I do the transformation this way:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>spawnedEntity.gameObject.SetActive(false);
+spawnedEntity.transform.LookAt(new Vector3(originX, targetY, originZ));
+spawnedEntity.gameObject.SetActive(true);</pre>{% endraw %}
+                        </div>the player stops from being pushed anymore. However, I believe this is a &#039;dirty&#039; way to fix the issue and does not tackle it at its core. I hope this is of help
+                        to anyone who can explain what is happening!<br />
+                        <br />
+                        <b>#Edit 2:</b> I delved a bit as to why this code worked and I believe it might have something to do with colliders, however this feels a bit illogical to me (keep on reading
+                        to see why).<br />
+                        <br /> Essentially, every object is a &#039;GameObject&#039; in most simple Unity terms. Stuff is attached to the object, such as rigid bodies and colliders. If you have a
+                        GameObject without a collider, you can pass through it and nothing would be registered so something happens, thus colliders, once attached to an object, can be used to detect
+                        collision and call whatever methods are appropriate.<br />
+                        <br /> Apparently there are &#039;static&#039; colliders, which are in one place when the object spawns and in Unity&#039;s docs it says not to move the object if it has a
+                        static collider, since the collider won&#039;t move (it seems), thus it might be what is happening here. I will try changing it to Kinetic to see if that fixes it.<br />
+                        <br /> Now the illogical part is, if the collider doesn&#039;t move, then why does the object still block me in the client when I try to pass through the actual object?
+                        It&#039;s like the collider moves, but also retains its old position, or so to say, the collider copies itself onto the new position thus we get two colliders (which I&#039;m
+                        almost sure is not happening, but it&#039;s as an example to show what I mean).<br />
+                        <br />
+                        <b>#Edit 3:</b> Ok I found out why it was causing this. I added this code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>((MeshCollider) spawnedEntity.gameObject.GetComponent(typeof(Collider))).convex = true;
+spawnedEntity.gameObject.AddComponent(typeof(Rigidbody));</pre>{% endraw %}
+                        </div>or<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>spawnedEntity.gameObject.AddComponent(typeof(Rigidbody));
+((Rigidbody)spawnedEntity.gameObject.GetComponent(typeof(Rigidbody))).isKinematic = true;</pre>{% endraw %}
+                        </div>before transformations are applied and they fixed the issue I was having, so it IS the collider that might cause this kind of issue. In short, Rust objects use non-convex
+                        Mesh Colliders and have no rigid bodies, thus the colliders are static. SO yeah, like transforming an object with a static collider is a <b>big</b> no-no! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 8, 2016 at 2:41 PM">Sep 8, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TeamRequem</a>,</span>
+                        <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 8, 2016 at 12:10 AM">Sep 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/249706/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-249756" class="message" data-author="Jakkee">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Jakkee" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Jakkee</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">- entity.transform.Translate(x, y, z) to move an entity</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Why move the entity?<br /> Destroy it and re spawn it at the X/Y/Z you want<br /> EDIT:<br /> Are you spawning it and then moving it so it aligns? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Jakkee</a>,</span>
+                        <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/#post-249756' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 8, 2016 at 4:02 AM">Sep 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/#post-249756' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/249756/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-249854" class="message" data-author="TeamRequem">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TeamRequem" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TeamRequem</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Jakkee">
+                            <aside>
+                                <div class="attribution type">Jakkee said: <a href="#post-249756" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Why move the entity?<br /> Destroy it and re spawn it at the X/Y/Z you want<br /> EDIT:<br /> Are you spawning it and then moving it so it
+                                        aligns?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Depends on what you want to achieve. Say you have a box and there&#039;s a mini-game like &#039;catch the box&#039;, so it teleports around but would be the same box
+                        still (not a real mod, just an example out the top of my head). So translating (moving) it would in my opinion prove much more efficient than destroying it and respawning it,
+                        since a lot more goes into that, whereas moving it is just displacing its position and this is quickly mirrored by the renderer, thus a lot of overhead is avoided.<br />
+                        <br /> Imagine you have 100 objects or even 1000 and want to move them. Respawning them would be much less efficient than moving them due to the operations that take
+                        place.<br />
+                        <br /> Regarding aligning, that was not my intention, but rather to know what I can do in case I decide I want to do this, thus I experimented and saw the rotation/positioning
+                        issue. Pretty sure you can get object dimensions and use them in your magic code if you want to align them though.<br />
+                        <br /> Check out #Edit 2 in the topic, may have some idea about why this is happening. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 8, 2016 at 2:45 PM">Sep 8, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TeamRequem</a>,</span>
+                        <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/#post-249854' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 8, 2016 at 2:11 PM">Sep 8, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/transformed-entity-leaves-an-unpassable-ghost.20859/#post-249854' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/249854/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

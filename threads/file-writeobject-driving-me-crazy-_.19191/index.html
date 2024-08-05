@@ -1,0 +1,937 @@
+---
+layout: forums
+title: 'Solved - File WriteObject driving me crazy @_@'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/' | prepend: site.baseurl }}">File WriteObject driving me crazy @_@</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Yatta</a>, <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 5, 2016 at 12:47 AM">Jul 5,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-222328" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey, really need help on that one. I guess Im missing something rather simple, but already spent the last few
+                        hours just trying to write and read a List with DynamicConfigFile.WriteObject().<br />
+                        <br /> I have two sets, the first one works, the other does not.<br />
+                        <br /> Here are the definitions :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        DynamicConfigFile playersFile;
+        DynamicConfigFile resourcesFile;        public Dictionary&lt;ulong, YattaPlayerData&gt; playersData;
+        public HashSet&lt;YattaResourceData&gt; resourcesData;        void Init() {
+            playersData = new Dictionary&lt;ulong, YattaPlayerData&gt;();
+            playersFile = Interface.GetMod().DataFileSystem.GetDatafile(&quot;EquityPlayerData&quot;);
+            playersFile.Settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;            resourcesData = new HashSet&lt;YattaResourceData&gt;();
+            resourcesFile = Interface.GetMod().DataFileSystem.GetDatafile(&quot;EquityResourcesData&quot;);
+            resourcesFile.Settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        }
+</pre>{% endraw %}
+                        </div>the classes<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        public class YattaPlayerData {
+            public bool bearWarned = false;
+            public bool wandStop = false;
+            public ulong id = 0;
+            public string wandMode = &quot;&quot;;            public YattaPlayerData(BasePlayer bp) {
+                if (bp != null) {
+                    id = bp.userID;
+                    wandMode = &quot;none&quot;;
+                } else {
+                    wandMode = &quot;empty&quot;;
+                }
+            }
+        }
+        public class YattaResourcesData {
+            public HashSet&lt;YattaResourceData&gt; data = new HashSet&lt;YattaResourceData&gt;();
+        }        public class YattaResourceData {
+            public bool found;
+            public Vector3 pos;
+            public Quaternion rot;
+            public string prefab;            public YattaResourceData(GameObject go) {
+                pos = go.transform.position;
+                rot = go.transform.rotation;
+                prefab = go.name;
+            }
+        }
+</pre>{% endraw %}
+                        </div><br /> Reader &amp; writers<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        void LoadYattaPlayerData() {
+            try {
+                playersData = playersFile.ReadObject&lt;Dictionary&lt;ulong, YattaPlayerData&gt;&gt;();
+                Puts(&quot;CUSTOM PLAYER DATA READY (&quot;+playersData.Count.ToString()+&quot;)&quot;);
+            } catch {
+                Puts(&quot;ERROR =================== COULD NOT LOAD PLAYER DATA!&quot;);
+            }
+        }        void SaveYattaPlayerData() {
+            playersFile.WriteObject(playersData);
+            Puts(&quot;PLAYER DATA SAVED (&quot; + playersData.Count.ToString() + &quot;)&quot;);
+        }        void LoadYattaResourceDatas() {
+            try {
+                resourcesData = resourcesFile.ReadObject&lt;YattaResourcesData&gt;().data;
+                Puts(&quot;CUSTOM RESOURCES DATA READY (&quot; + playersData.Count.ToString() + &quot;)&quot;);
+            } catch (Exception e) {
+                Puts(&quot;XXXXXXXX FAIL: {0}{1}{2}&quot;, e.Message, Environment.NewLine, e.StackTrace);
+                Puts(&quot;ERROR =================== COULD NOT LOAD RESOURCES DATA!&quot;);
+            }
+        }        void SaveYattaResourceDatas() {
+            YattaResourcesData yrd = new YattaResourcesData();
+            yrd.data = resourcesData;
+            resourcesFile.WriteObject(yrd);
+            Puts(&quot;RESOURCES DATA SAVED (&quot;+resourcesData.Count.ToString()+&quot;)&quot;);
+        }
+</pre>{% endraw %}
+                        </div><br /> So everything seems to works fine for <b>playersData</b>, but not for <b>resourcesData</b>. When I open the saved file for resourcesData, everything seems fine
+                        too. But when I open it I get an error whatever I do.<br />
+                        <br /> For information currently Im using a HashSet for resourcesData, but its just another try to make it work. It didnt work either when I tried to use a Dictionnary like the
+                        one I use for playersData, and no more luck with a simple List&lt;YattaResourceData&gt; which was the original intended storage mode.<br />
+                        <br /> Errors I get are either &quot;Object reference not set to an instance of an object&quot; on resourcesData = resourcesFile.ReadObject&lt;YattaResourcesData&gt;().data;
+                        (when im sure resourcesData, resourcesFile are defined and the file isnt empty) or something about it being a JSON array and having to convert it somehow. Tried whatever I
+                        could in that way with no luck.<br />
+                        <br /> Im losing hope on that one and im really out of ideas other than write everything as text and write my own parser.<br />
+                        <br /> I just want to save a List&lt;YattaResourceData&gt; T_T ...<br />
+                        <br />
+                        <b>Edit : </b>I thought it could be becaue I use Vector3 &amp; Quaternion in my 2nd class so I even tried saving all the floats as separate strings, no luck with that
+                        either.<br />
+                        <br />
+                        <b>Edit : </b>Taking a break from spamming the forum to sleep, see ya in a few hours. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 12:59 AM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 12:47 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/222328/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222377" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You&#039;re not trying to save a list, it looks like you&#039;re trying to save a HashSet. These can&#039;t be
+                        saved.<br />
+                        <br /> You didn&#039;t seem to add what your issue was when using a list, but using a HashSet is just going to cause issues too, just in a different way. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222377' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 2:56 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222377' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222377/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222505" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> As mentioned, im well aware im trying to save a hashset in this exemple. I tried that because while looking for a
+                        fix because I saw another plugin saving a Hashset. Before that I tried with dictionnary because it worked for my other class and before that - originally - it was just a
+                        list.<br />
+                        <br /> Saving worked in all cases iirc, its the reading that always caused either of the aforementioned errors. For the direct List saving, the error was a
+                        <b>NullReferenceException </b>on the line :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>resourcesData = resourcesFile.ReadObject&lt;List&lt;YattaResourceData&gt;&gt;();</pre>{% endraw %}
+                        </div>and neither resourcesData, resourcesFile, or the ReadObject methos are null at that point.<br />
+                        <b><br />
+                            <br /> Edit : </b>In some tries I also get the followin very explicit error :<br />
+                        <br /> Cannot deserialize the current JSON object (e.g. {&quot;name&quot;:&quot;value&quot;}) into type
+                        &#039;System.Collections.Generic.List`1[Oxide.Plugins.Equity+YattaResourceData]&#039; because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.<br /> To
+                        fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer,
+                        not a collection type like an array or List&lt;T&gt;) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize
+                        from a JSON object.<br />
+                        <br /> Which sounds really helpful but since im not doing anything with JSON myself (WriteObject/ReadObject methods being in charge) I have no idea what to do with that. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 10:15 AM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222505' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 9:50 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222505' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222505/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222519" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Yatta">
+                            <aside>
+                                <div class="attribution type">Yatta said: <a href="#post-222505" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">As mentioned, im well aware im trying to save a hashset in this exemple. I tried that because while looking for a fix because I saw another
+                                        plugin saving a Hashset. Before that I tried with dictionnary because it worked for my other class and before that - originally - it was just a list.<br />
+                                        <br /> Saving worked in all cases iirc, its the reading that always caused either of the aforementioned errors. For the direct List saving, the error was a
+                                        <b>NullReferenceException </b>on the line :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>resourcesData = resourcesFile.ReadObject&lt;List&lt;YattaResourceData&gt;&gt;();</pre>{% endraw %}
+                                        </div>and neither resourcesData, resourcesFile, or the ReadObject methos are null at that point.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I copied your code and changed it to a list instead of HashSet and saw no NREs, so I&#039;m not really sure whats going on. I didn&#039;t however test with actual things
+                        saved, but it did successfully load the blank data file, I just didn&#039;t have very much time to test it with actual objects.<br />
+                        <br /> EDIT: That json error you pasted sounds like you&#039;re trying to directly save a HashSet, which, once again, is not natively possible in json, since HashSets are
+                        un-ordered, which I presume is why it gave the example of &quot;1, 2, 3&quot;. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 10:36 AM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222519' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 10:28 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222519' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222519/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222529" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I just tried and can confirm there is no error when saving an <b>empty List</b> but the ReadObject fails
+                        otherwise.<br />
+                        <br /> Tested with :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+    resourcesData = new List&lt;YattaResourceData&gt;();
+    resourcesData.Add(new YattaResourceData(new GameObject()));
+    resourcesFile.WriteObject(resourcesData);
+</pre>{% endraw %}
+                        </div>resulting .json :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[
+  {
+    &quot;found&quot;: false,
+    &quot;pos&quot;: &quot;0 0 0&quot;,
+    &quot;rot&quot;: &quot;0 0 0 1&quot;,
+    &quot;prefab&quot;: &quot;New Game Object&quot;
+  }
+]
+</pre>{% endraw %}
+                        </div>Error : nullReferenceException / object reference not set to an instance of an object.<br />
+                        <br /> Despite all the methods and variations I tried so far, all I can say is something wrong happens during .ReadObject ... Im starting to think theres something wrong with
+                        my dlls / references but im not sure what to check. But on the other hand the other data I save/load has no problem so I just dont know <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222529' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 10:49 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222529' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222529/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222534" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-222519" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I copied your code and changed it to a list instead of HashSet and saw no NREs, so I&#039;m not really sure whats going on. I didn&#039;t however
+                                        test with actual things saved, but it did successfully load the blank data file, I just didn&#039;t have very much time to test it with actual objects.<br />
+                                        <br /> EDIT: That json error you pasted sounds like you&#039;re trying to directly save a HashSet, which, once again, is not natively possible in json, since
+                                        HashSets are un-ordered, which I presume is why it gave the example of &quot;1, 2, 3&quot;.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m pretty sure this line will generate a new empty file by itself<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Interface.GetMod().DataFileSystem.GetDatafile(&quot;EquityResourcesData&quot;);</pre>{% endraw %}
+                        </div><a href="https://oxidemod.org/members/148170/" class="username" data-user="148170, @Yatta">@Yatta</a> I have never tried saving a List or Dictionary outright, I usually
+                        put it inside a class and haven&#039;t had any issues. I have attached a example data storage system I give to others as a example that you might find useful <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="dataexample.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/dataexample-cs.23793/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/dataexample-cs.23793/" target="_blank">dataexample.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>1.4 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>20</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222534' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 10:55 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222534' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222534/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222542" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I already tried using an intermediate storage class with no luck. Based on your exemple I tried again, and
+                        here&#039;s what I have :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        class StoredData {
+            public List&lt;YattaResourceData&gt; list = new List&lt;YattaResourceData&gt;();
+        }        public class YattaResourceData {
+            public bool found = false;
+            public Vector3 pos;
+            public Quaternion rot;
+            public string prefab;            public YattaResourceData(GameObject go) {
+                pos = go.transform.position;
+                rot = go.transform.rotation;
+                prefab = go.name;
+            }
+        }        void Init() {
+           resourcesFile = Interface.Oxide.DataFileSystem.GetFile(&quot;EquityResourcesData&quot;);
+        }        void LoadYattaResourceDatas() {
+            Puts(&quot;LOADING CUSTOM RESOURCES DATA ...&quot;);
+            try {
+                StoredData s = new StoredData();
+                s = resourcesFile.ReadObject&lt;StoredData&gt;();
+                resourcesData = s.list;
+                Puts(&quot;CUSTOM RESOURCES DATA READY (&quot; + playersData.Count.ToString() + &quot;)&quot;);
+            } catch (Exception e) {
+                Puts(&quot;XXXXXXXXXXXXX failed: {0}{1}{2}&quot;, e.Message, Environment.NewLine, e.StackTrace);
+                Puts(&quot;ERROR =================== COULD NOT LOAD RESOURCES DATA!&quot;);
+                dontSave = true;
+            }
+        }        void SaveYattaResourceDatas() {
+            StoredData s = new StoredData();
+            s.list = resourcesData;
+            resourcesFile.WriteObject(s);
+            Puts(&quot;RESOURCES DATA SAVED (&quot;+resourcesData.Count.ToString()+&quot;)&quot;);
+        }
+</pre>{% endraw %}
+                        </div>As usual, .json file looks fine, but reading fails on ReadObject because <b>NullReferenceException</b>.<br />
+                        <br /> Could it be because of the data types I save (Vector3, Quaternion) ? I tried once with saving just floats or strings but it didnt work. Maybe I didnt use a storage class
+                        back then, or I missed something else ?<br />
+                        <br /> Note: I have much more code in the plugin, just showing whats relevant to the matter. Ill try to make a script with just what I just wrote to see see if I get a
+                        different result. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222542' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 11:18 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222542' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222542/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222545" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You can&#039;t directly save a Vector3 (never tried Quaternion but I assume its the same) You would either need a
+                        converter or save each variable. Usually it produces a self referencing loop error though. I use a Vector3 converter I pinched from ZoneManager <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />. The NRE might be from trying to load the file that was
+                        created from the previous version. Once you change it to store the variables make sure you delete the old data files before loading the plugin <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222545' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 11:30 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222545' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222545/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222552" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ah you might help me about that. I suspected I needed to use that but im not sure how to do that. I stole a
+                        Vector3 converter from ZoneManager too and got a Quaternion one too in HumanNPC. I tried to add the same lines as they did in those scripts :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+resourcesFile.Settings.Converters = new JsonConverter[] { new UnityQuaternionConverter(), new UnityVector3Converter() };
+</pre>{% endraw %}
+                        </div>But it doesnt seem to do anything and im not sure if im expected to do more than that ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222552' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 11:40 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222552' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222552/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222557" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Yatta">
+                            <aside>
+                                <div class="attribution type">Yatta said: <a href="#post-222552" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ah you might help me about that. I suspected I needed to use that but im not sure how to do that. I stole a Vector3 converter from ZoneManager
+                                        too and got a Quaternion one too in HumanNPC. I tried to add the same lines as they did in those scripts :<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+resourcesFile.Settings.Converters = new JsonConverter[] { new UnityQuaternionConverter(), new UnityVector3Converter() };
+</pre>{% endraw %}
+                                        </div>But it doesnt seem to do anything and im not sure if im expected to do more than that ?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>As k1lly0u already essentially said, try saving the X, Y, and Z coordinates (as floats or a string, unless you have a reason to use something else) themselves, then you
+                        can create a vector3 using them. Probably the easiest way. Unless you have a reason to do it otherwise, I think this is the best way. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 12:06 PM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222557' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 11:49 AM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222557' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222557/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222560" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok, just tried that. Everything in my class is now replaced with strings (I need precision for the positions),
+                        even the boolean :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        public class YattaResourceData {
+            public string found = &quot;false&quot;;
+            public string px, py, pz;
+            public string qw, qx, qy, qz;
+            public string prefab;            public YattaResourceData(GameObject go) {
+                SetPos(go.transform.position);
+                SetRot(go.transform.rotation);
+                prefab = go.name;
+            }            public Vector3 Pos() {
+                return new Vector3(float.Parse(px), float.Parse(py), float.Parse(pz));
+            }
+            public void SetPos(Vector3 v) {
+                px = v.x.ToString();
+                py = v.y.ToString();
+                pz = v.z.ToString();
+            }
+            public Quaternion Rot() {
+                return new Quaternion(float.Parse(qx), float.Parse(qy), float.Parse(qz), float.Parse(qw));
+            }
+            public void SetRot(Quaternion q) {
+                qw = q.w.ToString();
+                qx = q.x.ToString();
+                qy = q.y.ToString();
+                qz = q.z.ToString();
+            }
+        }
+</pre>{% endraw %}
+                        </div>All code updated to work with strings.<br />
+                        <br /> Resulting saved .json :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+{
+  &quot;list&quot;: [
+    {
+      &quot;found&quot;: &quot;false&quot;,
+      &quot;px&quot;: &quot;117.7684&quot;,
+      &quot;py&quot;: &quot;11.15466&quot;,
+      &quot;pz&quot;: &quot;-81.81329&quot;,
+      &quot;qw&quot;: &quot;0.8805754&quot;,
+      &quot;qx&quot;: &quot;0&quot;,
+      &quot;qy&quot;: &quot;0.473906&quot;,
+      &quot;qz&quot;: &quot;0&quot;,
+      &quot;prefab&quot;: &quot;assets/bundled/prefabs/autospawn/resource/field-tundra/field-bare-2.prefab&quot;
+    },
+    {
+      &quot;found&quot;: &quot;false&quot;,
+      &quot;px&quot;: &quot;-158.8376&quot;,
+      &quot;py&quot;: &quot;39.74121&quot;,
+      &quot;pz&quot;: &quot;-112.3795&quot;,
+      &quot;qw&quot;: &quot;0.8317726&quot;,
+      &quot;qx&quot;: &quot;0&quot;,
+      &quot;qy&quot;: &quot;0.5551165&quot;,
+      &quot;qz&quot;: &quot;0&quot;,
+      &quot;prefab&quot;: &quot;assets/bundled/prefabs/autospawn/resource/beachside-deadtrees/field-bare-2.prefab&quot;
+    },
+    and so on ...
+</pre>{% endraw %}
+                        </div>Result ... Still the same error. <b>NullReferenceException</b>.<br />
+                        <br /> T_T<br />
+                        <br />
+                        <br />
+                        <b>EDIT: Here&#039;s the full Equity.cs plugin with everything stripped to leave just enough to reproduce the problem :<br />
+                        </b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System;
+using System.Collections.Generic;using Oxide.Core;
+using Oxide.Core.Configuration;using UnityEngine;namespace Oxide.Plugins {
+    [Info(&quot;Equity&quot;, &quot;Yatta&quot;, &quot;0.0.1&quot;)]    class Equity : RustPlugin {
+        static Equity PluginInstance;
+        DynamicConfigFile playersFile;
+        DynamicConfigFile resourcesFile;        void Init() {
+            Puts(&quot;================================== INIT&quot;);
+            resourcesData = new List&lt;YattaResourceData&gt;();
+            resourcesFile = Interface.Oxide.DataFileSystem.GetFile(&quot;EquityResourcesData&quot;);
+        }        void OnServerInitialized() {
+            LoadYattaResourceDatas();
+            Puts(&quot;================================= SAVING ONE ITEM&quot;);
+            SaveYattaResourceDatas();
+        }        public List&lt;YattaResourceData&gt; resourcesData;        public class YattaResourceData {
+            public string found = &quot;false&quot;;
+            public string px, py, pz;
+            public string qw, qx, qy, qz;
+            public string prefab;            public YattaResourceData(GameObject go) {
+                SetPos(go.transform.position);
+                SetRot(go.transform.rotation);
+                prefab = go.name;
+            }            public Vector3 Pos() {
+                return new Vector3(float.Parse(px), float.Parse(py), float.Parse(pz));
+            }
+            public void SetPos(Vector3 v) {
+                px = v.x.ToString();
+                py = v.y.ToString();
+                pz = v.z.ToString();
+            }
+            public Quaternion Rot() {
+                return new Quaternion(float.Parse(qx), float.Parse(qy), float.Parse(qz), float.Parse(qw));
+            }
+            public void SetRot(Quaternion q) {
+                qw = q.w.ToString();
+                qx = q.x.ToString();
+                qy = q.y.ToString();
+                qz = q.z.ToString();
+            }
+        }        class StoredData {
+            public List&lt;YattaResourceData&gt; list = new List&lt;YattaResourceData&gt;();
+        }
+       
+        void SaveYattaResourceDatas() {
+            Puts(&quot;================================== SAVE&quot;);
+            resourcesData = new List&lt;YattaResourceData&gt;();
+            resourcesData.Add(new YattaResourceData(new GameObject()));            StoredData s = new StoredData();
+            s.list = resourcesData;
+            Puts(&quot;Trying to save &quot; + s.list.Count.ToString() + &quot; items&quot;);
+            resourcesFile.WriteObject(s);
+            Puts(&quot;RESOURCES DATA SAVED (&quot; + resourcesData.Count.ToString() + &quot;)&quot;);
+        }        void LoadYattaResourceDatas() {
+            Puts(&quot;================================== LOAD&quot;);
+            try {
+                StoredData s = new StoredData();
+                Puts(&quot;Trying to read data into &quot; + s.list.ToString());
+                s = resourcesFile.ReadObject&lt;StoredData&gt;();
+                resourcesData = s.list;
+                Puts(&quot;CUSTOM RESOURCES DATA READY (&quot; + resourcesData.Count.ToString() + &quot;)&quot;);
+            } catch (Exception e) {
+                Puts(&quot;FAIL: {0}{1}{2}&quot;, e.Message, Environment.NewLine, e.StackTrace);
+            }
+        }
+    }}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 12:22 PM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222560' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 12:05 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222560' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222560/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222562" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How are you loading the data exactly? Get the file first then load the data? If you post or pm me your plugin
+                        I&#039;ll be able to tell you what&#039;s wrong. Also if you use floats you won&#039;t have to parse it back when you want to use the data <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 5, 2016 at 12:26 PM">Jul 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222562' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 12:20 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222562' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222562/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-222579" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b>FINALLY !<br />
+                        </b><br /> Found the culprit and solution !<br />
+                        <br /> So you know how you&#039;re not supposed to store GameObjects in the classes you save ? I was aware of it and not doing that. But you should not even MENTION GameObjects
+                        in that class. The problem was with my following constructor code :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+            public YattaResourceData(GameObject go) {
+                SetPos(go.transform.position);
+                SetRot(go.transform.rotation);
+                prefab = go.name;
+            }
+</pre>{% endraw %}
+                        </div>Replacing it with the following code fixed the problem :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+           public YattaResourceData(Vector3 pos, Quaternion rot, string name) {
+                SetPos(pos);
+                SetRot(rot);
+                prefab = name;
+            }
+</pre>{% endraw %}
+                        </div>Well, TIL. Thank guys for supporting me with that one <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 6, 2016 at 12:44 PM">Jul 6, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222579' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 5, 2016 at 1:07 PM">Jul 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/file-writeobject-driving-me-crazy-_.19191/#post-222579' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/222579/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

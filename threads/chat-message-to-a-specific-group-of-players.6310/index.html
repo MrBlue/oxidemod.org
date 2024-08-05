@@ -1,0 +1,259 @@
+---
+layout: forums
+title: 'Solved - Chat Message to a specific group of players'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/' | prepend: site.baseurl }}">Chat Message to a specific group of
+            players</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRotAG</a>, <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 5, 2015 at 2:58 AM">Jan 5,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-59038" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi guys,<br />
+                        <br /> On my adventure into the world of developing a RPG System that would look likes the one promissed by the devs from WarZ, I stuck in the quest of creating a function that
+                        lets the players talk only to their group/party.<br />
+                        <br /> Pls, give me some advice of a good code to use or analyse mine if possible and thell me what I may change to make it work.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:GroupChat( player, cmd, args )
+    local pID = rust.UserIDFromPlayer( player )
+    local pGroup = LESData.PlayerData[pID].Group -- Catch the player's group name
+    if not pGroup or (pGroup == &quot;&quot;) then
+        self:ChatMessage( player, &quot;You have no group!&quot; )
+        return
+    end
+    local gMsg = args[0] -- With this method, the player must use at least one double quote mark after the command to identify the message that way (i.e. /gc &quot;my message here). I couldn't think in any way of receive all the args in the message without the quotes and then send it to the chat.
+    local playerList = self:GetAllPlayers() -- GetAllPlayers function catchs the baseplayer ids from all online players.
+    for k,pIDs in pairs(playerList) do
+        local gPID = rust.UserIDFromPlayer(pIDs) -- Convert the baseplayer ids to the SteamID (duuh)
+        local gCatch = LESData.PlayerData[gPID].Group -- I though that with this I would catch the group name of each online player, but it seems not to work, since the console throws me an exception (attempt to index field '?' (a nil value))
+        if pGroup == gCatch then -- Suposed to compare the Talking Player group name with the groups from all online active players
+            self:ChatMessage( gPID, player.displayName..&quot;: &quot;..gMsg ) -- Suposed to send the chat message from the player issuing the command to all the group members.
+        end
+    end
+end
+</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1420429838][/DOUBLEPOST]Ok... I guess I figured out what can be happening about the &quot;field &#039;?&#039;&quot;...<br />
+                        <br /> The plugin needs to create a basic data file for the player as soon as it connects for the first time... I was ussing &quot;OnPlayerConnect&quot;... with
+                        &quot;OnPlayerInit&quot; the basic player data is being created as intended so no ? fields will be found anywhere <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> The only issues that remains, is the fact that I couldn&#039;t make the player send the group chat message without using the quotes at the start of the message... <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jan 5, 2015 at 3:52 AM">Jan 5, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 5, 2015 at 2:58 AM">Jan 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/59038/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-59058" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">To get all args from a chat command and build a string from it you can try something like this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local i = 0
+local msg = &quot;&quot;
+while args[i] do
+    msg = msg..&quot; &quot;..args[i]
+    i = i + 1
+end</pre>{% endraw %}
+                        </div>Havent tested it so no guarantee it works. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59058' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 5, 2015 at 11:25 AM">Jan 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59058' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/59058/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-59146" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I tried something like that at the firsts days of my adventure, but maybe I had messed with something that broke
+                        the code... now that its cleaner I will try that again <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Tnx Domestos! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59146' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 6, 2015 at 4:18 PM">Jan 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59146' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/59146/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-59150" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">you can see exemples on some of my plugins:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+msg = &quot;&quot;
+for i=1, args.Length-1 do
+  msg = msg .. args[i] .. &quot; &quot;
+end
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59150' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 6, 2015 at 5:25 PM">Jan 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59150' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/59150/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-59202" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I was reading all the plugins that I use in the moment and couldn&#039;t find a good option to put it in to
+                        use...<br /> Yours works if I change i=1 to i=0.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>msg = &quot;&quot;
+for i=1, args.Length-1 do
+  msg = msg .. args[i] .. &quot; &quot;
+end</pre>{% endraw %}
+                        </div>Tnx as ever Reneb and Domestos <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59202' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 7, 2015 at 4:10 AM">Jan 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/chat-message-to-a-specific-group-of-players.6310/#post-59202' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/59202/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

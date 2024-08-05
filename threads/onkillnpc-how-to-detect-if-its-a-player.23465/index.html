@@ -1,0 +1,155 @@
+---
+layout: forums
+title: 'OnKillNPC how to detect if its a player?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/' | prepend: site.baseurl }}">OnKillNPC how to detect if its a player?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Ts3hosting</a>, <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 2, 2017 at 8:47 PM">Feb 2,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-291576" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How would i detect if its a player if not return?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnKillNPC(BasePlayer npc, HitInfo hinfo)
+        {
+           if (!npcData.NpcTP.ContainsKey(npc.UserIDString)) return; // Check if this NPC is registered
+            if (hinfo == null) return;
+            var player = hinfo.Initiator.ToPlayer();
+            ulong playerId = player.userID;
+            string npcId = npc.UserIDString;
+            var EnableDead = npcData.NpcTP[npcId].EnableDead;
+            var DeadOnPlayer = npcData.NpcTP[npcId].DeadOnPlayer;
+            string DeadCmd = npcData.NpcTP[npcId].DeadCmd;
+            string DeadArgs = npcData.NpcTP[npcId].DeadArgs;
+            var bad = &quot;somthing is not right somewhere in DeadCmd&quot;;
+              if (EnableDead)
+                if (!DeadOnPlayer) // Check if this is command on player
+                {
+                    rust.RunServerCommand($&quot;{DeadCmd} {DeadArgs}&quot;);                 }
+                if (DeadOnPlayer) // Check if this is command on player
+                {
+                    rust.RunServerCommand($&quot;{DeadCmd} {playerId} {DeadArgs}&quot;);                 }
+                else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem            }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2017 at 8:47 PM">Feb 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/291576/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-291577" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Where is the OnKillNPC hook coming from?<br />
+                        <br /> You can get the player from Rust&#039;s HitInfo like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var attacker = info.Initiator as BasePlayer;</pre>{% endraw %}
+                        </div>There are other methods too, like (BasePlayer)info.Initiator or info.Initiator.ToPlayer() maybe. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/#post-291577' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2017 at 8:54 PM">Feb 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/#post-291577' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/291577/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-291578" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> the hook is from Human Npc<br /> [DOUBLEPOST=1486069203][/DOUBLEPOST]thanks that worked. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/#post-291578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2017 at 8:56 PM">Feb 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onkillnpc-how-to-detect-if-its-a-player.23465/#post-291578' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/291578/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

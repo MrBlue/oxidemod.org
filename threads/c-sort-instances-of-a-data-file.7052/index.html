@@ -1,0 +1,249 @@
+---
+layout: forums
+title: 'Solved - [C#] Sort instances of a Data File'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/' | prepend: site.baseurl }}">[C#] Sort instances of a Data File</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRotAG</a>, <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 25, 2015 at 4:49 PM">Feb 25,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-69865" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Imagine the following code inside a plugin:<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+//references
+//various uses of namespacesusing DataHandling;namespace Oxide.Plugins
+{
+    [Info(&quot;TestPlugin&quot;, &quot;TheRotAG&quot;, &quot;1.0.0&quot;)]
+    public class TestPlugin : RustPlugin
+    {
+        //...some other vars
+        private List&lt;This&gt; genericList;
+        private string ThisData = &quot;This_Data&quot;;
+        private int getLastID { set; get; }        //...some other voids/classes/etc...
+        this.genericList = Interface.GetMod().DataFileSystem.ReadObject&lt;List&lt;This&gt;&gt;(this.ThisData);       public void createThis(BasePlayer player, string name, string title)
+       {     
+            int sN = 1;
+            foreach (This key in this.genericList)
+            {
+                if (key.id.Equals(sN))
+                {
+                    sN++;
+                }
+            }
+            getLastID = sN;
+            This records = new This();
+            records.generate(getLastID, player, name, title);
+       }       //lots of other things that manages the Dafa File
+     }
+}namespace DataHandling
+{
+    public class This
+    {
+        public string name { set; get; }
+        public string title { set; get; }
+        public int id { set; get; }        public void generate(int id, BasePlayer someone, string title, string name)
+        {
+            this.id = id;
+            this.someone = someone.userID.ToString();
+            this.name = name;
+            this.title = title;
+        }
+}</pre>{% endraw %}
+                        </div>This code will generate a data that will look like this:<br />
+                        <br /> [<br /> {<br /> &quot;someone&quot;: &quot;76561190000000000&quot;,<br /> &quot;id&quot;: 1,<br /> &quot;name&quot;: &quot;foo&quot; ,<br /> &quot;title&quot;:
+                        &quot;fox&quot;<br /> },<br /> {<br /> &quot;someone&quot;: &quot;76561191111111111&quot;,<br /> &quot;id&quot;: 3,<br /> &quot;name&quot;: &quot;bar&quot; ,<br />
+                        &quot;title&quot;: &quot;dog&quot;<br /> },<br /> {<br /> &quot;someone&quot;: &quot;76561192222222222&quot;,<br /> &quot;id&quot;: 2,<br /> &quot;name&quot;:
+                        &quot;lorem&quot;,<br /> &quot;title&quot;: &quot;ipsum&quot;<br /> }<br /> ]<br />
+                        <br />
+                        <br /> What I need is <b>sort</b> each instance by its <b>id</b>.<br />
+                        <br /> The reason is because each record is inserted following the id++ order, but when we delete one instance by its id (e.g. <b>id 2</b>) and create another, my code will
+                        compare all <b>ids</b> in the current order to elect the best <b>id</b> number to use. In the example data above, my code recognized that <b>id 1 </b>was already used, then
+                        checked if <b>id 2</b> was free, since it wasn&#039;t there it created another instance with <b>id 2 </b>(the lorem ipsum one).<br />
+                        <br /> Long history short, on my createThis class you will see that it checks all &quot;dictionaries&quot; (named <b>instances</b> by me before) until it finds a gap in the
+                        ids, so since the new instance with <b>id 2</b> was created below the one with <b>id 3</b> (remember that <b>id 2</b> was deleted before, so that&#039;s why it was created
+                        below <b>id 3</b> in the sequence), if I add another entry (instance) to the data file my logical comparison will fail by telling that <b>id 3</b> is free and will create a
+                        second istance with id 3 as well.<br />
+                        <br />
+                        <b>i.e.</b> <b>from public void createThis</b><br /> int sN = 1;<br /> foreach (This key in this.genericList)<br /> {<br /> if (key.id.Equals(sN))<br /> {<br /> sN++;<br />
+                        }<br /> }<br /> it will compare <i><b>id 3</b> </i>with <i><b>sN 2</b> </i>and since they are different it will claim that <i><b>id 3</b> </i>its free to use...<br />
+                        <br /> If sort isn&#039;t the best option here, I accept other <b>id check</b> suggestions <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7"
+                            alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2015 at 4:49 PM">Feb 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/69865/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-69867" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">What is the use case of the id on the class This (Which is terrible naming..), if the id is just so that it easier
+                        to store you should just use the users steam64Id. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-69867' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 25, 2015 at 5:03 PM">Feb 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-69867' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/69867/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-69873" class="message" data-author="TheRotAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRotAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRotAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hatemail">
+                            <aside>
+                                <div class="attribution type">Hatemail said: <a href="#post-69867" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What is the use case of the id on the class This (Which is terrible naming..), if the id is just so that it easier to store you should just use
+                                        the users steam64Id.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><b>This</b> its just and Example, I don&#039;t use it on my code...<br />
+                        <br /> Each user can have various IDs in the data file, so each instance from the same users contains his SteamID and a different ID (the way of identification of each
+                        istance). The ID is a way to store the user&#039;s entered data to let other users reach it without knowing who entered. On my plugin those records NEEDS to be misterious to
+                        users other than the owner... those &quot;other&quot; users will catch all IDs in a list and will take for their selves the ID they wish to have, that way when they
+                        &quot;take&quot; that ID it is simply deleted from the data file, and how I don&#039;t want to store infinite IDs, I use the logical comparison to detect if a gap exists
+                        between ids, so a freed id can be used.<br /> [DOUBLEPOST=1424912064,1424886803][/DOUBLEPOST]Ok, since I couldn&#039;t find a way to Sort my data, seems like that I need to add
+                        another logical comparison, just to let the program confirm that the <b>sN</b> var isn&#039;t really equal any <b>id</b> on the data. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRotAG</a>,</span>
+                        <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-69873' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 26, 2015 at 12:54 AM">Feb 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-69873' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/69873/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72946" class="message" data-author="PedraozauM">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PedraozauM" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PedraozauM</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ok first of all I suggest you to a dictionary instead of list for better indexing, I recommend indexing the id as
+                        an int.<br /> So it would become: Dictionary&lt;int,This&gt; but inside This there would not be the id anymore.<br />
+                        <br /> If you want to sort a list you can do that with this lambda expression:<br /> List.Sort((firstPair,nextPair) =&gt; { return
+                        ((int)firstPair.Value).CompareTo((int)(nextPair.Value)) ; } );<br />
+                        <br /> To sort a Dictionary you can use the method OrderBy with the above expressions, just changing to what you need, or you can call .ToList() and then use the above
+                        to.<br />
+                        <br /> Source: <a href="http://stackoverflow.com/questions/289/how-do-you-sort-a-dictionary-by-value" target="_blank" class="externalLink  rel="
+                            nofollow">http://stackoverflow.com/questions/289/how-do-you-sort-a-dictionary-by-value</a><br />
+                        <br /> Hope it helps! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PedraozauM</a>,</span>
+                        <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-72946' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2015 at 10:47 AM">Mar 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sort-instances-of-a-data-file.7052/#post-72946' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72946/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,261 @@
+---
+layout: forums
+title: 'Solved - Airdrop position wrong when spawning'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/' | prepend: site.baseurl }}">Airdrop position wrong when spawning</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Sir
+            BenSon</a>, <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 17, 2016 at 2:07 PM">Aug 17, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-242169" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello everybody <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> i create an airdrop and set the position. But the position is wrong.<br />
+                        <br /> config_airdroppos //Vector3<br />
+                        <br /> How i set the airdrop position:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+config_airdroppos = player.transform.position;
+SendReply(player, &quot;Airdrop position set&quot;);
+</pre>{% endraw %}
+                        </div>How i call the airdrop:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+var box = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, config_airdroppos, new Quaternion(), true);
+var box2 = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, config_airdroppos, new Quaternion(), true);
+box.Spawn(true);
+box2.Spawn(true);
+SendReply(player, &quot;Airdroptest started&quot;);
+</pre>{% endraw %}
+                        </div>But both airdrop are differntly and no one at the position i set. Whats wrong? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 17, 2016 at 2:07 PM">Aug 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/242169/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-242195" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">ok i get it work. You must set the airdrop position seperatly <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+BaseEntity planeEntity1 = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, new Vector3(), new Quaternion(1f, 0f, 0f, 0f));
+BaseEntity planeEntity2 = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, new Vector3(), new Quaternion(1f, 0f, 0f, 0f));
+CargoPlane plane1 = planeEntity1.GetComponent&lt;CargoPlane&gt;();
+CargoPlane plane2 = planeEntity2.GetComponent&lt;CargoPlane&gt;();
+plane1.InitDropPosition(config_airdroppos);
+plane2.InitDropPosition(config_airdroppos);
+planeEntity1.Spawn(true);
+planeEntity2.Spawn(true);
+</pre>{% endraw %}
+                        </div>can close <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242195' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 17, 2016 at 3:38 PM">Aug 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242195' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/242195/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-242391" class="message" data-author="Yatta">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Yatta" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Yatta</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can mark your post solved by going to &quot;Thread Tools&quot; at the top of your first post, &quot;Edit
+                        Title&quot; and changing &quot;(No prefix)&quot; to &quot;Solved&quot;. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Yatta</a>,</span>
+                        <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242391' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 18, 2016 at 9:29 AM">Aug 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242391' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/242391/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-242566" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ah ok thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242566' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 18, 2016 at 9:15 PM">Aug 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-242566' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/242566/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-277834" class="message" data-author="Fluffyskip">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Fluffyskip" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Fluffyskip</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sir BenSon">
+                            <aside>
+                                <div class="attribution type">Sir BenSon said: <a href="#post-242195" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">ok i get it work. You must set the airdrop position seperatly <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8"
+                                            alt=":D" title="Big Grin    :D" /><br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+BaseEntity planeEntity1 = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, new Vector3(), new Quaternion(1f, 0f, 0f, 0f));
+BaseEntity planeEntity2 = GameManager.server.CreateEntity(&quot;assets/prefabs/npc/cargo plane/cargo_plane.prefab&quot;, new Vector3(), new Quaternion(1f, 0f, 0f, 0f));
+CargoPlane plane1 = planeEntity1.GetComponent&lt;CargoPlane&gt;();
+CargoPlane plane2 = planeEntity2.GetComponent&lt;CargoPlane&gt;();
+plane1.InitDropPosition(config_airdroppos);
+plane2.InitDropPosition(config_airdroppos);
+planeEntity1.Spawn(true);
+planeEntity2.Spawn(true);
+</pre>{% endraw %}
+                                        </div>can close <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Let&#039;s say i wanted to make a plane go down like the plane does when destroyed, could you tell me how that would look like. the code i mean?? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Fluffyskip</a>,</span>
+                        <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-277834' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 20, 2016 at 5:45 AM">Dec 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/airdrop-position-wrong-when-spawning.20383/#post-277834' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/277834/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

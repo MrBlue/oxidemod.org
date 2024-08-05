@@ -1,0 +1,842 @@
+---
+layout: forums
+title: 'Solved - Zone radius (circle draw)'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}">Zone radius (circle draw)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">Freaky</a>, <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}"><span class="DateTime" title="May 5, 2015 at 6:51 AM">May 5, 2015</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}" data-baseurl="threads/zone-radius-circle-draw.8200/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-85544" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi all ! <br /> As an admin i make zones on my server (with <a
+                            href="http://oxidemod.org/plugins/zones-manager.739/" class="internalLink">http://oxidemod.org/plugins/zones-manager.739/</a>) ... it is possible to see the zone radius
+                        (like /zone draw true)... enable a circle draw of zone radius ?!<br />
+                        <br /> P.S.: Now to see the zone radius i use the enter/leave messages! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 6:51 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85544/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85556" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I see you can use /zone_list to show all the zones with the radiuses. If that doesn&#039;t work for you you
+                        either have ask nicely <a href="https://oxidemod.org/members/20031/" class="username" data-user="20031, @Reneb">@Reneb</a> to include an additional command or do it
+                        yourself.<br />
+                        <br /> if you need it badly right now open Zone.cs file, scroll to around ~100 line where you have &quot;public class ZoneLocation&quot;, and underneath it change &quot;float
+                        radius;&quot; to &quot;public float radius;&quot;. then scroll down to the end of your file when the commands are, and paste this in between them somewhere:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;zone_rad&quot;)]
+        void cmdChatZoneShowRad(BasePlayer player, string command, string[] args)
+        {
+            if (!hasPermission(player, &quot;zone&quot;)) { SendMessage(player, &quot;You don't have access to this command&quot;); return; }
+            if (args.Length == 0) { SendMessage(player, &quot;/zone_rad XXXXXID&quot;); return; }
+            if (zonedefinitions[args[0]] == null) { SendMessage(player, &quot;This zone doesn't exist&quot;); return; }
+            LastZone[player] = args[0];
+            SendMessage(player, &quot;zone ID: &quot; + args[0] +&quot; Radius: &quot;+zonedefinitions[args[0]].Location.radius.ToString());
+        }</pre>{% endraw %}
+                        </div>/zone_rad id should give you the radius now. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85556' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 7:37 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85556' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85556/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85562" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i want to draw a line (circle) to see the limit zone... i don&#039;t want to see the zone radius... ex. radius 20
+                        ... <br />
+                        <br /> P.S.: i don&#039;t know if you give me the drawing code above! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85562' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 8:55 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85562' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85562/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85563" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> nope it&#039;s not a drawing code, it&#039;s just to display radius. i don&#039;t think we can draw directly onto
+                        game world objects although i&#039;m not 100% sure. what you could do though, is take something like other very good Reneb&#039;s plugin &quot;Build&quot;. Then you would need
+                        a piece of code that calculates points on the sphere that zone is, and spawn pillars or something more visible in those points. this is not ideal but gives you an overview.
+                        Pretty sure there is no plugin that does this though, you would have to find a dev that would write it for you (pretty sure no more than 100 lines of code ). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85563' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 9:02 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85563' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85563/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85565" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> k thanks ... i asked if is possible ... maybe Reneb could add on his plugin ZoneManager the drawing thing ...
+                        like /zone_draw id <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85565' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 9:08 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85565' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85565/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85566" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> can i ask why you need this? i mean do you need to see them or do you just want to get a feeling of how big they
+                        are? if second, you can also do it like this:<br /> get zone location and radius (20)<br /> teleport to center of the zone<br /> get your location (for example x,y,z)<br /> now
+                        you can teleport to (x+20,y,z) and you will be teleported to the edge of your zone<br /> you can do(x-20,y,z) and you will be teleported to the edge of the zone but on the
+                        other side<br /> you can also +/- 20 from y and z (but only from one of them at the same time!) to teleport to 4 more points on the edges of your zone.<br /> this is not ideal
+                        but should give you fair overview of how big the zone is. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85566' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 9:24 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85566' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85566/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85569" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i made my base and she will be protected by snipers who will kill on sight everyone who enters the zone. I want
+                        to put signs of warnings inside the zone but on a circular line (zone radius). i will spent a lot of time doing the teleport thing, but with that line drawing i will see
+                        exactly where to put my signs or to see the sniper range (radius)! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br />
+                        <br /> I&#039;m not a bad Admin, i help the players! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85569' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 9:36 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85569' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85569/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85576" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> you can yes i&#039;ll add it as a feature at some point <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85576' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 10:09 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85576' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85576/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85578" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> oo thanks Reneb! Regards! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 10:13 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85578' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85578/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85600" class="message" data-author="4seti">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="4seti" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">4seti</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It should be sphere, not circle<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2"
+                            alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">4seti</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85600' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 11:25 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85600' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85600/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85603" class="message" data-author="Freaky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Freaky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Freaky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> yes,ideal, but i dont need really a sphere, just a circle like 1m above the ground to see the edges of the
+                        zone... (if Reneb is willing to make a sphere i don&#039;t mind <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> )
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Freaky</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85603' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 11:30 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85603' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85603/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85604" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="seanterris">
+                            <aside>
+                                <div class="attribution type">seanterris said: <a href="#post-85563" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">nope it&#039;s not a drawing code, it&#039;s just to display radius. i don&#039;t think we can draw directly onto game world objects although
+                                        i&#039;m not 100% sure.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>hooooly molly, so apparently i was very wrong about this, i just found playrust.io draw plugin oO. this just opened my eyes to whole new possibilities.<br />
+                        <br /> i&#039;ve done this as a test. you can use /zone_show zoneID and it will draw a &#039;red&#039; sphere around the zone for 30 seconds. this doesn&#039;t look very nice
+                        and can be hard to see from some angles but no point of me tweaking it if Reneb is going to include it soon anyway. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85604' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 11:39 AM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85604' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85604/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85614" class="message" data-author="4seti">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="4seti" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">4seti</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Using external plugin for drawing 1 shpere is a bit... too much <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">4seti</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85614' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 12:53 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85614' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85614/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85615" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> nah, i just didn&#039;t know it was possible at all. the drawing &quot;plugin&quot; is like 10 lines of actual
+                        code, i just copied the one needed into the zonemanager so <a href="https://oxidemod.org/members/47691/" class="username" data-user="47691, @Freaky">@Freaky</a> can have fun
+                        with his signs before the ZM gets updated <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        [DOUBLEPOST=1430827255][/DOUBLEPOST] <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>       [ChatCommand(&quot;zone_show&quot;)]
+        void cmdChatZoneShowRad(BasePlayer player, string command, string[] args)
+        {
+            if (!hasPermission(player, &quot;zone&quot;)) { SendMessage(player, &quot;You don't have access to this command&quot;); return; }
+            if (args.Length == 0) { SendMessage(player, &quot;/zone_rad XXXXXID&quot;); return; }
+            if (zonedefinitions[args[0]] == null) { SendMessage(player, &quot;This zone doesn't exist&quot;); return; }
+            LastZone[player] = args[0];
+            player.SendConsoleCommand(&quot;ddraw.sphere&quot;, 30.0f, Color.red, zonedefinitions[args[0]].Location.GetPosition(), zonedefinitions[args[0]].Location.GetRadius());
+        }</pre>{% endraw %}
+                        </div>this is all that i added <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85615' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 12:59 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85615' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85615/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85623" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> that&#039;s why i think a capture the flag could be fun to make at some point ^^ <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85623' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 1:22 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85623' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85623/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85625" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> damn man where do you even find the time <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /> if you plan on making CTF at least skip on king of the hill please <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85625' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 1:26 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85625' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85625/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85626" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> protect the VIP, CTF, kind of the hill, etc i would love !!!<br /> that&#039;s why i want to make a very strong
+                        &quot;basic&quot; event manager that will allow mods to only be for modding new games and not having to redo most of the previous codes ^^. it&#039;s taking a long time on
+                        making 1 thing to have more fun in making other things after ^^<br /> but won&#039;t be anytime soon sadely ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85626' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 1:30 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85626' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85626/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85628" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> oooh protect the vip i din&#039;t even think about, nice. for king of the hill we wanted an actual castle as a
+                        battlefield, on top of the mountain of course <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />leave only one path
+                        leading to it and make an obstacle course on it so the potential challengers have to sweat for it first. set the reward high enough, turn on the spectator mode and enjoy the
+                        rat race <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85628' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 1:37 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85628' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85628/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85642" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="seanterris">
+                            <aside>
+                                <div class="attribution type">seanterris said: <a href="#post-85604" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">hooooly molly, so apparently i was very wrong about this, i just found playrust.io draw plugin oO. this just opened my eyes to whole new
+                                        possibilities.<br />
+                                        <br /> i&#039;ve done this as a test. you can use /zone_show zoneID and it will draw a &#039;red&#039; sphere around the zone for 30 seconds. this doesn&#039;t
+                                        look very nice and can be hard to see from some angles but no point of me tweaking it if Reneb is going to include it soon anyway.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You should have a look at ddraw in Assembly-CSharp <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85642' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 2:19 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85642' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85642/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-85644" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-85642" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You should have a look at ddraw in Assembly-CSharp <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                                            title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>yeah i see i won&#039;t be able to keep a visit there on the TODO list forever. is it ok if i disassemble the server Assembly-CSharp while the steam with rust client is
+                        running on the same machine? yet again i&#039;m worried about the EAC bitching. i remember good all times when DRMs locked down if they saw anything remotely similar to a
+                        debugger, and editing Assembly-CSharp is how people make hacks after all... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85644' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2015 at 2:33 PM">May 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/zone-radius-circle-draw.8200/#post-85644' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/85644/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}" data-baseurl="threads/zone-radius-circle-draw.8200/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/zone-radius-circle-draw.8200/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

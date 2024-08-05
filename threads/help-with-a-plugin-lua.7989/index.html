@@ -1,0 +1,180 @@
+---
+layout: forums
+title: 'Help with a plugin (Lua)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/help-with-a-plugin-lua.7989/' | prepend: site.baseurl }}">Help with a plugin (Lua)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">render.
+            2</a>, <a href="{{ '/threads/help-with-a-plugin-lua.7989/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 26, 2015 at 11:28 AM">Apr 26, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-82571" class="message" data-author="render. 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="render. 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">render. 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi I&#039;m trying to write a simple hitmarker plugin for my server, and I&#039;m having trouble getting it to
+                        display the correct damage dealt to the player / NPC. <br />
+                        <br /> Looking in the rust DLLs I&#039;ve realized the hook I&#039;m using runs before the hurt function has scaled / mitigated it based on the bone hit and armor etc. <br />
+                        <br /> I&#039;ve been able to find the scaling based on the hit bone (Down the bottom), but I haven&#039;t worked out how to get the protection value from the hit part yet.
+                        Could somebody help me with this? (Sorry if this is in wrong section).<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Title = &quot;Hitmarkers&quot;
+PLUGIN.Version = V(1, 0, 1)
+PLUGIN.Description = &quot;Simple hitmarkers.&quot;
+PLUGIN.Author = &quot;render.&quot;
+PLUGIN.HasConfig = falsefunction PLUGIN:OnEntityTakeDamage(victim, hitInfo)local attacker = hitInfo.Initiator
+--print(&quot;lol&quot;)
+    if (attacker:GetComponent(&quot;BasePlayer&quot;)) then
+        if (victim:GetComponent(&quot;BasePlayer&quot;)) or (victim:GetComponent(&quot;BaseNPC&quot;)) then           
+            local dmg = hitInfo.damageTypes:Total()--Wrong damage... need it AFTER hurt has had it's way with it.
+            local plypos = attacker.eyes.position + attacker.eyes:Forward() * 2.1 + attacker.eyes:Up() * 0.025
+            local dmsg = &quot;DEAD&quot;
+            local dmsg2 = tostring(math.floor(dmg + 0.5))
+            if tonumber(dmg) &gt;= 1 then
+                if (victim:Health() - dmg) &lt;= 0 then               
+                    attacker:SendConsoleCommand(&quot;ddraw.text&quot;, 0.5, System.ConsoleColor.White, plypos, &quot;&lt;color=red&gt;&quot;..dmsg..&quot;&lt;/color&gt;&quot;)                   
+                else               
+                    if (victim:GetComponent(&quot;BasePlayer&quot;)) then   
+                        self:GetDMG(victim, hitInfo)
+                        if hitInfo.isHeadshot == true then                       
+                            attacker:SendConsoleCommand(&quot;ddraw.text&quot;, 0.7, System.ConsoleColor.White, plypos, &quot;&lt;color=red&gt;HIT&lt;/color&gt;&quot;)
+                        else
+                            attacker:SendConsoleCommand(&quot;ddraw.text&quot;, 0.45, System.ConsoleColor.White, plypos, &quot;HIT&quot;)
+                        end                       
+                    else                   
+                        attacker:SendConsoleCommand(&quot;ddraw.text&quot;, 0.45, System.ConsoleColor.White, plypos, dmsg2)               
+                    end
+                end               
+            end                   
+        end       
+    end
+endfunction PLUGIN:GetDMG(victim, hitInfo)--Just testing what I can find here.
+    if victim.skeletonProperties then
+        local boneProperty = victim.skeletonProperties
+        local boneInfo = boneProperty:FindBone(hitInfo.HitBone)
+        local boneMulti = boneInfo.damageMultiplier
+        local part = hitInfo.HitPart
+        print(boneMulti..&quot;|&quot;..part)
+    end
+end</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1430044104,1430022587][/DOUBLEPOST]To be more clear, I know I need to use -<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public static GameManifest.MeshColliderInfo FindColliderInfo(uint partID)</pre>{% endraw %}
+                        </div>But I&#039;m doing it wrong : / <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">render. 2</a>,</span>
+                        <a href="{{ '/threads/help-with-a-plugin-lua.7989/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 26, 2015 at 11:28 AM">Apr 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-a-plugin-lua.7989/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/82571/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82629" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>global.SkinnedMeshCollider:FindColliderInfo(hitInfo.HitPart)</pre>{% endraw %}
+                        </div>This should either return null if there isn&#039;t protection or a MeshColliderInfo with the protection value. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/help-with-a-plugin-lua.7989/#post-82629' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 26, 2015 at 11:49 AM">Apr 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-a-plugin-lua.7989/#post-82629' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/82629/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-82639" class="message" data-author="render. 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="render. 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">render. 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> EDIT: Got it to work, thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 27, 2015 at 12:34 PM">Apr 27, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">render. 2</a>,</span>
+                        <a href="{{ '/threads/help-with-a-plugin-lua.7989/#post-82639' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 26, 2015 at 12:25 PM">Apr 26, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-a-plugin-lua.7989/#post-82639' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/82639/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

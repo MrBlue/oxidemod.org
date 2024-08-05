@@ -1,0 +1,339 @@
+---
+layout: forums
+title: 'Check if player has access to codelock'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/' | prepend: site.baseurl }}">Check if player has access to codelock</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Alphawar</a>, <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 4, 2015 at 11:38 AM">Dec 4,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-147542" class="message" data-author="Alphawar">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alphawar" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alphawar</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi there.<br /> I am trying to figure out how to check if players have been added to white list for
+                        codelocks.<br /> Reason is that for the mod I am currently working on I want to check if they have access before running the mod to stop consumption of resources.<br /> I have
+                        been going through the DLLs to see what is available but so far all I found was this and sadly the list was private, Please can someone assist me, cheers.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Assembly-CSharp.dll
+internal List&lt;ulong&gt; whitelistPlayers = new List&lt;ulong&gt;();  public override bool OnTryToOpen(BasePlayer player)
+  {
+  object[] objArray = new object[] { player, this };
+  object obj = Interface.CallHook(&quot;CanUseDoor&quot;, objArray);
+  if (obj as bool)
+  {
+  return (bool)obj;
+  }
+  if (!base.IsLocked())
+  {
+  return true;
+  }
+  if (this.whitelistPlayers.Contains(player.userID))
+  {
+  this.DoEffect(this.effectUnlocked.resourcePath);
+  return true;
+  }
+  this.DoEffect(this.effectDenied.resourcePath);
+  return false;
+  }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alphawar</a>,</span>
+                        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 4, 2015 at 11:38 AM">Dec 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/147542/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-147728" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Try using reflection, maybe something like this..<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>System.Reflection.FieldInfo propertyInfo = typeof(CodeLock).GetField(&quot;whitelistPlayers&quot;, BindingFlags.NonPublic | BindingFlags.Instance);
+List&lt;ulong&gt; whitelist = (List&lt;ulong&gt;)propertyInfo.GetValue(myCodeLock);
+whitelist.Add(player.userID);
+propertyInfo.SetValue(myCodeLock, whitelist);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-147728' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 4, 2015 at 11:10 PM">Dec 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-147728' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/147728/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-147795" class="message" data-author="Alphawar">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alphawar" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alphawar</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-147728" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Try using reflection, maybe something like this..<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>System.Reflection.FieldInfo propertyInfo = typeof(CodeLock).GetField(&quot;whitelistPlayers&quot;, BindingFlags.NonPublic | BindingFlags.Instance);
+List&lt;ulong&gt; whitelist = (List&lt;ulong&gt;)propertyInfo.GetValue(myCodeLock);
+whitelist.Add(player.userID);
+propertyInfo.SetValue(myCodeLock, whitelist);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you for your help.<br /> I am having trouble integrating this.<br />
+                        <br /> I have included this in the segment &quot;object CanUseDoor(BasePlayer player, CodeLock door)&quot;<br /> What I want to know how would I do a variable like:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+   if (Targetdoor whitelist contain (player.userid))
+      return null
+</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1449348480,1449289835][/DOUBLEPOST]<a href="https://oxidemod.org/members/58712/" class="username" data-user="58712, @Calytic">@Calytic</a> could I please get
+                        some more assistance? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alphawar</a>,</span>
+                        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-147795' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 5, 2015 at 8:48 PM">Dec 5, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-147795' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/147795/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-148116" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Untested, but here..<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+System.Reflection.FieldInfo whitelistPlayers = typeof(CodeLock).GetField(&quot;whitelistPlayers&quot;, BindingFlags.NonPublic | BindingFlags.Instance);object CanUseDoor(BasePlayer player, BaseLock codeLock)
+{
+    if (codeLock is CodeLock)
+    {
+        List&lt;ulong&gt; whitelist = (List&lt;ulong&gt;)whitelistPlayers.GetValue(codeLock);        if (whitelist.Contains(player.userID))
+        {
+            return null;
+        }
+    }    return false;
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-148116' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 6, 2015 at 9:28 AM">Dec 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-148116' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/148116/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-148266" class="message" data-author="Alphawar">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alphawar" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alphawar</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-148116" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Untested, but here..<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+System.Reflection.FieldInfo whitelistPlayers = typeof(CodeLock).GetField(&quot;whitelistPlayers&quot;, BindingFlags.NonPublic | BindingFlags.Instance);object CanUseDoor(BasePlayer player, BaseLock codeLock)
+{
+    if (codeLock is CodeLock)
+    {
+        List&lt;ulong&gt; whitelist = (List&lt;ulong&gt;)whitelistPlayers.GetValue(codeLock);        if (whitelist.Contains(player.userID))
+        {
+            return null;
+        }
+    }    return false;
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you for that, To me this indeed makes more sense, I will try it out tonight and let you know. If it works ill shout you a beer <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> (somehow)<br /> [DOUBLEPOST=1449566678,1449439304][/DOUBLEPOST]
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-148116" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Untested, but here..<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+System.Reflection.FieldInfo whitelistPlayers = typeof(CodeLock).GetField(&quot;whitelistPlayers&quot;, BindingFlags.NonPublic | BindingFlags.Instance);object CanUseDoor(BasePlayer player, BaseLock codeLock)
+{
+    if (codeLock is CodeLock)
+    {
+        List&lt;ulong&gt; whitelist = (List&lt;ulong&gt;)whitelistPlayers.GetValue(codeLock);        if (whitelist.Contains(player.userID))
+        {
+            return null;
+        }
+    }    return false;
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you Thank you Thank you Thank you.<br /> Just did some quick tests and it seemed to work perfectly <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> Your name will forever be marked in my mod. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alphawar</a>,</span>
+                        <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-148266' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 8, 2015 at 9:24 AM">Dec 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-if-player-has-access-to-codelock.13061/#post-148266' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/148266/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

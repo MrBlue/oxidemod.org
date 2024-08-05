@@ -1,0 +1,273 @@
+---
+layout: forums
+title: 'Workbench Window Crafting List'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/workbench-window-crafting-list.14701/' | prepend: site.baseurl }}">Workbench Window Crafting List</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">Koenrad</a>, <a href="{{ '/threads/workbench-window-crafting-list.14701/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 16, 2016 at 12:20 PM">Jan 16,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-164507" class="message" data-author="Koenrad">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Koenrad" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Koenrad</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;ve been trying to change the crafting requirements for certain items as well as items not normally
+                        craftable. I&#039;ve gotten it to sort of work by making my own BuildRecipes function. However when I open the workbench that has these unique recipes the Workbench Window does
+                        not reflect the new recipes. It does change the requirements, and I can craft the item, it just doesn&#039;t update them in the window and in order to craft it I have to guess
+                        which of the default items it is (usualy starting with the flint hatchet).<br />
+                        <br /> Is there an RPC method to &quot;re-draw&quot; the workbench menu that I can call on a client? I sure can&#039;t find one. From what I can tell, it&#039;s supposed to
+                        re-draw the window every time you open the workbench based on the recipes, but that is not the behavior I am observing in my tests.<br />
+                        <br /> From WorkbenchWindow class:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public override void OnOpen(GameObject target)
+  {
+//...more code here
+    this.PopulateListButtons(); //Won't this repop the list every time the windows is opened?
+//...... more code here
+  }</pre>{% endraw %}
+                        </div>Here is an example BuildRecipies.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void BuildRecipies(Workbench wb)
+        {
+            //Clear current recipes
+            wb.RecipeDefinitions.Clear();
+            //Engines
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.DamagedEngine,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.WeakEngine,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.MediumEngine,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.PowerfullEngine,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            //Gearbox
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.RoachStockGearbox,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.RoachRoadGearbox,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            //Wheels
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.LargeTractorWheel,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.SmallCartWheel,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.GoatWheelNipples,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.DriftLargeWheel,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Machines&quot;).SetTier(1));
+       
+            //Sombero
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.Sombrero,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Gear&quot;).SetTier(1));            //Mining Bow
+            wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.MineBow,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Weapons&quot;).SetTier(1));
+       
+            //Anvil
+            /*wb.RecipeDefinitions.Add(new RecipeDefinition((IItemGenerator) new ItemGeneratorStatic()
+            {
+                ItemId = EItemCode.Anvil,
+                StackSize = 1
+            }).AddMaterial(EItemCode.Wood, 5).AddMaterial(EItemCode.Flint, 5).SetCategory(&quot;UI/WorkbenchCategories/Gear&quot;).SetTier(1));*/
+            wb.RecipeNames = new string[wb.RecipeDefinitions.Count];
+            for (int index = 0; index &lt; wb.RecipeDefinitions.Count; ++index)
+              wb.RecipeNames[index] = wb.RecipeDefinitions[index].Generator.GetName();
+        }</pre>{% endraw %}
+                        </div>I have also tried creating my own inherited CustomWorkbench : Workbench class overriding BuildRecipes(). I then removed the Workbench component of the Workbench object,
+                        and attached a CustomWorkbench component. This gave the same results.<br />
+                        <br /> Thank you for any assistance! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 16, 2016 at 12:35 PM">Jan 16, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Koenrad</a>,</span>
+                        <a href="{{ '/threads/workbench-window-crafting-list.14701/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 16, 2016 at 12:20 PM">Jan 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/workbench-window-crafting-list.14701/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/164507/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-164579" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Pretty sure recipe info is mostly client-side, so the server wouldn&#039;t be able to alter them. I may be wrong
+                        though, but I believe someone mentioned that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-164579' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 16, 2016 at 4:03 PM">Jan 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-164579' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/164579/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-164585" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Created a RecipeConfig plugin a while ago to change the receipes but it is not possible for the client to see
+                        those changes because the client has a fixed receipe list... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-164585' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 16, 2016 at 4:15 PM">Jan 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-164585' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/164585/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-166957" class="message" data-author="cowtrix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cowtrix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cowtrix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Yes, the workbench currently doesn&#039;t propogate these recipes to the client. This is on our todo. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cowtrix</a>,</span>
+                        <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-166957' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 22, 2016 at 5:16 AM">Jan 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/workbench-window-crafting-list.14701/#post-166957' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/166957/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

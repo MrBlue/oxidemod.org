@@ -1,0 +1,169 @@
+---
+layout: forums
+title: 'Solved - Spectate Issues - [Debug] Player is actually a BasePlayer'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/' | prepend: site.baseurl }}">Spectate Issues - [Debug] Player
+            is actually a BasePlayer</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TeamRequem</a>, <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Nov 23, 2016 at 3:57 AM">Nov 23, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-270406" class="message" data-author="TeamRequem">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TeamRequem" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TeamRequem</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br />
+                        <br /> At the moment in my mod I intercept players&#039; commands &quot;respawn&quot; and &quot;spectate&quot; using the OnServerCommand() hook.<br />
+                        <br /> It all works fine and with my code the player can spectate and respawn under certain conditions.<br />
+                        <br /> The problem is that when a player who is spectating another player, if the second player disconnects while he is BEING spectated, the spectator is left spectating the
+                        air, unable to do anything besides reconnect to fix the issue (spectate and respawn commands throw an exception as they get intercepted - read on...). Apparently, this causes
+                        the player, who I retrieve from arg.connection.player, to have a null value as a result of which leads to the message status in the title, namely [Debug] Player is actually a
+                        BasePlayer (leads to an exception in my code as well, but that is just a symptom).<br />
+                        <br /> Is this an issue that exists and has anyone else received it? Any possible reasons why this might be caused?<br />
+                        <br /> Here are snippets of relevant code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        object OnServerCommand(ConsoleSystem.Arg arg)
+        {
+            if (arg.connection == null)
+            {
+                return null;
+            }            if (arg?.cmd?.namefull == &quot;global.spectate&quot;) {
+                CmdSpectate(player, &quot;&quot;, target);
+                return true;
+            }            return null;
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (!player.IsSpectating())
+{
+        var target = (args.Length &gt; 0 ? BasePlayer.Find(args[0]) : null);        //*        // Put player in spectate mode
+        player.SetPlayerFlag(BasePlayer.PlayerFlags.Spectating, true);
+        player.gameObject.SetLayerRecursive(10);
+        player.CancelInvoke(&quot;MetabolismUpdate&quot;);
+        player.CancelInvoke(&quot;InventoryUpdate&quot;);
+        player.ClearEntityQueue();
+        entitySnapshot.Invoke(player, new object[] { target });
+        player.gameObject.Identity();
+        player.SetParent(target, 0);
+        player.Die();
+} else {
+        Respawn(player);
+}</pre>{% endraw %}
+                        </div>//* I omitted the code which sets the target to spectate. It&#039;s essentially a custom list of players which is managed by the plugin and one of the players is picked
+                        everytime someone writes &#039;/spectate&#039;.<br />
+                        <br /> Also note Respawn() is a custom function which again checks a certain amount of conditions and at one point calls RespawnAt(), which is built-in into the BasePlayer
+                        class. Issue is essentially somewhere else and not involved with the actual respawning. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TeamRequem</a>,</span>
+                        <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 23, 2016 at 3:57 AM">Nov 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/270406/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-270411" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Have you looked at my Spectate plugin? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/#post-270411' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 23, 2016 at 5:18 AM">Nov 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/#post-270411' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/270411/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-270425" class="message" data-author="TeamRequem">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TeamRequem" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TeamRequem</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey Wulf, sorry for my stupidity. I used the Spectate plugin a while ago and had it ready in my local resources
+                        and checked before writing, but last time I needed it I manually removed certain bits and resultingly had the wrong contents.<br />
+                        <br /> Redownloaded it and double-checked, got a working solution now, all set! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TeamRequem</a>,</span>
+                        <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/#post-270425' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 23, 2016 at 10:42 AM">Nov 23, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/spectate-issues-debug-player-is-actually-a-baseplayer.22094/#post-270425' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/270425/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

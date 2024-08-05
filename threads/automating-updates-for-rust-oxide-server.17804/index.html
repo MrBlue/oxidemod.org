@@ -1,0 +1,995 @@
+---
+layout: forums
+title: 'Solved - Automating updates for Rust Oxide server'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}">Automating updates for Rust Oxide server</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username" dir="auto">Ryan
+            Pound</a>, <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}"><span class="DateTime" title="May 5, 2016 at 3:31 AM">May 5, 2016</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/automating-updates-for-rust-oxide-server.17804/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-202942" class="message" data-author="Ryan Pound">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan Pound" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan Pound</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This is a simple guide to setup a Rust Oxide Server with automatic updates every time the server restarts in
+                        anyway.<br />
+                        <br /> First, lets get what you need to make this server. {This has only been tested on Windows Server 2008, but should work with all other Windows operating systems}<br />
+                        <br /> SteamCMD:<br />
+                        <a href="https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip" target="_blank" class="externalLink  rel="
+                            nofollow">https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip</a><br /> WGet:<br />
+                        <a href="http://pilotfiber.dl.sourceforge.net/project/gnuwin32/wget/1.11.4-1/wget-1.11.4-1-setup.exe" target="_blank" class="externalLink  rel="
+                            nofollow">http://pilotfiber.dl.sourceforge.net/project/gnuwin32/wget/1.11.4-1/wget-1.11.4-1-setup.exe</a><br /> 7Zip:<br />
+                        <a href="http://www.7-zip.org/download.html" target="_blank" class="externalLink  rel=" nofollow">Download</a><br />
+                        <br /> Second, lets install both 7Zip and Wget and you will need there locations(C:\\Program Files x86 or whatever). Lets also copy and paste SteamCMD into a folder somewhere
+                        on your computer this location you will need as well so we can update Rust to the latest version.<br />
+                        <br /> Third, after everything is installed create a folder on your computer/server for your rust server directory. After you have done this create a batch file and add the
+                        text below.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+:STEAM
+@echo off
+&quot;Location of your SteamCMD Folder\steamcmd.exe&quot; +login anonymous +force_install_dir &quot;Where your batch  file and rust server folder is located&quot; +app_update 258550 validate +quit
+goto OXIDE:OXIDE
+@echo offfor /F &quot;tokens=2,3,4 delims=/ &quot; %%i in ('date/t') do set y=%%k
+for /F &quot;tokens=2,3,4 delims=/ &quot; %%i in ('date/t') do set d=%%k%%i%%j
+for /F &quot;tokens=5-8 delims=:. &quot; %%i in ('echo.^| time ^| find &quot;current&quot; ') do set t=%%i%%j
+set t=%t%_
+if &quot;%t:~3,1%&quot;==&quot;_&quot; set t=0%t%
+set t=%t:~0,4%
+set &quot;theFilename=%d%%t%&quot;
+echo %theFilename%cd &quot;Where your WGet folder is located\GnuWin32\bin&quot;
+wget.exe --no-check-certificate https://raw.githubusercontent.com/OxideMod/Snapshots/master/Oxide-Rust.zip --output-document &quot;Where ever you want this zip to save will be delete by the end on update\Oxide-Rust.zip&quot;&quot;Where your 7Zip folder is located\7-Zip\7z.exe&quot; x -spe &quot;Where ever you want this zip to save will be delete by the end on update\Oxide-Rust.zip&quot; -o&quot;Where your Rust server directory and batch file folder is located&quot; -aoa
+del &quot;Where ever you want this zip to save will be delete by the end on update\Oxide-Rust.zip&quot;
+del &quot;Where your Rust server directory and batch file folder is located\_start-example.bat&quot;
+goto SERV:SERV
+@echo off
+cd &quot;Where your Rust server directory and batch file folder is located&quot;
+RustDedicated.exe -batchmode -server.port 28017 -rcon.port 28018 -rcon.password &quot;Muffin&quot; -server.seed 5692 -server.identity yourserviden_Server -server.hostname &quot;Your Server Name&quot; -server.maxplayers 75 -autoupdate
+goto STEAM
+</pre>{% endraw %}
+                        </div>Finally, start up your batch file and let it run and it will update and add all necessary items including oxide as well as start up your server. A quick way to shutdown
+                        your server during an update is by typing<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>quit</pre>{% endraw %}
+                        </div>in the server console and done it will go through the same process as listed above.<br />
+                        <br /> If any of you have issues or are confused just PM me or post down below, hopefully this helped many other serverowners like myself. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="May 5, 2016 at 5:55 AM">May 5, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan Pound</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2016 at 3:31 AM">May 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/202942/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204468" class="message" data-author="Kiwes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kiwes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kiwes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Nice! So far looks like its working, but what will happen when RUST updates and there is no Oxide Update yet? will
+                        it launch &quot;autoupdate&quot; right after RUST update released or will that &quot;autoupdate&quot; wait Oxide to update too? (just thinking that i will remove that
+                        -autoupdate if it will force update before Oxideupdate live) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kiwes</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204468' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 11:40 AM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204468' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204468/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204470" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kiwes">
+                            <aside>
+                                <div class="attribution type">Kiwes said: <a href="#post-204468" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Nice! So far looks like its working, but what will happen when RUST updates and there is no Oxide Update yet? will it launch
+                                        &quot;autoupdate&quot; right after RUST update released or will that &quot;autoupdate&quot; wait Oxide to update too? (just thinking that i will remove that
+                                        -autoupdate if it will force update before Oxideupdate live)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It will only auto update Rust in that case. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204470' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 11:49 AM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204470' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204470/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204471" class="message" data-author="Kiwes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kiwes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kiwes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-204470" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It will only auto update Rust in that case.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>As i thought so, so remove -autoupdate and add timed command restart to come on every friday @ 1am (normally rust+oxide updated before midnight here GMT+3) and for that
+                        if it updates rust and forceinstalls old Oxide, it will stuck on start and if it wont install oxide at all server will run as vanilla before there is timed restart (on my case
+                        its about 8h from update 6AM + 6PM), so cant use it either way <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D"
+                            title="Big Grin    :D" /><br />
+                        <br /> THANKS! i will start using this and see how it goes on next thursday <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /> (friday on my case) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kiwes</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204471' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 12:00 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204471' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204471/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204472" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kiwes">
+                            <aside>
+                                <div class="attribution type">Kiwes said: <a href="#post-204471" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">As i thought so, so remove -autoupdate and add timed command restart to come on every friday @ 1am (normally rust+oxide updated before midnight
+                                        here GMT+3) and for that if it updates rust and forceinstalls old Oxide, it will stuck on start and if it wont install oxide at all server will run as vanilla
+                                        before there is timed restart (on my case its about 8h from update 6AM + 6PM), so cant use it either way <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                                        <br /> THANKS! i will start using this and see how it goes on next thursday <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1"
+                                            alt=":)" title="Smile    :)" /> (friday on my case)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Keep in mind that some plugins may rely on the fact that they&#039;ve been installed since the server was wiped, e.g. BuildingOwners (and I&#039;m sure there are more
+                        plugins like that).<br /> Make sure that you&#039;ve got no plugins installed where the data file might contain incomplete state as a result of running the server on vanilla
+                        for a while.<br /> If you checked that and you don&#039;t care about your server potentially being down until the next restart (or potentially even until you check the next
+                        time, there have been occasions where after an update servers were in a broken state where they would neither boot nor update) then you&#039;re good to go. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204472' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 12:08 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204472' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204472/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204476" class="message" data-author="Kiwes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kiwes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kiwes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-204472" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Keep in mind that some plugins may rely on the fact that they&#039;ve been installed since the server was wiped, e.g. BuildingOwners (and
+                                        I&#039;m sure there are more plugins like that).<br /> Make sure that you&#039;ve got no plugins installed where the data file might contain incomplete state as
+                                        a result of running the server on vanilla for a while.<br /> If you checked that and you don&#039;t care about your server potentially being down until the next
+                                        restart (or potentially even until you check the next time, there have been occasions where after an update servers were in a broken state where they would
+                                        neither boot nor update) then you&#039;re good to go.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>i am aware of that and that is the reason i build &quot;new&quot; server on every WIPE. Change identity on .bat and config all mods again (copy old one) that needed
+                        (kits, vorerewards etc.) and make fresh install/config on other plugins, so when that restart command will run it will start &quot;clean&quot; server. And if there is some
+                        problems, i will be up around 6am on friday, so not so big deal if some update messes up my system <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> And for sure there will be problems. EVERY update fcks up with something (haven had any updates yet that
+                        has gone straight without needed to do something with server/plugins)<br />
+                        <br /> Just for the record, i am self hosting from home cloud(data directory), so its easy to build new server anytime i want to(just change that .bat and run it on another
+                        computer, so its there already)<br />
+                        <br /> So i will try what happens <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kiwes</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204476' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 12:18 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204476' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204476/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204480" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well, that seems a bit complicated. To completly wipe the server you only have to wipe your map save, plugin data
+                        and the blueprint database.<br /> Either way, whatever floats your boat I guess. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204480' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 12:24 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204480' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204480/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204485" class="message" data-author="Kiwes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kiwes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kiwes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-204480" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well, that seems a bit complicated. To completly wipe the server you only have to wipe your map save, plugin data and the blueprint
+                                        database.<br /> Either way, whatever floats your boat I guess.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>i know what is needed on complete wipe (so no need to build new every time, but its easier to &quot;automate&quot; when i do that) much smoother wipe when its already
+                        done when update hits, only need to update and run .bat again (no need to do any settings in midnight <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />) and WHEN something goes wrong i can fix those up on next morning when maybe little sharper than in
+                        night <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> it takes about 10min to build new one with configurations
+                        and test that &quot;new&quot; server(completely on different computer), so its not so big deal to do lets say on Thursday around 6PM, but when I do wipe on a night there is
+                        always something i forgot to remove / change or whatever<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /> not
+                        easiest way, but best for me. Need to wake up at 6am on every morning, so not sharpest moment on midnight<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />, so lets cut the crap and leave that OT here <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <br />
+                        <br /> i will report on Friday how that worked<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kiwes</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204485' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 12:39 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204485' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204485/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204493" class="message" data-author="Ryan Pound">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan Pound" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan Pound</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yea this weekend ill come out with a better autoupdate solution to check oxide every hour on a separate batch and
+                        it will report with no update and or report with an update and if that update is possible then it will update everything including Rust itself and that batch will loop for as
+                        long as it is on and server will be shutdown normally and start back up like normal. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan Pound</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204493' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 9, 2016 at 1:46 PM">May 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204493' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204493/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204696" class="message" data-author="Kiwes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kiwes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kiwes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kiwes">
+                            <aside>
+                                <div class="attribution type">Kiwes said: <a href="#post-204485" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">i will report on Friday how that worked<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                                            title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Didn&#039;t need to wait friday. Just found out that there has been update last night (little one or something) just checked and server is updated with Oxide (protocol
+                        didn&#039;t change i think, since ConstructionConfig is OK), but looks like its working fine so far<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan Pound">
+                            <aside>
+                                <div class="attribution type">Ryan Pound said: <a href="#post-204493" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yea this weekend ill come out with a better autoupdate solution to check oxide every hour on a separate batch and it will report with no update
+                                        and or report with an update and if that update is possible then it will update everything including Rust itself and that batch will loop for as long as it is
+                                        on and server will be shutdown normally and start back up like normal.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Sounds great! i don&#039;t have time to do that, so its nice to see someone have <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /> (and what is the best thing that someone willing to share that <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1"
+                            alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kiwes</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204696' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 10, 2016 at 6:25 AM">May 10, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204696' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204696/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204729" class="message" data-author="Ryan Pound">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan Pound" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan Pound</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Let me rephrase that current statement. So I am just resolving current issues with the batch making hourly checks
+                        and need it to check the live version of oxide and compare it to the latest installed version and if it is the same version it will ignore and go through the hourly wait to
+                        check the version again or it will say new version available and update the server with both oxide and rust server update if a new one is out at that current time. Hopefully
+                        will come out with it this coming weekend and will resolve past issues as well as make an easy first install script to help make life easier. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan Pound</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204729' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 4:43 AM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204729' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204729/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204899" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">PS. There are a few scripts that already handle this, as well as a standalone tool in the Rust Tools section. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204899' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 5:05 AM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204899' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204899/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204951" class="message" data-author="Ryan Pound">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan Pound" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan Pound</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m just trying to make a script that updates rust server as well as rust oxide and i doubt the Steam tools
+                        for Rust will update both. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan Pound</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204951' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 1:13 PM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204951' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204951/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-204968" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan Pound">
+                            <aside>
+                                <div class="attribution type">Ryan Pound said: <a href="#post-204951" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m just trying to make a script that updates rust server as well as rust oxide and i doubt the Steam tools for Rust will update both.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://oxidemod.org/resources/rupdater-windows.1823/" class="internalLink">Rupdater (Windows) for Rust | Oxide</a><br />
+                        <br />
+                        <a href="http://oxidemod.org/resources/rustboot-windows.1813/" class="internalLink">RustBoot (Windows) for Rust | Oxide</a><br />
+                        <a href="http://oxidemod.org/resources/plugin-updater-windows.1829/" class="internalLink">Plugin Updater (Windows) for Rust | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204968' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 3:52 PM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-204968' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/204968/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205016" class="message" data-author="Ryan Pound">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan Pound" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan Pound</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">But it is good to try and achieve something and learn from your mistakes so this helps me learn as well as give
+                        the people a new way to update their servers haste free. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan Pound</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-205016' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 5:41 PM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-205016' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/205016/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-205020" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan Pound">
+                            <aside>
+                                <div class="attribution type">Ryan Pound said: <a href="#post-205016" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">But it is good to try and achieve something and learn from your mistakes so this helps me learn as well as give the people a new way to update
+                                        their servers haste free.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That&#039;s fine, just mentioning that there are options and existing scripts out there. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2"
+                            alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-205020' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 11, 2016 at 5:48 PM">May 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-205020' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/205020/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295085" class="message" data-author="McMunch^">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="McMunch^" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">McMunch^</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-204899" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">PS. There are a few scripts that already handle this, as well as a standalone tool in the Rust Tools section.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> Please wulf show me an easy configurated Full Auto updater with oxide that
+                        works with Windows Server 2008 R2. i have ben looking around for ages now. Murkys dont seem to work at it just get stucked at trying to connect to steam. (<a
+                            href="http://oxidemod.org/resources/rupdater-windows.1823/" class="internalLink">Rupdater (Windows) for Rust | Oxide</a> ) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">McMunch^</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295085' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 8, 2017 at 4:59 PM">Feb 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295085' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295085/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295089" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="McMunch^">
+                            <aside>
+                                <div class="attribution type">McMunch^ said: <a href="#post-295085" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> Please wulf show me an easy configurated Full
+                                        Auto updater with oxide that works with Windows Server 2008 R2. i have ben looking around for ages now. Murkys dont seem to work at it just get stucked at
+                                        trying to connect to steam. (<a href="http://oxidemod.org/resources/rupdater-windows.1823/" class="internalLink">Rupdater (Windows) for Rust | Oxide</a> )</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m not familiar with any of the tools, and I don&#039;t suggest blindly updating like most do. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295089' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 8, 2017 at 5:06 PM">Feb 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295089' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295089/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295093" class="message" data-author="McMunch^">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="McMunch^" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">McMunch^</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295089" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m not familiar with any of the tools, and I don&#039;t suggest blindly updating like most do.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well if i dont blindly update then all players will leave due to high down time + i got a full time job and a kid now xD can keep up, getting old <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> ..... So in my case i somehow have to get Murkys tool to work ?
+                        Thank you man for replying so fast ! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">McMunch^</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295093' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 8, 2017 at 5:11 PM">Feb 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295093' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295093/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295097" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="McMunch^">
+                            <aside>
+                                <div class="attribution type">McMunch^ said: <a href="#post-295093" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well if i dont blindly update then all players will leave due to high down time + i got a full time job and a kid now xD can keep up, getting old
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> ..... So in my case i somehow have to get Murkys
+                                        tool to work ? Thank you man for replying so fast !</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Blindly update can often lead to more issues if a compatible Oxide build is not yet available. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <br /> I&#039;d suggest watching our Release Changelog and only updating after that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295097' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 8, 2017 at 5:20 PM">Feb 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/#post-295097' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295097/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/automating-updates-for-rust-oxide-server.17804/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/automating-updates-for-rust-oxide-server.17804/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

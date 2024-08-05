@@ -1,0 +1,139 @@
+---
+layout: forums
+title: 'Solved - Type of weapon'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/type-of-weapon.25984/' | prepend: site.baseurl }}">Type of weapon</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">HOUGAN_Y</a>, <a href="{{ '/threads/type-of-weapon.25984/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 19, 2017 at 5:22 AM">Jun 19, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-332283" class="message" data-author="HOUGAN_Y">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HOUGAN_Y" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HOUGAN_Y</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok, hello. <br />
+                        <br /> In my code i need to move items from inventory to box, all is working good, BUT.<br /> When i try to move weapon - it moves withous mods, e.t.c.<br />
+                        <br /> I fixed that with new function MakeWeapon, <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+            if (item.info.category.ToString() == &quot;Weapon&quot;)
+            {
+                    var weapon = original.GetHeldEntity() as BaseProjectile;                 (item.GetHeldEntity() as BaseProjectile).primaryMagazine.contents = weapon.primaryMagazine.contents;
+                 (item.GetHeldEntity() as BaseProjectile).primaryMagazine.ammoType = weapon.primaryMagazine.ammoType;
+                 if (original.contents.SlotTaken(0))
+                 {
+                     var atta = makeattach(original.contents.GetSlot(0).info.itemid);
+                     item.contents.AddItem(atta.info, 1);
+                 }
+                 if (original.contents.SlotTaken(1))
+                 {
+                     var atta = makeattach(original.contents.GetSlot(1).info.itemid);
+                     item.contents.AddItem(atta.info, 2);
+                 }
+                 if (original.contents.SlotTaken(2))
+                 {
+                     var atta = makeattach(original.contents.GetSlot(2).info.itemid);
+                     item.contents.AddItem(atta.info, 3);
+                 }            }
+            return item;</pre>{% endraw %}
+                        </div>But, when i try to copy MEELE weapon i have an error: Object reference not set to an instance of object.<br />
+                        <br /> So, i need help.<br /> 1) How to check, is item - meele weapon?<br /> or<br /> 2) How to easily move item from inventory to box?<br />
+                        <br /> (Now i am moving items like that<img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>StorageContainer container = Box.GetComponent&lt;StorageContainer&gt;();
+                PInventory[player.userID] = new Item[player.inventory.containerMain.itemList.Count];
+                player.inventory.containerMain.itemList.CopyTo(PInventory[player.userID]);foreach (var check in PInventory[player.userID])
+                {
+                    if (check.info.category.ToString() == BoxType || BoxType == &quot;All&quot;)
+                    {
+                        if (container.inventory.IsFull())
+                        {
+                            SendReply(player, &quot;space&quot;);
+                            PInventory.Remove(player.userID);
+                            return;
+                        }
+                        Traded++;
+                        Item create = ItemManager.CreateByItemID(check.info.itemid, check.amount, check.skin);
+                        SetModules(create, check);
+                        create.MoveToContainer(container.inventory);
+                        check.Remove();
+                    }
+                }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HOUGAN_Y</a>,</span>
+                        <a href="{{ '/threads/type-of-weapon.25984/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Jun 19, 2017 at 5:22 AM">Jun 19,
+                                2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/type-of-weapon.25984/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/332283/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332292" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> A melee weapon&#039;s held entity should have BaseMelee as a type, instead of BaseProjectile. Just check if
+                        BaseProjectile is null or if the type is BaseMelee, and if so, return or do something else. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/type-of-weapon.25984/#post-332292' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 19, 2017 at 6:52 AM">Jun 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/type-of-weapon.25984/#post-332292' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/332292/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

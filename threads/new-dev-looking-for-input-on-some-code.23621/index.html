@@ -1,0 +1,756 @@
+---
+layout: forums
+title: 'New dev looking for input on some code'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/' | prepend: site.baseurl }}">New dev looking for input on some code</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Maloxan</a>, <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 9, 2017 at 8:57 AM">Feb 9,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-295381" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello<br />
+                        <br /> I just started getting into C# (been coding a little bit in the past, small stuff like basic php and such) and I want to get into the oxide modding.<br />
+                        <br /> I want to start with making a very simple plugin that basicly announces in chat when a player respawns from death. I&#039;ve used the Oxide API site for reference, and
+                        found the following code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerRespawned(BasePlayer player)
+{
+    Puts(&quot;OnPlayerRespawned works!&quot;);
+}</pre>{% endraw %}
+                        </div>So I downloaded a few plugins that announces to chat and looked at their code. I&#039;ve ended up with the following<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Libraries.Covalence;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Oxide.Core;
+using System;namespace PlayerRespawnAnnouncement
+{
+    [Info(&quot;Player Respawn Announcement&quot;, &quot;Maloxan&quot;, 0.1)]
+    [Description(&quot;Mention in chat when player respawns from death&quot;)]    class PlayerRespawnAnnouncement
+    {
+        void OnPlayerRespawned(BasePlayer player)
+        {
+            Puts(&quot;{Player} just respawned from a short temporarily death!&quot;);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>Now i&#039;m stuck and not sure how to continue. First of all, i&#039;ve installed the JustDecompile program and looked through Assembly-CSharp.dll for references but not
+                        really sure how or what to do with it.<br />
+                        <br /> If you have any inputs on how to continue from here when stuck, please let me know. Much appreciated! I am willing to eventually pay for further assistance with the
+                        right help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 8:57 AM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/295381/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295391" class="message" data-author="Kriogenic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kriogenic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kriogenic</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey there,<br />
+                        <br /> From what I can see what you have is almost correct and here are a few tips<br />
+                        <br />
+                        <ol>
+                            <li>The namespace should be Oxide.Plugins<br />
+                            </li>
+                            <li>You need to inherit RustPlugin for it to be registered as a plugin</li>
+                            <li>The Puts command outputs to the server window and not actually to the game</li>
+                        </ol>Here is an edited version which should work how you want, hopefully you can learn from the tips mentioned here. I am using the rust.broadcast method to broadcast to every
+                        player ingame.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Libraries.Covalence;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Oxide.Core;
+using System;namespace Oxide.Plugins
+{
+    [Info(&quot;Player Respawn Announcement&quot;, &quot;Maloxan&quot;, 0.1)]
+    [Description(&quot;Mention in chat when player respawns from death&quot;)]    class PlayerRespawnAnnouncement : RustPlugin
+    {
+        void OnPlayerRespawned(BasePlayer player)
+        {
+            rust.BroadcastChat(player.displayName + &quot; just respawned from a short temporary death!&quot;, null, null);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kriogenic</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295391' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 10:00 AM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295391' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295391/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295449" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kriogenic">
+                            <aside>
+                                <div class="attribution type">Kriogenic said: <a href="#post-295391" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hey there,<br />
+                                        <br /> From what I can see what you have is almost correct and here are a few tips<br />
+                                        <br />
+                                        <ol>
+                                            <li>The namespace should be Oxide.Plugins<br />
+                                            </li>
+                                            <li>You need to inherit RustPlugin for it to be registered as a plugin</li>
+                                            <li>The Puts command outputs to the server window and not actually to the game</li>
+                                        </ol>Here is an edited version which should work how you want, hopefully you can learn from the tips mentioned here. I am using the rust.broadcast method to
+                                        broadcast to every player ingame.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using Oxide.Core.Libraries.Covalence;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Oxide.Core;
+using System;namespace Oxide.Plugins
+{
+    [Info(&quot;Player Respawn Announcement&quot;, &quot;Maloxan&quot;, 0.1)]
+    [Description(&quot;Mention in chat when player respawns from death&quot;)]    class PlayerRespawnAnnouncement : RustPlugin
+    {
+        void OnPlayerRespawned(BasePlayer player)
+        {
+            rust.BroadcastChat(player.displayName + &quot; just respawned from a short temporary death!&quot;, null, null);
+        }
+    }
+}</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The rust.BroadcastChat is called a library helper, and mainly existed for Lua plugins and such. For C#, you can use methods such as PrintToChat or the Covalence options
+                        if desired. What the OP had for the string formatting was fine, it&#039;s a newer C# 6 style called string interpolation. While you could use the entire player as a string,
+                        player.displayName is likely more of what the OP was looking for, so good catch there. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295449' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 2:56 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295449' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295449/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295514" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Now, alright! Thanks so much for the replies.<br />
+                        <br /> I copy pasted <a href="http://oxidemod.org/members/kriogenic.192511/" class="internalLink">Kriogenic</a>&#039;s code and understood a bit more! I am still confused about
+                        the <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>null, null);</pre>{% endraw %}
+                        </div> though. Why does that have to be there? <br />
+                        <br /> Is it possible to check for errors? When I hit &quot;Start&quot; (green arrow / play button) it gives me 30 warnings and 10 errors. I did input the necessary Analyzers
+                        as mentioned in a thread somewhere. How do I &quot;finish&quot; it? I mean, I guess there should be generated a .json file to edit for the users. Basicly it should just be one
+                        setting to be changed on or off or something, just to make it super simple and easily understandable <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295514' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:18 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295514' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295514/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295516" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Maloxan">
+                            <aside>
+                                <div class="attribution type">Maloxan said: <a href="#post-295514" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Now, alright! Thanks so much for the replies.<br />
+                                        <br /> I copy pasted <a href="http://oxidemod.org/members/kriogenic.192511/" class="internalLink">Kriogenic</a>&#039;s code and understood a bit more! I am
+                                        still confused about the <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>null, null);</pre>{% endraw %}
+                                        </div> though. Why does that have to be there?<br />
+                                        <br /> Is it possible to check for errors? When I hit &quot;Start&quot; (green arrow / play button) it gives me 30 warnings and 10 errors. I did input the
+                                        necessary Analyzers as mentioned in a thread somewhere. How do I &quot;finish&quot; it? I mean, I guess there should be generated a .json file to edit for the
+                                        users. Basicly it should just be one setting to be changed on or off or something, just to make it super simple and easily understandable <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The null and null that he added there are sent in lieu of actual values for that method; in this case, they are optional and can be removed. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295516' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:24 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295516' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295516/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295519" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295516" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The null and null that he added there are sent in lieu of actual values for that method; in this case, they are optional and can be removed.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Alright thanks. I get it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> <br /> Is there any guides
+                        available I haven&#039;t seen that explains the finishing touches on a plugin? So I can upload it and test it on my own server working. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295519' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:31 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295519' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295519/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295520" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Maloxan">
+                            <aside>
+                                <div class="attribution type">Maloxan said: <a href="#post-295519" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Alright thanks. I get it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> Is
+                                        there any guides available I haven&#039;t seen that explains the finishing touches on a plugin? So I can upload it and test it on my own server working.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There are plenty of C# tutorials around the net. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295520' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:32 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295520' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295520/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295522" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295520" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">There are plenty of C# tutorials around the net. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                                            title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You beast. <br /> Last short question - If a plugin were to be uploaded to oxidemod as it is right now; would it be accepted or declined? And if declined, on what
+                        background? Just curious! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295522' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:37 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295522' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295522/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295523" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Maloxan">
+                            <aside>
+                                <div class="attribution type">Maloxan said: <a href="#post-295522" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You beast.<br /> Last short question - If a plugin were to be uploaded to oxidemod as it is right now; would it be accepted or declined? And if
+                                        declined, on what background? Just curious!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It depends what it is and if it follows the guidelines and such. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295523' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 6:38 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295523' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295523/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295569" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295523" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It depends what it is and if it follows the guidelines and such.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="http://imgur.com/a/fH8GC" target="_blank" class="externalLink  rel=" nofollow">Imgur: The most awesome images on the Internet</a> getting alot of erros <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295569' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 9:10 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295569' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295569/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295574" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Maloxan">
+                            <aside>
+                                <div class="attribution type">Maloxan said: <a href="#post-295569" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="http://imgur.com/a/fH8GC" target="_blank" class="externalLink">Imgur: The most awesome images on the Internet</a> getting alot of erros
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You do not compile plugins as DLLs; you install them under your oxide/plugins folder as a .cs file. You are seeing a lot of errors though as you do not have a proper
+                        project setup. I&#039;d suggest looking up how to add References to the DLLs you need to resolve the errors. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295574' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 9:14 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295574' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295574/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-295594" class="message" data-author="Maloxan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Maloxan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Maloxan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295574" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You do not compile plugins as DLLs; you install them under your oxide/plugins folder as a .cs file. You are seeing a lot of errors though as you
+                                        do not have a proper project setup. I&#039;d suggest looking up how to add References to the DLLs you need to resolve the errors.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It all makes sense now! Thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Maloxan</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295594' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 9, 2017 at 9:37 PM">Feb 9, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-295594' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/295594/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296422" class="message" data-author="Kriogenic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kriogenic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kriogenic</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-295449" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The rust.BroadcastChat is called a library helper, and mainly existed for Lua plugins and such. For C#, you can use methods such as PrintToChat
+                                        or the Covalence options if desired. What the OP had for the string formatting was fine, it&#039;s a newer C# 6 style called string interpolation. While you
+                                        could use the entire player as a string, player.displayName is likely more of what the OP was looking for, so good catch there. <img
+                                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for that, had no idea about string interpolation, so I learned something new. About the BroadcastChat I just copied that line from your stickied thread with the
+                        twitter icon thingy, but good to know as I was also using it in my plugin and I will switch it to PrintToChat <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kriogenic</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-296422' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 11, 2017 at 5:32 AM">Feb 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-296422' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/296422/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-296441" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kriogenic">
+                            <aside>
+                                <div class="attribution type">Kriogenic said: <a href="#post-296422" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for that, had no idea about string interpolation, so I learned something new. About the BroadcastChat I just copied that line from your
+                                        stickied thread with the twitter icon thingy, but good to know as I was also using it in my plugin and I will switch it to PrintToChat</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The rust.BroadcastChat does have additional options for passing a userId for an icon, so it can be useful in certain circumstances. It&#039;ll eventually be phased out
+                        though in favor of others though once we cleanup a bit to focus on C# plugins. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-296441' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 11, 2017 at 6:28 AM">Feb 11, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/new-dev-looking-for-input-on-some-code.23621/#post-296441' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/296441/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

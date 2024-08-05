@@ -1,0 +1,235 @@
+---
+layout: forums
+title: 'Solved - &quot;Unknown Command&quot; OnRunCommand Hook //WarpSystem'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/' | prepend: site.baseurl }}">&quot;Unknown Command&quot; OnRunCommand
+            Hook //WarpSystem</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">PaiN</a>, <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 20, 2015 at 6:27 PM">Oct 20,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-137632" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I was recently asked to add something like the lua version of the WarpSystem had.<br />
+                        <br /> Its the /&lt;warpname/warpId&gt;, so instead of typing /warp to &lt;warpName, WarpId&gt; you could just type /&lt;warpname, warpId&gt;<br />
+                        <br /> I&#039;ve managed it to work but.. once the player will type the command then the teleport, cooldown and stuff works perfectly but it also shows &quot;Unknown Command
+                        &#039;1&#039;! &quot; .. I tried registering the command like in lua command.AddChatCommand... but doesnt work.. I cant think of another way to fix the Unknown Command message,
+                        that&#039;s why I am asking <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /> Do you have any ideas ?<br />
+                        <br /> Current OnRunCommand hook code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnRunCommand(ConsoleSystem.Arg arg)
+            {
+                BasePlayer player = (BasePlayer)arg.connection.player;
+                if(arg.connection == null) return;
+                if(arg.cmd == null) return;
+                ulong steamId = player.userID;
+                float nextteletime;
+                string cmd = arg.cmd.namefull;
+                string text = arg.GetString(0, &quot;text&quot;);               
+                if(cmd == &quot;chat.say&quot; &amp;&amp; text.StartsWith(&quot;/&quot;))
+                {
+                    foreach(WarpInfo info in storedData.WarpInfo)
+                    { 
+                        if(text == &quot;/&quot;+info.WarpName || text == &quot;/&quot;+info.WarpId)
+                        {
+                            if(info.WarpPermissionGroup == &quot;all&quot; || permission.UserHasGroup(steamId.ToString(), info.WarpPermissionGroup))
+                            {
+                               
+                                if(enablecooldown == true) 
+                                {
+                                    if (storedData.cantele.TryGetValue(steamId, out nextteletime))
+                                    {  
+                                        if(Time.realtimeSinceStartup &gt;= nextteletime)
+                                        {
+                                           
+                                            storedData.cantele[steamId] = Time.realtimeSinceStartup + cooldown;
+                                            Interface.GetMod().DataFileSystem.WriteObject(&quot;WarpSystem&quot;, storedData);
+                                            goto Finish;
+                                        } 
+                                        else
+                                        {
+                                            int nexttele = Convert.ToInt32(nextteletime - Time.realtimeSinceStartup);
+                                            SendReply(player, youhavetowait, nexttele.ToString());
+                                            return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        storedData.cantele.Add(steamId, Time.realtimeSinceStartup + cooldown);
+                                        Interface.GetMod().DataFileSystem.WriteObject(&quot;WarpSystem&quot;, storedData);
+                                        goto Finish;
+                                    }
+                                }
+                                Finish: 
+                                if(storedData.lastposition.ContainsKey(steamId) |! storedData.lastposition.ContainsKey(steamId))
+                                {
+                                    storedData.lastposition.Remove(steamId);
+                                    Interface.GetMod().DataFileSystem.WriteObject(&quot;WarpSystem&quot;, storedData);
+                                    float x = player.transform.position.x; 
+                                    float y = player.transform.position.y;
+                                    float z = player.transform.position.z;
+                                    var oldinfo = new OldPosInfo(x, y, z);
+                                    storedData.lastposition.Add(steamId, oldinfo);
+                                    Interface.GetMod().DataFileSystem.WriteObject(&quot;WarpSystem&quot;, storedData);
+                                   
+                                }
+                                   
+                                SendReply(player, teleportingto,info.WarpTimer, info.WarpName);
+                                timer.Once(info.WarpTimer, () =&gt; { 
+                                if(WarpIfRunning == false &amp;&amp; player.IsRunning())
+                                {
+                                    SendReply(player, cantwarpwhilerunning);
+                                    return;
+                                }
+                                if(WarpIfWounded == false &amp;&amp; player.IsWounded())
+                                {
+                                    SendReply(player, cantwarpwhilewounded);
+                                    return;
+                                } 
+                                if(WarpIfSwimming == false &amp;&amp; player.IsSwimming())
+                                {
+                                    SendReply(player, cantwarpwhileswimming);
+                                    return;
+                                }
+                                if(WarpIfBuildingBlocked == false &amp;! player.CanBuild())
+                                {
+                                    SendReply(player, cantwarpwhilebuildingblocked);
+                                    return;
+                                }
+                                if(WarpIfDucking == false &amp;&amp; player.IsDucked())
+                                {
+                                    SendReply(player, cantwarpwhileducking);
+                                    return;
+                                }
+                                    ForcePlayerPos(player, new Vector3(info.WarpX, info.WarpY, info.WarpZ)); 
+                                    SendReply(player, youhaveteleportedto, info.WarpName);
+                                });                                                 
+                            }
+                            else
+                            {
+                                SendReply(player, &quot;You are not allowed to use this warp!&quot;);
+                                return; 
+                            }
+                        }
+                    }
+                }
+               
+            }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 20, 2015 at 6:27 PM">Oct 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/137632/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-137649" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> cmd.AddChatCommand <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/#post-137649' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 20, 2015 at 7:38 PM">Oct 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/#post-137649' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/137649/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-137657" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/#post-137657' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 20, 2015 at 8:21 PM">Oct 20, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unknown-command-onruncommand-hook-warpsystem.12344/#post-137657' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/137657/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

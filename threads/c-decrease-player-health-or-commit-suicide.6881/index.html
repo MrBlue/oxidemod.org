@@ -1,0 +1,188 @@
+---
+layout: forums
+title: 'C#: decrease player health or commit suicide'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/' | prepend: site.baseurl }}">C#: decrease player health or commit suicide</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Grinsekotze</a>, <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 16, 2015 at 1:50 PM">Feb
+                16, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-67292" class="message" data-author="Grinsekotze">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Grinsekotze" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Grinsekotze</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I&#039;m trying to make a plugin based on C# which limits fall height. It is based on R-Anticheat (which is awesome btw <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />). Right now i&#039;m able to detect if player is falling. So far so good...<br /> I do not understand how
+                        i can decrease a players health. I believe this can be done with hook &quot;<b>OnRunPlayerMetabolism&quot;.</b> Is that correct? How do i use this hook in a c# plugin? Another
+                        option would be to let the player commit suicide remotely triggered from the plugin. Is that possible?<br />
+                        <br /> Best regards<br /> Grinsekotze <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Grinsekotze</a>,</span>
+                        <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2015 at 1:50 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/67292/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67295" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">this is where the falling is taken care of:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnPlayerLanded(float velocity)
+{
+    float num = Mathf.InverseLerp(-15f, -100f, velocity);
+    if (num != 0f)
+    {
+        this.metabolism.bleeding.Add(num * 0.5f);
+        this.Hurt(num * 500f, DamageType.Fall, null);
+    }
+}
+</pre>{% endraw %}
+                        </div>if it can help you.<br /> so yeah from the metabolism you will have to remove the bleeding<br /> and OnEntityAttacked you will have to check if damatype is FALL, and
+                        remove the damage.<br /> something like: hitinfo.damageTypes = new damageTypes blabla, there are plugins showing how to do that (Zone Manager, for exemple you&#039;ll just have
+                        to convert it into C#)<br /> didn&#039;t really try anything but i guess this should get you going.<br /> [DOUBLEPOST=1424095424][/DOUBLEPOST]if you need anyhelp or are stuck
+                        somewhere just post the code here <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /> and we will help you
+                        fix it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67295' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2015 at 2:01 PM">Feb 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67295' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67295/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67852" class="message" data-author="Grinsekotze">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Grinsekotze" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Grinsekotze</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/20031/" class="username" data-user="20031, @Reneb">@Reneb</a>:<br /> I&#039;ve made good progress and the plugin is working so far. There
+                        are still a few rough edges i&#039;m working on. Would you consider merging my changes to your AntiCheat-Plugin? Imho this makes sense, cause my modded version is also
+                        constantly checkin player postion. This would consume additional resources if both plugins are run on the same server. I had to remove the time limited checks cause fall
+                        detection needs the player-position-data all the time. What do you think?<br />
+                        <br /> I&#039;ll post the plugin code here, but i have to clean it up and comment first. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Grinsekotze</a>,</span>
+                        <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67852' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 18, 2015 at 12:13 PM">Feb 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67852' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67852/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-67854" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I would gladly work with you yes, no problem <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67854' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 18, 2015 at 12:37 PM">Feb 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-decrease-player-health-or-commit-suicide.6881/#post-67854' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/67854/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

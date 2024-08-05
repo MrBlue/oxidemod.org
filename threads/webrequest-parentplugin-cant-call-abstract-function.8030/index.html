@@ -1,0 +1,217 @@
+---
+layout: forums
+title: 'Not an Issue - WebRequest ParentPlugin can&#039;t call abstract function'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixBlue">Not an Issue</span> <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/' | prepend: site.baseurl }}">WebRequest ParentPlugin
+            can&#039;t call abstract function</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username" dir="auto">Dr
+            Jones</a>, <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 28, 2015 at 6:31 AM">Apr 28,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-83059" class="message" data-author="Dr Jones">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dr Jones" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dr Jones</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I currently have the following on a parent plugin.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public abstract class ParentPlugin:RustPluginpublic void Post(string url, string body, Action&lt;int,string&gt; response)
+     {
+       webrequests.EnqueuePost(url, body, response, this);
+     }
+  
+     public void Post(Event e)
+     {
+       Post(e.Url,e.Body,onEventComplete);
+     }     public void callEvent()
+     {
+       Oxide.Ext.Vanrust.Event e = getNextEvent();
+       try
+       {
+         Post(e);
+       }
+       catch(Exception ex)
+       {
+         this.PrintError(&quot;NOPE!&quot;);
+       }
+     }
+     public abstract void onSetupEvent(Event e);
+     public abstract void onEventComplete(int code, string response);</pre>{% endraw %}
+                        </div>When the child <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>MyPlugin:ParentPlugin</pre>{% endraw %}
+                        </div> calls the callEvent() function i get the following error.<br />
+                        <br /> &lt;TypeLoadException: Could not load type &#039;System.Action&#039;2&#039; from assembly &#039;mscorlib, version=4.0.0.0.0 etc..&gt;<br /> I believe this has something
+                        to do with the web request action not being able to call the childs abstract function. The child&#039;s abstract function does exist and all other variables are working.<br />
+                        <br /> I can event replace Post(e) with onEventComplete(1,&quot;Test&quot;).<br /> This means that the onEventComplete is being passed correctly but once given to the
+                        EnqueuePost it is unable to run the action.<br />
+                        <br /> Does anything have any ideas?<br />
+                        <br /> EDIT:<br /> I alsoforgot to mention i am declaring it like public WebRequests webrequests = Interface.Oxide.GetLibrary&lt;WebRequests&gt;(&quot;WebRequests&quot;); <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 28, 2015 at 4:03 PM">Apr 28, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dr Jones</a>,</span>
+                        <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 28, 2015 at 6:31 AM">Apr 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83059/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83139" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What does Oxide.Ext.Vanrust.dll do that can&#039;t be done as a plugin? <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83139' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 28, 2015 at 4:13 PM">Apr 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83139' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83139/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83243" class="message" data-author="Dr Jones">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Dr Jones" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Dr Jones</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It creates a plugin master class i am working on which all my plugins will be able to extend. It also is my way
+                        of trying out extensions.<br />
+                        <br /> The reason why i need a parent class is that all my planned plugins have the same needed base functionality that im working on building off. For this reason i need an
+                        extension.<br />
+                        <br /> The issue here is an issue with the webrequest.enqueuepost function. My e.Url and e.Body <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Dr Jones</a>,</span>
+                        <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83243' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 28, 2015 at 11:19 PM">Apr 28, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83243' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83243/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83497" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Dr Jones">
+                            <aside>
+                                <div class="attribution type">Dr Jones said: <a href="#post-83243" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It creates a plugin master class i am working on which all my plugins will be able to extend. It also is my way of trying out extensions.<br />
+                                        <br /> The reason why i need a parent class is that all my planned plugins have the same needed base functionality that im working on building off. For this
+                                        reason i need an extension.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, that could still be done via a plugin which other plugins can depend on. An extension is overkill for your use. You&#039;re also losing hotloading of plugins by
+                        having an extension rather than a plugin. Without seeing what your extension is doing, it&#039;s hard to really give you a straight answer. Honestly though, I&#039;d get rid of
+                        the extension and create it as a plugin instead. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83497' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 29, 2015 at 10:35 PM">Apr 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/webrequest-parentplugin-cant-call-abstract-function.8030/#post-83497' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83497/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

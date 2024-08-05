@@ -1,0 +1,258 @@
+---
+layout: forums
+title: 'Issue With DateTime Timer'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/issue-with-datetime-timer.24434/' | prepend: site.baseurl }}">Issue With DateTime Timer</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DylanSMR</a>, <a href="{{ '/threads/issue-with-datetime-timer.24434/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 13, 2017 at 12:25 AM">Mar 13,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-307270" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Right. Just creating a simple timer to subtract two date times with a class to handle it(will be more advanced in
+                        the future) and I seem to be running into a small issue.<br /> You can see the code here:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Newtonsoft.Json
+// Reference: Rust.Data
+using UnityEngine;
+using Oxide.Game.Rust.Cui;
+using System.Collections.Generic;
+using System;namespace Oxide.Plugins
+{
+    [Info(&quot;ScreenTimer&quot;, &quot;DylanSMR&quot;, &quot;1.0.7&quot;, ResourceId = 1918)]
+    [Description(&quot;A GUI timer.&quot;)]
+    class ScreenTimer : RustPlugin
+    { 
+        static List&lt;Timer&gt; timers = new List&lt;Timer&gt;();
+        public class Timer
+        {
+            public DateTime currentTime;
+            public DateTime endTime;            public int days;
+            public int hours;
+            public int minutes;
+            public int seconds;            public string Text;
+            public string TextColor;
+            public string Command;            public string OutlineColor;
+            public string InnerColor;            public Timer(){
+                this.RTimer();
+                timers.Add(this);
+            }
+            public void RTimer(){
+                TimeSpan span = endTime - currentTime;
+                this.days = span.Days;
+                this.hours = span.Hours;
+                this.minutes = span.Minutes;
+                this.seconds = span.Seconds;
+            }
+        }
+        public void RefreshTimer(Timer t){
+            t.RTimer();
+            PrintWarning($&quot;Time = Days:{t.days}  -  Hours:{t.hours}  -  Minutes:{t.minutes}  -  Seconds:{t.seconds}&quot;);
+            if(t.currentTime &gt;= t.endTime){
+                PrintWarning(&quot;Time Ended&quot;);
+                timers.Remove(t);
+                return;
+            }
+            timer.Once(1f, () =&gt;
+            {
+                if(!(t.currentTime &gt;= t.endTime)){t.currentTime = DateTime.Now; RefreshTimer(t); t.RTimer(); }
+            });
+        }
+        [ConsoleCommand(&quot;testtimer&quot;)]
+        void TestTimer(){
+            var timer = new Timer(){
+                currentTime = DateTime.Now,
+                endTime = DateTime.Now.AddSeconds(10),
+            };
+            PrintWarning(&quot;Timer Created&quot;);
+            RefreshTimer(timer);
+        }
+    }
+}</pre>{% endraw %}
+                        </div>And then the output here when I run &quot;testtimer&quot; in console. Any idea&#039;s why it is outputting like that instead of 10,9,8,7,6,5,4,3,2,1,0?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ScreenTimer] Timer Created
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:10
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:8
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:7
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:6
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:5
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:4
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:3
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:2
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:1
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:0
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:0
+[ScreenTimer] Time Ended</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/issue-with-datetime-timer.24434/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2017 at 12:25 AM">Mar 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datetime-timer.24434/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/307270/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-307277" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I haven&#039;t tested this, but I suspect your <i>RefreshTimer</i> procedure doesn&#039;t need to call
+                        <i>t.RTimer()</i> when you call it in the <i>timer.Once</i> loop. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307277' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2017 at 12:56 AM">Mar 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307277' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/307277/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-307296" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Still seems to result in:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ScreenTimer] Timer Created
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:10
+[ScreenTimer] Time = Days:0  -  Hours:0  -  Minutes:0  -  Seconds:8</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307296' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2017 at 1:49 AM">Mar 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307296' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/307296/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-307304" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Timers are concurrent. Concurrency is not deterministic.<br /> [DOUBLEPOST=1489371608][/DOUBLEPOST]Here, a more
+                        detailed explanation:<br /> TestTimer is called, you create a new timer with currentTime = DateTime.Now and endTime = DateTime.Now + 10s.<br /> You call RefreshTimer.<br />
+                        t.RTimer is called and copies span to RTimer.<br /> You print the time, time has passed since we created the new timer!<br /> A new timer is created that fires in *roughly* 1
+                        second.<br /> Firstly, the time between currentTime and this timer ending isn&#039;t actually one second anymore - time passed since we created the timer with
+                        DateTime.Now.<br /> The timer will actually fire in currentTime + delta + 1s, delta being the time your plugin wasted and any of the following inaccuracies.<br /> Why roughly?
+                        Because it is impossible to schedule a timer fully precisely.<br /> Just a few of the factors affecting this, from less important to more important:<br /> - CPU clock speed or
+                        any other hardware related ticks. If our timer is scheduled between two cycles, we obviously cannot run it at that exact moment.<br /> This is obviously worsened with hardware
+                        slowdown issues like branch missprediction, cache misses etc.<br /> - OS/C# thread scheduling. If our process/thread isn&#039;t scheduled to be allowed to work at the final
+                        time, we cannot meet the deadline.<br /> - Rust tick rate. Iirc Oxide checks every tick (or even less often, depending on the situation) whether your timer finished. This may
+                        only be ~10 times per second!<br /> - Expensive work done in the same tick that your timer is scheduled in. Your timer is done in a specific tick, but some work may kick in
+                        right in that tick, for instance some plugin doing a heavy calculation.<br /> - Garbage collection! This may delay your timer by a couple of seconds!<br /> We repeat the
+                        process. All these inaccuracies add up with every single time we call the timer!<br /> The actual &quot;end time&quot; you expected to be currentTime + 10s is actually
+                        currentTime + delta1 + delta2 + ... + delta10 + 10s. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Mar 13, 2017 at 2:25 AM">Mar 13, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307304' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2017 at 2:00 AM">Mar 13, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datetime-timer.24434/#post-307304' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/307304/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

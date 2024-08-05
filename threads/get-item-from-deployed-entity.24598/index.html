@@ -1,0 +1,179 @@
+---
+layout: forums
+title: 'Solved - Get item from deployed entity'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/get-item-from-deployed-entity.24598/' | prepend: site.baseurl }}">Get item from deployed entity</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ignignokt84</a>, <a href="{{ '/threads/get-item-from-deployed-entity.24598/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 22, 2017 at 4:06 PM">Mar 22,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-309711" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi all. Does anyone know of a built-in or simple method to get an <i>itemId</i>, <i>Item</i>,
+                        <i>ItemDefinition</i>, or <i>ItemBlueprint</i> from a deployed entity? I&#039;ve been looking all over for a &quot;clean&quot; solution, but I&#039;ve not been able to find
+                        anything. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/get-item-from-deployed-entity.24598/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2017 at 4:06 PM">Mar 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-item-from-deployed-entity.24598/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309711/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309716" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Something like that is the common way:<br />
+                        <i>Example from RemoverTool</i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        static Dictionary&lt;string, string&gt; PrefabNameToDeployable = new Dictionary&lt;string, string&gt;();
+        static Dictionary&lt;string, string&gt; PrefabNameToItemName = new Dictionary&lt;string, string&gt;();        void InitializeItems()
+        {
+            foreach (var item in ItemManager.GetItemDefinitions())
+            {
+                if (!ItemNameToItemID.ContainsKey(item.displayName.english.ToLower())) ItemNameToItemID.Add(item.displayName.english.ToLower(), item.itemid);                var itemdeployable = item?.GetComponent&lt;ItemModDeployable&gt;();
+                if (itemdeployable == null) continue;                if (!PrefabNameToDeployable.ContainsKey(itemdeployable.entityPrefab.resourcePath)) PrefabNameToDeployable.Add(itemdeployable.entityPrefab.resourcePath, item.displayName.english);
+                if(!PrefabNameToItemName.ContainsKey(itemdeployable.entityPrefab.resourcePath)) PrefabNameToItemName.Add(itemdeployable.entityPrefab.resourcePath, item.shortname);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309716' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2017 at 5:22 PM">Mar 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309716' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309716/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309719" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/26533/" class="username" data-user="26533, @Fujikura">@Fujikura</a> - Thanks for this! It had just clicked in my brain that I should
+                        attack from the other direction and see if I could get the entity from the item and just build a reference map - that is exactly what I needed <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309719' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2017 at 5:33 PM">Mar 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309719' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309719/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309729" class="message" data-author="mTrX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mTrX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mTrX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Great to see this, i ran into the same issue aswell. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mTrX</a>,</span>
+                        <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309729' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 22, 2017 at 6:27 PM">Mar 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-item-from-deployed-entity.24598/#post-309729' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309729/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

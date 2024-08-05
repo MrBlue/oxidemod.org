@@ -1,0 +1,1239 @@
+---
+layout: forums
+title: 'Custom extension not loading after update | Page 3'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/' | prepend: site.baseurl }}">Custom extension not loading after update</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kolyma</a>, <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 21, 2017 at 12:59 AM">Oct 21,
+                2017</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="3" data-range="2" data-start="2" data-end="3" data-last="4" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/custom-extension-not-loading-after-update.27653/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-2' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3' | prepend: site.baseurl }}" class="currentPage ">3</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-4' | prepend: site.baseurl }}" class="">4</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-4' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-359203" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yep, even with the current OxideMod sources, if I switch this area in Extensions/Oxide.CSharp/Compilation.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (match.Success)
+{
+    var result = match.Groups[1].Value;
+    if (result.StartsWith(&quot;Oxide.&quot;)) AddReference(plugin, Regex.Replace(result, @&quot;Oxide\.[\w]+\.([\w]+)&quot;, &quot;Oxide.$1&quot;));
+    else AddReference(plugin, result);
+    continue;
+}
+</pre>{% endraw %}
+                        </div>With this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (match.Success)
+{
+    AddReference(plugin, match.Groups[1].Value);
+    continue;
+}
+</pre>{% endraw %}
+                        </div>My extension works like before<br /> [DOUBLEPOST=1508651730][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-359202" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The part you quoted is for handing adding extension references based on using statements. The code below basically looks for any &quot;using
+                                        X.X.X using statements, which then tries to find an extension by that name. If you have a varying namespace and DLL, then it may have an issue. The
+                                        &quot;Oxide.&quot; check in there is for our extensions, as we currently still have the Oxide.Core.X and Oxide.Game.X namespace, but Oxide.X for DLL
+                                        names.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+                // Include implicit references detected from using statements in script
+                match = Regex.Match(line, @&quot;^\s*using\s+([\w]+\.(?:Core|Ext|Game)\.(?:[^\.]+))[^;]*;.*$&quot;, RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    var result = match.Groups[1].Value;
+                    if (result.StartsWith(&quot;Oxide.&quot;)) AddReference(plugin, Regex.Replace(result, @&quot;Oxide\.[\w]+\.([\w]+)&quot;, &quot;Oxide.$1&quot;));
+                    else AddReference(plugin, result);
+                    continue;
+                }</pre>{% endraw %}
+                                        </div>The only thing that has changed with that portion of code is that I removed the Oxide. specific check in the first matching line, and then added the
+                                        Oxide. check later to handle our assembly name changes.<br />
+                                        <br /> So, if your extension doesn&#039;t have an X.X.X namespace and assembly DLL, then that&#039;s likely the cause. I could probably loosen that up a bit as
+                                        I know there are some without X.X.X.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m glad to update my stuff however is needed to make it compliant with current design. I&#039;ll press on with this new information. Thanks! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359203' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 6:53 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359203' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359203/permalink">#41</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359206" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-359203" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yep, even with the current OxideMod sources, if I switch this area in Extensions/Oxide.CSharp/Compilation.cs<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>if (match.Success)
+{
+    var result = match.Groups[1].Value;
+    if (result.StartsWith(&quot;Oxide.&quot;)) AddReference(plugin, Regex.Replace(result, @&quot;Oxide\.[\w]+\.([\w]+)&quot;, &quot;Oxide.$1&quot;));
+    else AddReference(plugin, result);
+    continue;
+}
+</pre>{% endraw %}
+                                        </div>With this<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>if (match.Success)
+{
+    AddReference(plugin, match.Groups[1].Value);
+    continue;
+}
+</pre>{% endraw %}
+                                        </div>My extension works like before<br /> [DOUBLEPOST=1508651730][/DOUBLEPOST]I&#039;m glad to update my stuff however is needed to make it compliant with
+                                        current design. I&#039;ll press on with this new information. Thanks!
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What do your using statements currently look like in the top of your plugin? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359206' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 7:02 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359206' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359206/permalink">#42</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359208" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Network;
+using System;
+using Oxide.Ext.MyExt.Libraries;
+using Oxide.Core.Libraries;
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359208' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 7:14 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359208' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359208/permalink">#43</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359210" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-359208" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using Network;
+using System;
+using Oxide.Ext.MyExt.Libraries;
+using Oxide.Core.Libraries;
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ahh, I see why then. Didn&#039;t expect people to be using the Oxide. prefixed for their own namespace. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359210' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 7:16 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359210' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359210/permalink">#44</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359211" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">That was just how it all started for me because originally, I copied the MySQL implementation as a framework to
+                        create my extension. The Oxide. came with it <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359211' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 7:18 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359211' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359211/permalink">#45</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359215" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">So here are 2 &quot;official&quot; 3rd-party extensions. The first seems to use the same namespace&#039;ing as
+                        mine<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core;
+using Oxide.Core.Extensions;
+using Oxide.Core.Libraries;
+using Oxide.Core.Plugins;
+using Oxide.Ext.IRC.Libraries;
+using Oxide.Plugins;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;namespace Oxide.Ext.IRC
+{
+</pre>{% endraw %}
+                        </div>But not the second example<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using A;
+using ConVar;
+using Newtonsoft.Json.Linq;
+using Oxide.Core;
+using Oxide.Core.Extensions;
+using Oxide.Core.Logging;
+using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;namespace RustIO.Oxide
+{
+</pre>{% endraw %}
+                        </div>And I realize #2 obfuscated (lol) their effort <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359215' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 7:56 AM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359215' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359215/permalink">#46</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359373" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">GOT IT.<br />
+                        <br /> The solution for me required several changes:<br />
+                        <ol>
+                            <li>In my extension file <b>MyExtension.cs</b>, I had to change:<br />
+                                <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>namespace Oxide.Ext.MyExt
+</pre>{% endraw %}
+                                </div>to<br />
+                                <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>namespace Ext.MyExt
+</pre>{% endraw %}
+                                </div>
+                            </li>
+                            <li>In the accompanying extension file <b>MyExt.cs</b>, I had to change: <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>namespace Oxide.Ext.MyExt.Libraries</pre>{% endraw %}
+                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>namespace Ext.MyExt.Libraries</pre>{% endraw %}
+                                </div>
+                            </li>
+                            <li>For the project properties in MSVC of <b>MyExt.csproj</b>, I had to change both the &quot;Assembly name:&quot; and &quot;Default namespace&quot; from: <div
+                                    class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>Oxide.Ext.MyExt</pre>{% endraw %}
+                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>Ext.MyExt</pre>{% endraw %}
+                                </div>
+                            </li>
+                            <li>Then in my actual plugin <b>MyExtUniversal.cs</b>, I had to add to the top: <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>// Reference: Ext.MyExt</pre>{% endraw %}
+                                </div>
+                            </li>
+                            <li>And change <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>using Oxide.Ext.MyExt.Libraries;</pre>{% endraw %}
+                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                    <div class="type">Code:</div>
+                                    {% raw %}<pre>using Ext.MyExt.Libraries;</pre>{% endraw %}
+                                </div>
+                            </li>
+                        </ol>Now everything works normal as it used to. My only real issue is I have this Ext.MyExt.dll file instead of Oxide.Ext.MyExt.dll in my Rust server Managed directory. It was
+                        nice before that all Oxide related stuff appeared in the same area of that directory. Oh well, that&#039;s cosmetic and of no real concern.<br />
+                        <br /> I don&#039;t think this trouble of mine warrants a GitHub issue since it seems you clearly meant to make this code change to the extension reference handling code, so I
+                        won&#039;t start one. It&#039;s more of a user implementation issue.<br />
+                        <br /> I am curious if the whole &quot;// Reference: Blah.Blah.Blah&quot; is documented somewhere? Or better yet, a brief but comprehensive description of how to properly
+                        implement an OxideMod extension?<br />
+                        <br /> Thanks for your help! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 23, 2017 at 1:20 AM">Oct 23, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359373' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 8:04 PM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359373' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359373/permalink">#47</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359377" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-359373" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">GOT IT.<br />
+                                        <br /> The solution for me required several changes:<br />
+                                        <ol>
+                                            <li>In my extension file <b>MyExtension.cs</b>, I had to change:<br />
+                                                <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>namespace Oxide.Ext.MyExt
+</pre>{% endraw %}
+                                                </div>to<br />
+                                                <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>namespace Ext.MyExt
+</pre>{% endraw %}
+                                                </div>
+                                            </li>
+                                            <li>In the accompanying extension file <b>MyExt.cs</b>, I had to change: <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>namespace Oxide.Ext.MyExt.Libraries</pre>{% endraw %}
+                                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>namespace Ext.MyExt.Libraries</pre>{% endraw %}
+                                                </div>
+                                            </li>
+                                            <li>For the project properties in MSVC of <b>MyExt.csproj</b>, I had to change both the &quot;Assembly name:&quot; and &quot;Default namespace&quot; from:
+                                                <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>Oxide.Ext.MyExt</pre>{% endraw %}
+                                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>Ext.MyExt</pre>{% endraw %}
+                                                </div>
+                                            </li>
+                                            <li>The in my actual plugin <b>MyExtUniversal.cs</b>, I had to add to the top: <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>// Reference: Ext.MyExt</pre>{% endraw %}
+                                                </div>
+                                            </li>
+                                            <li>And change <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>using Oxide.Ext.MyExt.Libraries;</pre>{% endraw %}
+                                                </div>to <div class="bbCodeBlock bbCodeCode">
+                                                    <div class="type">Code:</div>
+                                                    {% raw %}<pre>using Ext.MyExt.Libraries;</pre>{% endraw %}
+                                                </div>
+                                            </li>
+                                        </ol>Everything works normal as before now. My only real issue is I have this Ext.MyExt.dll file instead of Oxide.Ext.MyExt.dll in my Rust server Managed
+                                        directory. It was nice before that all Oxide related stuff appeared in the same area of that directly. Oh well, that&#039;s cosmetic and of no real
+                                        concern.<br />
+                                        <br /> I don&#039;t think this trouble of mine warrants a GitHub issue since it seems you clearly meant to make this code change to the extension reference
+                                        handling code, so I won&#039;t start one. It&#039;s more of a user implementation issue.<br />
+                                        <br /> I am curious if the whole &quot;// Reference: Blah.Blah.Blah&quot; is documented somewhere? Or better yet, a brief but comprehensive description of how
+                                        to properly implement an OxideMod extension?<br />
+                                        <br /> Thanks for your help!
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;ll tweak it a bit once I get a chance. The main reason for the way it is now is because we haven&#039;t changed our namespace to the new naming yet to avoid some
+                        breakage.<br />
+                        <br /> The // Reference was added awhile back and never really documented, and was mainly there to reference DLLs manually added and those that aren&#039;t referenced by Oxide
+                        itself so that plugins can make use of them. We now keep default references for each game extension for common DLLs that plugins may and do use, as well as all of the core
+                        extensions. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359377' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 22, 2017 at 8:08 PM">Oct 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-359377' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359377/permalink">#48</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361464" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Are you still having any issues on the latest builds? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361464' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 1:29 AM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361464' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361464/permalink">#49</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361480" class="message" data-author="Canopy Sheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Canopy Sheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Canopy Sheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361464" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Are you still having any issues on the latest builds?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I had the same issue <a href="https://oxidemod.org/members/142647/" class="username" data-user="142647, @Kolyma">@Kolyma</a> had, and I&#039;m not seeing any issues for
+                        my extension on the latest build. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Canopy Sheep</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361480' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 1:42 AM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361480' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361480/permalink">#50</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361670" class="message" data-author="Mirajorino">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mirajorino" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mirajorino</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Canopy Sheep">
+                            <aside>
+                                <div class="attribution type">Canopy Sheep said: <a href="#post-361480" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I had the same issue <a href="https://oxidemod.org/members/142647/" class="username" data-user="142647, @Kolyma">@Kolyma</a> had, and I&#039;m
+                                        not seeing any issues for my extension on the latest build.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I found a solution:<br />
+                        <br /> Extension namespace:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Ext.UI</pre>{% endraw %}
+                        </div>Plugin Reference and Using statements:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Ext.UIusing Ext.UI.Libraries;
+using Ext.UI;</pre>{% endraw %}
+                        </div>Finally, I added two copies of my extension into the Oxide managed directory.<br /> One named <b>Ext.UI.DLL </b>and another named <b>Oxide.Ext.UI.DLL</b><br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361464" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Are you still having any issues on the latest builds?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><b>From the research I did the issue stems from:</b><br />
+                        <a href="https://github.com/OxideMod/Oxide/blob/6ffe28cd16a59c6a3ccbbb80e1ccc935d667fdd7/Extensions/Oxide.CSharp/Compilation.cs#L224" target="_blank" class="externalLink  rel="
+                            nofollow">Oxide/Compilation.cs at 6ffe28cd16a59c6a3ccbbb80e1ccc935d667fdd7 · OxideMod/Oxide · GitHub</a><br /> Which prevents references to any extension starting with
+                        <i>Oxide.</i><br />
+                        <br /> and <br />
+                        <br />
+                        <a href="https://github.com/OxideMod/Oxide/blob/10f96237ad116e3479c8035552cfeebf0316e075/Oxide.Core/Extensions/ExtensionManager.cs#L176" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide/ExtensionManager.cs at 10f96237ad116e3479c8035552cfeebf0316e075 · OxideMod/Oxide · GitHub</a><br /> Which only loads extensions
+                        that <i><b>DO </b></i>start with <i>Oxide.</i><br />
+                        <br /> So by including a copy of the extension without the Oxide. the Compilation.cs file is able to reference my library while the ExtensionManager loads the dll with Oxide.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mirajorino</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361670' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 7:01 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361670' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361670/permalink">#51</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361678" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mirajorino">
+                            <aside>
+                                <div class="attribution type">Mirajorino said: <a href="#post-361670" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I found a solution:<br />
+                                        <br /> Extension namespace:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>namespace Ext.UI</pre>{% endraw %}
+                                        </div>Plugin Reference and Using statements:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>// Reference: Ext.UIusing Ext.UI.Libraries;
+using Ext.UI;</pre>{% endraw %}
+                                        </div>Finally, I added two copies of my extension into the Oxide managed directory.<br /> One named <b>Ext.UI.DLL </b>and another named
+                                        <b>Oxide.Ext.UI.DLL</b><br />
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <b>From the research I did the issue stems from:</b><br />
+                                        <a href="https://github.com/OxideMod/Oxide/blob/6ffe28cd16a59c6a3ccbbb80e1ccc935d667fdd7/Extensions/Oxide.CSharp/Compilation.cs#L224" target="_blank"
+                                            class="externalLink">Oxide/Compilation.cs at 6ffe28cd16a59c6a3ccbbb80e1ccc935d667fdd7 · OxideMod/Oxide · GitHub</a><br /> Which prevents references to any
+                                        extension starting with <i>Oxide.</i><br />
+                                        <br /> and<br />
+                                        <br />
+                                        <a href="https://github.com/OxideMod/Oxide/blob/10f96237ad116e3479c8035552cfeebf0316e075/Oxide.Core/Extensions/ExtensionManager.cs#L176" target="_blank"
+                                            class="externalLink">Oxide/ExtensionManager.cs at 10f96237ad116e3479c8035552cfeebf0316e075 · OxideMod/Oxide · GitHub</a><br /> Which only loads extensions
+                                        that <i><b>DO </b></i>start with <i>Oxide.</i><br />
+                                        <br /> So by including a copy of the extension without the Oxide. the Compilation.cs file is able to reference my library while the ExtensionManager loads the
+                                        dll with Oxide.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>None of that should be necessary or needed anymore if you are fully updated. Extensions should really should be prefixed with Oxide as well in order for them to be
+                        properly handled as an extension, not a random DLL.<br />
+                        <br /> To explain how Oxide currently handles it:<br />
+                        <ul>
+                            <li>If extensions prefixed with &quot;Oxide.&quot;, they are automatically detected and loaded at startup; manually loading them is unnecessary.</li>
+                            <li>If &quot;// Reference: X&quot; is detected in a plugin, it ignores &quot;Oxide.&quot; and a couple other DLLs that are already referenced by default in Oxide (all
+                                extensions are referenced based on using statements and default references). The select &quot;// Reference&quot; ignoring was added because of this, as it can cause
+                                some issues by trying to reference non-existent DLLs and conflicting dependencies.</li>
+                            <li>If &quot;using Oxide.*&quot; is detected, then Oxide attempts to look and load DLLs that match that namespace if not already loaded. So by not having your
+                                extension&#039;s namespace prefixed with that, it isn&#039;t automatically loaded.</li>
+                        </ul>So with that being said, if you are still having issues, you likely aren&#039;t fully updated. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361678' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 7:07 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361678' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361678/permalink">#52</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361717" class="message" data-author="Mirajorino">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mirajorino" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mirajorino</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361678" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">None of that should be necessary or needed anymore if you are fully updated. Extensions should really should be prefixed with Oxide as well in
+                                        order for them to be properly handled as an extension, not a random DLL.<br />
+                                        <br /> To explain how Oxide currently handles it:<br />
+                                        <ul>
+                                            <li>If extensions prefixed with &quot;Oxide.&quot;, they are automatically detected and loaded at startup; manually loading them is unnecessary.</li>
+                                            <li>If &quot;// Reference: X&quot; is detected in a plugin, it ignores &quot;Oxide.&quot; and a couple other DLLs that are already referenced by default in
+                                                Oxide (all extensions are referenced based on using statements and default references). The select &quot;// Reference&quot; ignoring was added because
+                                                of this, as it can cause some issues by trying to reference non-existent DLLs and conflicting dependencies.</li>
+                                            <li>If &quot;using Oxide.*&quot; is detected, then Oxide attempts to look and load DLLs that match that namespace if not already loaded. So by not having
+                                                your extension&#039;s namespace prefixed with that, it isn&#039;t automatically loaded.</li>
+                                        </ul>So with that being said, if you are still having issues, you likely aren&#039;t fully updated.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thats just it. I am using the updated oxide and this was the only way to get my extension to reference. Using Oxide.Ext.UI would not include my assembly and the plugin
+                        that uses it could not access the extension. When I renamed it to Ext.UI it was able to reference it but the extension would not load. I could only resolve it by having both
+                        Oxide.Ext.UI and Ext.UI in the managed directory.<br />
+                        <br /> This issue was compounded when I used the Oxide.* namespace. It just looped errors when I attempted to load the plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mirajorino</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361717' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 9:14 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361717' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361717/permalink">#53</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361720" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mirajorino">
+                            <aside>
+                                <div class="attribution type">Mirajorino said: <a href="#post-361717" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thats just it. I am using the updated oxide and this was the only way to get my extension to reference. Using Oxide.Ext.UI would not include my
+                                        assembly and the plugin that uses it could not access the extension. When I renamed it to Ext.UI it was able to reference it but the extension would not load. I
+                                        could only resolve it by having both Oxide.Ext.UI and Ext.UI in the managed directory.<br />
+                                        <br /> This issue was compounded when I used the Oxide.* namespace. It just looped errors when I attempted to load the plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Which version does the oxide.version command show? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361720' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 9:24 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361720' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361720/permalink">#54</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361725" class="message" data-author="Mirajorino">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mirajorino" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mirajorino</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361720" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Which version does the oxide.version command show?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Build Date: 10/26/2017 15:33:59
+Unity Version: 2017.1.2f1
+Changeset: 23539
+Branch: main
+Oxide Version: 2.0.3681</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mirajorino</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361725' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 10:25 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361725' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361725/permalink">#55</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361742" class="message" data-author="Canopy Sheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Canopy Sheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Canopy Sheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361678" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">None of that should be necessary or needed anymore if you are fully updated. Extensions should really should be prefixed with Oxide as well in
+                                        order for them to be properly handled as an extension, not a random DLL.<br />
+                                        <br /> To explain how Oxide currently handles it:<br />
+                                        <ul>
+                                            <li>If extensions prefixed with &quot;Oxide.&quot;, they are automatically detected and loaded at startup; manually loading them is unnecessary.</li>
+                                            <li>If &quot;// Reference: X&quot; is detected in a plugin, it ignores &quot;Oxide.&quot; and a couple other DLLs that are already referenced by default in
+                                                Oxide (all extensions are referenced based on using statements and default references). The select &quot;// Reference&quot; ignoring was added because
+                                                of this, as it can cause some issues by trying to reference non-existent DLLs and conflicting dependencies.</li>
+                                            <li>If &quot;using Oxide.*&quot; is detected, then Oxide attempts to look and load DLLs that match that namespace if not already loaded. So by not having
+                                                your extension&#039;s namespace prefixed with that, it isn&#039;t automatically loaded.</li>
+                                        </ul>So with that being said, if you are still having issues, you likely aren&#039;t fully updated.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I apologize if I wasn&#039;t clear, but I meant the fix that <a href="https://oxidemod.org/members/142647/" class="username" data-user="142647, @Kolyma">@Kolyma</a>
+                        posted was working for me. Tried reverting my extension back to the version before the update, and still the same reference error from the plugin however the extension does
+                        load. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Canopy Sheep</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361742' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 29, 2017 at 11:48 PM">Oct 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361742' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361742/permalink">#56</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361757" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Canopy Sheep">
+                            <aside>
+                                <div class="attribution type">Canopy Sheep said: <a href="#post-361742" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I apologize if I wasn&#039;t clear, but I meant the fix that <a href="https://oxidemod.org/members/142647/" class="username"
+                                            data-user="142647, @Kolyma">@Kolyma</a> posted was working for me. Tried reverting my extension back to the version before the update, and still the same
+                                        reference error from the plugin however the extension does load.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ah... yeah, that wasn&#039;t at all clear from your last post. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361757' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 30, 2017 at 12:22 AM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361757' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361757/permalink">#57</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361768" class="message" data-author="Canopy Sheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Canopy Sheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Canopy Sheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361757" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ah... yeah, that wasn&#039;t at all clear from your last post.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Sorry for getting your hopes up on fixing this issue lol <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Canopy Sheep</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361768' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 30, 2017 at 12:52 AM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361768' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361768/permalink">#58</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361769" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Canopy Sheep">
+                            <aside>
+                                <div class="attribution type">Canopy Sheep said: <a href="#post-361768" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sorry for getting your hopes up on fixing this issue lol</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yeah, I&#039;ll have to get some more test cases together, because the ones I&#039;ve been testing do not have any issues. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361769' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 30, 2017 at 12:53 AM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361769' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361769/permalink">#59</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-361771" class="message" data-author="Canopy Sheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Canopy Sheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Canopy Sheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-361769" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yeah, I&#039;ll have to get some more test cases together, because the ones I&#039;ve been testing do not have any issues.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I could provide the two versions of my extension along with the using statements in my plugin if you&#039;d like. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Canopy Sheep</a>,</span>
+                        <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361771' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 30, 2017 at 1:10 AM">Oct 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3#post-361771' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/361771/permalink">#60</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="3" data-range="2" data-start="2" data-end="3" data-last="4" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/custom-extension-not-loading-after-update.27653/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-2' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-3' | prepend: site.baseurl }}" class="currentPage ">3</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-4' | prepend: site.baseurl }}" class="">4</a>
+            <a href="{{ '/threads/custom-extension-not-loading-after-update.27653/page-4' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

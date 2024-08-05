@@ -1,0 +1,371 @@
+---
+layout: forums
+title: 'Solved - Purpose of &quot;I&quot; prefixed hooks?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/' | prepend: site.baseurl }}">Purpose of &quot;I&quot; prefixed hooks?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Vlad-00003</a>, <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 22, 2017 at 9:15 PM">Jun 22,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-333120" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey guys, <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a>
+                        espessially. I was looking thro the assembly-csharp and found something interesting.<br /> Assembly-CSharp/PlayerLoot.cs<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public void StartLootingEntity(BaseEntity targetEntity, bool doPositionChecks = true)
+  {
+    this.Clear();
+    if (!(bool) ((UnityEngine.Object) targetEntity) || !targetEntity.OnStartBeingLooted(this.baseEntity))
+      return;
+    Assert.IsTrue(targetEntity.isServer, &quot;Assure is server&quot;);
+    this.PositionChecks = doPositionChecks;
+    this.entitySource = targetEntity;
+    this.itemSource = (Item) null;
+    this.MarkDirty();
+    Interface.CallHook(&quot;IOnLootEntity&quot;, (object) this, (object) targetEntity); &lt;---
+  }</pre>{% endraw %}
+                        </div>and<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public void StartLootingPlayer(BasePlayer player)
+  {
+    this.Clear();
+    if (!(bool) ((UnityEngine.Object) player) || !(bool) ((UnityEngine.Object) player.inventory))
+      return;
+    this.AddContainer(player.inventory.containerWear);
+    this.AddContainer(player.inventory.containerMain);
+    this.AddContainer(player.inventory.containerBelt);
+    this.PositionChecks = true;
+    this.entitySource = (BaseEntity) player;
+    this.itemSource = (Item) null;
+    this.MarkDirty();
+    Interface.CallHook(&quot;IOnLootPlayer&quot;, (object) this, (object) player);&lt;---
+  }</pre>{% endraw %}
+                        </div>and<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>  public void StartLootingItem(Item item)
+  {
+    this.Clear();
+    if (item == null || item.contents == null)
+      return;
+    this.PositionChecks = true;
+    this.containers.Add(item.contents);
+    item.contents.onDirty += new Action(this.MarkDirty);
+    this.itemSource = item;
+    this.entitySource = item.GetWorldEntity();
+    this.MarkDirty();
+    Interface.CallHook(&quot;IOnLootItem&quot;, (object) this, (object) item);&lt;---
+  }</pre>{% endraw %}
+                        </div>Also just found this - BaseCombatEntity.cs: <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (Interface.CallHook(&quot;IOnBaseCombatEntityHurt&quot;, (object) this, (object) info) != null)</pre>{% endraw %}
+                        </div>----<br /> BaseMelee.cs:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (Interface.CallHook(&quot;IOnPlayerAttack&quot;, (object) this, (object) info) != null)</pre>{% endraw %}
+                        </div>What this &quot;I&quot; Doing in every hook? &quot;IOnLootPlayer&quot;,&quot;IOnLootItem&quot;,&quot;IOnLootEntity&quot; etc.<br /> Should it be there? I haven&#039;t
+                        test or even ever use this hooks, but still - it looks strange.<br /> This was actuallly found by <a href="https://oxidemod.org/members/166411/" class="username"
+                            data-user="166411, @Vlad-00003">@Vlad-00003</a>, but for some reason he still didn&#039;t post it here.....<br /> So? Is this a problem or I just didn&#039;t get it? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:15 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333120/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333121" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hooks prefixed with &quot;I&quot; indicate they are internal, which plugins cannot access directly. These types
+                        of hooks are then wrapped via RustCore.cs and then a new hook without the &quot;I&quot; prefix is called for plugins to use. We&#039;ve been using these for probably 2 years
+                        now; nothing wrong about them, they&#039;re supposed to be there. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333121' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:18 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333121' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333121/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333122" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Oh.... Ok, got it.<br /> Also - is there any obj file for the patcher, that contains all of the hooks? Cos docs
+                        doesn&#039;t contain every hook. And also - it takes some time for them to be updated.<br /> [DOUBLEPOST=1498162938][/DOUBLEPOST]Yes. Found it in the RustCore, thanks for the
+                        quick answer! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333122' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:20 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333122' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333122/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333124" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hydrontium">
+                            <aside>
+                                <div class="attribution type">Hydrontium said: <a href="#post-333122" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Oh.... Ok, got it.<br /> Also - is there any obj file for the patcher, that contains all of the hooks? Cos docs doesn&#039;t contain every hook.
+                                        And also - it takes some time for them to be updated.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yes, it&#039;s under our GitHub repo. The Docs should contain all of the public hooks intended for plugins, there should be very few if any missing.<br />
+                        <br /> PS. The Docs are open source, people can contribute if they see some missing (assuming someone told you some where.) ;P <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333124' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:22 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333124' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333124/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333125" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333124" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes, it&#039;s under our GitHub repo. The Docs should contain all of the public hooks intended for plugins, there should be very few if any
+                                        missing.<br />
+                                        <br /> PS. The Docs are open source, people can contribute if they see some missing (assuming someone told you some where.) ;P</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have nere used ruby before, so.... I&#039;m not a very good at programming at all, just got my hands on this.<br /> Can&#039;t find the obj anywhere - can you point me
+                        to the right direction?<br />
+                        <br /> I&#039;ve cloned already both oxide source and patcher, but can&#039;t see anything related there. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333125' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:25 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333125' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333125/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333126" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Hydrontium">
+                            <aside>
+                                <div class="attribution type">Hydrontium said: <a href="#post-333125" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I have nere used ruby before, so.... I&#039;m not a very good at programming at all, just got my hands on this.<br /> Can&#039;t find the obj
+                                        anywhere - can you point me to the right direction?<br />
+                                        <br /> I&#039;ve cloned already both oxide source and patcher, but can&#039;t see anything related there.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The docs are written in HTML, not Ruby. You can find the .opj under our GitHub repo: <a
+                            href="https://github.com/OxideMod/Oxide/blob/develop/Games/Unity/Oxide.Game.Rust/Rust.opj" target="_blank" class="externalLink">Oxide/Rust.opj at develop · OxideMod/Oxide ·
+                            GitHub</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333126' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:28 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333126' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333126/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333127" class="message" data-author="Vlad-00003">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Vlad-00003" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Vlad-00003</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m f***ing blind.... Thanks again! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Vlad-00003</a>,</span>
+                        <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333127' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2017 at 9:29 PM">Jun 22, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/purpose-of-i-prefixed-hooks.26041/#post-333127' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/333127/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

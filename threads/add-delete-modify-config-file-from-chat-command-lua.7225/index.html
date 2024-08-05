@@ -1,0 +1,544 @@
+---
+layout: forums
+title: 'Solved - Add/delete/modify config file from chat command (Lua)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/' | prepend: site.baseurl }}">Add/delete/modify config file from
+            chat command (Lua)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheDoc</a>, <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Mar 10, 2015 at 9:48 PM">Mar 10, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-72249" class="message" data-author="TheDoc">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoc" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoc</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi Guys,<br />
+                        <br /> I wanted to upgrade my vipname.lua plugin to allow admins to add users from the command line (CHAT), is there a way to do this? Can you guys show me how?<br />
+                        <br /> I would like to add / delete SteamIDs to eg.: <b>Vips</b> list that&#039;s one thing, and another, I would like to modify any <b>Setting</b> values for eg.:
+                        <b>AddOther3Tag&quot;: &quot;false&quot;</b> change to &quot;<b>true</b>&quot;, how do I go about it? Thanks.<br />
+                        <br /> My config file looks like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;Settings&quot;: {
+    &quot;AddAdminTag&quot;: &quot;true&quot;,
+    &quot;Other2Tag&quot;: &quot; ]Other2[&quot;,
+    &quot;AddOther2Tag&quot;: &quot;false&quot;,
+    &quot;VipTag&quot;: &quot; -ViP-&quot;,
+    &quot;AdminTag&quot;: &quot;[Admin] &quot;,
+    &quot;AddVipTag&quot;: &quot;true&quot;,
+    &quot;AddOther3Tag&quot;: &quot;false&quot;,
+    &quot;Other1Tag&quot;: &quot; ]Other1[&quot;,
+    &quot;AddOther1Tag&quot;: &quot;false&quot;,
+    &quot;Other3Tag&quot;: &quot; ]Other3[&quot;
+  },
+  &quot;Other1&quot;: [],
+  &quot;Other2&quot;: [],
+  &quot;Other3&quot;: [],
+  &quot;Admins&quot;: [
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;
+  ],
+  &quot;Vips&quot;: [
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;
+  ]
+}</pre>{% endraw %}
+                        </div>-TheDoc <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 10, 2015 at 9:57 PM">Mar 10, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoc</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 10, 2015 at 9:48 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72249/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72251" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just set the config value in your chat command function, then save the config.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>self.Config.Settings.AddOther3Tag = &quot;true&quot;
+self:SaveConfig()</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72251' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 10, 2015 at 9:55 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72251' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72251/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72252" class="message" data-author="TheDoc">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoc" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoc</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Cool, how about adding an item to the list? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoc</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72252' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 10, 2015 at 10:06 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72252' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72252/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72254" class="message" data-author="KillParadise">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="KillParadise" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">KillParadise</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoc">
+                            <aside>
+                                <div class="attribution type">TheDoc said: <a href="#post-72252" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Cool, how about adding an item to the list?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Depends on how you have the config item you want to push stuff too, I wouldn&#039;t recommend sending things to the config as its only loaded once upon plugin
+                        initiation.<br />
+                        <br /> The user would have to then reboot your plugin in order to use the new data anyway, when they can just change it or add it into the config manually and then reboot the
+                        plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">KillParadise</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72254' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 10, 2015 at 10:49 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72254' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72254/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72257" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="TheDoc">
+                            <aside>
+                                <div class="attribution type">TheDoc said: <a href="#post-72252" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Cool, how about adding an item to the list?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The same as you&#039;d do with creating the default config. The SaveConfig is the magic maker.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>self.Config.Admins = {
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;
+}
+self:SaveConfig()</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72257' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 10, 2015 at 11:33 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72257' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72257/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72258" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="KillParadise">
+                            <aside>
+                                <div class="attribution type">KillParadise said: <a href="#post-72254" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Depends on how you have the config item you want to push stuff too, I wouldn&#039;t recommend sending things to the config as its only loaded
+                                        once upon plugin initiation.<br />
+                                        <br /> The user would have to then reboot your plugin in order to use the new data anyway, when they can just change it or add it into the config manually and
+                                        then reboot the plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div> Thats not true. You can easily change config values on the fly without restarting the plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72258' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 10, 2015 at 11:33 PM">Mar 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72258' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72258/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72273" class="message" data-author="TheDoc">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoc" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoc</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-72257" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The same as you&#039;d do with creating the default config. The SaveConfig is the magic maker.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>self.Config.Admins = {
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;,
+    &quot;12312312312312333&quot;
+}
+self:SaveConfig()</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This works, however it does not add to the list but overrides the list, is there a way to add it to it or do I need to iterate over the list and add all the items from
+                        current list and then add the new one?<br />
+                        <br /> or can I do something like self.Config.Admins = self.Config.Admins .. &quot;,\&quot;&quot; .. args[1] .. &quot;\&quot;&quot; and then write it...<br />
+                        <br /> I&#039;ll try and see...<br />
+                        <br /> Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoc</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72273' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 11, 2015 at 4:44 AM">Mar 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72273' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72273/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72274" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">It&#039;s a lua table you can do pretty much anything you want to it. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72274' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 11, 2015 at 4:56 AM">Mar 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72274' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72274/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72277" class="message" data-author="TheDoc">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheDoc" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheDoc</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Well I can&#039;t get it to work....<br />
+                        <br /> I wrote the following function and it blows up on me....<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:cmdAddVip(player, cmd, args)
+    local newVipList = &quot;&quot;
+    local i = 1
+    for _, value in pairs(self.Config.Vips) do
+        print(&quot;*** Value = &quot; .. value )
+        if i == 1 then
+            newVipList = newVipList .. &quot;\&quot;&quot; .. value .. &quot;\&quot;&quot;
+            i = 0
+        else 
+            newVipList = newVipList .. &quot;,\&quot;&quot; .. value .. &quot;\&quot;&quot;
+       end
+    end
+   
+    -- now let's add our new SteamID to it
+    newVipList = newVipList .. &quot;,\&quot;&quot; .. args[1] .. &quot;\&quot;&quot; 
+       
+    print(&quot;*** newVipList = &quot; .. newVipList )
+   
+    self.Config.Vips = { newVipList }
+    self:SaveConfig()
+   
+    rust.SendChatMessage(player, &quot;&lt;color=#01DF3A&gt;VIP Added!&lt;/color&gt;&quot;)
+end
+</pre>{% endraw %}
+                        </div>This is the error I&#039;m getting:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[Oxide] 12:05 AM [Debug] ExType: IndexOutOfRangeException
+[Oxide] 12:05 AM [Error] Failed to call hook 'cmdAddVip' on plugin 'ViP / Admin
+/ Other - Auto Name Changer' (IndexOutOfRangeException: Array index is out of ra
+nge.)
+[Oxide] 12:05 AM [Debug]   at NLua.MetaFunctions.GetMethodInternal (LuaState lua
+State) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.MetaFunctions.GetMethod (LuaState luaState) [0x00000] in &lt;filename unk
+nown&gt;:0 nts, 0 slprs                                        3kb/s in, 3kb/s out
+  at (wrapper native-to-managed) NLua.MetaFunctions:GetMethod (KeraLua.LuaState)  at (wrapper managed-to-native) KeraLua.NativeMethods:LuaNetPCall (intptr,int,i
+nt,int)
+  at KeraLua.Lua.LuaNetPCall (IntPtr luaState, Int32 nArgs, Int32 nResults, Int3
+2 errfunc) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.LuaLib.LuaPCall (LuaState luaState, Int32 nArgs, Int32 nResults, Int32
+ errfunc) [0x00000] in &lt;filename unknown&gt;:0
+  at NLua.Lua.CallFunction (System.Object function, System.Object[] args, System
+.Type[] returnTypes) [0x00000] in &lt;filename unknown&gt;:0
+  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (ob
+ject,object[],System.Exception&amp;)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invoke
+Attr, System.Reflection.Binder binder, System.Object[] parameters, System.Global
+</pre>{% endraw %}
+                        </div><b>Please help....</b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheDoc</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72277' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 11, 2015 at 5:16 AM">Mar 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72277' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72277/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-72291" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Like Hatemail said you just had to google &quot;lua tables&quot;.<br /> table.insert() is what you&#039;re looking
+                        for. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72291' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Mar 11, 2015 at 8:26 AM">Mar 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/add-delete-modify-config-file-from-chat-command-lua.7225/#post-72291' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/72291/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

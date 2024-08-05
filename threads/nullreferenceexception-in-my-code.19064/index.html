@@ -1,0 +1,378 @@
+---
+layout: forums
+title: 'NullReferenceException in my code'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/' | prepend: site.baseurl }}">NullReferenceException in my code</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">ThunderZ</a>, <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 30, 2016 at 12:21 AM">Jun 30,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-220612" class="message" data-author="ThunderZ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ThunderZ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ThunderZ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The error is<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>22:22 [Error] Failed to call hook 'OnEntityDeath' on plugin 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+22:22 [Debug]   at Oxide.Plugins.NukeTown.OnEntityDeath (.BaseCombatEntity entity, .HitInfo hitInfo) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.NukeTown.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>the code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo){
+            if(entity is BasePlayer){
+                var killer = hitInfo.Initiator.ToPlayer();
+                var victim = entity.ToPlayer();
+              
+                if(killer == victim &amp;&amp; playerData.Kills.ContainsKey(killer.userID)){
+                    playerData.Deaths[victim.userID]++;
+                    return;
+                }
+              
+                if(killer &amp;&amp; playerData.Kills.ContainsKey(killer.userID)){
+                    playerData.Kills[killer.userID]++;
+                }
+          
+                if(victim &amp;&amp; playerData.Deaths.ContainsKey(victim.userID)){
+                    playerData.Deaths[victim.userID]++;
+                }
+              
+                //victim.Respawn();
+              
+                //rust.BroadcastChat(string.Format(&quot;K: {0} D: {1}&quot;, playerData.Kills[killer.userID], playerData.Deaths[killer.userID]),null,null);
+              
+                //Puts(playerData.Kills[killer.userID]);
+                //Puts(playerData.Deaths[killer.userID]);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 30, 2016 at 1:16 AM">Jun 30, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ThunderZ</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 30, 2016 at 12:21 AM">Jun 30, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/220612/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-220617" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> try this one on the first part....<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo){
+            if(entity != null &amp;&amp; entity is BasePlayer){
+                var killer = hitInfo.Initiator as BasePlayer;
+                var victim = entity as BasePlayer;...
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-220617' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 30, 2016 at 1:11 AM">Jun 30, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-220617' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/220617/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-221082" class="message" data-author="ThunderZ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ThunderZ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ThunderZ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0
+01:50 [Error] Failed to run a 1.00 timer in 'NukeTown v1.0.0' (NullReferenceException: Object reference not set to an instance of an object)
+01:50 [Debug]   at Oxide.Plugins.NukeTown.&lt;initTimer&gt;m__1 () [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.Timer+TimerInstance.FireCallback () [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void initGame(){
+            timer.Repeat(1f, 0, () =&gt;
+            {
+                if(BasePlayer.activePlayerList.Count == 0){
+                        currTick = 0;
+                        msgTick = 0;
+                }
+               
+                if(msgTick &gt;= msgPerTick){
+                    rust.BroadcastChat(string.Format(&quot;[{1}] Next map: {0}&quot;, nextMap, nukeTag),null,null);
+                    msgTick = 0;
+                }
+               
+                if(currTick == maxTick-10){
+                    showScores();
+                    godMode = 1;
+                }
+               
+                if(currTick &gt; maxTick){
+                    rust.BroadcastChat(string.Format(&quot;[{1}] Switching to {0}.&quot;, nextMap, nukeTag),null,null);
+                   
+                    currSpawn = 1;
+            
+                    relocatePlayers(nextMap);
+                   
+                    if(nextMap == &quot;Powerplant&quot;){
+                        spawnsname = &quot;Powerplant&quot;;
+                        nextMap = &quot;Satellite&quot;;
+                    }
+                    else if(nextMap == &quot;Satellite&quot;){
+                        spawnsname = &quot;Satellite&quot;;
+                        nextMap = &quot;Water Treatment&quot;;
+                    }
+                    else if(nextMap == &quot;Water Treatment&quot;){
+                        spawnsname = &quot;Water Treatment&quot;;
+                        nextMap = &quot;Trainyard&quot;;
+                    }
+                    else if(nextMap == &quot;Trainyard&quot;){
+                        spawnsname = &quot;Trainyard&quot;;
+                        nextMap = &quot;Dome&quot;;
+                    }
+                    else if(nextMap == &quot;Dome&quot;){
+                        spawnsname = &quot;Dome&quot;;
+                        nextMap = &quot;Airfield&quot;;
+                    }
+                    else if(nextMap == &quot;Airfield&quot;){
+                        spawnsname = &quot;Airfield&quot;;
+                        nextMap = &quot;Powerplant&quot;;
+                    }                    godMode = 0;
+                   
+                    playerData.Kills.Clear();
+                    playerData.Deaths.Clear();
+                    deleteScores();
+                   
+                    initPlayers();
+                   
+                    currTick = 0;
+                }
+                               currTick++;
+                msgTick++;
+                TOD_Sky.Instance.Cycle.Hour=12.00f;
+                RefreshUI();
+            });
+        }</pre>{% endraw %}
+                        </div>This happens when running a timer.repeat upon server initialization if i reload the plugin it works fine. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ThunderZ</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221082' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 1, 2016 at 3:27 AM">Jul 1, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221082' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/221082/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-221152" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> When exactly do you execute that method? Seeing that you have some TOD stuff in there it might just be that you
+                        are calling the method to soon (before TOD is initialized) leaving you with an NRE. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221152' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 1, 2016 at 11:36 AM">Jul 1, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221152' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/221152/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-221369" class="message" data-author="ThunderZ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ThunderZ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ThunderZ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-221152" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">When exactly do you execute that method? Seeing that you have some TOD stuff in there it might just be that you are calling the method to soon
+                                        (before TOD is initialized) leaving you with an NRE.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnPluginLoaded(){
+            initPlayers();
+            //killSleepers();
+            OpenUIAll();
+            initGame();
+        }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1467412854][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="ThunderZ">
+                            <aside>
+                                <div class="attribution type">ThunderZ said: <a href="#post-221369" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        void OnPluginLoaded(){
+            initPlayers();
+            //killSleepers();
+            OpenUIAll();
+            initGame();
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I fixed it using OnServerInitialized() instead. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ThunderZ</a>,</span>
+                        <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221369' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 1, 2016 at 11:22 PM">Jul 1, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nullreferenceexception-in-my-code.19064/#post-221369' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/221369/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

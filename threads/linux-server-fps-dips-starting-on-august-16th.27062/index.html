@@ -1,0 +1,216 @@
+---
+layout: forums
+title: 'Linux server FPS dips starting on August 16th'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/' | prepend: site.baseurl }}">Linux server FPS dips starting on August 16th</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">RustProof</a>, <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/' | prepend: site.baseurl }}"><span class="DateTime" title="Sep 1, 2017 at 5:04 PM">Sep
+                1, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-348519" class="message" data-author="RustProof">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RustProof" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RustProof</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This is going to be a little bit of a read, but I hope those interested follow along. I run three different Rust
+                        servers. Two of them are hosted on a dedicated OVH server (8 core, 4ghz, 32 gigs of memory, 2x480 SSDs) and are my production Vanilla and Modded servers. The third is hosted on
+                        a DigitalOcean VM (their 4gb template), and is used for testing my plugins, rcon tools, etc. Starting around the 16th of August, I noticed a sudden increase in lag. The lag
+                        manifests are slight intermittent delays opening doors, an intermittent very short rubberbanding (~1 meter, frequently noticed going through doorways), slight lag opening
+                        boxes. Emphasis on <b>intermittent</b>. The lag is not always present at all times, but it is on-going. <br />
+                        <br /> I have a Python tool I&#039;ve written that does a number of tasks, it relays chat to discord, notifies heli/airdrops, monitors the savefile, but most importantly, it
+                        collects a number of statistics and dumps them into an InfluxDB. InfluxDB is a time series database great at tracking large amounts of statistical data. I was lucky enough to
+                        have been capturing the server FPS from all three of my servers during this time. Here is the graph that represents the sudden change in FPS characteristics on August
+                        16th:<br />
+                        <br />
+                        <a href="http://i.imgur.com/pJPex3W.jpg" target="_blank" class="externalLink  rel=" nofollow">http://i.imgur.com/pJPex3W.jpg</a><br />
+                        <br /> The server FPS being collected in question comes from the rcon command &#039;serverinfo&#039;, and the field &#039;Framerate&#039;. This data is polled once per 10
+                        seconds. From this graph, you can see the sudden dips in FPS begin on August 16th across <b>all three servers</b>. Two of the servers are hosted on the same machine, but the
+                        <b>third</b> is on a separate VM, separate network, region, etc. It couldn&#039;t be any further away, yet it is exhibiting the same problem. Because the problem was so close
+                        to the patch on the 17th, I originally mistook it for a potential bug in that patch, and sent some PMs to Alistair. So far he&#039;s responded that he&#039;s looking into it
+                        and running some profilers to figure out if anything is wrong. <br />
+                        <br /> However, given what I see above, I do not think the issue was a bug introduced on the 17th, but rather a backend service change in the way the Rust server interacts with
+                        either Steam, EAC, or Facepunch causing these FPS dips. With that in mind, I created a graph that then also plotted the NetIn and NetOut returned by &#039;serverinfo&#039;
+                        during the same periods, and we can see an apparently dip in network traffic during the same period:<br />
+                        <br />
+                        <a href="http://i.imgur.com/OxDFSoz.jpg" target="_blank" class="externalLink  rel=" nofollow">http://i.imgur.com/OxDFSoz.jpg</a><br />
+                        <br /> At first glance, these dips appear to happen about once a minute, but I would notice two things: 1. Occasionally it would &quot;skip a beat&quot;, or 2. It would have an
+                        additional dip. So I added another poll to my code to grab the output of &#039;server.fps&#039; once per second to get better resolution. With that now polling, I can see the
+                        the actual duty cycle of the FPS dips:<br />
+                        <br />
+                        <a href="http://i.imgur.com/vD2EIGK.jpg" target="_blank" class="externalLink  rel=" nofollow">http://i.imgur.com/vD2EIGK.jpg</a><br />
+                        <br /> These dips appear to happen once every <b>10 seconds.</b> <br />
+                        <br /> I do want to make one thing clear, it is entirely possible these FPS dips are a red herring, and are not the cause of the lag my users experience. I&#039;ve verified my
+                        server is operating with resources to spare:<br />
+                        <br />
+                        <a href="http://i.imgur.com/yktUSik.jpg" target="_blank" class="externalLink  rel=" nofollow">http://i.imgur.com/yktUSik.jpg</a><br />
+                        <br /> So, that being said, even if the FPS dips aren&#039;t the cause of lag, they are puzzling and appeared suddenly. I am curious if any other server owners / admins,
+                        especially those on Linux, are seeing anything similar? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RustProof</a>,</span>
+                        <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Sep 1, 2017 at 5:04 PM">Sep 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/348519/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-348578" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> (windows server)<br /> yep, starting from about these days having issues with low fps/lags too, no big
+                        TimeWarnings or new long Garbage collections or long Calling hooks in console or logs <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 1, 2017 at 9:03 PM">Sep 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348578' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/348578/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-348588" class="message" data-author="RustProof">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RustProof" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RustProof</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="wazzzup">
+                            <aside>
+                                <div class="attribution type">wazzzup said: <a href="#post-348578" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">(windows server)<br /> yep, starting from about these days having issues with low fps/lags too, no big TimeWarnings or new long Garbage
+                                        collections or long Calling hooks in console or logs</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;m curious which provider / region is your server in? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RustProof</a>,</span>
+                        <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348588' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 1, 2017 at 10:30 PM">Sep 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348588' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/348588/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-348589" class="message" data-author="wazzzup">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="wazzzup" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">wazzzup</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="RustProof">
+                            <aside>
+                                <div class="attribution type">RustProof said: <a href="#post-348588" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I&#039;m curious which provider / region is your server in?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Russia/Europe, its not hardware or provider problem I think<br />
+                        <br /> but yes, there is possibility that it&#039;s about how big the distance is to steam/eac server, but i don&#039;t think that&#039;s our problem, but who knows <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Sep 1, 2017 at 10:45 PM">Sep 1, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">wazzzup</a>,</span>
+                        <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348589' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 1, 2017 at 10:33 PM">Sep 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/linux-server-fps-dips-starting-on-august-16th.27062/#post-348589' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/348589/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

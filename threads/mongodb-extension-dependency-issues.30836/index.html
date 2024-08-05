@@ -1,0 +1,293 @@
+---
+layout: forums
+title: 'MongoDB Extension Dependency Issues'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/' | prepend: site.baseurl }}">MongoDB Extension Dependency Issues</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CombatTag</a>, <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 12, 2018 at 7:50 PM">Jun 12,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-404184" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi I&#039;ve been working on a library similar to the MySQL library oxide provides. I have all of the framework
+                        written, but I&#039;m having an issue with getting the library to run. The server.log gives me this error <a href="https://hastebin.com/uxabarigen.pas" target="_blank"
+                            class="externalLink  rel=" nofollow">hastebin</a>. There seems to be some kind of issue with the System.Runtime.InteropServices.RuntimeInformation.dll dependency which I
+                        have in my RustDedicated_Data/Managed/ folder.<br />
+                        <br /> A quick google search online shows that this a pretty common issue when working with MongoDB, but none of their solutions have helped. The library compiles successfully
+                        and I have put the Oxide.MongoDB.dll in the RustDedicated_Data/Managed/ folder as well as MongoDB.Bson.dll, MongoDB.Driver.dll and MongoDB.Driver.Core.dll.
+                        MongoDB.Driver.Core.dll depends on System.Runtime.InteropServices.RuntimeInformation so I have put that dll in the folder as well.<br />
+                        <br /> According to the error it is looking for version 4.0.0.0, but I have tried using both of these versions. <a href="https://i.imgur.com/kkNdxDk.png" target="_blank"
+                            class="externalLink  rel=" nofollow">https://i.imgur.com/kkNdxDk.png</a>. I can&#039;t figure out why the server is unable to load
+                        System.Runtime.InteropServices.RuntimeInformation.<br />
+                        <br /> People have suggested online that you need to add this to your app.config, but it didn&#039;t make a difference.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;runtime&gt;
+        &lt;assemblyBinding xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot;&gt;
+            &lt;dependentAssembly&gt;
+                &lt;assemblyIdentity name=&quot;System.Runtime.InteropServices.RuntimeInformation&quot; publicKeyToken=&quot;b03f5f7f11d50a3a&quot; culture=&quot;neutral&quot; /&gt;
+                &lt;bindingRedirect oldVersion=&quot;0.0.0.0-4.0.1.0&quot; newVersion=&quot;4.0.1.0&quot; /&gt;
+            &lt;/dependentAssembly&gt;
+        &lt;/assemblyBinding&gt;
+    &lt;/runtime&gt;
+&lt;/configuration&gt;</pre>{% endraw %}
+                        </div>Any help would be appreciated. Thank you for your time! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 12, 2018 at 7:56 PM">Jun 12, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 12, 2018 at 7:50 PM">Jun 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/404184/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404294" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Target your solution for .NET Framework 4.x not 2.0<br />
+                        <br /> Make sure the MongoDB drivers you&#039;re getting are also the matching .NET Framework version.<br />
+                        <br /> If you&#039;re using NuGet I believe it automatically obtains the libraries that your solution is targeted for.<br />
+                        <br /> Also nice to see someones working on this, hope you decide to PR it <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404294' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 13, 2018 at 1:18 AM">Jun 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404294' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404294/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404305" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I was planning on submitting a PR once I got everything up an running and I changed my library to be a little
+                        more abstract.<br />
+                        <br /> My solution targets .NET Framework 4.6.<br />
+                        <br /> According to this website MongoDB has been compatible with .NET 4.6 since version 2.0 of the C# driver.<br />
+                        <br /> I am uploading the version of System.Runtime.InteropServices.RuntimeInformation that NuGet produces when I build the library. I have even opened the dll in dotPeek and
+                        the Version and PublicKeyToken match so I believe I have the correct dll.<br />
+                        <br /> I am having a hard time understanding why the dll won&#039;t be found. Is it possible that System.Runtime.InteropServices.RuntimeInformation does not work on Ubuntu? I
+                        am also wondering about the second part of the error where it says or one of its dependencies <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Could not load file or assembly 'System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies</pre>{% endraw %}
+                        </div> How could I go about investigating whether or not it&#039;s a dependency of RuntimeInformation that&#039;s an issue rather than the dll itself?<br />
+                        <br /> I was also wondering where the main app.config file is so I can test using a bindingRedirect on the dependency. I don&#039;t think class libraries would run this xml. I
+                        think I need to find the main application config and add this xml.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;configuration&gt;
+  &lt;runtime&gt;
+    &lt;assemblyBinding xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot; appliesTo=&quot;v1.0.3705&quot;&gt;
+      &lt;dependentAssembly&gt;
+        &lt;assemblyIdentity name=&quot;System.Runtime&quot; publicKeyToken=&quot;b03fS5f7f11d50a3a&quot; culture=&quot;neutral&quot; /&gt;
+        &lt;bindingRedirect oldVersion=&quot;0.0.0.0-4.1.2.0&quot; newVersion=&quot;4.0.0.0&quot; /&gt;
+      &lt;/dependentAssembly&gt;
+      &lt;dependentAssembly&gt;
+        &lt;assemblyIdentity name=&quot;System.Runtime.InteropServices.RuntimeInformation&quot; publicKeyToken=&quot;b03f5f7f11d50a3a&quot; culture=&quot;neutral&quot; /&gt;
+        &lt;bindingRedirect oldVersion=&quot;0.0.0.0-4.0.2.0&quot; newVersion=&quot;4.0.0.0&quot; /&gt;
+      &lt;/dependentAssembly&gt;
+    &lt;/assemblyBinding&gt;
+  &lt;/runtime&gt;
+&lt;/configuration&gt;</pre>{% endraw %}
+                        </div>Sorry for all the questions I&#039;ve been working on fixing this all day and I just have no idea where to start in finding a solution. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404305' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 13, 2018 at 3:20 AM">Jun 13, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404305' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404305/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404528" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://hastebin.com/uxabarigen.pas" target="_blank" class="externalLink  rel=" nofollow">The error I am still getting if anyone hasn&#039;t seen it.</a><br />
+                        <br /> I think I may have found this issue, however, I&#039;m not 100% sure how .Net Framework compatibility works. All of the system dlls in the Managed directory are compiled
+                        against .Net Framework v4.0. Mongo was compiled against .Net Framework v4.5 and is not compatible with with the project if I target v4.0 I also saw from Microsoft(<a
+                            href="https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.runtimeinformation%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank"
+                            class="externalLink  rel=" nofollow">link</a>) that System.Runtime.InteropServices.RuntimeInformation was introduced in .Net Framework v4.7.1. What I don&#039;t understand
+                        is why it said in the Dev Blog &quot;Upgraded to .NET 4.x&quot;. Shouldn&#039;t that mean any library targeted against .Net Framework v4.x should work? I&#039;ve actually
+                        compiled an extension against 4.7.2 and it worked just fine just without Mongo referenced in the project. I think Upgraded to .Net 4.x means that we can use the new language
+                        features, but anything added recently such as System.Runtime.InteropServices.RuntimeInformation won&#039;t work because it needs a newer version of the system dlls.<br />
+                        <br /> I&#039;ve tried updating those system dlls in the Managed folder, but that causes errors so I don&#039;t think it&#039;s possible to run MongoDB. It&#039;s just really
+                        odd to me that the error I get only says<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>FileNotFoundException: Could not load file or assembly 'System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies.</pre>{% endraw %}
+                        </div>when it&#039;s clearly there. When I tried to get MongoDB working before the updated to 4.x it gave me a different error basically saying there was a version
+                        mismatch.<br />
+                        <br /> I&#039;ve been trying to research how .Net Framework compatibility works, but this case seems very specific and it&#039;s hard to find information to help.<br />
+                        <br /> It seems that all of the System dlls in the Managed directory where compiled against .Net Framework v4.0 not against 4.5 or higher. According to <a
+                            href="https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.runtimeinformation%28v=vs.110%29.aspx?f=255&amp;MSPPError=-2147217396" target="_blank"
+                            class="externalLink  rel=" nofollow">Microsoft</a> System.Runtime.InteropServices.RuntimeInformation has only been available since version 4.7.1 and version 4.0.0.0 of
+                        System.Runtime.InteropServices.RuntimeInformation is targeted against .Net Framework v4.7.2. It&#039;s very unclear how compatibility in .Net works because in the dev blog said
+                        they upgraded to &quot;Upgraded to .NET 4.x&quot; which means that MongoDB which was targeted against 4.5 and not compatible with .Net 4.0 should be compatible, but I
+                        don&#039;t think it is because updating the System dlls to anything newer causes errors.<br />
+                        <br /> I&#039;ve been working on this problem for a couple days so any insight about the issue would be helpful because I&#039;m not very knowledgeable about the .Net Framework
+                        in terms of compatibility. I guess my main question is if version 4.0.0.0 of System.Runtime.InteropServices.RuntimeInformation that&#039;s targeted against .Net Framework 4.7.2
+                        is not compatible with .Net Framework 4.0 system dlls would I get this error? Or would I get another error telling me they don&#039;t work together? The exception seems to
+                        imply it just can&#039;t find the dll, but it&#039;s clearly there with the proper version. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 14, 2018 at 7:17 PM">Jun 14, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404528' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 14, 2018 at 6:33 PM">Jun 14, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404528' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404528/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-404543" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://github.com/mongodb/mongo-csharp-driver" target="_blank" class="externalLink  rel=" nofollow">I finally decided to clone the mongo-csharp-driver repository and
+                            tried to fix it.</a> I only had to remove the reference to System.Runtime.InteropServices.RuntimeInformation.dll and fix a couple of errors. It build no problem and now my
+                        extension is working! I wish I would have tried to do this earlier, it was such a simple fix. .net 4.0 already has methods to do the same thing as the code RuntimeInformation
+                        does. If anyone needs a download to the driver let me know!<br />
+                        <br /> I know this isn&#039;t a perfect solution because I still don&#039;t understand why the RuntimeInformation dll wouldn&#039;t load, but it&#039;s working and I&#039;ve
+                        spent far too long working on this. <a href="https://answers.unity.com/questions/618708/unity-and-mongodb-saas.html" target="_blank" class="externalLink  rel=" nofollow">For
+                            anyone curious this post isn&#039;t exactly relevant to my issue, but it motivated me to try and fix the driver myself.</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 14, 2018 at 7:17 PM">Jun 14, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404543' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 14, 2018 at 7:11 PM">Jun 14, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/mongodb-extension-dependency-issues.30836/#post-404543' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/404543/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

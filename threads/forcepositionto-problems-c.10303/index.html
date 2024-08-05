@@ -1,0 +1,171 @@
+---
+layout: forums
+title: 'ForcePositionTo problems C#'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/forcepositionto-problems-c.10303/' | prepend: site.baseurl }}">ForcePositionTo problems C#</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">PaiN</a>, <a href="{{ '/threads/forcepositionto-problems-c.10303/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 17, 2015 at 9:00 AM">Jul 17, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-109065" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So yeah.. If someone saw a thread that i said &quot;I accidently deleted the plugin&quot;.. i rewrote it today..
+                        its exactly the same but its like doing non sense thing.<br />
+                        <br /> I will show you the code bcs it will be a public plugin anyway:<br /> What can fix this issue (PROBABLY) ?<br /> Config.. but if i do it with a classic way like
+                        Config[&quot;Teleport&quot;, &quot;ToX&quot;] = 0; then it keeps overwriting.<br />
+                        <br /> The problem is that .. after the 5seconds OnceTimer you can see i teleport the player. This should teleport the player to the config xyz. What it does.. it just
+                        teleports the player to his position.. but i dont even tell it to teleport to player.transform.position... WEIRD<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using System;
+using System.Reflection;
+using UnityEngine;
+using Oxide.Core;
+using System.Linq;namespace Oxide.Plugins
+{
+    [Info(&quot;Rules Agreement&quot;, &quot;PaiN&quot;, 0.1, ResourceId = 1231)]
+    [Description(&quot;On connect the player gets teleported to the set location in config. After he types /agree he goes back to his spawn&quot;)]
+    public class RulesAgreement : RustPlugin
+    {
+          
+        private class LoginInfo
+        {
+            public BasePlayer Player { get; set; }
+            public Vector3 LoginPosition { get; set; }            public LoginInfo(BasePlayer player)
+            {
+                Player = player;
+                LoginPosition = player.transform.position;
+            }
+        }      
+      
+        List&lt;LoginInfo&gt; loginagreed = new List&lt;LoginInfo&gt;();
+      
+        class StoredData
+        {
+            public HashSet&lt;PlayerInfo&gt; Players = new HashSet&lt;PlayerInfo&gt;();            public StoredData()
+            {
+            }
+        }        class PlayerInfo
+        {
+            public string UserId;            public PlayerInfo()
+            {
+            }            public PlayerInfo(BasePlayer player)
+            {
+                UserId = player.userID.ToString();
+            }
+        }        StoredData storedData;
+          
+            void Loaded()
+            {
+                LoadDefaultConfig();
+                storedData = Interface.GetMod().DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;RulesAgreementData&quot;);
+          
+            }
+  
+            protected override void LoadDefaultConfig()
+            {
+                //Teleport Coordinates
+                if(Config[&quot;Teleport&quot;, &quot;ToX&quot;] == null) Config[&quot;Teleport&quot;, &quot;ToX&quot;] = 0;
+                if(Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToX&quot;]) != 0) return;
+              
+                if(Config[&quot;Teleport&quot;, &quot;ToY&quot;] == null) Config[&quot;Teleport&quot;, &quot;ToY&quot;] = 0;
+                if(Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToY&quot;]) != 0) return;
+              
+                if(Config[&quot;Teleport&quot;, &quot;ToZ&quot;] == null) Config[&quot;Teleport&quot;, &quot;ToZ&quot;] = 0;
+                if(Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToZ&quot;]) != 0) return;
+              
+                //Messages
+                if(Config[&quot;Messages&quot;, &quot;ConnectMessage&quot;] == null) Config[&quot;Messages&quot;, &quot;ConnectMessage&quot;] = &quot;Welcome {player}!\n Please read the rules and type /agree to teleport back to your spawn.&quot;;
+                if((Config[&quot;Messages&quot;, &quot;ConnectMessage&quot;].ToString()) != &quot;Welcome {player}!\n Please read the rules and type /agree to teleport back to your spawn.&quot;) return;
+              
+                if(Config[&quot;Messages&quot;, &quot;AgreeMessage&quot;] == null) Config[&quot;Messages&quot;, &quot;AgreeMessage&quot;] = &quot;Thank you for accepting the rules. Have Fun!&quot;;
+                if((Config[&quot;Messages&quot;, &quot;AgreeMessage&quot;].ToString()) != &quot;Thank you for accepting the rules. Have Fun!&quot;) return;
+                          
+                SaveConfig();
+            }
+            
+            [ChatCommand(&quot;test&quot;)]
+            void cmdTest(BasePlayer player, string cmd, string[] args)
+            {
+                string steamId = Convert.ToString(player.userID);
+                if (storedData.Players.Any(p =&gt; p.UserId == steamId)) return;
+                    loginagreed.Add(new LoginInfo(player));
+                timer.Once(5, () =&gt; {
+                    Vector3 teleportexit = new Vector3(Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToX&quot;]), Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToY&quot;]), Convert.ToInt32(Config[&quot;Teleport&quot;, &quot;ToZ&quot;]));
+                        player.StartSleeping();
+                        player.ClientRPCPlayer(null, player, &quot;ForcePositionTo&quot;, new object[] { teleportexit });
+                        player.TransformChanged();
+                        player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+                        player.UpdateNetworkGroup();
+                        player.UpdatePlayerCollider(true, false);
+                        player.SendNetworkUpdateImmediate(false);
+                        player.ClientRPCPlayer(null, player, &quot;StartLoading&quot;);
+                        player.SendFullSnapshot();
+                        player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, false);
+                        player.ClientRPCPlayer(null, player, &quot;FinishLoading&quot; );
+                    string message = Config[&quot;Messages&quot;, &quot;ConnectMessage&quot;].ToString();
+                    SendReply(player, message);
+                }); 
+            }
+                [ChatCommand(&quot;agree&quot;)]
+        void cmdAgree(BasePlayer player, string cmd, string[] args)
+        {
+            string steamId = Convert.ToString(player.userID);
+            if (storedData.Players.Any(p =&gt; p.UserId == steamId)) return;
+            foreach (LoginInfo current in loginagreed)
+            {
+                var info = new PlayerInfo(player);
+                storedData.Players.Add(info);
+                string messagee = Config[&quot;Messages&quot;, &quot;AgreeMessage&quot;].ToString();
+                SendReply(player, messagee);
+                current.Player.ClientRPCPlayer(null, current.Player, &quot;ForcePositionTo&quot;, new object[] { current.LoginPosition });
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;RulesAgreementData&quot;, storedData);
+            }
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/forcepositionto-problems-c.10303/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 17, 2015 at 9:00 AM">Jul 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/forcepositionto-problems-c.10303/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/109065/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

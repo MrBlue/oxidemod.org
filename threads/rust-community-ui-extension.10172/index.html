@@ -1,0 +1,755 @@
+---
+layout: forums
+title: 'Rust community UI extension'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/rust-community-ui-extension.10172/' | prepend: site.baseurl }}">Rust community UI extension</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Zuen</a>, <a href="{{ '/threads/rust-community-ui-extension.10172/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 13, 2015 at 12:32 AM">Jul 13, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-107828" class="message" data-author="Zuen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zuen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zuen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b><span style="color: #ff4d4d">Rust UI Extension<br />
+                            </span></b><br /> This is my first release of the UI extension that I have been working on. I made this into an extension instead of a plug-in because of the amount of
+                        classes and features that I have created and are planning on adding in the future. No more JSON required to create your UI, you now only need to use C#. (Not supporting other
+                        languages)<br />
+                        <br /> I simplified it as much as possible and it&#039;s a lot easier to position your controls.<br />
+                        <br /> You can find the extension attached below and also a simple plug-in example to help you get started.<br />
+                        <br /> The first thing you need to do is get the instance of the extension.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private readonly Ext.RUI.RustUI _rustUI = Interface.GetMod().GetLibrary&lt;Ext.RUI.RustUI&gt;();</pre>{% endraw %}
+                        </div>you then need to create an unassigned WindowUI to be able to create the UI.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private WindowUI testWindow;</pre>{% endraw %}
+                        </div>You now only need to create the window Properties and then start building your UI.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>WindowProperties windowProperties = new WindowProperties(&quot;MainWindowName&quot;);
+testWindow = _rustUI.CreateNewWindow(windowProperties, new Image(new Grid(GridType.Small), new ColorData(&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;0.5&quot;)));</pre>{% endraw %}
+                        </div>So each button, text, image, rawimage is called a control. So now you can start adding your controls.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Create Close Button
+testWindow.AddControl(&quot;btn_CloseWindow&quot;, new Button(new Grid(10, 10, 1, 1, GridType.Small), new ColorData(&quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;), new ButtonData(&quot;MainWindow&quot; + counter), new TextData(&quot;X&quot;)));
+// Row of Buttons
+testWindow.AddControl(&quot;btn_one&quot;, new Button(new Grid(2, 9, 2, 1, GridType.Small), new ColorData(&quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;), new TextData(&quot;one&quot;, 20, TextAnchor.MiddleCenter)));
+testWindow.AddControl(&quot;btn_two&quot;, new Button(new Grid(4, 9, 2, 1, GridType.Small), new ColorData(&quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;), new TextData(&quot;two&quot;, 20, TextAnchor.MiddleCenter)));
+testWindow.AddControl(&quot;btn_three&quot;, new Button(new Grid(6, 9, 2, 1, GridType.Small), new ColorData(&quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;, &quot;0.5&quot;), new TextData(&quot;three&quot;, 20, TextAnchor.MiddleCenter)));</pre>{% endraw %}
+                        </div>Once you are done creating your UI, you can now send the window to the player by doing this.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>testWindow.SendWindow(player);</pre>{% endraw %}
+                        </div>You can also remove the window from the player by doing this.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>testWindow.DestroyWindow(player);</pre>{% endraw %}
+                        </div>The positioning of your controls is done by using the Grid class. I made it work similar to how unity GUI works.<br />
+                        <br /> So a Grid constructor takes 5 parameters. x start position, y start position, width of the control, height of the control, and then lastly is the GridType.<br />
+                        <br /> GridType has 4 options.<br />
+                        <ul>
+                            <li>Small = 10x10 Grid</li>
+                            <li>Medium = 50x50 Grid<br />
+                            </li>
+                            <li>Large = 100x100 Grid<br />
+                            </li>
+                            <li>Ultra = 250x250 Grid</li>
+                        </ul>So positioning of a control is done by using a grid system. I will be using Excel to explain how you can use it.<br />
+                        <br /> So lets say you wanted to work with a GridType Small. That means the grid will be using a (10 x 10) row/column space.<br />
+                        <br />
+                        <a href="http://gyazo.com/bbb10f37865d7856cf6ab005a17f8b35" target="_blank" class="externalLink  rel=" nofollow">http://gyazo.com/bbb10f37865d7856cf6ab005a17f8b35</a><br />
+                        <br /> So using that Grid size, lets say you wanted to have your control at the top right. with a height of 2 and width of 3. It will basically look like this.<br />
+                        <br />
+                        <a href="http://gyazo.com/b323073892636e7e77e67495455c8158" target="_blank" class="externalLink  rel=" nofollow">http://gyazo.com/b323073892636e7e77e67495455c8158</a><br />
+                        <br /> so in code it will be...<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>new Grid(8, 10, 3, 2, GridType.Small)</pre>{% endraw %}
+                        </div>X and Y will be the value of the TOP RIGHT block. so x = 8 and y = 10.<br />
+                        <br /> The reason that I have different types of grid sizes, is if you wanted to create a detailed UI with a lot of buttons and text and w/e you need.<br />
+                        <br />
+                        <span style="color: #ff0000"><b>Sending a Notification</b></span><br /> I have 3 types of ways to send a notification. You can access them by using...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>_rustUI.SendNotification(1, &quot;Notification Message Here&quot;)
+_rustUI.SendPlayerNotification(player, &quot;Notification Message Here&quot;)
+_rustUI.SendNotificationAll(&quot;Notification Message Here&quot;)
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void SendNotification(int authLevel, string message)</pre>{% endraw %}
+                        </div>This sends a notification to a specified auth level. This is best used for when you want send something ot only auth 1 or w/e you like<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void SendPlayerNotification(BasePlayer player, string message)</pre>{% endraw %}
+                        </div>This sends a notification to only one specific player.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public void SendNotificationAll(string message)</pre>{% endraw %}
+                        </div>This sends a notification to all active players on the server. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> For debugging purposes, you can access the raw JSON by using...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>testWindow.GetJSON();</pre>{% endraw %}
+                        </div><br /> My explanation is a bit short, so PLEASE do not hesitate to ask me. I will be extended this tutorial A LOT in the near future. I would first like to see who is
+                        interested in using this Extension.<br />
+                        <br /> P.S. Can a mod perhaps pin this if they thinks it&#039;s a useful extension for the community. Also ignore the grammar errors for now <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                        <br /> Love,<br /> ZuenTheMan <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="Oxide.Ext.RUI.dll">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/oxide-ext-rui-dll.10685/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/oxide-ext-rui-dll.10685/" target="_blank">Oxide.Ext.RUI.dll</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>35 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>71</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="attachment" title="RustUITest.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/rustuitest-cs.10686/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/rustuitest-cs.10686/" target="_blank">RustUITest.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>5.2 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>72</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jul 13, 2015 at 1:10 AM">Jul 13, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zuen</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 12:32 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107828/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-107829" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <b>Note</b>: Keep in mind that this is a community provided extension, and with it we have no control over what it can do. It is not an official extension, so use at your own
+                        risk. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107829' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 12:35 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107829' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107829/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-107830" class="message" data-author="Zuen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zuen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zuen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-107829" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><b>Note</b>: Keep in mind that this is a community provided extension, and with it we have no control over what it can do. \\</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yes this is true, Once I see some fame catching on with this extension. I am more than willing to share the code to the public, so they can not only see what is going on
+                        in the background, but also do their own changes to it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zuen</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107830' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 12:36 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107830' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107830/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-107892" class="message" data-author="ownprox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ownprox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ownprox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> nice good job, but i still find the json just as easy <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ownprox</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107892' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 6:28 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107892' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107892/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-107894" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ownprox">
+                            <aside>
+                                <div class="attribution type">ownprox said: <a href="#post-107892" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">nice good job, but i still find the json just as easy</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I would still provide configs for plugins though, as editing the plugins isn&#039;t doable for good portion of people. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107894' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 6:45 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107894' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107894/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-107897" class="message" data-author="ownprox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ownprox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ownprox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-107894" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I would still provide configs for plugins though, as editing the plugins isn&#039;t doable for good portion of people.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>yeah its wise but i already spent alot of time splitting them (alot of them used reference each other to like the coloured name support in pms ect), in my server i just
+                        have 1 big plugin handling all the custom stuff i&#039;ve done, at some point ill provide configs for my plugins when i can be asked to look up how to use oxides config loader
+                        and saver i know its simple im just lazy <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ownprox</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107897' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 7:13 AM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-107897' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/107897/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-108037" class="message" data-author="Zuen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zuen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zuen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Still no feedback on the extension for any issues or if it is useful D: #SadPanda <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zuen</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-108037' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 9:01 PM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-108037' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/108037/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-108055" class="message" data-author="ownprox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ownprox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ownprox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> i guess a lot people lack knowledge to even use this let alone the json way (yeah i know yours is just a wrapper
+                        for creating json) or can&#039;t be asked to spend time and want a quick plugin already made, this should help a lot of new developers you did a good thing even if it helps one
+                        person it matters. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ownprox</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-108055' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 13, 2015 at 10:16 PM">Jul 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-108055' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/108055/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-109536" class="message" data-author="LEO318x">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LEO318x" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LEO318x</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good Job Bro! <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LEO318x</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-109536' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 19, 2015 at 6:25 AM">Jul 19, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-109536' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/109536/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-132922" class="message" data-author="UnderFawkes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnderFawkes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnderFawkes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello ! I have this error :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 4:34 AM [Error] Oxide.Ext.RUI is referenced by RustUITest plugin but is not loaded! An appropriate include file needs to be saved to Plugins\Include\Ext.RUI.cs if this extension is not required.</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnderFawkes</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132922' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 4:43 AM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132922' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/132922/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-132978" class="message" data-author="Zuen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zuen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zuen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="UnderFawkes">
+                            <aside>
+                                <div class="attribution type">UnderFawkes said: <a href="#post-132922" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hello ! I have this error :<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>[Oxide] 4:34 AM [Error] Oxide.Ext.RUI is referenced by RustUITest plugin but is not loaded! An appropriate include file needs to be saved to Plugins\Include\Ext.RUI.cs if this extension is not required.</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Did you include the extension? - I might have to look into it and see if the extension is not outdated. Never received any feedback since July, so never took the time to
+                        update it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zuen</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132978' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 7:28 AM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132978' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/132978/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-132988" class="message" data-author="UnderFawkes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnderFawkes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnderFawkes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Zuen">
+                            <aside>
+                                <div class="attribution type">Zuen said: <a href="#post-132978" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Did you include the extension? - I might have to look into it and see if the extension is not outdated. Never received any feedback since July,
+                                        so never took the time to update it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Have you the instructions for installation? I&#039;ve just put the dll in &quot;/RustDedicated_Data/Managed&quot;. You share the SourceCode for Update? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnderFawkes</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132988' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2015 at 7:56 AM">Oct 2, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-132988' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/132988/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134446" class="message" data-author="Larry 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Larry 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Larry 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks will give this a try soon! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Larry 2</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-134446' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 6, 2015 at 3:44 PM">Oct 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-134446' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134446/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-134510" class="message" data-author="UnderFawkes">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="UnderFawkes" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">UnderFawkes</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You know how to install it? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">UnderFawkes</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-134510' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 6, 2015 at 6:52 PM">Oct 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-134510' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/134510/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-135042" class="message" data-author="Zuen">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Zuen" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Zuen</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You should just place it in your managed folder of the server files ... I will try and find some time to see if I
+                        need to do any updating on it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Zuen</a>,</span>
+                        <a href="{{ '/threads/rust-community-ui-extension.10172/#post-135042' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 8, 2015 at 5:58 PM">Oct 8, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/rust-community-ui-extension.10172/#post-135042' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/135042/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

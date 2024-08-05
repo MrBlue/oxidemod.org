@@ -1,0 +1,375 @@
+---
+layout: forums
+title: 'Considerations in regards to universal plugins'
+breadcrumbs:
+ - "Feature Suggestions": "/forums/feature-suggestions.6/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/' | prepend: site.baseurl }}">Considerations in regards to universal plugins</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/feature-suggestions.6/' | prepend: site.baseurl }}">Feature Suggestions</a>' started by <a class="username"
+            dir="auto">sqroot</a>, <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/' | prepend: site.baseurl }}"><span class="DateTime" title="May 20, 2016 at 6:36 PM">May
+                20, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-207794" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">In this thread I&#039;d like to discuss the aspects of porting plugins between games because of the newly added
+                        feature to be able to publish plugins as universal, because I suspect that most people writing universal plugins will not have any experience in regards to porting code between
+                        platforms (mainly because of the languages Oxide supports - C# (and the closely connected Java world), Javascript, Python and Lua are all languages that mostly take the burden
+                        of portability off your back.<br /> Most people probably won&#039;t have to care about this, but for those that care about writing good and clean portable code it&#039;s maybe
+                        worth a read. This is especially relevant for people that want to port huge and complex plugins.<br />
+                        <br /> First off, I think universal plugins are a great idea.<br /> I can see two different kinds of plugins being published here:<br />
+                        <ul>
+                            <li>Plugins that are inherently portable because they only work with Oxide&#039;s interface (e.g. Covalence)</li>
+                            <li>Plugins that are not inherently portable and need specific code for each platform</li>
+                        </ul>The first kind isn&#039;t problematic at all, this is what universal plugins are great for and there&#039;s no need to discuss this in detail. Strive to replace platform
+                        specific code with code that uses a portable Oxide equivalent, the existing universal plugins published today are mostly decent examples of cases where you can accomplish
+                        this.<br /> The second kind is a bit more complicated.<br />
+                        <br /> A plugin that isn&#039;t portable generally consists of code that is &quot;sort of&quot; portable, for instance logic code, and code that is specific to the platform,
+                        for instance hooks.<br /> When I say &quot;sort of&quot; portable I mean that in general this code should be portable, but because some hooks lack on some platforms and
+                        different things being possible on different platforms, you might actually have to add platform specific code to code that should in theory be portable, meaning that sometimes
+                        platform independent code may turn into platform dependent code.<br /> There are essentially two different kinds of platform specific code:<br />
+                        <ul>
+                            <li>Platform specific code at the top of your function callstack (hooks)</li>
+                            <li>Platform specific code at the bottom of your function callstack (&quot;sort of&quot; portable code, code that deals with game state)</li>
+                        </ul>Both need to be treated differently.<br />
+                        <br /> There are three different ways to port a plugin between games:<br />
+                        <ul>
+                            <li>Duplicate code (create a single plugin for every game you&#039;re porting to)</li>
+                            <li>Use preprocessor directives for specific games (e.g. #if Rust)</li>
+                            <li>Transfer portable code into an API plugin (publish API plugin as universal plugin, publish platform specific plugins that use the API plugin as game specific plugins)
+                            </li>
+                        </ul>Each of these has advantages and disadvantages and it&#039;s important that one understands these when deciding how to port his plugin.<br />
+                        <br /> Transfer portable code into an API plugin:<br />
+                        <ul>
+                            <li>Introduces an extra dependency, which is always annoying for anyone who wants to use your plugin</li>
+                            <li>Clearly seperates portable code from non-portable code</li>
+                            <li>Clearly seperates a plugin from an API</li>
+                            <li>Becomes messy when portable code turns into &quot;sort of&quot; portable code</li>
+                        </ul>Use preprocessor directives for specific games:<br />
+                        <ul>
+                            <li>Easily results in strong coupling between portable and non-portable code</li>
+                            <li>Becomes very messy when not careful</li>
+                            <li>Allows for lots of flexibility in regards to avoiding duplicate code</li>
+                        </ul>Duplicate code:<br />
+                        <ul>
+                            <li>No coupling between portable and non-portable code</li>
+                            <li>Requires more effort to update portable code</li>
+                            <li>Allows for lots of flexibility in regards to platform specific features</li>
+                        </ul>Each of these is useful in different kinds of situations:<br />
+                        <ul>
+                            <li>Transfer portable code into an API plugin when the code you&#039;re transfering will be useful to lots of plugins and the code you&#039;re dealing with isn&#039;t
+                                &quot;sort of&quot; portable.<br />
+                            </li>
+                            <li>Use preprocessor directives for specific games when the code you&#039;re required to write to port your plugin isn&#039;t that complex. <br /> C devs have been porting
+                                code like this for decades and in many cases the code was an absolute mess (just take a look at the GNU coreutils - yuck!).<br />
+                                <a href="https://www.usenix.org/legacy/publications/library/proceedings/sa92/spencer.pdf" target="_blank" class="externalLink  rel="
+                                    nofollow">https://www.usenix.org/legacy/publications/library/proceedings/sa92/spencer.pdf</a> is a paper published in 1992 that raises some interesting points in
+                                regards to porting code in C and is definetly worth a read.<br /> We can transfer that knowledge to Oxide with some adjustments.<br /> Above I mentioned that there is
+                                platform specific code at the top of your callstack and platform specific code at the bottom of your callstack. In C you&#039;re mostly not dealing with any kind of
+                                hooks, so almost all code is platform specific code at the bottom of your callstack, while in Oxide you&#039;re dealing with this sort of code on a daily basis.<br />
+                                The paper states that platform specific code should be clearly encapsulated somewhere and not spread all over the place. In Oxide we cannot do this on a per-file basis
+                                (only in the case of using an API plugin!), but we can do this on a per-function or a per-class basis. <br /> The best approach in this regard is to encapsulate your
+                                platform specific code in a set of simple functions instead of spreading it all over the place.<br /> For code at the top of your callstack we&#039;ll have to invert
+                                this process: Obviously when our platform specific code is the name of the hook we&#039;re using, we can&#039;t encapsulate that hook in any way. What we&#039;ll have
+                                to do is encapsulate our portable code and our non-portable code at the bottom of the callstack in some manner and call that code from our platform specific at the top
+                                of the callstack - the process is inverted.<br /> In general that means that there should be non-portable code at the top of the callstack, that portable and
+                                non-portable code at the bottom of the callstack should be encapsulated and that the non-portable code at the bottom of the callstack should be encapsulated once more
+                                to decouple it from the platform independent code.</li>
+                            <li>Duplicate code when the code you&#039;re required to port is very complex.<br /> When you find that you can&#039;t easily encapsulate non-portable code as mentioned
+                                above without your code turning into a complete mess because of preprocessor directives being all over the place (or even being nested!) then you should consider
+                                publishing seperate versions of your plugin, even if that means duplicating some code. Duplicating code isn&#039;t that bad, even if that&#039;s often taught. Google
+                                once had a policy to avoid any duplicate code and they&#039;re significantly suffering from that policy today and trying to revert huge chunks of it. Coupling and code
+                                repetition are mostly inverse to each other and deciding which degree of coupling and code repetition is the correct amount requires a bunch of experience.</li>
+                        </ul><br /> This knowledge is not local to Oxide!<br /> Need to port your program to a different OS or a different processor architecture? This is still relevant!<br />
+                        <br /> I hope this helps those that want to port bigger things, I know there are quite some *huge* plugins on Oxide that might benefit from this.<br /> Also, I know that some
+                        of this might be pretty complicated - if you&#039;ve got suggestions on how to simplify it, just let me know. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 20, 2016 at 6:36 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207794/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-207797" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Quite the long read!<br />
+                        <br /> Covalence is what would eventually be used to replace all other API available via Oxide as well as most direct calls to game code. Most of my plugins I try to do as much
+                        as possible to use the Covalence API, though most of my plugins are also generally pretty simple and game-agnostic.<br />
+                        <br /> For the plugins that are using preprocessor references, that code would eventually be replaced by the Covalence API once it wraps that functionality. Right now Covalence
+                        is pretty basic, but it is expanding slowly yet surely. I&#039;ll be working on it more as I get time, wrapping more hooks and adding more to the IPlayer and ILivePlayer
+                        method. Things are bound to break though while it gets settled into what we want it to be.<br />
+                        <br /> It&#039;s also worth noting that only Rust, Rust Legacy, Reign of Kings, Hurtworld, and Hide &amp; Hold Out are currently using Covalence. The other games will be
+                        supported as I get time. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207797' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 20, 2016 at 6:47 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207797' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207797/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-207809" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">That&#039;s great, although I&#039;m sure Covalence will never completly replace game specific API, for multiple
+                        obvious reasons.<br /> Different games simply often work differently. Some games may allow you to fire a specific hook that others will never allow you to fire, requiring you
+                        to provide different arguments as well.<br /> Trying to unify *everything* will eventually result in a fairly awkward API.<br />
+                        <br /> The idea to unify things almost all games have in common is awesome, though.<br />
+                        <br /> Also, this post is posted here because I didn&#039;t really find a better place to give tips for universal plugins. When there&#039;s a place for that kind of stuff
+                        it&#039;d be nice if you could move it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207809' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 20, 2016 at 7:09 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207809' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207809/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-207813" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-207809" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">That&#039;s great, although I&#039;m sure Covalence will never completly replace game specific API, for multiple obvious reasons.<br /> Different
+                                        games simply often work differently. Some games may allow you to fire a specific hook that others will never allow you to fire, requiring you to provide
+                                        different arguments as well.<br /> Trying to unify *everything* will eventually result in a fairly awkward API.<br />
+                                        <br /> The idea to unify things almost all games have in common is awesome, though.<br />
+                                        <br /> Also, this post is posted here because I didn&#039;t really find a better place to give tips for universal plugins. When there&#039;s a place for that
+                                        kind of stuff it&#039;d be nice if you could move it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Covalence will eventually replace all of the currently used API from Oxide, and the goal is to provide as much as possible for what people use directly from games as
+                        well. Yes, some of the games do work differently, but that&#039;s something we try to handle in the wrapper to account for the differences. Some will likely never be available
+                        for all games, but for the most part we can wrap quite a bit. The plugins may have to check if some things exist before handling them, but we&#039;ll see. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207813' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 20, 2016 at 7:13 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207813' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207813/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-207822" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-207813" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Covalence will eventually replace all of the currently used API from Oxide, and the goal is to provide as much as possible for what people use
+                                        directly from games as well. Yes, some of the games do work differently, but that&#039;s something we try to handle in the wrapper to account for the
+                                        differences. Some will likely never be available for all games, but for the most part we can wrap quite a bit. The plugins may have to check if some things
+                                        exist before handling them, but we&#039;ll see.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Well, in regards to having to check if some things exist before handling them, that&#039;s what I meant with a fairly awkward API.<br /> I don&#039;t think a unified API
+                        that requires you to check whether certain things exist (almost as if you were using loads of flags like WinAPI does) is better than just duplicating some code for different
+                        plugins.<br /> Unifying *everything* is roughly the equivalent of the following:<br /> You&#039;re combining a function foo(int) and a function bar(int, int) into a function
+                        foobar(int, int), where the second parameter is optional and the behaviour changes depending on whether the second parameter is present or not.<br /> In some cases this makes
+                        sense, at a large scale it becomes cruft and rather annoying.<br /> When executed at a larger scale, this is also known as &quot;the wrong abstraction&quot; (explained here for
+                        instance: <a href="http://www.sandimetz.com/blog/2016/1/20/the-wrong-abstraction" target="_blank" class="externalLink  rel=" nofollow">The Wrong Abstraction</a>).<br /> John
+                        Carmack also talked about this (to a more extreme degree, though, even suggesting to trash abstractions without flags when possible) in 2007: <a
+                            href="http://number-none.com/blow/john_carmack_on_inlined_code.html" target="_blank" class="externalLink  rel=" nofollow">Jonathan Blow&#039;s home page</a><br /> On a
+                        plugin-level (not at an Oxide-level <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />), this is what I was getting
+                        at when suggesting to duplicate code when porting plugins in some cases.<br /> When an API with too many flags (or too many preprocessor directives, which is just about the
+                        same, just in a different coat) becomes too complex, duplication yields many advantages, the greatest one being simplicity. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207822' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 20, 2016 at 7:32 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207822' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207822/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-207830" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="sqroot">
+                            <aside>
+                                <div class="attribution type">sqroot said: <a href="#post-207822" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well, in regards to having to check if some things exist before handling them, that&#039;s what I meant with a fairly awkward API.<br /> I
+                                        don&#039;t think a unified API that requires you to check whether certain things exist (almost as if you were using loads of flags like WinAPI does) is better
+                                        than just duplicating some code for different plugins.<br /> Unifying *everything* is roughly the equivalent of the following:<br /> You&#039;re combining a
+                                        function foo(int) and a function bar(int, int) into a function foobar(int, int), where the second parameter is optional and the behaviour changes depending on
+                                        whether the second parameter is present or not.<br /> In some cases this makes sense, at a large scale it becomes cruft and rather annoying.<br /> When executed
+                                        at a larger scale, this is also known as &quot;the wrong abstraction&quot; (explained here for instance: <a
+                                            href="http://www.sandimetz.com/blog/2016/1/20/the-wrong-abstraction" target="_blank" class="externalLink">The Wrong Abstraction</a>).<br /> John Carmack
+                                        also talked about this (to a more extreme degree, though, even suggesting to trash abstractions without flags when possible) in 2007: <a
+                                            href="http://number-none.com/blow/john_carmack_on_inlined_code.html" target="_blank" class="externalLink">Jonathan Blow&#039;s home page</a><br /> On a
+                                        plugin-level (not at an Oxide-level <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />), this is what
+                                        I was getting at when suggesting to duplicate code when porting plugins in some cases.<br /> When an API with too many flags (or too many preprocessor
+                                        directives, which is just about the same, just in a different coat) becomes too complex, duplication yields many advantages, the greatest one being simplicity.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>We&#039;ll see where it goes and how it turns out I guess. There&#039;s still a long ways to go. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207830' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 20, 2016 at 7:41 PM">May 20, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/considerations-in-regards-to-universal-plugins.18186/#post-207830' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/207830/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

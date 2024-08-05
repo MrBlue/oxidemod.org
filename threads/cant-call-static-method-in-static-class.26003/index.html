@@ -1,0 +1,249 @@
+---
+layout: forums
+title: 'Can&#039;t call static method in static class'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/' | prepend: site.baseurl }}">Can&#039;t call static method in static class</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">JustCallMeAPro</a>, <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 20, 2017 at 8:44 AM">Jun
+                20, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-332474" class="message" data-author="JustCallMeAPro">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JustCallMeAPro" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JustCallMeAPro</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m working on my own plugin, and I&#039;m new to Rust, so this will help me start out. I am having problems
+                        with one of my classes. It&#039;s a class that holds Authorization Level based functions, and they are all static. When I say a command and run a function in that class, it
+                        throws an object reference error, but not sure why. When I run <span style="text-decoration: underline">any</span> method inside AuthLevel class, it throws this error. What I
+                        don&#039;t understand is that I have other static classes with static methods and variables, that I can call and get/set without any errors. It&#039;s just this one class. Any
+                        help would be appreciated, and thanks.<br />
+                        <br /> Here is the error:<br />
+                        <br /> (03:35:54) | ExType: TypeInitializationException<br />
+                        <br /> (03:35:55) | Failed to call hook &#039;CallAction&#039; on plugin &#039;AdminMenu v0.1.0&#039; (NullReferenceException: Object reference not set to an instance of an
+                        object)<br />
+                        <br /> (03:35:55) | at (wrapper stelemref) object:stelemref (object,intptr,object)<br />
+                        <br /> at Oxide.Plugins.AdminMenu+AuthLevel..cctor () [0x00000] in &lt;filename unknown&gt;:0<br />
+                        <br /> And here is the code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        static class AuthLevel
+        {
+            static public int[] auth_levels =
+            {
+                0, //No Access
+                1,
+                2,
+                3 //Full Access
+            };            public static string[][] allowedCommandsPerAuthLevel =
+            {
+                allowedCommandsPerAuthLevel[0] = new string[] { },
+                allowedCommandsPerAuthLevel[1] = new string[] {
+                    &quot;viewbans&quot;, &quot;ban&quot;, &quot;kick&quot;, &quot;unban&quot; },
+                allowedCommandsPerAuthLevel[2] = new string[] {
+                    &quot;open&quot;, &quot;close&quot;, &quot;reload&quot;, &quot;airdrop&quot;, &quot;vectortp&quot;, &quot;listplayers&quot;, &quot;listadmins&quot;, &quot;viewbans&quot;, &quot;kick&quot;, &quot;kickall&quot;, &quot;ban&quot;, &quot;unban&quot;, &quot;tp&quot;, &quot;spawnanimal&quot;,
+                    &quot;kill&quot;, &quot;mute&quot;, &quot;give&quot;, &quot;say&quot;, &quot;godmode&quot;, &quot;noclip&quot;, &quot;deathloop&quot;, &quot;setmoney&quot;, &quot;popup&quot;, &quot;turrets&quot;, &quot;setfire&quot;, &quot;rename&quot;, &quot;airdrop&quot;, &quot;airstrike&quot;, &quot;clearinv&quot;,
+                    &quot;repairinv&quot;, &quot;rotate&quot;, &quot;listkits&quot;, &quot;addkit&quot;, &quot;deletekit&quot;, &quot;loadkit&quot;, &quot;clonekit&quot;, &quot;saveplayerkit&quot;
+                },
+                allowedCommandsPerAuthLevel[3] = new string[] {
+                    &quot;open&quot;, &quot;close&quot;, &quot;reload&quot;, &quot;airdrop&quot;, &quot;vectortp&quot;, &quot;listplayers&quot;, &quot;listadmins&quot;, &quot;viewbans&quot;, &quot;kick&quot;, &quot;kickall&quot;, &quot;ban&quot;, &quot;unban&quot;, &quot;tp&quot;, &quot;spawnanimal&quot;, &quot;kill&quot;,
+                    &quot;mute&quot;, &quot;give&quot;, &quot;say&quot;, &quot;godmode&quot;, &quot;noclip&quot;, &quot;deathloop&quot;, &quot;setmoney&quot;, &quot;popup&quot;, &quot;turrets&quot;, &quot;setfire&quot;, &quot;rename&quot;, &quot;airdrop&quot;, &quot;airstrike&quot;, &quot;clearinv&quot;, &quot;repairinv&quot;,
+                    &quot;rotate&quot;, &quot;listkits&quot;, &quot;addkit&quot;, &quot;deletekit&quot;, &quot;loadkit&quot;, &quot;clonekit&quot;, &quot;saveplayerkit&quot;, &quot;setpermission&quot;, &quot;acceptauthrequest&quot;, &quot;freezetime&quot;, &quot;settime&quot;, &quot;setpassword&quot;, &quot;setjoinmsg&quot;
+                }
+            };            public static int returnAuthLevelFromID(string ID)
+            {
+                return 3;
+            }            public static bool commandAllowed(BasePlayer player, string command, string ID)
+            {
+                int auth_level = returnAuthLevelFromID(ID);                if (allowedCommandsPerAuthLevel[auth_level].ToList().FindIndex(element =&gt; element == command) &lt; 0)
+                    return false;                return true;
+            }            public static bool test()
+            {
+                return true;
+            }
+        }</pre>{% endraw %}
+                        </div><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        [ChatCommand(&quot;adminmenu&quot;)]
+        void CallAction(BasePlayer player, string command, string[] args)
+        {
+            //if (AuthLevel.returnAuthLevelFromID(player.UserIDString) &lt; 1)
+            //return;            /*if (args == null)
+                return;            if (args[0] == null)
+                return;*/            string arg_command = &quot;test&quot;;//args[0];            if (!(AuthLevel.test())) //player, arg_command, &quot;&quot; TODO FIX AuthLevel object reference error
+            {
+                SendMessage(player, &quot;{0} {1}&quot;, &quot;[AdminMenu]: &quot;, &quot;You are not authorized to use this command.&quot;);
+                return;
+            }            switch(command.ToLower())
+            {            }            SendMessage(player, &quot;{0} {1}&quot;, &quot;[AdminMenu]: &quot;, &quot;The '&quot; + arg_command + &quot;' command has executed successfully.&quot;);
+            //SendMessage(player, &quot;AdminMenu v{0}. Type -help for a list of commands.&quot;, AdminMenuInfoAttribute.Version);
+            //Puts(&quot;Player {0} has executed command {1}&quot;, player.displayName, command);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JustCallMeAPro</a>,</span>
+                        <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 8:44 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/332474/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332491" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I would not make the class static and instead just the methods inside of it. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332491' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 9:50 AM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332491' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332491/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332566" class="message" data-author="JustCallMeAPro">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JustCallMeAPro" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JustCallMeAPro</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan">
+                            <aside>
+                                <div class="attribution type">Ryan said: <a href="#post-332491" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I would not make the class static and instead just the methods inside of it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Alright thanks, will try it and post results.<br />
+                        <br /> EDIT: Nope still getting same result in console. Even with a non-static class.<br /> [DOUBLEPOST=1497975902][/DOUBLEPOST]If I have to, I don&#039;t mind moving the
+                        methods outside of the class, I just like to have neat, organized functions. I tried moving the test method outside of the class, and voila, it worked. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 20, 2017 at 5:10 PM">Jun 20, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JustCallMeAPro</a>,</span>
+                        <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332566' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 4:58 PM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332566' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332566/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-332593" class="message" data-author="JustCallMeAPro">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JustCallMeAPro" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JustCallMeAPro</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ok so I&#039;ve narrowed it down to being a problem with how I initialize my allowedCommandsPerAuthLevel
+                        array.<br />
+                        <br /> EDIT: Can a mod/admin close this. I have figured out what was causing the error. Thanks again Ryan for your help. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 20, 2017 at 6:29 PM">Jun 20, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JustCallMeAPro</a>,</span>
+                        <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332593' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2017 at 6:07 PM">Jun 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-call-static-method-in-static-class.26003/#post-332593' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/332593/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

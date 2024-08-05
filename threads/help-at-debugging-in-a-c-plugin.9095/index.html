@@ -1,0 +1,491 @@
+---
+layout: forums
+title: 'Solved - Help at Debugging in a C# plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/' | prepend: site.baseurl }}">Help at Debugging in a C# plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">LaserHydra</a>, <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 3, 2015 at 7:04 PM">Jun 3,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-95552" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I tried rewriting my LUA Plugin &quot;Easy Heal&quot; and thats what I&#039;ve come up with:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using System.Reflection;
+using System;
+using System.Data;
+using UnityEngine;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;Easy Heal&quot;, &quot;LaserHydra&quot;, &quot;2.0.0&quot;, ResourceId = 984)]
+    [Description(&quot;Heal yourself or others&quot;)]
+    class EasyHeal : RustPlugin
+    {
+        void Loaded()
+        {
+            string[] foundPlayers;
+        }
+        [ChatCommand(&quot;heal&quot;)]
+        void cmdHeal(BasePlayer player, string cmd, string[] args)
+        {
+            if (!player.IsAdmin())
+            {
+                SendChatMessage(player, &quot;HEAL&quot;, &quot;You have no permission to use this command!&quot;);
+                return;
+            }
+           
+            if (args.Length != 1)
+            {
+                player.InitializeHealth(100, 100);
+                SendChatMessage(player, &quot;HEAL&quot;, &quot;You healed youself!&quot;);
+                return;
+            }            if (args.Length == 1)
+            {
+                string[] target;
+                target = GetPlayer(args[0]);
+                if (target.Length == 0)
+                {
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;No matching players found!&quot;);
+                }
+               
+                if (target.Length &gt; 1)
+                {
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;Multiple players found:&quot;);
+                    string multipleUsers = &quot;&quot;;
+                    foreach (string matchingplayer in target)
+                    {
+                        multipleUsers = mutlipleUsers + &quot;, &quot; + matchingplayer;
+                    }
+                    SendChatMessage(player, &quot;HEAL&quot;, multipleUsers);
+                }                if (target.Length == 1)
+                {
+                    BasePlayer targetPlayer = BasePlayer.Find(target[0]);
+                    targetPlayer.InitializeHealth(100,100);
+                    SendChatMessage(targetPlayer, &quot;HEAL&quot;, &quot;You got healed by &lt;color=orange&gt;&quot; + player.displayName + &quot;&lt;/color&gt;&quot;);
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;You have healed &lt;color=orange&gt;&quot; + targetPlayer.displayName + &quot;&lt;/color&gt;&quot;);
+                }            }
+        }        //---------------------------&gt;   Player finding   &lt;---------------------------//        void GetPlayer(string searchedPlayer)
+        {            string searchedLower = searchedPlayer.ToLower();
+            foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {
+                string display = player.displayName;
+                string displayLower = display.ToLower();
+                if (displayLower.Contains(searchedLower))
+                {
+                    int length = foundPlayers.Length + 1;
+                    foundPlayers[length] = display;
+                }
+            }
+            if (searchedPlayer == &quot;&quot; || searchedPlayer == null)
+            {
+                return;
+            }            return foundPlayers;
+        }        //----------------------------&gt;   Chat Sending   &lt;----------------------------//        void BroadcastChat(string prefix, string msg)
+        {
+            PrintToChat(&quot;&lt;color=orange&gt;&quot; + prefix + &quot;&lt;/color&gt;: &quot; + msg);
+        }        void SendChatMessage(BasePlayer player, string prefix, string msg)
+        {
+            SendReply(player, &quot;&lt;color=orange&gt;&quot; + prefix + &quot;&lt;/color&gt;: &quot; + msg);
+        }        //---------------------------------------------------------------------------//
+    }
+}
+</pre>{% endraw %}
+                        </div>Anyways. When trying to compile im getting following error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 8:08 PM [Error] EasyHeal.cs(86,13): error CS0127: `Oxide.Plugins.EasyHeal.GetPlayer(string)': A return keyword must not be followed by any expression when method returns void</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 3, 2015 at 7:04 PM">Jun 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95552/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95555" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-95552" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><b><span style="color: #6666cc">void</span></b> GetPlayer<span style="color: #008000">(</span><b><span style="color: #6666cc">string</span></b>
+                                        searchedPlayer<span style="color: #008000">)</span></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The error already points you at the error <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /> You can&#039;t
+                        return an expression in a void method, instead use the type it should return. <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>BasePlayer GetPlayer(string searchedPlayer)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95555' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 3, 2015 at 7:14 PM">Jun 3, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95555' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95555/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95656" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-95555" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The error already points you at the error <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                                            title="Wink    ;)" /> You can&#039;t return an expression in a void method, instead use the type it should return. <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>BasePlayer GetPlayer(string searchedPlayer)</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What I want to return is a string array, so I would use<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>string GetPlayer(string searchedPlayer)</pre>{% endraw %}
+                        </div> ? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95656' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 4, 2015 at 6:04 AM">Jun 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95656' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95656/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95659" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Google is your friend. Also please follow the tutorials that were linked for you. You wouldn&#039;t be asking
+                        these questions if you did. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95659' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 4, 2015 at 6:11 AM">Jun 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95659' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95659/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95695" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> umm, I fixed that and some others now. but now I ran into an error which I wasn&#039;t able to fix yet.<br />
+                        error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 12:54 PM [Error] EasyHeal plugin failed to compile!
+[Oxide] 12:54 PM [Error] EasyHeal.cs(84,20): error CS0029: Cannot implicitly convert type `System.Collections.Generic.List' to `string[]'</pre>{% endraw %}
+                        </div>Plugin:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using System.Reflection;
+using System;
+using System.Data;
+using UnityEngine;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;Easy Heal&quot;, &quot;LaserHydra&quot;, &quot;2.0.0&quot;, ResourceId = 984)]
+    [Description(&quot;Heal yourself or others&quot;)]
+    class EasyHeal : RustPlugin
+    {
+        [ChatCommand(&quot;heal&quot;)]
+        void cmdHeal(BasePlayer player, string cmd, string[] args)
+        {
+            if (!player.IsAdmin())
+            {
+                SendChatMessage(player, &quot;HEAL&quot;, &quot;You have no permission to use this command!&quot;);
+                return;
+            }            if (args.Length != 1)
+            {
+                player.InitializeHealth(100, 100);
+                SendChatMessage(player, &quot;HEAL&quot;, &quot;You healed youself!&quot;);
+                return;
+            }            if (args.Length == 1)
+            {
+                string[] target;
+                target = GetPlayer(args[0]);
+                if (target.Length == 0)
+                {
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;No matching players found!&quot;);
+                }                if (target.Length &gt; 1)
+                {
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;Multiple players found:&quot;);
+                    string multipleUsers = &quot;&quot;;
+                    foreach (string matchingplayer in target)
+                    {
+                        multipleUsers = multipleUsers + &quot;, &quot; + matchingplayer;
+                    }
+                    SendChatMessage(player, &quot;HEAL&quot;, multipleUsers);
+                }                if (target.Length == 1)
+                {
+                    BasePlayer targetPlayer = BasePlayer.Find(target[0]);
+                    targetPlayer.InitializeHealth(100, 100);
+                    SendChatMessage(targetPlayer, &quot;HEAL&quot;, &quot;You got healed by &lt;color=orange&gt;&quot; + player.displayName + &quot;&lt;/color&gt;&quot;);
+                    SendChatMessage(player, &quot;HEAL&quot;, &quot;You have healed &lt;color=orange&gt;&quot; + targetPlayer.displayName + &quot;&lt;/color&gt;&quot;);
+                }            }
+        }        //---------------------------&gt;   Player finding   &lt;---------------------------//        string[] GetPlayer(string searchedPlayer)
+        {
+            List&lt;string&gt; foundPlayers = new List&lt;string&gt;();
+            string searchedLower = searchedPlayer.ToLower();
+            foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {
+                string display = player.displayName;
+                string displayLower = display.ToLower();                if (!displayLower.Contains(searchedLower))
+                {
+                    Puts(displayLower + &quot; != &quot; + searchedLower);
+                    continue;
+                }
+                if (displayLower.Contains(searchedLower))
+                {
+                    Puts(displayLower + &quot; == &quot; + searchedLower);
+                    foundPlayers.Add(display);
+                }
+            }
+            foundPlayers.ToArray();
+            return foundPlayers;
+        }        //----------------------------&gt;   Chat Sending   &lt;----------------------------//        void BroadcastChat(string prefix, string msg)
+        {
+            PrintToChat(&quot;&lt;color=orange&gt;&quot; + prefix + &quot;&lt;/color&gt;: &quot; + msg);
+        }        void SendChatMessage(BasePlayer player, string prefix, string msg)
+        {
+            SendReply(player, &quot;&lt;color=orange&gt;&quot; + prefix + &quot;&lt;/color&gt;: &quot; + msg);
+        }        //---------------------------------------------------------------------------//
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95695' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 4, 2015 at 11:50 AM">Jun 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95695' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95695/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95696" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You might want to consider reading up on some more tutorials LaserHydra, on <a
+                            href="http://csharp.net-tutorials.com/" target="_blank" class="externalLink  rel=" nofollow">http://csharp.net-tutorials.com/</a> you can find a nice introduction to C#,
+                        it&#039;s mainly focused on starting out with a console application which isn&#039;t that much of interest for you but it handles most of the basics. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95696' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 4, 2015 at 12:00 PM">Jun 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95696' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95696/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-95697" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-95696" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You might want to consider reading up on some more tutorials LaserHydra, on <a href="http://csharp.net-tutorials.com/" target="_blank"
+                                            class="externalLink  rel=" nofollow">http://csharp.net-tutorials.com/</a> you can find a nice introduction to C#, it&#039;s mainly focused on starting out
+                                        with a console application which isn&#039;t that much of interest for you but it handles most of the basics.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I made my way through most of the basic chapters here: <a href="http://www.tutorialspoint.com/csharp/index.htm" target="_blank" class="externalLink  rel="
+                            nofollow">http://www.tutorialspoint.com/csharp/index.htm</a><br /> Ill take a look at what you sent me<br /> [DOUBLEPOST=1433416159][/DOUBLEPOST]- Failure found <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95697' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 4, 2015 at 12:02 PM">Jun 4, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-at-debugging-in-a-c-plugin.9095/#post-95697' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/95697/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

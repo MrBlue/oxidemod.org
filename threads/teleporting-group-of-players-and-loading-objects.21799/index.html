@@ -1,0 +1,216 @@
+---
+layout: forums
+title: 'Solved - Teleporting group of players and loading objects?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/' | prepend: site.baseurl }}">Teleporting group of players and
+            loading objects?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Sir
+            BenSon</a>, <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 4, 2016 at 6:47 PM">Nov 4,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-265277" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey guys,<br />
+                        <br /> i need a perfect way to teleport 20+ players at the same time to a position. It works but one problem. The player that has not loaded the objects / structures falls down
+                        and get damage. So what can i do to teleport the baseplayer to a position with structure without falldamage?<br />
+                        <br /> Sir <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 4, 2016 at 6:47 PM">Nov 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/265277/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-265392" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Are you using the technique most other teleport plugins do? Via having them use the loading screen and forcing
+                        them to sleep.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public void Teleport(BasePlayer player, Vector3 position)
+        {
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;StartLoading&quot;, null, null, null, null, null);
+            StartSleeping(player);
+            player.MovePosition(position);
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;ForcePositionTo&quot;, position);
+            player.TransformChanged();
+            if (player.net?.connection != null)
+                player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+            player.UpdateNetworkGroup();
+            //player.UpdatePlayerCollider(true, false);
+            player.SendNetworkUpdateImmediate(false);
+            if (player.net?.connection == null) return;
+            //TODO temporary for potential rust bug
+            try { player.ClearEntityQueue(null); } catch { }
+            player.SendFullSnapshot();
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private void StartSleeping(BasePlayer player)
+{
+if (player.IsSleeping())
+return;
+player.SetPlayerFlag(BasePlayer.PlayerFlags.Sleeping, true);
+if (!BasePlayer.sleepingPlayerList.Contains(player))
+BasePlayer.sleepingPlayerList.Add(player);
+player.CancelInvoke(&quot;InventoryUpdate&quot;);
+//player.inventory.crafting.CancelAll(true);
+//player.UpdatePlayerCollider(true, false);
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265392' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 4, 2016 at 9:46 PM">Nov 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265392' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/265392/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-265477" class="message" data-author="Sir BenSon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sir BenSon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sir BenSon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ha best way! Thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sir BenSon</a>,</span>
+                        <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265477' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 5, 2016 at 12:58 AM">Nov 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265477' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/265477/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-265496" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Sir BenSon">
+                            <aside>
+                                <div class="attribution type">Sir BenSon said: <a href="#post-265477" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ha best way! Thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>No problem, most other teleportation plugins used this method. From what I know it just makes the client register objects like he would upon loading in. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265496' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 5, 2016 at 1:34 AM">Nov 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/teleporting-group-of-players-and-loading-objects.21799/#post-265496' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/265496/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

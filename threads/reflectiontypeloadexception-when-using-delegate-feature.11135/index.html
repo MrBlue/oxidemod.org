@@ -1,0 +1,245 @@
+---
+layout: forums
+title: 'ReflectionTypeLoadException when using delegate feature'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/' | prepend: site.baseurl }}">ReflectionTypeLoadException when using delegate feature</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Andrew
+            Mensky</a>, <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 15, 2015 at 6:41 PM">Aug 15,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-120604" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi guys. I have some problems with Rust extension creation. So... for example i have very simple code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;using Oxide.Core;
+using Oxide.Core.Extensions;namespace Oxide.Ext.SimpleExt
+{
+    public class SimpleExt: Extension
+    {
+         public override string Name { get { return &quot;ExtName&quot;; } }        public override VersionNumber Version { get { return new VersionNumber(1, 0, 0); } }        public override string Author { get { return &quot;Ext Team&quot;; } }        public SimpleExt(ExtensionManager manager) : base(manager)
+        {
+            // This make ReflectionTypeLoadException :(
+             Action&lt;int, int&gt; t = delegate(int i, int j) {            };
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>When i trying use delegate feature, I get <b>ReflectionTypeLoadException</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>ReflectionTypeLoadException: The classes in the module cannot be loaded.
+  at (wrapper managed-to-native) System.Reflection.Assembly:GetTypes (bool)  at System.Reflection.Assembly.GetTypes () [0x00000] in &lt;filename unknown&gt;:0  at Network.Serialize.&lt;Initialize&gt;m__56 (System.Reflection.Assembly x) [0x00000] in &lt;filename unknown&gt;:0  at System.Linq.Enumerable+&lt;CreateSelectManyIterator&gt;c__Iterator12`2[System.Reflection.Assembly,System.Type].MoveNext () [0x00000] in &lt;filename unknown&gt;:0  at System.Linq.Enumerable+&lt;CreateWhereIterator&gt;c__Iterator1D`1[System.Type].MoveNext () [0x00000] in &lt;filename unknown&gt;:0  at System.Linq.Enumerable+&lt;CreateWhereIterator&gt;c__Iterator1D`1[System.Type].MoveNext () [0x00000] in &lt;filename unknown&gt;:0  at Network.Serialize.Initialize () [0x00000] in &lt;filename unknown&gt;:0  at Bootstrap.NetworkInit () [0x00000] in &lt;filename unknown&gt;:0  at Bootstrap.Init_Tier0 () [0x00000] in &lt;filename unknown&gt;:0  at Bootstrap+&lt;Start&gt;c__Iterator2.MoveNext () [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>I&#039;m using Visual Studio 2010 (.NET 4.0). I will be glad for your help <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 15, 2015 at 6:41 PM">Aug 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/120604/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-121063" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Is your project targeting .Net 3.5 ? And have you tried using lambda instead of delegate?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Action&lt;int, int&gt; t = (i, j) =&gt;
+{};</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121063' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 17, 2015 at 2:02 PM">Aug 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121063' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/121063/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-121074" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Nope, .Net 4.0 <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121074' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 17, 2015 at 2:55 PM">Aug 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121074' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/121074/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-121085" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Andrew Mensky">
+                            <aside>
+                                <div class="attribution type">Andrew Mensky said: <a href="#post-121074" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Nope, .Net 4.0</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>.NET 3.5 is what should be targeted, as that&#039;s what Unity supports. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121085' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 17, 2015 at 3:06 PM">Aug 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121085' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/121085/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-121091" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-121085" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">.NET 3.5 is what should be targeted, as that&#039;s what Unity supports.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thx <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121091' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 17, 2015 at 3:32 PM">Aug 17, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflectiontypeloadexception-when-using-delegate-feature.11135/#post-121091' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/121091/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

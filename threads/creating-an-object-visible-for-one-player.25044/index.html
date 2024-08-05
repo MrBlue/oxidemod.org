@@ -1,0 +1,260 @@
+---
+layout: forums
+title: 'Creating an object visible for one player?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/' | prepend: site.baseurl }}">Creating an object visible for one player?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Alex_Wells</a>, <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 19, 2017 at 9:14 PM">Apr
+                19, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-316685" class="message" data-author="Alex_Wells">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alex_Wells" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alex_Wells</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey! I&#039;ve found VisualCupboard plugin and I like the idea, but realization is quite poor. So I&#039;ve
+                        rewritten it and now I&#039;m stuck with adding an object visible only for one player - command caller. So here&#039;s a part of code I&#039;ve stolen from original
+                        plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class ToolCupboardSphere : MonoBehaviour
+    {
+        BaseEntity sphere;
+        BaseEntity entity;        Vector3 pos = new Vector3(0, 0, 0);
+        Quaternion rot = new Quaternion();
+        string strPrefab = &quot;assets/prefabs/visualization/sphere.prefab&quot;;        void Awake()
+        {
+            entity = GetComponent&lt;BaseEntity&gt;();
+            sphere = GameManager.server.CreateEntity(strPrefab, pos, rot);
+            SphereEntity ball = sphere.GetComponent&lt;SphereEntity&gt;();
+            ball.currentRadius = 1f;
+            ball.lerpRadius = 2.0f * VisualCupboards.cupboardRadius;
+            ball.lerpSpeed = 100f;            sphere.SetParent(entity, &quot;&quot;);
+            sphere?.Spawn();
+        }        void OnDestroy()
+        {
+            if (sphere == null) return;
+            sphere.Kill();
+        }
+    }</pre>{% endraw %}
+                        </div>And now I need to make it visible for command caller only. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alex_Wells</a>,</span>
+                        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 19, 2017 at 9:14 PM">Apr 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/316685/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316726" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You may wish to make use of the CanNetworkTo hook to check if that sphere should be networking with the player it
+                        is trying to. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316726' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 20, 2017 at 12:29 AM">Apr 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316726' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/316726/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316731" class="message" data-author="Colon Blow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Colon Blow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Colon Blow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">yes, JoeSheep is correct, the CanNetworkTo hook is what you need.<br />
+                        <br /> But I will have a new version of VisualCupboard after tomorrows update that does include this very feature <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> I know a lot of players have been asking for only the owner of cupboard to see the spheres. its
+                        something I have been slowly working on. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Colon Blow</a>,</span>
+                        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316731' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 20, 2017 at 12:54 AM">Apr 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316731' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/316731/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316785" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Colon Blow">
+                            <aside>
+                                <div class="attribution type">Colon Blow said: <a href="#post-316731" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">yes, JoeSheep is correct, the CanNetworkTo hook is what you need.<br />
+                                        <br /> But I will have a new version of VisualCupboard after tomorrows update that does include this very feature <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> I know a lot of players have been asking for only the owner of cupboard to see the
+                                        spheres. its something I have been slowly working on.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I look forward to that <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316785' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 20, 2017 at 9:12 AM">Apr 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316785' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/316785/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316795" class="message" data-author="Alex_Wells">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Alex_Wells" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Alex_Wells</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Colon Blow">
+                            <aside>
+                                <div class="attribution type">Colon Blow said: <a href="#post-316731" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">yes, JoeSheep is correct, the CanNetworkTo hook is what you need.<br />
+                                        <br /> But I will have a new version of VisualCupboard after tomorrows update that does include this very feature <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br /> I know a lot of players have been asking for only the owner of cupboard to see the
+                                        spheres. its something I have been slowly working on.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yea, that would be cool, but I&#039;ve also rewritten the code and /showsphere + /killsphere commands to single command: /cupboards &lt;delay 3-60&gt;, which toggles them
+                        and no more /killsphere.<br /> [DOUBLEPOST=1492681808][/DOUBLEPOST] <div class="bbCodeBlock bbCodeQuote" data-author="JoeSheep">
+                            <aside>
+                                <div class="attribution type">JoeSheep said: <a href="#post-316726" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You may wish to make use of the CanNetworkTo hook to check if that sphere should be networking with the player it is trying to.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks =) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Alex_Wells</a>,</span>
+                        <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316795' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 20, 2017 at 10:49 AM">Apr 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/creating-an-object-visible-for-one-player.25044/#post-316795' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/316795/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

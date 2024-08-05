@@ -1,0 +1,180 @@
+---
+layout: forums
+title: 'Making NPCs wander around?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/making-npcs-wander-around.23824/' | prepend: site.baseurl }}">Making NPCs wander around?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">yannick10012</a>, <a href="{{ '/threads/making-npcs-wander-around.23824/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 16, 2017 at 8:15 AM">Feb 16,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-298007" class="message" data-author="yannick10012">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="yannick10012" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">yannick10012</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello Community,<br />
+                        <br /> I am currently running a server which has a few &quot;Zombies&quot; (NPC&#039;s) running around at set waypoints, sadly most of the time I&#039;m dealing with blocked
+                        waypoints or players getting scared to death when suddenly one of them walks right trough their base because of a waypoint. <br />
+                        <br /> My idea is to make them wander around randomly and after some searching I came across this code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using UnityEngine;
+using System.Collections;
+/// &lt;summary&gt;
+/// Creates wandering behaviour for a CharacterController.
+/// &lt;/summary&gt;
+[RequireComponent(typeof(CharacterController))]
+public class Wander : MonoBehaviour
+{
+    public float speed = 5;
+    public float directionChangeInterval = 1;
+    public float maxHeadingChange = 30;
+    CharacterController controller;
+    float heading;
+    Vector3 targetRotation;
+    void Awake ()
+    {
+        controller = GetComponent&lt;CharacterController&gt;();
+        // Set random initial rotation
+        heading = Random.Range(0, 360);
+        transform.eulerAngles = new Vector3(0, heading, 0);
+        StartCoroutine(NewHeading());
+    }
+    void Update ()
+    {
+        transform.eulerAngles = Vector3.Slerp(transform.eulerAngles, targetRotation, Time.deltaTime * directionChangeInterval);
+        var forward = transform.TransformDirection(Vector3.forward);
+        controller.SimpleMove(forward * speed);
+    }
+    /// &lt;summary&gt;
+    /// Repeatedly calculates a new direction to move towards.
+    /// Use this instead of MonoBehaviour.InvokeRepeating so that the interval can be changed at runtime.
+    /// &lt;/summary&gt;
+    IEnumerator NewHeading ()
+    {
+        while (true) {
+            NewHeadingRoutine();
+            yield return new WaitForSeconds(directionChangeInterval);
+        }
+    }
+    /// &lt;summary&gt;
+    /// Calculates a new direction to move towards.
+    /// &lt;/summary&gt;
+    void NewHeadingRoutine ()
+    {
+        var floor = Mathf.Clamp(heading - maxHeadingChange, 0, 360);
+        var ceil  = Mathf.Clamp(heading + maxHeadingChange, 0, 360);
+        heading = Random.Range(floor, ceil);
+        targetRotation = new Vector3(0, heading, 0);
+    }
+}</pre>{% endraw %}
+                        </div>Should it be possible, if edited, to combine this with the HumanNPC plugin? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">yannick10012</a>,</span>
+                        <a href="{{ '/threads/making-npcs-wander-around.23824/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2017 at 8:15 AM">Feb 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-npcs-wander-around.23824/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/298007/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-299401" class="message" data-author="yannick10012">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="yannick10012" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">yannick10012</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> No one able to help me? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">yannick10012</a>,</span>
+                        <a href="{{ '/threads/making-npcs-wander-around.23824/#post-299401' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 19, 2017 at 3:45 PM">Feb 19, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-npcs-wander-around.23824/#post-299401' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/299401/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-330196" class="message" data-author="JakeTheRipper">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JakeTheRipper" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JakeTheRipper</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> whats the zombie mod called <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JakeTheRipper</a>,</span>
+                        <a href="{{ '/threads/making-npcs-wander-around.23824/#post-330196' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 8, 2017 at 11:59 PM">Jun 8, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/making-npcs-wander-around.23824/#post-330196' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/330196/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

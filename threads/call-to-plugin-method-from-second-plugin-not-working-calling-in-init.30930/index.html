@@ -1,0 +1,566 @@
+---
+layout: forums
+title: 'Solved - Call to plugin method from second plugin not working (calling in Init())'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/' | prepend: site.baseurl }}">Call to plugin
+            method from second plugin not working (calling in Init())</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rebajas</a>, <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 22, 2018 at 3:36 PM">Jun 22, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-405344" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hiya,<br />
+                        <br /> Having a spot of bother with calling methods from another plugin - I have the following code in my &#039;core&#039; plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Core.Plugins;
+using Oxide.Core.Libraries;namespace Oxide.Plugins {    [Info(&quot;Core&quot;, &quot;Rebajas&quot;, &quot;0.0.1&quot;)]
+    [Description(&quot;Oxide plugin.&quot;)]    class RustAlertCore : RustPlugin {        string privateKey;        protected override void LoadDefaultConfig() {            Config.Clear();            Config[&quot;privateKey&quot;] = &quot;11111111111111111111111111111111&quot;;            SaveConfig();        }        void Init() {            privateKey = (string)Config[&quot;privateKey&quot;];        }        string GetPrivateKey() {            /* Make the private key accessible to other plugins */            Puts(&quot;In GetPrivateKey: &quot; + privateKey);            return privateKey;        }    }}</pre>{% endraw %}
+                        </div>And this in a second plugin:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [PluginReference] Plugin RustAlertCore;        string privateKey;        void Init() {            /* Get the private key from core */            privateKey = (string)RustAlertCore?.Call(&quot;GetPrivateKey&quot;);            Puts(&quot;Private key: &quot; + privateKey);        }</pre>{% endraw %}
+                        </div>But the value is not returned <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" /> additionally I don&#039;t see
+                        the message from the core method in the console.<br />
+                        <br /> Any help appreciated,<br />
+                        <br />
+                        <br /> T. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 22, 2018 at 3:36 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405344/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405346" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I think you have to precede <i>GetPrivateKey()</i> with <i>[HookMethod(&quot;GetPrivateKey&quot;)]</i> to make it
+                        accessible to other plugs. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405346' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 4:09 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405346' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405346/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405354" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If I do the method call like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void Init() {
+           
+            var RustAlertCore = plugins.Find(&quot;RustAlertCore&quot;);
+            privateKey = (string)RustAlertCore?.Call(&quot;GetPrivateKey&quot;);            Puts(&quot;Private key: &quot; + privateKey);        }</pre>{% endraw %}
+                        </div>It works, but I don&#039;t really want a bunch of references to the same plugin floating around, and when I put the reference in the class root it throws an error about
+                        using var.<br />
+                        <br /> Basically I am trying to tidy up some code and the way as described in my first post seems the cleanest.<br />
+                        <br /> ---<br />
+                        <br /> Steenamaroo: not sure where you mean - literally on the line before I define the method? I&#039;ve not seen an example using this syntax before... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405354' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 4:32 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405354' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405354/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405355" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yep.<br /> My knowledge is very limited here but any time I&#039;ve seen/used external calls it&#039;s been<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        [HookMethod(&quot;NameHere&quot;)]
+        public string NameHere()
+        {
+           //return some string
+        }</pre>{% endraw %}
+                        </div>then <br />
+                        <br /> string result = (string)SomePlugin?.CallHook(&quot;NameHere&quot;); <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 22, 2018 at 4:53 PM">Jun 22, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405355' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 4:34 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405355' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405355/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405359" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hmm, I had tried that but it didn&#039;t seem to make any difference - I see you added in more info but I&#039;ve
+                        started down a different route now <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> If what I&#039;m trying now
+                        doesn&#039;t sort this out I&#039;ll revisit using your syntax. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405359' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 5:06 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405359' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405359/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405360" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ok, cool.<br /> I&#039;m sure there&#039;s more than one way to skin the cat.<br /> That&#039;s just the one
+                        I&#039;m using. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405360' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 5:14 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405360' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405360/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405362" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">My plugin looks like Frankenstien&#039;s Monster right now <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                        <br /> I am wondering if it might have been some sort of race condition where the Init was firing before the other plugin was ready. I changed the Init to OnPluginLoaded and it
+                        seems to be working now... fingers crossed. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405362' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 5:22 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405362' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405362/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405363" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I think you can check if a referenced plugin is null.<br /> In your case - <i>if (RustAlertCore == null)</i>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405363' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 5:28 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405363' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405363/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405367" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Oo, that might be useful later - currently looking at something else I&#039;ve managed to break while getting this
+                        sorted <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405367' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 6:42 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405367' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405367/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405368" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-405346" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I think you have to precede <i>GetPrivateKey()</i> with <i>[HookMethod(&quot;GetPrivateKey&quot;)]</i> to make it accessible to other plugs.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>No you don&#039;t. That&#039;s only useful if a method is public or you are developing an extension. The methods in these plugins are all private and accessible via
+                        .Call. 99.9% of the time; HookMethod is not necessary in normal plugins.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-405363" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I think you can check if a referenced plugin is null.<br /> In your case - <i>if (RustAlertCore == null)</i></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The ? in RustAlertCore?.Call is what that is already, though none of that needs to be done if it is null really. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405368' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 7:04 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405368' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405368/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405369" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi Wulf, I think I&#039;m getting there - piecing things together slowly. Alot of it seemed to be the Init() not
+                        triggering when I thought it would... anyway, getting there <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405369' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 7:07 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405369' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405369/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405370" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rebajas">
+                            <aside>
+                                <div class="attribution type">Rebajas said: <a href="#post-405369" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hi Wulf, I think I&#039;m getting there - piecing things together slowly. Alot of it seemed to be the Init() not triggering when I thought it
+                                        would... anyway, getting there <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>RustAlertCore comes after Core when loaded, so you&#039;d either need to change the plugin order or use a different hook such as Loaded() or OnServerInitialized(). A
+                        plugin reference will always be null in Init(). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405370' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 7:07 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405370' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405370/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405372" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Good to know, thanks. ^^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405372' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 22, 2018 at 7:24 PM">Jun 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/call-to-plugin-method-from-second-plugin-not-working-calling-in-init.30930/#post-405372' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405372/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

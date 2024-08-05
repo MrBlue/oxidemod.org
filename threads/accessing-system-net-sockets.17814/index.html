@@ -1,0 +1,293 @@
+---
+layout: forums
+title: 'Accessing System.Net.Sockets?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/accessing-system-net-sockets.17814/' | prepend: site.baseurl }}">Accessing System.Net.Sockets?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">DestinyClan.Hekey</a>, <a href="{{ '/threads/accessing-system-net-sockets.17814/' | prepend: site.baseurl }}"><span class="DateTime" title="May 5, 2016 at 2:17 PM">May 5,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-203033" class="message" data-author="DestinyClan.Hekey">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DestinyClan.Hekey" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DestinyClan.Hekey</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I have a problem with the server socket. It has to be something on a remote control. I&#039;m trying to do it this
+                        way:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;using Oxide.Core;
+using Oxide.Core.Libraries;namespace Oxide.Plugins
+{
+    class Remote : HurtworldPlugin
+    {
+        void Init()
+        {
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse(&quot;127.0.0.1&quot;), 29000);
+            //IPEndPoint localEndPoint = CreateIPEndPoint(&quot;127.0.0.1:29000&quot;);            // Create a TCP/IP socket.
+            Socket listener = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream, ProtocolType.Tcp);            // Bind the socket to the local endpoint and listen for incoming connections.
+            listener.Bind(localEndPoint);
+            listener.Listen(100);            // ...        }
+    }
+}
+</pre>{% endraw %}
+                        </div>But I getting an error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>15:13 [Error] Failed to initialize plugin 'Remote v1.0.0' (UnauthorizedAccessException: System access is restricted, you are not allowed to use System.Net.IPEndPoint)
+15:13 [Debug]   at Oxide.Plugins.Remote.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.HandleAddedToManager (Oxide.Core.Plugins.PluginManager manager) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>How to properly do a simple socket? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DestinyClan.Hekey</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2016 at 2:17 PM">May 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203033/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203040" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You&#039;d need to use an extension to handle that, it isn&#039;t available in plugins due to the sandbox. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203040' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2016 at 2:55 PM">May 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203040' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203040/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203052" class="message" data-author="DestinyClan.Hekey">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DestinyClan.Hekey" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DestinyClan.Hekey</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">From your other posts I know that the extension should be placed in Hurtworld_Data/Managed. But how to do them? It
+                        must be in the format .dll? You can give tips on how you can do extension? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DestinyClan.Hekey</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203052' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2016 at 3:13 PM">May 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203052' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203052/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203053" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DestinyClan.Hekey">
+                            <aside>
+                                <div class="attribution type">DestinyClan.Hekey said: <a href="#post-203052" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">From your other posts I know that the extension should be placed in Hurtworld_Data/Managed. But how to do them? It must be in the format .dll?
+                                        You can give tips on how you can do extension?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Most of Oxide is extensions, but yes, they&#039;d be placed under Managed as a .dll. You can see some examples here: <a
+                            href="https://github.com/OxideMod/Oxide/tree/master/Extensions" target="_blank" class="externalLink">Oxide/Extensions at master · OxideMod/Oxide · GitHub</a>. Keep in mind
+                        that not all hosts allow custom extensions though. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203053' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 5, 2016 at 3:14 PM">May 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203053' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203053/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203918" class="message" data-author="DestinyClan.Hekey">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DestinyClan.Hekey" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DestinyClan.Hekey</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thanks, socket works. I have not used before C#. How in the extension call any server command and chat command? I
+                        have a problem to get to ConsoleManager.Instance?.ExecuteCommand() or similar method executeCommand in extension. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DestinyClan.Hekey</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203918' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 7, 2016 at 7:16 PM">May 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203918' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203918/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-203925" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DestinyClan.Hekey">
+                            <aside>
+                                <div class="attribution type">DestinyClan.Hekey said: <a href="#post-203918" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks, socket works. I have not used before C#. How in the extension call any server command and chat command? I have a problem to get to
+                                        ConsoleManager.Instance?.ExecuteCommand() or similar method executeCommand in extension.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d need the correct using statements and references. You may be able to use API already wrapped by Oxide, but I&#039;ve not tried with custom extensions. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203925' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 7, 2016 at 7:32 PM">May 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-system-net-sockets.17814/#post-203925' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/203925/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

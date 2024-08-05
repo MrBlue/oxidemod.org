@@ -1,0 +1,177 @@
+---
+layout: forums
+title: 'Rust - Banking System'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixRed">Rust</span> <a href="{{ '/threads/banking-system.28244/' | prepend: site.baseurl }}">Banking System</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">tomhud</a>, <a href="{{ '/threads/banking-system.28244/' | prepend: site.baseurl }}"><span class="DateTime" title="Nov 20, 2017 at 5:14 AM">Nov 20, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-368023" class="message" data-author="tomhud">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="tomhud" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">tomhud</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I searched,only Bank system on here was on for storing peoples stuff in a vault.<br /> Can anyone make a bank
+                        system that works with Economics and gives the player a % Interest or even withdrawal fee based on what will be set in the config file ?<br />
+                        <br /> Maybe do a toplist of the high end earners in the bank as well.<br /> Im willing to chip in some money for this plugin if anyone else is willing. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">tomhud</a>,</span>
+                        <a href="{{ '/threads/banking-system.28244/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Nov 20, 2017 at 5:14 AM">Nov 20,
+                                2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/banking-system.28244/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368023/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-368188" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Text;
+using UnityEngine;
+using Oxide.Core;
+using Oxide.Core.Plugins;namespace Oxide.Plugins
+{
+    [Info(&quot;EconomicsInterest&quot;, &quot;Calytic&quot;, &quot;0.0.1&quot;)]
+    class EconomicsInterest : RustPlugin
+    {
+        [PluginReference]
+        Plugin Economics;        public void Loaded()
+        {
+            if (!plugins.Exists(&quot;Economics&quot;))
+            {
+                PrintWarning(&quot;Economics not found! EconomicsInterest disabled. Cannot use clanShare without this plugin. http://oxidemod.org/plugins/economics.717/&quot;);
+                return;
+            }            Initialize();
+        }        protected override void LoadDefaultConfig()
+        {
+            Config[&quot;VERSION&quot;] = Version.ToString();            Config[&quot;AccumulateMinutes&quot;] = 60;
+            Config[&quot;InterestPercent&quot;] = 1.5f;
+        }        void Initialize()
+        {
+            float accumulateMinutes = (float)Config[&quot;AccumulateMinutes&quot;];
+            timer.Every(accumulateMinutes * 60, AccumulateInterest);
+        }        void AccumulateInterest()
+        {
+            float interestPercent;            if(!float.TryParse(Config[&quot;InterestPercent&quot;].ToString(), out interestPercent)) {
+                return;
+            }
+           
+            foreach (var player in covalence.Players.All)
+            {
+                double balance = Economics.Call&lt;double&gt;(&quot;Balance&quot;, player.Id);                if(balance &gt; 0) {
+                    var interest = Math.Round(balance * interestPercent / 100, 2);
+                    Economics.Call(&quot;Deposit&quot;, player.Id, (double)interest);
+                }
+            }
+        }        [ChatCommand(&quot;eco_test_interest&quot;)]
+        void cmdTestInterest(BasePlayer player, string command, string[] args)
+        {
+            if (!player.IsAdmin) return;
+            AccumulateInterest();
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>Here is a small plugin to get you started. Will accumulate 1.5% interest every hour for every player who has a balance above zero (regardless of activity). <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/banking-system.28244/#post-368188' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 21, 2017 at 1:18 AM">Nov 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/banking-system.28244/#post-368188' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368188/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-368199" class="message" data-author="tomhud">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="tomhud" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">tomhud</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">thanks will test this Calytic <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">tomhud</a>,</span>
+                        <a href="{{ '/threads/banking-system.28244/#post-368199' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Nov 21, 2017 at 2:32 AM">Nov 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/banking-system.28244/#post-368199' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/368199/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

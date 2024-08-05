@@ -1,0 +1,190 @@
+---
+layout: forums
+title: 'Moving item to container?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/moving-item-to-container.24678/' | prepend: site.baseurl }}">Moving item to container?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kuhulin</a>, <a href="{{ '/threads/moving-item-to-container.24678/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 27, 2017 at 7:25 PM">Mar 27, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-310894" class="message" data-author="Kuhulin">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kuhulin" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kuhulin</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> When I use CanEquipItem hook i try:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> void CanEquipItem(PlayerInventory inventory, Item item)
+{
+        item.MoveToContainer(inventory.containerMain);
+           
+}</pre>{% endraw %}
+                        </div>And this don&#039;t work.<br /> But when i use this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;testm&quot;)]
+        void AddressCommand(BasePlayer player, string command, string[] args)
+        {
+            player.inventory.containerBelt.GetSlot(1).MoveToContainer(player.inventory.containerMain);
+        }</pre>{% endraw %}
+                        </div>this work fine. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kuhulin</a>,</span>
+                        <a href="{{ '/threads/moving-item-to-container.24678/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 27, 2017 at 7:25 PM">Mar 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/moving-item-to-container.24678/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/310894/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-310923" class="message" data-author="VVoid">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="VVoid" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">VVoid</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You probably misusing hook CanEquipItem.<br /> Possible situation: Hook being called when Rust are checking if
+                        item can be equipped. <br /> You are moving it to different container and when check ends rust moves item to the appropriate slot.<br />
+                        <br /> Possible solution: Override behavior of CanEquipItem by returning bool value. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">VVoid</a>,</span>
+                        <a href="{{ '/threads/moving-item-to-container.24678/#post-310923' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 27, 2017 at 9:35 PM">Mar 27, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/moving-item-to-container.24678/#post-310923' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/310923/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-310961" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/18166/" class="username" data-user="18166, @VVoid">@VVoid</a> is correct - you are not using the <i>CanEquipItem</i> hook quite right.
+                        This hook is called <span style="text-decoration: underline">before</span> the item is moved to any inventory, and should have a return type of <i>object</i>, not <i>void</i>.
+                        Then if you&#039;re looking to prevent an item from being equipped into the belt, then all you have to do is return <i>false</i> (after checking for said item/inventory) and
+                        the item will not be moved to the belt. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/moving-item-to-container.24678/#post-310961' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 28, 2017 at 12:49 AM">Mar 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/moving-item-to-container.24678/#post-310961' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/310961/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-311014" class="message" data-author="Austinv900">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Austinv900" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Austinv900</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Essentially do what you where doing<br />
+                        <br /> But like so<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private object CanEquipItem(PlayerInventory inventory, Item item)
+{
+    // Run your code here    return false; // to bypass the default move
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Austinv900</a>,</span>
+                        <a href="{{ '/threads/moving-item-to-container.24678/#post-311014' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 28, 2017 at 6:10 AM">Mar 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/moving-item-to-container.24678/#post-311014' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/311014/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

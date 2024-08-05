@@ -1,0 +1,220 @@
+---
+layout: forums
+title: 'Solved - Self referencing loop while saving data'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/' | prepend: site.baseurl }}">Self referencing loop while saving data</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Bonzaii</a>, <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 21, 2016 at 8:37 PM">Jan 21,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-166572" class="message" data-author="Bonzaii">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bonzaii" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bonzaii</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi Guys,<br />
+                        <br /> Could anyone please tell me what is that self referencing loop thingy about?<br />
+                        <br /> I get a console error message when trying to save data with this function:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Interface.Oxide.DataFileSystem.WriteObject(dataFile, storedData);</pre>{% endraw %}
+                        </div>Error I am getting is:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+&gt; reload Auctioner
+[Oxide] 9:34 PM [Error] Failed to call hook 'Unloaded' on plugin 'Auctioner v0.0.2' (JsonSerializationException: Self referencing loop detected for property 'normalized' with type 'UnityEngine.Vector3'. Path 'auctionCurrent.seller.eyes.duckOffset.normalized'.)
+[Oxide] 9:34 PM [Debug]   at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CheckForCircularReference (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonProperty property, Newtonsoft.Json.Serialization.JsonContract contract, Newtonsoft.Json.Serialization.JsonContainerContract containerContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.CalculatePropertyValues (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonContainerContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonProperty property, Newtonsoft.Json.Serialization.JsonContract&amp; memberContract, System.Object&amp; memberValue) [0x00000] in &lt;filename unknown&gt;:0
+  at Newtonsoft.Json.Serialization.JsonSerializerInternalWriter.SerializeObject (Newtonsoft.Json.JsonWriter writer, System.Object value, Newtonsoft.Json.Serialization.JsonObjectContract contract, Newtonsoft.Json.Serialization.JsonProperty member, Newtonsoft.Json.Serialization.JsonContainerContract collectionContract, Newtonsoft.Json.Serialization.JsonProperty containerProperty) [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>This is data class I am trying to save:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+class StoredData
+        {            public Auction auctionCurrent = null;
+            public List&lt;Auction&gt; auctionQueue = new List&lt;Auction&gt;();
+            public List&lt;Auction&gt; auctionArchive = new List&lt;Auction&gt;();            public void NewAuction(BasePlayer seller, Item item, int price)
+            {
+                Auction auc = new Auction(seller, item, price);
+                if (auctionCurrent == null) auctionCurrent = auc;
+                else auctionQueue.Add(auc);
+            }            public void NextAuction()
+            {
+                Auction auc = GetNextAuction();
+                if (auc != null)
+                {
+                    auctionCurrent = auc;
+                    auc.Start();
+                }
+            }
+            public void EndAuction()
+            {
+                auctionCurrent.End();
+                auctionArchive.Add(auctionCurrent);
+                auctionCurrent = null;
+            }
+            public Auction GetNextAuction()
+            {
+                if (auctionQueue.Count &gt; 0)
+                {
+                    Auction auc = auctionQueue[0];
+                    auctionQueue.Remove(auc);
+                    return auc;
+                }
+                return null;
+            }            public StoredData() { }
+        }
+        class Auction
+        {
+            public string status;
+            public BasePlayer seller;
+            public BasePlayer buyer = null;
+            public int startPrice;
+            public int currentPrice = 0;
+            public Item item;            public void Start() { status = &quot;started&quot;; }
+            public void Queue() { status = &quot;queued&quot;; }
+            public void Bid(BasePlayer buyer, int bid)
+            {
+                if (bid &gt; currentPrice)
+                {
+                    this.buyer = buyer;
+                    currentPrice = bid;
+                }
+                if (status != &quot;bid&quot;) status = &quot;bid&quot;;
+            }
+            public void End() { status = &quot;ended&quot;; }            public bool isLive() { return status == &quot;started&quot; || status == &quot;bid&quot;; }
+            public bool isQueued() { return status == &quot;queued&quot;; }
+            public bool isBet() { return buyer != null; }            public Auction() { }
+            public Auction(BasePlayer seller, Item item, int price)
+            {
+                this.seller = seller;
+                this.item = item;
+                startPrice = price;
+            }
+        }</pre>{% endraw %}
+                        </div><br />
+                        <b>Is this because I use Item and/or BasePlayer class within my data class? </b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bonzaii</a>,</span>
+                        <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 21, 2016 at 8:37 PM">Jan 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/166572/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-166979" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><b>Is this because I use Item and/or BasePlayer class within my data class?</b></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Yes, specifically the BasePlayer in this case. Do not attempt to save the BasePlayer (use the userID). I would also discourage attempting to save the Item instance as
+                        well. Instead create proxy classes to represent the item as JSON. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/#post-166979' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 22, 2016 at 6:25 AM">Jan 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/#post-166979' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/166979/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-167028" class="message" data-author="Bonzaii">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bonzaii" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bonzaii</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well I don&#039;t really have to save any of these classes, I applied a workaround but it would make things
+                        sooooo much easier if I could save Item. Well, still learning, will get around this too. <br />
+                        <br /> Thanks a lot! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bonzaii</a>,</span>
+                        <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/#post-167028' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 22, 2016 at 9:06 AM">Jan 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/self-referencing-loop-while-saving-data.14891/#post-167028' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/167028/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

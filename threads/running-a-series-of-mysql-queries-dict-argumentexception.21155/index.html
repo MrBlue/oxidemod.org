@@ -1,0 +1,138 @@
+---
+layout: forums
+title: 'Solved - Running a series of MySQL queries? (Dict ArgumentException)'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/' | prepend: site.baseurl }}">Running a series of MySQL
+            queries? (Dict ArgumentException)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">Tolland</a>, <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Sep 24, 2016 at 4:57 AM">Sep 24, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-254319" class="message" data-author="Tolland">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tolland" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tolland</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Maybe I am missing something, but I am trying to run a series of mysql queries, like so;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void ProcessMySQLEvents()
+        {
+            string SelectEvents = &quot;SELECT * FROM scheduled_game &quot;
+                  +&quot;WHERE scheduled_start &gt; NOW();&quot;;
+            string SelectTeams = &quot;SELECT * FROM scheduled_game_team t, scheduled_game g &quot;
+                 +&quot;WHERE g.scheduled_start &gt; NOW() AND t.g_guid = g.guid;&quot;;
+            var sql = Sql.Builder.Append(SelectEvents);
+            _mySql.Query(sql, _mySqlConnection, results =&gt; ParseSchEventResults(results));
+            var sql2 = Sql.Builder.Append(SelectTeams);
+            _mySql.Query(sql2, _mySqlConnection, results2 =&gt; ParseSchTeamResults(results2));        }        void ParseSchEventResults(List&lt;Dictionary&lt;string, object&gt;&gt; events)
+        {
+            //foreach (Dictionary&lt;string, object&gt; result in events)
+            //{
+            //    DateTime time = DateTime.Now;
+            //    Puts(&quot;start is &quot; + result[&quot;scheduled_start&quot;]);
+            //}
+        }        void ParseSchTeamResults(List&lt;Dictionary&lt;string, object&gt;&gt; teams)
+        {
+            //foreach (Dictionary&lt;string, object&gt; result in teams)
+            //{
+            //    DateTime time = DateTime.Now;
+            //    Puts(&quot;start is &quot; + result[&quot;team_name&quot;]);
+            //}
+        }
+</pre>{% endraw %}
+                        </div>However I am getting the following error;<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[09/24/2016 04:52:45] [Oxide] 4:52 AM [Error] MySql handle raised an exception in 'Test2 v1.0.0' 
+plugin (ArgumentException: An element with the same key already exists in the dictionary.)</pre>{% endraw %}
+                        </div>and<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[09/24/2016 04:56:06] [Oxide] 4:56 AM [Debug]   at System.Collections.Generic.Dictionary`2[System.String,System.Object].Add
+ (System.String key, System.Object value) [0x00000] in &lt;filename unknown&gt;:0
+</pre>{% endraw %}
+                        </div>also, is there any way to get some more specific debugging information? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tolland</a>,</span>
+                        <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 24, 2016 at 4:57 AM">Sep 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/254319/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-254331" class="message" data-author="Tolland">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Tolland" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Tolland</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ah. It seems that this happens if you do a query on multiple tables, which each have the same fieldname.<br />
+                        <br /> So changing the second query to this, fixed the problem;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            string SelectTeams = &quot;SELECT g.guid, g.scheduled_start, length, game_name, t.guid t_guid, team_name &quot;
+                +&quot; FROM scheduled_game_team t, scheduled_game g &quot;
+                 + &quot;WHERE g.scheduled_start &gt; NOW() AND t.g_guid = g.guid;&quot;;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Tolland</a>,</span>
+                        <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/#post-254331' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 24, 2016 at 5:50 AM">Sep 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/running-a-series-of-mysql-queries-dict-argumentexception.21155/#post-254331' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/254331/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

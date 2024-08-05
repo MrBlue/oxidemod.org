@@ -1,0 +1,532 @@
+---
+layout: forums
+title: 'Issue with datatable example from docs'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/' | prepend: site.baseurl }}">Issue with datatable example from docs</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Masteroliw</a>, <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 10, 2015 at 7:41 PM">Oct 10,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-135530" class="message" data-author="Masteroliw">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Masteroliw" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Masteroliw</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What I&#039;m talking about: <a href="http://docs.oxidemod.org/rust/#saving-a-data-table" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide API for Rust</a><br />
+                        <br /> So I have been trying to understand how the data tables work from the code example. I have copied the code to a clean C# file, and it runs as it should. But there&#039;s
+                        one problem I have come across about the command /Test.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;Test&quot;)]
+        private void Test(BasePlayer player, string command, string[] args)
+        {
+            var info = new PlayerInfo(player);
+            if (storedData.Players.Contains(info))
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+                storedData.Players.Add(info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;MyDataFile&quot;, storedData);
+            }
+        }</pre>{% endraw %}
+                        </div>When I do the command /Test for the first time, everything goes as it should. Message about saving the player data and the player info gets stored in the json file.<br />
+                        <br /> But when I do the command a second time to see if the if statement works and that it checks that the data is already existing, it somehow doesn&#039;t work. It
+                        doesn&#039;t read the json file. So instead it duplicates the information and it becomes this mess:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;Players&quot;: [
+    {
+      &quot;UserId&quot;: &quot;76561198023852873&quot;,
+      &quot;Name&quot;: &quot;Masteroliw&quot;
+    },
+    {
+      &quot;UserId&quot;: &quot;76561198023852873&quot;,
+      &quot;Name&quot;: &quot;Masteroliw&quot;
+    },
+    {
+      &quot;UserId&quot;: &quot;76561198023852873&quot;,
+      &quot;Name&quot;: &quot;Masteroliw&quot;
+    }
+  ]
+}</pre>{% endraw %}
+                        </div>I have tested to restart the server, and then the command, but that doesn&#039;t work. And tried to reload the plugin.<br />
+                        <br /> So I ask, has something changed and that it&#039;s just out of date information I just have copied and tried to run.<br />
+                        <br /> Or is it just working fine for everyone else and there&#039;s something else I have to do to get it all to work? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Masteroliw</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 10, 2015 at 7:41 PM">Oct 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/135530/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-135538" class="message" data-author="Norn">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Norn" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Norn</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[ChatCommand(&quot;Test&quot;)]
+        private void Test(BasePlayer player, string command, string[] args)
+        {
+            if (storedData.Players.Contains(player.UserId))
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+        var info = new PlayerInfo(player);
+                storedData.Players.Add(info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;MyDataFile&quot;, storedData);
+            }
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Norn</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-135538' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 10, 2015 at 8:17 PM">Oct 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-135538' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/135538/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-135555" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You are confusing binary and JSON serialization. JSON is an intermediate format, binary is the in-memory
+                        representation of an object. JSON serialization is not like binary serialization in that the object instances are stateless and may not be re-used. Essentially, saving the data
+                        destroys the object, and when it is reloaded it is a totally different object (with the same data). This is why the Contains check is not functioning as intended.<br />
+                        <br /> You can use an in-memory working copy of your objects and only save/load the data on restart.<br />
+                        <br /> Or you can key your stored JSON data using a key-value pair/dictionary<br />
+                        <br /> Or you can do both. In any case, you will no longer have duplicate data in your file. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-135555' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 11, 2015 at 12:33 AM">Oct 11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-135555' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/135555/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-280896" class="message" data-author="[CHRONIC] Skeeter">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="[CHRONIC] Skeeter" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">[CHRONIC] Skeeter</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Calytic">
+                            <aside>
+                                <div class="attribution type">Calytic said: <a href="#post-135555" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You are confusing binary and JSON serialization. JSON is an intermediate format, binary is the in-memory representation of an object. JSON
+                                        serialization is not like binary serialization in that the object instances are stateless and may not be re-used. Essentially, saving the data destroys the
+                                        object, and when it is reloaded it is a totally different object (with the same data). This is why the Contains check is not functioning as intended.<br />
+                                        <br /> You can use an in-memory working copy of your objects and only save/load the data on restart.<br />
+                                        <br /> Or you can key your stored JSON data using a key-value pair/dictionary<br />
+                                        <br /> Or you can do both. In any case, you will no longer have duplicate data in your file.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Heya Calytic, It&#039;d be real awesome if you could show what you mean with a bit of example code.<br />
+                        <br /> The API documentation lists one example snippet that appears broken af, and when any potential plugin developer asks about it, the stock answer is &quot;Don&#039;t do
+                        that, that is bad&quot;, without any generally useful clarification.<br />
+                        <br /> I&#039;ve gathered there are better ways to do this sort of thing (read the stored data at startup, modify it in memory, and write it at shutdown, for instance), but
+                        without some pre-existing solid grounding in oxide plugin development or the theory of JSON instantiation, these sort of broad suggestions don&#039;t find fertile ground with
+                        me (and it would seem, many others).<br />
+                        <br /> Throw us a bone, yo, hopefully one that hasn&#039;t been previously boiled for soup <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2"
+                            alt=";)" title="Wink    ;)" /><br />
+                        <br /> Thanks in advance! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">[CHRONIC] Skeeter</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280896' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 2, 2017 at 5:21 PM">Jan 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280896' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/280896/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-280903" class="message" data-author="[CHRONIC] Skeeter">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="[CHRONIC] Skeeter" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">[CHRONIC] Skeeter</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Norn">
+                            <aside>
+                                <div class="attribution type">Norn said: <a href="#post-135538" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+[ChatCommand(&quot;Test&quot;)]
+        private void Test(BasePlayer player, string command, string[] args)
+        {
+            if (storedData.Players.Contains(player.UserId))
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+        var info = new PlayerInfo(player);
+                storedData.Players.Add(info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;MyDataFile&quot;, storedData);
+            }
+        }
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>This simply doesn&#039;t work. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">[CHRONIC] Skeeter</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280903' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 2, 2017 at 6:53 PM">Jan 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280903' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/280903/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-280961" class="message staff" data-author="Calytic">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a href="members/calytic.58712/" class="avatar Avm" data-avatarhtml="true"><img src="data/avatars/m/58/58712.jpg?1463423255" width="96" height="96" alt="Calytic" /></a>
+                </div>
+                <h3 class="userText">
+                    <a href="members/calytic.58712/" class="username" dir="auto" itemprop="name">Calytic</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                    <em class="userBanner bannerGreen wrapped" itemprop="title"><span class="before"></span><strong>Community Mod</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;Test&quot;)]
+        private void Test(BasePlayer player, string command, string[] args)
+        {
+            var info = new PlayerInfo(player);
+            if (storedData.Players.Contains(info))
+                PrintToChat(player, &quot;Your data has already been added to the file.&quot;);
+            else
+            {
+                PrintToChat(player, &quot;Saving your data to the file.&quot;);
+                storedData.Players.Add(info);
+                Interface.GetMod().DataFileSystem.WriteObject(&quot;MyDataFile&quot;, storedData);
+            }
+        }</pre>{% endraw %}
+                        </div>The Test method, in this case, follows the Chain of Responsibility pattern commonly used in logging. A clearer way to express this pattern would be to add a DateTime
+                        property to PlayerInfo. Therein denoting a stateless list of singular events as opposed to a stateful list of all in-memory players.<br />
+                        <br /> What&#039;s confusing you is that a log file would generally not be reloaded on restart. I will agree that the example above is achieving 2 separate things and doing
+                        neither particularly well. But then again, it is just an API guide, not a primer on conventional programming practices.<br />
+                        <br /> There is somewhere in the range of 500 plugins in the Oxide plugin repository, many of which demonstrate data storage in a variety of patterns using a variety of data
+                        formats. 3 of my public plugins reliably store player data by a keyed list, you may consult:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/noescape.1394/" class="internalLink">NoEscape for Rust | Oxide</a><br />
+                        <a href="http://oxidemod.org/plugins/antiofflineraid.1464/" class="internalLink">AntiOfflineRaid for Rust | Oxide</a><br />
+                        <a href="http://oxidemod.org/plugins/bank.2116/" class="internalLink">Bank for Rust | Oxide</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a href="members/calytic.58712/" class="username author" dir="auto">Calytic</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280961' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 3, 2017 at 12:06 AM">Jan 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280961' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/280961/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-280983" class="message" data-author="[CHRONIC] Skeeter">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="[CHRONIC] Skeeter" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">[CHRONIC] Skeeter</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for the reply Calytic!<br />
+                        <br /> Also, I didn&#039;t mean to be throwing shade on you regarding the quality of the example code in the API doc; I&#039;m sure we&#039;d both agree that an example that
+                        *doesn&#039;t* illustrate best coding practices is probably not the most desireable of examples.<br />
+                        <br /> That being said, thanks for the more penetrating illustration, and the encouragement to review the technique in the plugins you&#039;ve written; I have done this with a
+                        few of the plugins, and have gotten some traction with some things, though not with this particular problem.<br />
+                        <br /> However, I think that the real problem with this example code per the OP&#039;s original question, is that the code given *does not work*. This is complicated by the
+                        fact that it appears to provide a useful recipe for a commonly required solution, that of recognizing the presence or absence of a member in the hashset (in spite of the
+                        example actually being about something else entirely).<br />
+                        <br /> I&#039;ll have a look at your code in the morning, I&#039;m just clearing out for the day.<br />
+                        <br /> Thanks again <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">[CHRONIC] Skeeter</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280983' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 3, 2017 at 3:08 AM">Jan 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-280983' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/280983/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-281710" class="message" data-author="james.stallings">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="james.stallings" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">james.stallings</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok Caylitic<br />
+                        <br /> I spent a few days taking a good look at your plugins and man you got a lot going on there, proud of you <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> Not exactly a great place to send a newb to parse a simple solution though. I singled out the AntiOfflineRaid plugin, and focussed entirely on that one for this
+                        purpose.<br />
+                        <br /> I did manage to sort out the relevant bits and come up with the following piece of code, which is actually foundational for a simple greeter type plugin that I&#039;m
+                        writing (not because the world needs another one, but because I desire to know how to do this sort of thing). It does only slightly more than the example code referenced in
+                        OP&#039;s initial post, had the example code actually worked:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
+using Rust;
+using Facepunch;
+using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;MC&quot;, &quot;James Stallings&quot;, 0.1)]
+    [Description(&quot;Master of Ceremonies&quot;)]    public class MC : RustPlugin
+    {
+        public ulong userid;
+        public string username;        public Dictionary&lt;ulong, string&gt; playerData = new Dictionary&lt;ulong, string&gt;();        public BasePlayer player
+        {
+            get
+            {
+                return BasePlayer.FindByID(userid);
+            }
+        }        void ReadPlayerData()
+        {
+            playerData = Interface.Oxide.DataFileSystem.ReadObject&lt;Dictionary&lt;ulong, string&gt;&gt;(&quot;MC&quot;);
+        }
+ 
+     
+        void WritePlayerData()
+        {
+             Interface.Oxide.DataFileSystem.WriteObject(&quot;MC&quot;, playerData);
+        }     
+        void OnServerInitialized()
+        {
+            ReadPlayerData();
+        }     
+        void OnServerSave()
+        {
+            WritePlayerData();
+        }     
+        void OnServerShutdown()
+        {
+            playerData.Add(player.userID,player.displayName);
+            WritePlayerData();
+        }        void OnPlayerInit(BasePlayer player)
+        {
+            if (playerData.ContainsKey(player.userID))
+                PrintToChat(player, &quot;Welcome Back {0}&quot;,player.displayName);
+            else
+            {
+                 playerData.Add(player.userID,player.displayName);
+                 PrintToChat(&quot;Everyone welcome {0} to the local food chain!&quot;,player.displayName);
+            }
+      }
+}</pre>{% endraw %}
+                        </div>Sorry about any formatting concerns; web text entry is not my friend.<br />
+                        <br /> For the sake of OP I will mention that the execution context of a rust plugin is largely an event driven beast, and so patterns reflect a lot of callback and event
+                        hooking construction.<br />
+                        <br /> In this instance, all file I/O is contingent on timed events (server state-saves), startup/shutdown events, and user joins. All data is kept in memory, and only
+                        persisted when it is logical to do so.<br />
+                        <br /> a few of the using directives may not be strictly required for this snippet of code, but are for my continued work on this little project, and I cbt to eliminate them in
+                        this post.<br />
+                        <br /> One thing about this code that is stumping me, is that the chats are sent well before the user login process is completed, and so they aren&#039;t actually seen by the
+                        user except and unless the user open up the chat on his client, where they will be visible in the history. Do I need to hook a differnet event than
+                        &#039;OnPlayerInit()&#039;?<br />
+                        <br /> Comments/Questions are welcome and encouraged.<br />
+                        <br /> NOTE: JamesStallings is [CHRONIC] Skeeter. Dunno why it did that in the reply, perhaps because I&#039;m on a different PC. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 5, 2017 at 2:15 PM">Jan 5, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">james.stallings</a>,</span>
+                        <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-281710' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 5, 2017 at 2:09 PM">Jan 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/issue-with-datatable-example-from-docs.12222/#post-281710' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/281710/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

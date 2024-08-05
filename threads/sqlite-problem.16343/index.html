@@ -1,0 +1,288 @@
+---
+layout: forums
+title: 'Sqlite problem'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/sqlite-problem.16343/' | prepend: site.baseurl }}">Sqlite problem</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rizzok</a>, <a href="{{ '/threads/sqlite-problem.16343/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 4, 2016 at 2:59 PM">Mar 4, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-183700" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi,<br /> Writing plugin, that working with sqlite db. Some code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>       internal class Database
+        {
+            private readonly Ext.SQLite.Libraries.SQLite _sqLite = Interface.GetMod().GetLibrary&lt;Ext.SQLite.Libraries.SQLite&gt;();
+            private Ext.SQLite.Connection con;
+           
+            public Database(string filename, Plugin p)
+            {
+                this.con = _sqLite.OpenDb(filename, p, true);
+                this.CreateTables();
+            }            public void Close()
+            {
+                _sqLite.CloseDb(con);
+            }
+            private void CreateTables()
+            {
+                this.Exec(&quot;CREATE TABLE IF NOT EXISTS blabla...so on&quot;, new object[0]);
+                //...
+            }
+            public int Exec(string query, params object[] args)
+            {
+                Sql sql = new Sql(query, args);
+                int result;
+                _sqLite.ExecuteNonQuery(sql, con, i =&gt;
+                {
+                    result = i; //??????
+                });
+                return result;
+            }
+            //other methods  ...
+        }
+       
+        private bool AddFriend(ulong playerId, ulong friendId)
+        {
+            int num;            Database database = this.db;
+            object[] objArray = new object[] { playerId, friendId };
+            num = database.Exec(&quot;INSERT OR IGNORE INTO friends (id, friend_id) VALUES (@0, @1)&quot;, objArray);            if (num &lt;= 0)
+            {
+                return false;
+            }
+            return true;
+        }        [ChatCommand(&quot;friend&quot;)]
+        public void cmdFriend(BasePlayer player, string cmd, string[] args)
+        {
+            // Checks... resolving... checks... and finally:
+            done = AddFriend(PlayerID, targetPlayerID);
+            // ....
+        }</pre>{% endraw %}
+                        </div>and code will not work, and even compile, cos database query is called async? <br /> Any suggestions how I can report to user result of db action? Store somehow
+                        Baseplayer and inform him with callback? Or any other nice method?<br />
+                        <br /> And to Oxide devs: why not to make in Oxide.Ext.SQLite.Connection: internal SQLiteConnection Con { get; set; } pulbicaly readable? So we can use standard library
+                        functions of System.Data.SQLite to make queries synchronously or commands like: SQLiteCommand.ExecuteScalar?<br /> [DOUBLEPOST=1457103591,1457030297][/DOUBLEPOST]<a
+                            href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> <a href="https://oxidemod.org/members/24296/" class="username"
+                            data-user="24296, @Mughisi">@Mughisi</a> any comment on second part of topic, and maybe first? <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/sqlite-problem.16343/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Mar 4, 2016 at 2:59 PM">Mar 4,
+                                2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-problem.16343/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/183700/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-184175" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If the plugin is not compiling, please provide the log with the errors.<br />
+                        <br /> Everything is wrapped the way it is to prevent security issues, as some of those functions expose System.IO access I believe. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/sqlite-problem.16343/#post-184175' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 4, 2016 at 5:34 PM">Mar 4, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-problem.16343/#post-184175' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/184175/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185227" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-184175" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If the plugin is not compiling, please provide the log with the errors.<br />
+                                        <br /> Everything is wrapped the way it is to prevent security issues, as some of those functions expose System.IO access I believe.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> <br /> I think, that after connection is opened, you can&#039;t do
+                        anything other, then query... (maybe I&#039;m wrong)...<br /> I can&#039;t understand, how to write code, using Oxide wrapped SQLite to do query without callbacks? I need
+                        returned data from query in same context (same way when I&#039;m using data files)...<br /> And for compile errors? Look at this <a href="http://puu.sh/nxQAO/6096b7ba3d.png"
+                            target="_blank" class="externalLink  rel=" nofollow">http://puu.sh/nxQAO/6096b7ba3d.png</a> Will it compile by oxide compiler, if VS telling me, that result var declared,
+                        but not initialized? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/sqlite-problem.16343/#post-185227' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 9:45 AM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-problem.16343/#post-185227' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/185227/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185435" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rizzok">
+                            <aside>
+                                <div class="attribution type">Rizzok said: <a href="#post-185227" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a><br /> I think, that after connection is opened,
+                                        you can&#039;t do anything other, then query... (maybe I&#039;m wrong)...<br /> I can&#039;t understand, how to write code, using Oxide wrapped SQLite to do
+                                        query without callbacks? I need returned data from query in same context (same way when I&#039;m using data files)...<br /> And for compile errors? Look at this
+                                        <a href="http://puu.sh/nxQAO/6096b7ba3d.png" target="_blank" class="externalLink  rel=" nofollow">http://puu.sh/nxQAO/6096b7ba3d.png</a> Will it compile by
+                                        oxide compiler, if VS telling me, that result var declared, but not initialized?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>sqlite is intended to be async and you won&#039;t be able to return a value that way, you need to pass your callback and handle the result in there...<br /> have you
+                        checked the sqlite example? <a href="http://oxidemod.org/extensions/sqlite-extension.902/" class="internalLink">SQLite Extension | Oxide</a><br /> your expression lambda is the
+                        callback, you can also use a method there if you don&#039;t want a anonymous callback...<br />
+                        <br /> sync queries won&#039;t be added since you would easily create lags on the gameserver. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/sqlite-problem.16343/#post-185435' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 9:58 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-problem.16343/#post-185435' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/185435/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-185451" class="message" data-author="Rizzok">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rizzok" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rizzok</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for reply. I know about delegates, lambda func and checked documentation before ask questions... Do you
+                        have statistics, how many plugins using SQLite or MySQL? I feel zero or very near it. SQL makes a lot easier to maintain data, update it and query... 300+ lines of code to save
+                        a bunch of player data in files, or 100 or less to manage it in sql... I understand, why MySQL need to be async (network delay, host delay etc)... But SQLite? Where we can make
+                        delays in SQLite? Complex query? I think plugin devs can shoot himself in the leg in many other ways (i.e. create lag on server)... <br /> Nevermind, I&#039;m simply upset,
+                        that I can&#039;t manage data in way I need... Returning to old good json data files... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rizzok</a>,</span>
+                        <a href="{{ '/threads/sqlite-problem.16343/#post-185451' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 7, 2016 at 10:44 PM">Mar 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/sqlite-problem.16343/#post-185451' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/185451/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

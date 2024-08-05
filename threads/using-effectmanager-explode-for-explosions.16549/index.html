@@ -1,0 +1,966 @@
+---
+layout: forums
+title: 'Using EffectManager.Explode for explosions'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}">Using EffectManager.Explode for explosions</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">DJDiamonD</a>, <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 11, 2016 at 3:27 PM">Mar
+                11, 2016</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/using-effectmanager-explode-for-explosions.16549/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-186493" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Guys help please. This is error log:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>18:24 [Info] Explosion was compiled successfully in 187ms
+18:24 [Info] Unloaded plugin Explosion v0.1.0 by DJDiamonD
+18:24 [Info] Loaded plugin Explosion v0.1.0 by DJDiamonD
+18:24 [Error] Failed to call hook 'ExplosionCommand' on plugin 'Explosion v0.1.0' (NullReferenceException: Object reference not set to an instance of an object)
+18:24 [Debug]  at EffectManager.AccumEffect () [0x00000] in &lt;filename unknown&gt;:0
+  at EffectManager.Explode (Vector3 position, Vector3 normal, Single strength) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Explosion.StartExplode (.PlayerSession player, Vector3 location, Vector3 rotation) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Explosion.ExplosionCommand (.PlayerSession player, System.String command, System.String[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Explosion.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (System.Reflection.MethodInfo method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String hookname, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0 </pre>{% endraw %}
+                        </div>This is code of my plugin:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using Newtonsoft.Json;
+using UnityEngine;
+using System.Linq;
+using Oxide.Core;
+using System;namespace Oxide.Plugins
+{
+    [Info(&quot;Explosion&quot;, &quot;DJDiamonD&quot;, 0.1)]
+    [Description(&quot;Makes explosion&quot;)]
+   
+    class Explosion : HurtworldPlugin
+    {       
+        [ChatCommand(&quot;explosion&quot;)]
+        private void ExplosionCommand(PlayerSession player, string command, string[] args)
+        {
+            if (!player.IsAdmin)
+            {
+                hurt.SendChatMessage(player, &quot;No Permission&quot;);
+                return;
+            }
+            GameObject playerEntity = player.WorldPlayerEntity;
+            Vector3 vec = playerEntity.transform.rotation.eulerAngles;
+            StartExplode(player, playerEntity.transform.position, vec);
+        }               void StartExplode(PlayerSession player, Vector3 location, Vector3 rotation)
+        {
+            EffectManager.Explode(location, rotation);
+        }
+       
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 3:27 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/186493/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186508" class="message" data-author="SilentHillft">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SilentHillft" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SilentHillft</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>EffectManager.Instance.Explode(location, rotation);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SilentHillft</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186508' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 4:49 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186508' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186508/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186509" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="SilentHillft">
+                            <aside>
+                                <div class="attribution type">SilentHillft said: <a href="#post-186508" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>EffectManager.Instance.Explode(location, rotation);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ohh.. New error:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>19:51 [Error] Explosion.cs(31,36): error CS0176: Static member `EffectManager.Explode(UnityEngine.Vector3, UnityEngine.Vector3, float)' cannot be accessed with an instance reference, qualify it with a type name instead</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186509' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 4:52 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186509' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186509/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186511" class="message" data-author="SilentHillft">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SilentHillft" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SilentHillft</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Umm, I don&#039;t know much about Instances, but try it out:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Singleton&lt;EffectManager&gt;.Instance.Explode(location, rotation);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SilentHillft</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186511' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 5:12 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186511' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186511/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186514" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Some error guy( <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186514' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 5:21 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186514' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186514/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186517" class="message" data-author="SilentHillft">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SilentHillft" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SilentHillft</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Singleton&lt;EffectManagerServer&gt;.Instance.RPC(&quot;RPCExplode&quot;, uLink.RPCMode.Others, (object) location, (object) rotation);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SilentHillft</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186517' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 5:42 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186517' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186517/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186536" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="SilentHillft">
+                            <aside>
+                                <div class="attribution type">SilentHillft said: <a href="#post-186517" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Singleton&lt;EffectManagerServer&gt;.Instance.RPC(&quot;RPCExplode&quot;, uLink.RPCMode.Others, (object) location, (object) rotation);</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks man, but this is effect. Do you know how i can make big explosion with damage? For example how C4 or dynamite. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186536' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 7:13 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186536' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186536/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186570" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DJDiamonD">
+                            <aside>
+                                <div class="attribution type">DJDiamonD said: <a href="#post-186536" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks man, but this is effect. Do you know how i can make big explosion with damage? For example how C4 or dynamite.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Look at NukeWipe maybe <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186570' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 11, 2016 at 10:45 PM">Mar 11, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186570' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186570/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186635" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="LaserHydra">
+                            <aside>
+                                <div class="attribution type">LaserHydra said: <a href="#post-186570" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Look at NukeWipe maybe <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>But NukeWipe isn&#039;t for Rust? I need for Hurtworld or the same function? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186635' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 12, 2016 at 7:40 AM">Mar 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186635' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186635/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186657" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DJDiamonD">
+                            <aside>
+                                <div class="attribution type">DJDiamonD said: <a href="#post-186635" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">But NukeWipe isn&#039;t for Rust? I need for Hurtworld or the same function?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Oh sorry. Missed that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186657' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 12, 2016 at 10:04 AM">Mar 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186657' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186657/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186747" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It&#039;s possible or no in Hurtworld? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186747' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 12, 2016 at 6:29 PM">Mar 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186747' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186747/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186920" class="message" data-author="Noviets">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Noviets" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Noviets</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Have a look at the Explode() class in ExplosiveDynamicObjectServer <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Noviets</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186920' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 7:54 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186920' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186920/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-186928" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Noviets">
+                            <aside>
+                                <div class="attribution type">Noviets said: <a href="#post-186920" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Have a look at the Explode() class in ExplosiveDynamicObjectServer</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Okey. But how can i do this Explode in place where i need. It doesn&#039;t have any arguments.<br /> [DOUBLEPOST=1457863993][/DOUBLEPOST] <div
+                            class="bbCodeBlock bbCodeQuote" data-author="Noviets">
+                            <aside>
+                                <div class="attribution type">Noviets said: <a href="#post-186920" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Have a look at the Explode() class in ExplosiveDynamicObjectServer</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>base.transform.position<br /> Where can i this change? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186928' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 13, 2016 at 9:08 AM">Mar 13, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-186928' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/186928/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187474" class="message" data-author="cowtrix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cowtrix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cowtrix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="DJDiamonD">
+                            <aside>
+                                <div class="attribution type">DJDiamonD said: <a href="#post-186509" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ohh.. New error:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>19:51 [Error] Explosion.cs(31,36): error CS0176: Static member `EffectManager.Explode(UnityEngine.Vector3, UnityEngine.Vector3, float)' cannot be accessed with an instance reference, qualify it with a type name instead</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s a static function, don&#039;t use instance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cowtrix</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-187474' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2016 at 2:31 AM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-187474' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187474/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187546" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="cowtrix">
+                            <aside>
+                                <div class="attribution type">cowtrix said: <a href="#post-187474" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s a static function, don&#039;t use instance.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I solved this problem. Now i need to make an Explode. How can i change base.transform.position in Explode() in ExplosiveDynamicObjectServer? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-187546' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 15, 2016 at 12:40 PM">Mar 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-187546' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/187546/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-189314" class="message" data-author="DJDiamonD">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DJDiamonD" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DJDiamonD</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Guys, how can i call the explosion effect with damage, sound.. How dynamite explosion. Any ideas?<br />
+                        [DOUBLEPOST=1458581013][/DOUBLEPOST]I really know that dynamite explosion is Explode() void method in ExplosiveDynamicObjectServer, but i don&#039;t know how can i call this
+                        method. Any ideas guys? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DJDiamonD</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-189314' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 21, 2016 at 4:57 PM">Mar 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-189314' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/189314/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-211655" class="message" data-author="Glumi Chan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Glumi Chan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Glumi Chan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> As it seems the ThreadStarter solved his first Problem.<br />
+                        <br /> Can someone or youself (DJDiamonD) explain which is the correct Command?<br />
+                        <br /> Because anything i&#039;ll get when i try stuff with the Explode-Method are Error in the InGame-Console:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>attempting to use an uninitialised pool! GenericExplosion hurtworld</pre>{% endraw %}
+                        </div>Any help? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Glumi Chan</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-211655' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 2, 2016 at 6:49 PM">Jun 2, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-211655' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/211655/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-212250" class="message" data-author="SouZa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SouZa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SouZa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This is how I do to create an explosion:<br />
+                        <br /> - The explosion will use the landcrab mine configuration for radius, damage, etc...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+public static ExplosionConfiguration landcrabXplosConfig;
+</pre>{% endraw %}
+                        </div>- On Plugin Init():<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+landcrabXplosConfig = (from o in Resources.FindObjectsOfTypeAll&lt;ExplosiveDynamicServer&gt;() where o.transform.name.Equals(&quot;LandCrabDynamicObject&quot;) select o).First().Configuration;
+</pre>{% endraw %}
+                        </div>- Explosion Method:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private void Explosion(Vector3 pos)
+{
+    GameObject ExplosionServer = Singleton&lt;NetworkManager&gt;.Instance.NetInstantiate(&quot;ExplosionServer&quot;, pos, Quaternion.identity, GameManager.GetSceneTime());
+    IExplosion componentByInterface = ExplosionServer.GetComponentByInterface&lt;IExplosion&gt;();
+    componentByInterface.SetData(landcrabXplosConfig);
+    componentByInterface.Explode();
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SouZa</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-212250' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 3, 2016 at 4:49 PM">Jun 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-212250' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/212250/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-212364" class="message" data-author="Glumi Chan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Glumi Chan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Glumi Chan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for helping <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br />
+                        <br /> But does anyone know why the standard Explode-Class didnt work? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Glumi Chan</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-212364' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 3, 2016 at 8:20 PM">Jun 3, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-212364' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/212364/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-215642" class="message" data-author="cowtrix">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="cowtrix" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">cowtrix</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Glumi Chan">
+                            <aside>
+                                <div class="attribution type">Glumi Chan said: <a href="#post-212364" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for helping <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                                        <br /> But does anyone know why the standard Explode-Class didnt work?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You were instantiating the client version of the explosion, which the server isn&#039;t prepared to do, thus &quot;attempting to use an uninitialised pool!&quot; <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">cowtrix</a>,</span>
+                        <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-215642' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 14, 2016 at 5:25 AM">Jun 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/#post-215642' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/215642/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="2" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/using-effectmanager-explode-for-explosions.16549/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/using-effectmanager-explode-for-explosions.16549/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

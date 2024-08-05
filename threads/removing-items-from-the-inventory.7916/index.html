@@ -1,0 +1,498 @@
+---
+layout: forums
+title: 'Solved - Removing items from the inventory?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/removing-items-from-the-inventory.7916/' | prepend: site.baseurl }}">Removing items from the inventory?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Polynomial</a>, <a href="{{ '/threads/removing-items-from-the-inventory.7916/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 21, 2015 at 10:18 PM">Apr 21,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-81293" class="message" data-author="Polynomial">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Polynomial" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Polynomial</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m attempting to write an extension method which removes a certain amount of a particular item from a
+                        player&#039;s inventory. Here&#039;s what I have:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>/// &lt;summary&gt;
+/// Removes a number of a particular item from the player inventory.
+/// &lt;/summary&gt;
+/// &lt;param name=&quot;inventory&quot;&gt;The inventory to operate upon.&lt;/param&gt;
+/// &lt;param name=&quot;itemId&quot;&gt;The item ID to remove.&lt;/param&gt;
+/// &lt;param name=&quot;amount&quot;&gt;The number of items to remove (e.g. 100 wood)&lt;/param&gt;
+/// &lt;param name=&quot;mustHaveEnough&quot;&gt;Only remove items if the player has enough. If set to false, everything will be taken if the amount exceeds what the player has.&lt;/param&gt;
+/// &lt;returns&gt;The number of items removed.&lt;/returns&gt;
+public static int RemoveItems(this PlayerInventory inventory, int itemId, int amount, bool mustHaveEnough)
+{
+    // find all stacks of the particular item
+    var stacks = inventory.FindItemIDs(itemId);    // got no stacks? return false
+    if (stacks.Count == 0)
+        return 0;    // get the total number of the particular item in the player's inventory
+    int totalAmount = stacks.Sum(item =&gt; item.amount);    // if we must have enough, and the player has insufficient, return 0
+    if (mustHaveEnough &amp;&amp; (totalAmount &lt; amount))
+        return 0;    // loop through all stacks to remove the items.
+    int remaining = amount;
+    foreach (var stack in stacks)
+    {
+        if (stack.amount &lt;= remaining)
+        {
+            // stack is smaller than we need, or exactly the right size, so remove the whole stack
+            remaining -= stack.amount;
+            stack.Remove(0f);
+        }
+        else
+        {
+            // stack has more than we need, so just remove some
+            stack.amount -= remaining;
+            stack.MarkDirty();
+            remaining = 0;
+        }        // if we've taken all we need, drop out
+        if (remaining == 0)
+            break;
+    }    // return the amount that we were able to take
+    // (for mustHaveEnough = true, remaining should always be 0)
+    return amount - remaining;
+}</pre>{% endraw %}
+                        </div>This appears to function as expected, but I&#039;m not well-versed in Rust&#039;s API. Are there any gotchas I should be aware of? I&#039;m primarily concerned about the
+                        MarkDirty call (and lack thereof on the Remove branch) and race conditions (stack amounts are summed, then later removed, allowing for changes between the two operations) or
+                        other potential exploits. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Polynomial</a>,</span>
+                        <a href="{{ '/threads/removing-items-from-the-inventory.7916/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 10:18 PM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-items-from-the-inventory.7916/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81293/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81307" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I have actually not used a lot of inventory related methods but I do not think this would cause any issues as you
+                        describe. Perhaps, if you haven&#039;t already, you could have a look at ItemContainer.Remove(Item item), Item.Remove(float fTime) or ItemContainer.Take(List&lt;Item&gt;
+                        collect, int itemid, int iAmount) which is all used by the server to remove items from an ItemContainer.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+internal bool Remove(Item item)
+{
+    if (!this.itemList.Contains(item))
+    {
+        return false;
+    }
+    this.itemList.Remove(item);
+    item.parent = null;
+    this.MarkDirty();
+    if (this.onItemAddedRemoved != null)
+    {
+        this.onItemAddedRemoved();
+    }
+    return true;
+}public void Remove(float fTime)
+{
+    if (this.removeTime &lt;= 0f)
+    {
+        foreach (ItemMod mod in this.info.GetComponents&lt;ItemMod&gt;())
+        {
+            mod.OnRemove(this);
+        }
+        this.removeTime = Time.time + fTime;
+        this.OnDirty = null;
+        this.position = -1;
+        if (this.isServer)
+        {
+            SingletonComponent&lt;ItemManager&gt;.Instance.RemoveItem(this, fTime);
+        }
+    }
+}public int Take(List&lt;Item&gt; collect, int itemid, int iAmount)
+{
+    int num = 0;
+    List&lt;Item&gt; list = new List&lt;Item&gt;();
+    foreach (Item item in this.itemList)
+    {
+        if ((item.info.itemid == itemid) &amp;&amp; !item.isBlueprint)
+        {
+            int num2 = iAmount - num;
+            if (item.amount &gt; num2)
+            {
+                item.MarkDirty();
+                item.amount -= num2;
+                num += num2;
+                Item item2 = ItemManager.CreateByItemID(itemid, 1, false);
+                item2.amount = num2;
+                if (collect != null)
+                {
+                    collect.Add(item2);
+                }
+                break;
+            }
+            if (item.amount &lt;= num2)
+            {
+                num += item.amount;
+                list.Add(item);
+                if (collect != null)
+                {
+                    collect.Add(item);
+                }
+            }
+            if (num == iAmount)
+            {
+                break;
+            }
+        }
+    }
+    foreach (Item item3 in list)
+    {
+        item3.RemoveFromContainer();
+    }
+    return num;
+}
+</pre>{% endraw %}
+                        </div>An implementation of Item.Remove in Item.UseOnItem<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+public void UseOneItem()
+{
+    if (this.amount &lt;= 1)
+    {
+        this.Remove(0f);
+    }
+    else
+    {
+        this.amount--;
+        this.MarkDirty();
+    }
+}
+</pre>{% endraw %}
+                        </div>An implementation of ItemContainer.Take in ItemCrafter.CollectIngredients:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private void CollectIngredient(int item, int amount, List&lt;Item&gt; collect)
+{
+    foreach (ItemContainer container in this.containers)
+    {
+        amount -= container.Take(collect, item, amount);
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-81307' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2015 at 11:33 PM">Apr 21, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-81307' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81307/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-81311" class="message" data-author="Polynomial">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Polynomial" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Polynomial</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for the info! Very useful. The Rust framework is remarkably intuitive once you find where things are. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Polynomial</a>,</span>
+                        <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-81311' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 22, 2015 at 12:03 AM">Apr 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-81311' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/81311/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-235068" class="message" data-author="mvrb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="mvrb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">mvrb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What does <b>this.MarkDirty();</b> do? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">mvrb</a>,</span>
+                        <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-235068' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2016 at 10:13 AM">Jul 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-235068' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/235068/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-255858" class="message" data-author="kcaper_ua">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kcaper_ua" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kcaper_ua</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-81307" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I have actually not used a lot of inventory related methods but I do not think this would cause any issues as you describe. Perhaps, if you
+                                        haven&#039;t already, you could have a look at ItemContainer.Remove(Item item), Item.Remove(float fTime) or ItemContainer.Take(List&lt;Item&gt; collect, int
+                                        itemid, int iAmount) which is all used by the server to remove items from an ItemContainer.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+internal bool Remove(Item item)
+{
+    if (!this.itemList.Contains(item))
+    {
+        return false;
+    }
+    this.itemList.Remove(item);
+    item.parent = null;
+    this.MarkDirty();
+    if (this.onItemAddedRemoved != null)
+    {
+        this.onItemAddedRemoved();
+    }
+    return true;
+}public void Remove(float fTime)
+{
+    if (this.removeTime &lt;= 0f)
+    {
+        foreach (ItemMod mod in this.info.GetComponents&lt;ItemMod&gt;())
+        {
+            mod.OnRemove(this);
+        }
+        this.removeTime = Time.time + fTime;
+        this.OnDirty = null;
+        this.position = -1;
+        if (this.isServer)
+        {
+            SingletonComponent&lt;ItemManager&gt;.Instance.RemoveItem(this, fTime);
+        }
+    }
+}public int Take(List&lt;Item&gt; collect, int itemid, int iAmount)
+{
+    int num = 0;
+    List&lt;Item&gt; list = new List&lt;Item&gt;();
+    foreach (Item item in this.itemList)
+    {
+        if ((item.info.itemid == itemid) &amp;&amp; !item.isBlueprint)
+        {
+            int num2 = iAmount - num;
+            if (item.amount &gt; num2)
+            {
+                item.MarkDirty();
+                item.amount -= num2;
+                num += num2;
+                Item item2 = ItemManager.CreateByItemID(itemid, 1, false);
+                item2.amount = num2;
+                if (collect != null)
+                {
+                    collect.Add(item2);
+                }
+                break;
+            }
+            if (item.amount &lt;= num2)
+            {
+                num += item.amount;
+                list.Add(item);
+                if (collect != null)
+                {
+                    collect.Add(item);
+                }
+            }
+            if (num == iAmount)
+            {
+                break;
+            }
+        }
+    }
+    foreach (Item item3 in list)
+    {
+        item3.RemoveFromContainer();
+    }
+    return num;
+}
+</pre>{% endraw %}
+                                        </div>An implementation of Item.Remove in Item.UseOnItem<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+public void UseOneItem()
+{
+    if (this.amount &lt;= 1)
+    {
+        this.Remove(0f);
+    }
+    else
+    {
+        this.amount--;
+        this.MarkDirty();
+    }
+}
+</pre>{% endraw %}
+                                        </div>An implementation of ItemContainer.Take in ItemCrafter.CollectIngredients:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+private void CollectIngredient(int item, int amount, List&lt;Item&gt; collect)
+{
+    foreach (ItemContainer container in this.containers)
+    {
+        amount -= container.Take(collect, item, amount);
+    }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I guess I`ve found a bug in ItemContainer.Take method, but could be mistaken since I am just a beginner in programming.<br /> The thing is that if player has, for
+                        example, 25 wood in main container and 100 in belt, using player.inventory.Take(null, itemid, 30); results in taking 25 wood from main container and 30 from belt.<br />
+                        Probably the error is in PlayerInventory class<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public int Take(List&lt;Item&gt; collect, int itemid, int amount)
+    {
+        int num = 0;
+        num = num + this.containerMain.Take(collect, itemid, amount);
+        if (amount == num)
+        {
+            return num;
+        }
+        num = num + this.containerBelt.Take(collect, itemid, amount);
+        if (amount == num)
+        {
+            return num;
+        }
+        num = num + this.containerWear.Take(collect, itemid, amount);
+        if (amount == num)
+        {
+            return num;
+        }
+        return num;
+    }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kcaper_ua</a>,</span>
+                        <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-255858' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 1, 2016 at 4:35 PM">Oct 1, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-items-from-the-inventory.7916/#post-255858' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/255858/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

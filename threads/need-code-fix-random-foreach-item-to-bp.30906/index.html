@@ -1,0 +1,566 @@
+---
+layout: forums
+title: 'Need code fix (random) foreach item to bp'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/' | prepend: site.baseurl }}">Need code fix (random) foreach item to bp</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">FireBurst</a>, <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 20, 2018 at 3:19 AM">Jun 20,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-405104" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi im sure its a simple mistake but I need your help to solve this. Im simply getting a list of items then if
+                        each item is in the blueprints data list, there&#039;s 30% chances to be dropped as a blueprint. Else just drop the item.<br /> This codes works but I noticed that once it got
+                        the 30% chances, it just get all items that are in the bp data to drop as bp (when I just want that single item to have 30% chance). So it looks like that the 30% happens to
+                        get ALL items found in databp instead of just ONE item at a time.<br />
+                        <br /> Idea (what I want):<br /> item 1: not in bpdata =&gt; drop normal<br /> item2: in bpdata =&gt; 30% chances =&gt; fail, drop normal item<br /> item3: in bpdata =&gt; 30%
+                        chances =&gt; success, drop as blueprint item<br /> item4: not in bpdata =&gt; drop normal<br /> item5: in bpdata =&gt; 30% chances =&gt; fail, drop normal item<br />
+                        etc.<br />
+                        <br /> This code (I need fix):<br /> item 1: not in bpdata =&gt; drop normal<br /> item2: in bpdata =&gt; 30% chances =&gt; success, drop as blueprint item<br /> item3: not in
+                        bpdata =&gt; drop normal<br /> item4: in bpdata =&gt; Forcing blueprint because was previously found success<br /> item5: in bpdata =&gt; Forcing blueprint because was
+                        previously found success<br /> etc.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var items = new List&lt;Item&gt;();
+                              ......skipping codes....
+                                if (items != null)
+                                {
+                                    foreach (var item in items)
+                                    {
+                                        //Blueprints add
+                                        if (storedDrops.Blueprints.Contains(item.info.shortname))
+                                        {
+                                        var itemid = item.info.itemid;
+                                        var rand = new Random();
+                                        var number = rand.Next(100);
+                                        if (number &lt;= 30) // 30 = 30% chance
+                                            {
+                                            Item itembp = ItemManager.CreateByName(&quot;blueprintbase&quot;, 1);
+                                            itembp.blueprintTarget = itemid;
+                                            itembp.MoveToContainer(corpse.containers[0]);
+                                            }
+                                            else
+                                                item.MoveToContainer(corpse.containers[0]);
+                                        }
+                                        else
+                                            item.MoveToContainer(corpse.containers[0]);
+                                    }
+                                }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2018 at 3:19 AM">Jun 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/405104/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405112" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach (var item in items)
+{
+    Item blueprint;
+    if (storedDrops.Blueprints.Contains(item.info.shortname) &amp;&amp; (UnityEngine.Random.Range(0, 1) &lt;= 0.3f))
+    {
+         // I didn't check, but I believe by default the amount is 1.
+        blueprint = ItemManager.CreateByName(&quot;blueprintbase&quot;);
+        blueprint.blueprintTarget = item.info.itemid;
+        blueprint.MoveToContainer(corpse.containers[0]);
+        continue;
+    }    item.MoveToContainer(corpse.containers[0]);
+}</pre>{% endraw %}
+                        </div>I&#039;d write it like this based off what you&#039;ve given me. A better way to do this would be by populating the list initially with 30% blueprints, that way the cost
+                        of creating new items isn&#039;t incurred. Then you can just do something like below.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>items.ForEach(x =&gt; x.MoveToContainer(corpse.containers[0]));</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 20, 2018 at 7:51 AM">Jun 20, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405112' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2018 at 7:45 AM">Jun 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405112' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405112/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405171" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi thanks for your reply. I tried both <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>foreach (var item in items)
+                                    {
+                                        Item blueprint;
+                                        if (storedDrops.Blueprints.Contains(item.info.shortname) &amp;&amp; (UnityEngine.Random.Range(0, 1) &lt;= 0.3f))
+                                        {
+                                             // I didn't check, but I believe by default the amount is 1.
+                                            blueprint = ItemManager.CreateByName(&quot;blueprintbase&quot;);
+                                            blueprint.blueprintTarget = item.info.itemid;
+                                            blueprint.MoveToContainer(corpse.containers[0]);
+                                            continue;
+                                        }                                        item.MoveToContainer(corpse.containers[0]);
+                                    }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>items.ForEach(x =&gt; {
+                                    if (storedDrops.Blueprints.Contains(x.info.shortname) &amp;&amp; (UnityEngine.Random.Range(0, 1) &lt;= 0.3f))
+                                    {
+                                        var itemid = x.info.itemid;
+                                        Item itembp = ItemManager.CreateByName(&quot;blueprintbase&quot;, 1);
+                                        itembp.blueprintTarget = itemid;
+                                        itembp.MoveToContainer(corpse.containers[0]);
+                                    }
+                                    else
+                                        x.MoveToContainer(corpse.containers[0]);
+                                    });</pre>{% endraw %}
+                        </div>They seem to do the same thing as the other example I tried. As soon as one is a blueprint (30% chance success), all other items that are found in the data are also
+                        converted into blueprint. While it should check the 30% chance on each item instead. I don&#039;t know if it should work like that or maybe there is a code somewhere else that
+                        prevents that. I&#039;ll check it <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405171' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2018 at 9:21 PM">Jun 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405171' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405171/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405180" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> OK that is very strange and I don&#039;t know why this minor change affect my solution.... As soon as I add a
+                        Puts(&quot;&quot;); in each case to log and see what happens, the blueprint applies perfectly to each item (30% success or not). But when I don&#039;t add a Puts, it just
+                        overwrite all items found in data to a blueprint (global 30% chance instead of individual item chance).<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Item itembp;
+                                    int count = items.Count;
+                                    var maxRetry = 20;
+                                    for (int i = 0; i &lt; count; ++i)
+                                    {
+                                        if (maxRetry == 0) break;
+                                        if (items[i] == null)
+                                        {
+                                            --maxRetry;
+                                            --i;
+                                            continue;
+                                        }
+                                        if (storedDrops.Blueprints.Contains(items[i].info.shortname))
+                                        {
+                                            var itemid = items[i].info.itemid;
+                                            var rand = new Random();
+                                            var number = rand.Next(100);
+                                            if (number &lt;= 30) // 30 = 50% chance
+                                            {
+                                                Puts(&quot;success&quot;);
+                                                itembp = ItemManager.CreateByName(&quot;blueprintbase&quot;, 1);
+                                                itembp.blueprintTarget = itemid;
+                                                itembp.MoveToContainer(corpse.containers[0]);
+                                            }
+                                            else
+                                            {
+                                                Puts(&quot;not success&quot;);
+                                                items[i].MoveToContainer(corpse.containers[0]);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Puts(&quot;not in bp data&quot;);
+                                            items[i].MoveToContainer(corpse.containers[0]);
+                                        }
+                                    }</pre>{% endraw %}
+                        </div>This formula works... as soon as I take out the Puts, its just forgetting to work the way I want. WTF? Anybody knows? what is some strange thing<br />
+                        <br /> EDIT: I just tried to keep only 1 Puts (no need to keep the 3 ones), it still works. So when there&#039;s atleast one Puts, it works, if I take all away, it just screw
+                        things up<br />
+                        <br /> Is there something I can do to replace the Puts without spamming my console? to have the same &quot;benefic&quot; effect that makes my plugin work the way I want? this
+                        is just too crazy for me to understand why this still affects my script logics. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 21, 2018 at 12:00 AM">Jun 21, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405180' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 20, 2018 at 11:21 PM">Jun 20, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405180' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405180/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405183" class="message" data-author="Kappasaurus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kappasaurus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kappasaurus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you post the full code I can help you. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kappasaurus</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405183' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 21, 2018 at 3:03 AM">Jun 21, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405183' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405183/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405631" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Solved... maybe someone can explain why this matters?<br />
+                        <br /> BUGGED code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+var rand = new Random();
+var number = rand.Next(100);
+if (number &lt;= 30) // 30 = 30% chance
+{
+    Puts(&quot;success&quot;);} // converts ALL items on success (BAD logic)
+    itembp = ItemManager.CreateByName(&quot;blueprintbase&quot;, 1);
+    itembp.blueprintTarget = itemid;
+    itembp.MoveToContainer(corpse.containers[0]);
+}
+</pre>{% endraw %}
+                        </div>The fix is:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var number = random.Next(100);
+if (number &lt;= 30) // 30 = 30% chance
+{
+   Puts(&quot;success&quot;);}// converts THIS item only on success (THE logic)
+   itembp = ItemManager.CreateByName(&quot;blueprintbase&quot;, 1);
+   itembp.blueprintTarget = itemid;
+   itembp.MoveToContainer(corpse.containers[0]);
+}
+</pre>{% endraw %}
+                        </div>making a new Random screws things up. I don&#039;t know why... so I figured out just calling the old &quot;random&quot; worked just fine. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 25, 2018 at 4:06 AM">Jun 25, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405631' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2018 at 3:58 AM">Jun 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405631' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405631/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405657" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What&#039;s that stray } doing after your Puts();?<br />
+                        <br /> If the code compiles as shown above, I think the Puts(); is conditional and the rest will happen always. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405657' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2018 at 2:13 PM">Jun 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405657' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405657/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405694" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-405657" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What&#039;s that stray } doing after your Puts();?<br />
+                                        <br /> If the code compiles as shown above, I think the Puts(); is conditional and the rest will happen always.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>are you talking about the old posts or the post right before your? because the last post &quot;Puts&quot; is not necessary. It was fixed without it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405694' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2018 at 8:06 PM">Jun 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405694' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405694/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405697" class="message" data-author="Steenamaroo">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Steenamaroo" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Steenamaroo</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Idk, maybe it&#039;s just a type error in the post but I spotted you have Puts(&quot;success&quot;);<b>} </b>and
+                        thought I&#039;d point it out. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Steenamaroo</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405697' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2018 at 8:19 PM">Jun 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405697' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405697/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-405699" class="message" data-author="FireBurst">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FireBurst" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FireBurst</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Steenamaroo">
+                            <aside>
+                                <div class="attribution type">Steenamaroo said: <a href="#post-405697" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Idk, maybe it&#039;s just a type error in the post but I spotted you have Puts(&quot;success&quot;);<b>} </b>and thought I&#039;d point it out.
+                                        <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>hehe yeah well it was just to show this worked out. xD sry it got confusing with the problem I had with a Puts lol. that was random&#039;s fault <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FireBurst</a>,</span>
+                        <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405699' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2018 at 8:29 PM">Jun 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/need-code-fix-random-foreach-item-to-bp.30906/#post-405699' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/405699/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,1352 @@
+---
+layout: forums
+title: 'Help with datafile cooldowns'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/' | prepend: site.baseurl }}">Help with datafile cooldowns</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Ts3hosting</a>, <a href="{{ '/threads/help-with-datafile-cooldowns.23352/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 28, 2017 at 2:43 PM">Jan 28,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-289840" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+using System.Collections.Generic;
+using System;
+using Oxide.Core;
+using Oxide.Core.Plugins;
+using Oxide.Core.Configuration;
+using Oxide.Game.Rust.Cui;
+using Newtonsoft.Json;
+using UnityEngine;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Oxide.Core.Libraries.Covalence;
+using static UnityEngine.Vector3;
+using System.Reflection;namespace Oxide.Plugins
+{
+    [Info(&quot;Npctp&quot;, &quot;Ts3hosting&quot;, &quot;2.2.6&quot;, ResourceId = 2229)]
+    [Description(&quot;Some NPC Controle&quot;)]    class Npctp : RustPlugin
+    {
+        #region Initialization        [PluginReference]
+        Plugin Spawns;
+        [PluginReference]
+        Plugin Economics;        PlayerCooldown pcdData;
+        NPCTPDATA npcData;
+        private DynamicConfigFile PCDDATA;
+        private DynamicConfigFile NPCDATA;
+     
+             private static int cooldownTime = 3600;        private static int auth = 2;
+        private static bool noAdminCooldown = false;        private bool Changed;
+        private string text;
+        private bool displayoneveryconnect;
+        private string Cost = &quot;0&quot;;
+        private static bool useEconomics = false;
+        private static bool useRewards = false;
+        #region Localization    
+        Dictionary&lt;string, string&gt; messages = new Dictionary&lt;string, string&gt;()
+        {
+            {&quot;title&quot;, &quot;&lt;color=orange&gt;Npc&lt;/color&gt; : &quot;},
+            {&quot;cdTime&quot;, &quot;You must wait another {0} minutes and some seconds before using me again&quot; },
+            {&quot;noperm&quot;, &quot;You do not have permissions to talk to me!&quot; },
+            {&quot;notenabled&quot;, &quot;Sorry i am not enabled!&quot; },
+            {&quot;nomoney&quot;, &quot;Sorry you need {0} to talk to me!&quot; },
+            {&quot;charged&quot;, &quot;Thanks i only took {0} from you!&quot; },
+            {&quot;npcCommand&quot;, &quot;I just ran a Command!&quot; }       };
+        #endregion        void Loaded()
+        {
+            PCDDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Player&quot;);
+            NPCDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Data&quot;);
+            LoadData();
+            LoadVariables();
+            RegisterPermissions();
+            lang.RegisterMessages(messages, this);
+            Puts(&quot;Thanks for using NPCTP drop me a line if you need anything added.&quot;);        }        object GetConfig(string menu, string datavalue, object defaultValue)
+        {
+            var data = Config[menu] as Dictionary&lt;string, object&gt;;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[menu] = data;
+                Changed = true;
+            }
+            object value;
+            if (!data.TryGetValue(datavalue, out value))
+            {
+                value = defaultValue;
+                data[datavalue] = value;
+                Changed = true;
+            }
+            return value;
+        }        private void RegisterPermissions()
+        {
+            permission.RegisterPermission(&quot;npctp.admin&quot;, this);
+            permission.RegisterPermission(&quot;npctp.default&quot;, this);
+        }        private void CheckDependencies()
+        {
+            if (Economics == null)
+                if (useEconomics)
+                {
+                    PrintWarning($&quot;Economics could not be found! Disabling money feature&quot;);
+                    useEconomics = false;
+                }
+            if (Spawns == null)
+               {
+               PrintWarning($&quot;Spawns Database could not be found!&quot;);
+             
+            }        }        void LoadVariables()
+        {            useEconomics = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useEconomics&quot;, false));
+            useRewards = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useRewards&quot;, false));
+            if (Changed)
+            {
+                SaveConfig();
+                Changed = false;            }
+        }        protected override void LoadDefaultConfig()
+        {
+            Puts(&quot;Creating a new configuration file!&quot;);
+            Config.Clear();
+            LoadVariables();
+        }
+        #endregion        #region Classes and Data Management  
+        void SaveNpcTpData()
+        {
+            NPCDATA.WriteObject(npcData);
+        }             class NPCTPDATA
+        {
+            public Dictionary&lt;string, NPCInfo&gt; NpcTP = new Dictionary&lt;string, NPCInfo&gt;();
+     
+           public NPCTPDATA() { }
+        }
+        class NPCInfo
+        {
+            public string SpawnFile;
+            public string Cooldown;         
+            public string CanUse;
+            public string Cost;
+            public string permission;
+            public string UseCommand;
+            public string CommandOnPlayer;
+            public string Command;
+            public string Arrangements;
+            public NPCInfo() { }
+            public NPCInfo(string cd1)
+            {
+                SpawnFile = cd1;
+                Cooldown = cd1;
+                CanUse = cd1;
+                Cost = cd1;
+                permission = cd1;
+               UseCommand = cd1;
+               CommandOnPlayer = cd1;
+               Command = cd1;
+               Arrangements = cd1;                     }
+        }     
+        class PlayerCooldown
+        {
+            public Dictionary&lt;ulong, PCDInfo&gt; pCooldown = new Dictionary&lt;ulong, PCDInfo&gt;();            public PlayerCooldown() { }
+        }
+        class PCDInfo
+        {
+            public long Cooldown;            public PCDInfo() { }
+            public PCDInfo(long cd)
+            {
+                Cooldown = cd;            }
+        }        void SaveData()
+        {
+            PCDDATA.WriteObject(pcdData);
+        }
+        void LoadData()
+        {
+            try
+            {
+                pcdData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayerCooldown&gt;(&quot;NpcTp/NpcTP_Player&quot;);
+            }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new Playerfile&quot;);
+                pcdData = new PlayerCooldown();
+            }
+            try
+            {
+            npcData = Interface.GetMod().DataFileSystem.ReadObject&lt;NPCTPDATA&gt;(&quot;NpcTp/NpcTP_Data&quot;);
+           }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new datafile&quot;);
+                npcData = new NPCTPDATA();
+            }         
+        }        #endregion        #region Cooldown Management            static double GrabCurrentTime() =&gt; DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;        #endregion
+     
+     
+        private void TeleportPlayerPosition1(BasePlayer player, Vector3 destination)
+        {
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;StartLoading&quot;, null, null, null, null, null);
+            StartSleeping(player);
+            player.MovePosition(destination);
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;ForcePositionTo&quot;, destination);
+            if (player.net?.connection != null)
+                player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+            player.UpdateNetworkGroup();
+            player.SendNetworkUpdateImmediate(false);
+            if (player.net?.connection == null) return;
+            try { player.ClearEntityQueue(null); } catch { }
+            player.SendFullSnapshot();
+        }
+        private void StartSleeping(BasePlayer player)
+        {
+            if (player.IsSleeping())
+                return;
+            player.SetPlayerFlag(BasePlayer.PlayerFlags.Sleeping, true);
+            if (!BasePlayer.sleepingPlayerList.Contains(player))
+                BasePlayer.sleepingPlayerList.Add(player);
+            player.CancelInvoke(&quot;InventoryUpdate&quot;);
+        }        private bool CheckPlayerMoney(BasePlayer player, int amount)
+        {
+            if (useEconomics)
+            {
+                double money = (double)Economics?.CallHook(&quot;GetPlayerMoney&quot;, player.userID);
+                if (money &gt;= amount)
+                {
+                    money = money - amount;
+                    Economics?.CallHook(&quot;Set&quot;, player.userID, money);
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;charged&quot;, this, player.UserIDString), (int)(amount)));
+                    return true;
+                }
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;nomoney&quot;, this, player.UserIDString), (int)(amount)));            }
+            return false;
+        }
+        #region USENPC        [ChatCommand(&quot;npctp_add&quot;)]
+        void cmdNpcAdD(BasePlayer player, string command, string[] args)
+        {
+     
+        var n = npcData.NpcTP;
+        string IDNPC = &quot;&quot;;
+     
+     
+        double timeStamp = GrabCurrentTime();
+        IDNPC = (args[0]);        if (args.Length &gt;= 1)     
+            if (!n.ContainsKey(IDNPC))
+                n.Add(IDNPC, new NPCInfo((string)Cost));
+               n[IDNPC].CanUse = &quot;false&quot;;
+                n[IDNPC].SpawnFile = &quot;none&quot;;
+                n[IDNPC].permission = &quot;npctp.default&quot;;
+               n[IDNPC].UseCommand = &quot;false&quot;;
+               n[IDNPC].CommandOnPlayer = &quot;false&quot;;
+               n[IDNPC].Command = &quot;say&quot;;
+               n[IDNPC].Arrangements = &quot;this is a test&quot;; 
+                SaveNpcTpData();
+             
+        if (args.Length &gt;= 2)     
+            if (!n.ContainsKey(IDNPC))
+                n.Add(IDNPC, new NPCInfo((string)Cost));
+               n[IDNPC].CanUse = &quot;true&quot;;
+                n[IDNPC].SpawnFile = (args[1]);
+                n[IDNPC].permission = &quot;npctp.default&quot;;
+               n[IDNPC].UseCommand = &quot;false&quot;;
+               n[IDNPC].CommandOnPlayer = &quot;false&quot;;
+               n[IDNPC].Command = &quot;say&quot;;
+               n[IDNPC].Arrangements = &quot;this is a test&quot;; 
+                SaveNpcTpData();             
+            }              
+     
+             void OnUseNPC(BasePlayer npc, BasePlayer player, Vector3 destination)
+        {
+            ulong playerID = player.userID;
+            string lowername = npc.userID.ToString();
+            var d = pcdData.pCooldown;
+            var np = npcData.NpcTP;
+            var NPCUSER = npc.userID;         
+            ulong ID = player.userID;
+            double timeStamp = GrabCurrentTime();
+         
+            string CanUse = np[lowername].CanUse;
+            var cooldownTime = Convert.ToInt32(np[lowername].Cooldown);
+            var buyMoney1 = Convert.ToInt32(np[lowername].Cost);
+            var UseCommand = Convert.ToBoolean(np[lowername].UseCommand);
+            var CommandOnPlayer = Convert.ToBoolean(np[lowername].CommandOnPlayer);
+            string Command = np[lowername].Command;
+            string Arrangements = np[lowername].Arrangements;
+            object newpos = null;
+            var bad = &quot;somthing is not right in command on player&quot;;
+            string spawn = np[lowername].SpawnFile;
+            if (!d.ContainsKey(ID))
+            {
+                d.Add(ID, new PCDInfo((long)timeStamp));
+                SaveData();
+            }            if (np.ContainsKey(lowername))
+            {                if (CanUse == &quot;false&quot;)
+                {
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;notenabled&quot;, this)));
+                    return;
+                }
+                else
+                {                    long time = d[ID].Cooldown;
+                    if (!permission.UserHasPermission(player.userID.ToString(), &quot;npctp.default&quot;))
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;noperm&quot;, this)));
+                        return;
+                    }
+                    if (time &gt; timeStamp &amp;&amp; time != 0.0)
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;cdTime&quot;, this, player.UserIDString), (int)(time - timeStamp) / 60));
+                        return;
+                    }
+                    else if (!useEconomics &amp;&amp; UseCommand == false)
+                    {
+                        d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                        SaveData();
+                        object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                        if (success is Vector3) // Check if the returned type is Vector3
+                        {
+                            Vector3 location = (Vector3)success;
+                            TeleportPlayerPosition1(player, (Vector3)success);
+                        }
+                        else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                    }                    if (useEconomics &amp;&amp; UseCommand == false)
+                        if (CheckPlayerMoney(player, buyMoney1))
+                        {
+                            d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                            SaveData();
+                            object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                            if (success is Vector3) // Check if the returned type is Vector3
+                            {
+                                Vector3 location = (Vector3)success;
+                                TeleportPlayerPosition1(player, (Vector3)success);
+                            }
+                            else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                        }
+                     
+                     
+                     
+                     
+                     
+                                      
+                    if (!useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == true)
+                    {
+                        d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                        SaveData();
+                     
+                        if (CommandOnPlayer) // Check if this is command on player
+                        {
+                            rust.RunServerCommand($&quot;{Command} {player.userID} {Arrangements}&quot;);
+                            SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                        }
+                        else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                    }                    if (useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == false)
+                        if (CheckPlayerMoney(player, buyMoney1))
+                        {
+                            d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                            SaveData();
+                        if (!CommandOnPlayer) // Check if this is command on player
+                            {
+                            rust.RunServerCommand($&quot;{Command} {Arrangements}&quot;);
+                            SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                            }
+                            else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                        }                                     }
+            }                #endregion            }        }    }</pre>{% endraw %}
+                        </div><br /> Trying to make datafile save in this format for player cooldowns. im lost and could use some help thank you.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+  &quot;pCooldown&quot;: {
+    &quot;USERSSTEAMID&quot;: {
+      &quot;NPCID&quot;: TimeStamp
+    }
+  }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 28, 2017 at 4:03 PM">Jan 28, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 28, 2017 at 2:43 PM">Jan 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/289840/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-289954" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It wont look exactly like that but basically you need the datafile to contain a dictionary using the npcId as
+                        key, with the value as the cooldown. Then you will need to check the players data, and also the cooldown for the specified npc<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class PCDInfo
+{
+   public Dictionary&lt;string, long&gt; npcCooldowns = new Dictionary&lt;string, long&gt;();
+}</pre>{% endraw %}
+                        </div>Also I recommend changing your NPCInfo class so that each variable is the correct type. At the moment you have them all as string, then you do a bunch of conversion to
+                        change them back to the type they are supposed to be later in the plugin which is a little wierd <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7"
+                            alt=":p" title="Stick Out Tongue    :p" /> Also your constructor for that class sets all of its variables to 1 that is specified in the arguments. You should change it to
+                        give the correct variables, or remove it all together as its not needed<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class NPCInfo
+        {
+            public string SpawnFile;
+            public int Cooldown;
+            public bool CanUse;
+            public float Cost;
+            public string permission;
+            public bool UseCommand;
+            public bool CommandOnPlayer;
+            public string Command;
+            public string Arrangements;                  
+        }</pre>{% endraw %}
+                        </div>^^ This will also work fine since you manually set all of them outside the constructor later anyway <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-289954' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 28, 2017 at 9:51 PM">Jan 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-289954' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/289954/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-290077" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System;
+using Oxide.Core;
+using Oxide.Core.Plugins;
+using Oxide.Core.Configuration;
+using UnityEngine;
+using Newtonsoft.Json.Linq;
+using Oxide.Core.Libraries.Covalence;
+using static UnityEngine.Vector3;namespace Oxide.Plugins
+{
+    [Info(&quot;Npctp&quot;, &quot;Ts3hosting&quot;, &quot;2.2.6&quot;, ResourceId = 2229)]
+    [Description(&quot;Some NPC Controle&quot;)]    class Npctp : RustPlugin
+    {
+        #region Initialization        [PluginReference]
+        Plugin Spawns;
+        [PluginReference]
+        Plugin Economics;        PlayerCooldown pcdData;
+        NPCTPDATA npcData;
+        private DynamicConfigFile PCDDATA;
+        private DynamicConfigFile NPCDATA;
+       
+               private static int cooldownTime = 3600;        private static int auth = 2;
+        private static bool noAdminCooldown = false;        private bool Changed;
+        private string text;
+        private bool displayoneveryconnect;
+        private float Cost = 0;
+        private static bool useEconomics = false;
+        private static bool useRewards = false;
+        #region Localization      
+        Dictionary&lt;string, string&gt; messages = new Dictionary&lt;string, string&gt;()
+        {
+            {&quot;title&quot;, &quot;&lt;color=orange&gt;Npc&lt;/color&gt; : &quot;},
+            {&quot;cdTime&quot;, &quot;You must wait another {0} minutes and some seconds before using me again&quot; },
+            {&quot;noperm&quot;, &quot;You do not have permissions to talk to me!&quot; },
+            {&quot;notenabled&quot;, &quot;Sorry i am not enabled!&quot; },
+            {&quot;nomoney&quot;, &quot;Sorry you need {0} to talk to me!&quot; },
+            {&quot;charged&quot;, &quot;Thanks i only took {0} from you!&quot; },
+            {&quot;npcCommand&quot;, &quot;I just ran a Command!&quot; }       };
+        #endregion        void Loaded()
+        {
+            PCDDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Player&quot;);
+            NPCDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Data&quot;);
+            LoadData();
+            LoadVariables();
+            RegisterPermissions();
+            lang.RegisterMessages(messages, this);
+            Puts(&quot;Thanks for using NPCTP drop me a line if you need anything added.&quot;);        }        object GetConfig(string menu, string datavalue, object defaultValue)
+        {
+            var data = Config[menu] as Dictionary&lt;string, object&gt;;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[menu] = data;
+                Changed = true;
+            }
+            object value;
+            if (!data.TryGetValue(datavalue, out value))
+            {
+                value = defaultValue;
+                data[datavalue] = value;
+                Changed = true;
+            }
+            return value;
+        }        private void RegisterPermissions()
+        {
+            permission.RegisterPermission(&quot;npctp.admin&quot;, this);
+            permission.RegisterPermission(&quot;npctp.default&quot;, this);
+        }        private void CheckDependencies()
+        {
+            if (Economics == null)
+                if (useEconomics)
+                {
+                    PrintWarning($&quot;Economics could not be found! Disabling money feature&quot;);
+                    useEconomics = false;
+                }
+            if (Spawns == null)
+               {
+               PrintWarning($&quot;Spawns Database could not be found!&quot;);
+              
+            }        }        void LoadVariables()
+        {            useEconomics = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useEconomics&quot;, false));
+            useRewards = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useRewards&quot;, false));
+            if (Changed)
+            {
+                SaveConfig();
+                Changed = false;            }
+        }        protected override void LoadDefaultConfig()
+        {
+            Puts(&quot;Creating a new configuration file!&quot;);
+            Config.Clear();
+            LoadVariables();
+        }
+        #endregion        #region Classes and Data Management   
+        void SaveNpcTpData()
+        {
+            NPCDATA.WriteObject(npcData);
+        }               class NPCTPDATA
+        {
+            public Dictionary&lt;string, NPCInfo&gt; NpcTP = new Dictionary&lt;string, NPCInfo&gt;();
+       
+            public NPCTPDATA() { }
+        }
+        class NPCInfo
+        {
+            public string SpawnFile;
+            public int Cooldown;
+            public bool CanUse;
+            public float Cost;
+            public string permission;
+            public bool UseCommand;
+            public bool CommandOnPlayer;
+            public string Command;
+            public string Arrangements;
+        }
+   
+        class PlayerCooldown
+        {
+            public Dictionary&lt;ulong, PCDInfo&gt; pCooldown = new Dictionary&lt;ulong, PCDInfo&gt;();            public PlayerCooldown() { }
+        }
+        class PCDInfo
+        {
+            public long Cooldown;           
+            public PCDInfo() { }
+            public PCDInfo(long cd)
+            {
+                Cooldown = cd;            }
+        }        void SaveData()
+        {
+            PCDDATA.WriteObject(pcdData);
+        }
+        void LoadData()
+        {
+            try
+            {
+                pcdData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayerCooldown&gt;(&quot;NpcTp/NpcTP_Player&quot;);
+            }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new Playerfile&quot;);
+                pcdData = new PlayerCooldown();
+            }
+            try
+            {
+            npcData = Interface.GetMod().DataFileSystem.ReadObject&lt;NPCTPDATA&gt;(&quot;NpcTp/NpcTP_Data&quot;);
+           }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new datafile&quot;);
+                npcData = new NPCTPDATA();
+            }           
+        }        #endregion        #region Cooldown Management              static double GrabCurrentTime() =&gt; DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;        #endregion
+       
+       
+        private void TeleportPlayerPosition1(BasePlayer player, Vector3 destination)
+        {
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;StartLoading&quot;, null, null, null, null, null);
+            StartSleeping(player);
+            player.MovePosition(destination);
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;ForcePositionTo&quot;, destination);
+            if (player.net?.connection != null)
+                player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+            player.UpdateNetworkGroup();
+            player.SendNetworkUpdateImmediate(false);
+            if (player.net?.connection == null) return;
+            try { player.ClearEntityQueue(null); } catch { }
+            player.SendFullSnapshot();
+        }
+        private void StartSleeping(BasePlayer player)
+        {
+            if (player.IsSleeping())
+                return;
+            player.SetPlayerFlag(BasePlayer.PlayerFlags.Sleeping, true);
+            if (!BasePlayer.sleepingPlayerList.Contains(player))
+                BasePlayer.sleepingPlayerList.Add(player);
+            player.CancelInvoke(&quot;InventoryUpdate&quot;);
+        }        private bool CheckPlayerMoney(BasePlayer player, int amount)
+        {
+            if (useEconomics)
+            {
+                double money = (double)Economics?.CallHook(&quot;GetPlayerMoney&quot;, player.userID);
+                if (money &gt;= amount)
+                {
+                    money = money - amount;
+                    Economics?.CallHook(&quot;Set&quot;, player.userID, money);
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;charged&quot;, this, player.UserIDString), (int)(amount)));
+                    return true;
+                }
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;nomoney&quot;, this, player.UserIDString), (int)(amount)));            }
+            return false;
+        }
+        #region USENPC        [ChatCommand(&quot;npctp_add&quot;)]
+        void cmdNpcAdD(BasePlayer player, string command, string[] args)
+        {
+       
+        var n = npcData.NpcTP;
+        string IDNPC = &quot;&quot;;
+        string SpawnFiles = &quot;&quot;;
+       
+        if (args.Length == 2)
+        {
+            SpawnFiles = (args[1]);
+        }
+       
+        var setup = new NPCInfo { Cost = Cost, CanUse = false, permission = &quot;npctp.default&quot;, UseCommand = false, CommandOnPlayer = false, Command = &quot;say&quot;, Arrangements = &quot;this is a test&quot;  };
+        var setups = new NPCInfo { Cost = Cost, CanUse = true, SpawnFile = SpawnFiles, permission = &quot;npctp.default&quot;, UseCommand = false, CommandOnPlayer = false, Command = &quot;say&quot;, Arrangements = &quot;this is a test&quot;  };       
+        IDNPC = (args[0]);        if (args.Length == 1 &amp;&amp; !n.ContainsKey(IDNPC))   
+                n.Add(IDNPC, setup);
+                SaveNpcTpData();                       if (args.Length == 2 &amp;&amp; !n.ContainsKey(IDNPC))
+                n.Add(IDNPC, setups);
+                SaveNpcTpData();               
+            }                                  void OnUseNPC(BasePlayer npc, BasePlayer player, Vector3 destination)
+        {
+            ulong playerID = player.userID;
+            string lowername = npc.userID.ToString();
+            var d = pcdData.pCooldown;
+            var np = npcData.NpcTP;
+            var NPCUSER = npc.userID;           
+            ulong ID = player.userID;
+            double timeStamp = GrabCurrentTime();
+           
+            var CanUse = np[lowername].CanUse;
+            var cooldownTime = np[lowername].Cooldown;
+            var buyMoney1 = Convert.ToInt32(np[lowername].Cost);
+            var UseCommand = np[lowername].UseCommand;
+            var CommandOnPlayer = np[lowername].CommandOnPlayer;
+            string Command = np[lowername].Command;
+            string Arrangements = np[lowername].Arrangements;
+            object newpos = null;
+            var bad = &quot;somthing is not right in command on player&quot;;
+            string spawn = np[lowername].SpawnFile;
+            if (!d.ContainsKey(ID))
+            {
+                d.Add(ID, new PCDInfo((long)NPCUSER));
+                SaveData();
+            }            if (np.ContainsKey(lowername))
+            {                if (!CanUse)
+                {
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;notenabled&quot;, this)));
+                    return;
+                }
+                else
+                {                    long time = d[ID].Cooldown;
+                    if (!permission.UserHasPermission(player.userID.ToString(), &quot;npctp.default&quot;))
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;noperm&quot;, this)));
+                        return;
+                    }
+                    if (time &gt; timeStamp &amp;&amp; time != 0.0)
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;cdTime&quot;, this, player.UserIDString), (int)(time - timeStamp) / 60));
+                        return;
+                    }
+                    else if (!useEconomics &amp;&amp; UseCommand == false)
+                    {
+                        d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                        SaveData();
+                        object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                        if (success is Vector3) // Check if the returned type is Vector3
+                        {
+                            Vector3 location = (Vector3)success;
+                            TeleportPlayerPosition1(player, (Vector3)success);
+                        }
+                        else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                    }                    if (useEconomics &amp;&amp; UseCommand == false)
+                        if (CheckPlayerMoney(player, buyMoney1))
+                        {
+                            d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                            SaveData();
+                            object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                            if (success is Vector3) // Check if the returned type is Vector3
+                            {
+                                Vector3 location = (Vector3)success;
+                                 TeleportPlayerPosition1(player, (Vector3)success);
+                            }
+                            else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                        }
+                       
+                       
+                       
+                       
+                       
+                                          
+                    if (!useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == true)
+                    {
+                        d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                        SaveData();
+                       
+                        if (CommandOnPlayer) // Check if this is command on player
+                        {
+                            rust.RunServerCommand($&quot;{Command} {player.userID} {Arrangements}&quot;);
+                            SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                        }
+                        else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                    }                    if (useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == false)
+                        if (CheckPlayerMoney(player, buyMoney1))
+                        {
+                            d[ID].Cooldown = (long)timeStamp + cooldownTime;
+                            SaveData();
+                        if (!CommandOnPlayer) // Check if this is command on player
+                            {
+                            rust.RunServerCommand($&quot;{Command} {Arrangements}&quot;);
+                            SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                            }
+                            else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                        }                                       }
+            }                #endregion            }        }    }</pre>{% endraw %}
+                        </div><br /> still dont understand the go about of the cooldown i see what your saying save instead of pCooldown would be the npcid just unsure about the route to do that. i
+                        did fix the other Suggestions. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290077' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2017 at 10:09 AM">Jan 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290077' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/290077/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-290083" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> well at the moment you have it saving 1 cooldown per player, and you want 1 cooldown per npc, per player. so do
+                        pretty much exactly what you are doing now, but 1 layer down if you will. When a player tp&#039;s you want to check and assign the cooldown to that npc&#039;s ID in that
+                        players data.<br />
+                        <br /> This could be cleaned up a bit but this is essentially what you want<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        class PCDInfo
+        {
+            public Dictionary&lt;string, long&gt; npcCooldowns = new Dictionary&lt;string, long&gt;();           
+        }        void OnUseNPC(BasePlayer npc, BasePlayer player, Vector3 destination)
+        {
+            if (!npcData.NpcTP.ContainsKey(npc.UserIDString)) return; // Check if this NPC is registered            ulong playerId = player.userID;
+            string npcId = npc.UserIDString;            double timeStamp = GrabCurrentTime();            var CanUse = npcData.NpcTP[npcId].CanUse;
+            var cooldownTime = npcData.NpcTP[npcId].Cooldown;
+            var buyMoney1 = npcData.NpcTP[npcId].Cost;
+            var UseCommand = npcData.NpcTP[npcId].UseCommand;
+            var CommandOnPlayer = npcData.NpcTP[npcId].CommandOnPlayer;
+            string Command = npcData.NpcTP[npcId].Command;
+            string Arrangements = npcData.NpcTP[npcId].Arrangements;
+            object newpos = null;
+            var bad = &quot;somthing is not right in command on player&quot;;
+            string spawn = npcData.NpcTP[npcId].SpawnFile;            if (!pcdData.pCooldown.ContainsKey(playerId))
+            {
+                pcdData.pCooldown.Add(playerId, new PCDInfo());
+                //SaveData();
+            }            if (!CanUse)
+            {
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;notenabled&quot;, this)));
+                return;
+            }
+            else
+            {
+                if (!permission.UserHasPermission(player.userID.ToString(), &quot;npctp.default&quot;))
+                {
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;noperm&quot;, this)));
+                    return;
+                }
+                if (pcdData.pCooldown[playerId].npcCooldowns.ContainsKey(npcId)) // Check if the player already has a cooldown for this NPC
+                {
+                    var cdTime = pcdData.pCooldown[playerId].npcCooldowns[npcId]; // Get the cooldown time of the NPC
+                    if (cdTime &gt; timeStamp)
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;cdTime&quot;, this, player.UserIDString), (int)(cdTime - timeStamp) / 60));
+                        return;
+                    }
+                }
+                else if (!useEconomics &amp;&amp; UseCommand == false)
+                {
+                    pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime; // Store the new cooldown in the players data under the specified NPC
+                    SaveData();
+                    object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                    if (success is Vector3) // Check if the returned type is Vector3
+                    {
+                        Vector3 location = (Vector3)success;
+                        TeleportPlayerPosition1(player, (Vector3)success);
+                    }
+                    else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                }                if (useEconomics &amp;&amp; UseCommand == false)
+                    if (CheckPlayerMoney(player, (int)buyMoney1))
+                    {
+                        pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                        SaveData();
+                        object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                        if (success is Vector3) // Check if the returned type is Vector3
+                        {
+                            Vector3 location = (Vector3)success;
+                            TeleportPlayerPosition1(player, (Vector3)success);
+                        }
+                        else PrintError((string)newpos); // Otherwise print the error message to console so server owners know there is a problem                    }                if (!useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == true)
+                {
+                    pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                    SaveData();                    if (CommandOnPlayer) // Check if this is command on player
+                    {
+                        rust.RunServerCommand($&quot;{Command} {player.userID} {Arrangements}&quot;);
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                    }
+                    else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                }                if (useEconomics &amp;&amp; UseCommand == true &amp;&amp; CommandOnPlayer == false)
+                    if (CheckPlayerMoney(player, (int)buyMoney1))
+                    {
+                        pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                        SaveData();
+                        if (!CommandOnPlayer) // Check if this is command on player
+                        {
+                            rust.RunServerCommand($&quot;{Command} {Arrangements}&quot;);
+                            SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                        }
+                        else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                    }
+            }
+            #endregion
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290083' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2017 at 10:35 AM">Jan 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290083' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/290083/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-290090" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> you are a life saver.... thank you. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290090' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2017 at 11:20 AM">Jan 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290090' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/290090/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-290121" class="message" data-author="Ts3hosting">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ts3hosting" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ts3hosting</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic;
+using System;
+using Oxide.Core;
+using Oxide.Core.Plugins;
+using Oxide.Core.Configuration;
+using UnityEngine;
+using Newtonsoft.Json.Linq;
+using Oxide.Core.Libraries.Covalence;
+using static UnityEngine.Vector3;namespace Oxide.Plugins
+{
+    [Info(&quot;Npctp&quot;, &quot;Ts3hosting&quot;, &quot;2.2.7&quot;, ResourceId = 2229)]
+    [Description(&quot;Some NPC Controle Thanks Wulf and k1lly0u&quot;)]    class Npctp : RustPlugin
+    {
+        #region Initialization        [PluginReference]
+        Plugin Spawns;
+        [PluginReference]
+        Plugin Economics;
+        [PluginReference]
+        Plugin ServerRewards;        PlayerCooldown pcdData;
+        NPCTPDATA npcData;
+        private DynamicConfigFile PCDDATA;
+        private DynamicConfigFile NPCDATA;
+       
+               private static int cooldownTime = 3600;        private static int auth = 2;
+        private static bool noAdminCooldown = false;        private bool Changed;
+        private string text;
+        private bool displayoneveryconnect;
+        private float Cost = 0;
+        private static bool useEconomics = false;
+        private static bool useRewards = false;
+        #region Localization      
+        Dictionary&lt;string, string&gt; messages = new Dictionary&lt;string, string&gt;()
+        {
+            {&quot;title&quot;, &quot;&lt;color=orange&gt;Npc&lt;/color&gt; : &quot;},
+            {&quot;cdTime&quot;, &quot;You must wait another {0} minutes and some seconds before using me again&quot; },
+            {&quot;noperm&quot;, &quot;You do not have permissions to talk to me!&quot; },
+            {&quot;notenabled&quot;, &quot;Sorry i am not enabled!&quot; },
+            {&quot;nomoney&quot;, &quot;Sorry you need {0} to talk to me!&quot; },
+            {&quot;charged&quot;, &quot;Thanks i only took {0} from you!&quot; },
+            {&quot;npcCommand&quot;, &quot;I just ran a Command!&quot; },
+            {&quot;npcadd&quot;, &quot;Added npcID {0} to datafile and not enabled edit NpcTP_Data .&quot; },
+            {&quot;npcadds&quot;, &quot;Added npcID {0} with spawnfile {1} to datafile and enabled edit NpcTP_Data for more options.&quot; },
+            {&quot;npcerror&quot;, &quot;error example /npctp_add &lt;npcID&gt; &lt;spawnfile&gt; or /npctcp_add &lt;npcID&gt;&quot; },
+            {&quot;nopermcmd&quot;, &quot;You do not have permissions to use this command&quot; }       };
+        #endregion        void Loaded()
+        {
+            PCDDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Player&quot;);
+            NPCDATA = Interface.Oxide.DataFileSystem.GetFile(&quot;NpcTp/NpcTP_Data&quot;);
+            LoadData();
+            LoadVariables();
+            RegisterPermissions();
+            CheckDependencies();
+            lang.RegisterMessages(messages, this);
+            Puts(&quot;Thanks for using NPCTP drop me a line if you need anything added.&quot;);        }        object GetConfig(string menu, string datavalue, object defaultValue)
+        {
+            var data = Config[menu] as Dictionary&lt;string, object&gt;;
+            if (data == null)
+            {
+                data = new Dictionary&lt;string, object&gt;();
+                Config[menu] = data;
+                Changed = true;
+            }
+            object value;
+            if (!data.TryGetValue(datavalue, out value))
+            {
+                value = defaultValue;
+                data[datavalue] = value;
+                Changed = true;
+            }
+            return value;
+        }        private void RegisterPermissions()
+        {
+            permission.RegisterPermission(&quot;npctp.admin&quot;, this);
+            permission.RegisterPermission(&quot;npctp.default&quot;, this);
+            foreach (var perm in npcData.NpcTP.Values)
+            {
+                if (!string.IsNullOrEmpty(perm.permission) &amp;&amp; !permission.PermissionExists(perm.permission))
+                    permission.RegisterPermission(perm.permission, this);
+            }       
+        }        private void CheckDependencies()
+        {
+            if (Economics == null)
+                if (useEconomics)
+                {
+                    PrintWarning($&quot;Economics could not be found! Disabling money feature&quot;);
+                    useEconomics = false;
+                }
+            if (ServerRewards == null)
+                if (useRewards)
+                {
+                    PrintWarning($&quot;ServerRewards could not be found! Disabling RP feature&quot;);
+                    useRewards = false;
+                }               
+            if (Spawns == null)
+               {
+               PrintWarning($&quot;Spawns Database could not be found you only can use command NPC all other will fail!&quot;);
+              
+            }        }        void LoadVariables()
+        {            useEconomics = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useEconomics&quot;, false));
+            useRewards = Convert.ToBoolean(GetConfig(&quot;SETTINGS&quot;, &quot;useRewards&quot;, false));
+            if (Changed)
+            {
+                SaveConfig();
+                Changed = false;            }
+        }        protected override void LoadDefaultConfig()
+        {
+            Puts(&quot;Creating a new configuration file!&quot;);
+            Config.Clear();
+            LoadVariables();
+        }
+        #endregion        #region Classes and Data Management   
+        void SaveNpcTpData()
+        {
+            NPCDATA.WriteObject(npcData);
+        }               class NPCTPDATA
+        {
+            public Dictionary&lt;string, NPCInfo&gt; NpcTP = new Dictionary&lt;string, NPCInfo&gt;();
+       
+            public NPCTPDATA() { }
+        }
+        class NPCInfo
+        {
+            public string SpawnFile;
+            public int Cooldown;
+            public bool CanUse;
+            public float Cost;
+            public string permission;
+            public bool UseCommand;
+            public bool CommandOnPlayer;
+            public string Command;
+            public string Arrangements;
+        }
+   
+        class PlayerCooldown
+        {
+            public Dictionary&lt;ulong, PCDInfo&gt; pCooldown = new Dictionary&lt;ulong, PCDInfo&gt;();            public PlayerCooldown() { }
+        }
+        class PCDInfo
+        {            public Dictionary&lt;string, long&gt; npcCooldowns = new Dictionary&lt;string, long&gt;();
+           
+            public PCDInfo() { }
+            public PCDInfo(long cd)
+            {
+            }
+        }        void SaveData()
+        {
+            PCDDATA.WriteObject(pcdData);
+        }
+        void LoadData()
+        {
+            try
+            {
+                pcdData = Interface.GetMod().DataFileSystem.ReadObject&lt;PlayerCooldown&gt;(&quot;NpcTp/NpcTP_Player&quot;);
+            }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new Playerfile&quot;);
+                pcdData = new PlayerCooldown();
+            }
+            try
+            {
+            npcData = Interface.GetMod().DataFileSystem.ReadObject&lt;NPCTPDATA&gt;(&quot;NpcTp/NpcTP_Data&quot;);
+           }
+            catch
+            {
+                Puts(&quot;Couldn't load NPCTP data, creating new datafile&quot;);
+                npcData = new NPCTPDATA();
+            }           
+        }        #endregion        #region Cooldown Management              static double GrabCurrentTime() =&gt; DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;        #endregion
+       
+       
+        private void TeleportPlayerPosition1(BasePlayer player, Vector3 destination)
+        {
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;StartLoading&quot;, null, null, null, null, null);
+            StartSleeping(player);
+            player.MovePosition(destination);
+            if (player.net?.connection != null)
+                player.ClientRPCPlayer(null, player, &quot;ForcePositionTo&quot;, destination);
+            if (player.net?.connection != null)
+                player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+            player.UpdateNetworkGroup();
+            player.SendNetworkUpdateImmediate(false);
+            if (player.net?.connection == null) return;
+            try { player.ClearEntityQueue(null); } catch { }
+            player.SendFullSnapshot();
+        }
+        private void StartSleeping(BasePlayer player)
+        {
+            if (player.IsSleeping())
+                return;
+            player.SetPlayerFlag(BasePlayer.PlayerFlags.Sleeping, true);
+            if (!BasePlayer.sleepingPlayerList.Contains(player))
+                BasePlayer.sleepingPlayerList.Add(player);
+            player.CancelInvoke(&quot;InventoryUpdate&quot;);
+        }        private bool CheckPlayerMoney(BasePlayer player, int amount)
+        {
+            if (useEconomics)
+            {
+                double money = (double)Economics?.CallHook(&quot;GetPlayerMoney&quot;, player.userID);
+                if (money &gt;= amount)
+                {
+                    money = money - amount;
+                    Economics?.CallHook(&quot;Set&quot;, player.userID, money);
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;charged&quot;, this, player.UserIDString), (int)(amount)));
+                    return true;
+                }
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;nomoney&quot;, this, player.UserIDString), (int)(amount)));            }
+            return false;
+        }        private bool CheckPlayerRP(BasePlayer player, int amount)
+        {
+            if (useRewards)
+            {
+                var money = (int)ServerRewards.Call(&quot;CheckPoints&quot;, player.userID);
+                if (money &gt;= amount)
+                {
+                    ServerRewards.Call(&quot;TakePoints&quot;, player.userID, amount);
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;charged&quot;, this, player.UserIDString), (int)(amount)));
+                    return true;
+                }
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;nomoney&quot;, this, player.UserIDString), (int)(amount)));            }
+            return false;
+        }        #region USENPC        [ChatCommand(&quot;npctp_add&quot;)]
+        void cmdNpcAdD(BasePlayer player, string command, string[] args)
+        {
+       
+        var n = npcData.NpcTP;
+        string IDNPC = &quot;&quot;;
+        string SpawnFiles = &quot;&quot;;
+                if (!permission.UserHasPermission(player.userID.ToString(), &quot;npctp.admin&quot;))
+                {
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;nopermcmd&quot;, this)));
+                    return;
+                }       
+        if (args.Length == 2)
+        {
+            SpawnFiles = (args[1]);
+        }
+       
+        var setup = new NPCInfo { Cost = Cost, CanUse = false, permission = &quot;npctp.default&quot;, UseCommand = false, CommandOnPlayer = false, Command = &quot;say&quot;, Arrangements = &quot;this is a test&quot;  };
+        var setups = new NPCInfo { Cost = Cost, CanUse = true, SpawnFile = SpawnFiles, permission = &quot;npctp.default&quot;, UseCommand = false, CommandOnPlayer = false, Command = &quot;say&quot;, Arrangements = &quot;this is a test&quot;  };
+       
+        if (args.Length &lt;= 0)
+        {
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcerror&quot;, this, player.UserIDString)));
+                return;   
+        }   
+       
+        IDNPC = (args[0]);
+       
+        if (args.Length == 1)
+        {
+            if (!n.ContainsKey(IDNPC))   
+                n.Add(IDNPC, setup);
+                SaveNpcTpData();               
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcadd&quot;, this, player.UserIDString), (string)(IDNPC)));
+                return;
+        }
+        if (args.Length == 2)
+        {
+            if (!n.ContainsKey(IDNPC))
+                n.Add(IDNPC, setups);
+                SaveNpcTpData();
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcadds&quot;, this, player.UserIDString), (string)(IDNPC), (string)(SpawnFiles)));               
+                return;
+                  }
+                }                          void OnUseNPC(BasePlayer npc, BasePlayer player, Vector3 destination)
+        {
+            if (!npcData.NpcTP.ContainsKey(npc.UserIDString)) return; // Check if this NPC is registered            ulong playerId = player.userID;
+            string npcId = npc.UserIDString;            double timeStamp = GrabCurrentTime();            var CanUse = npcData.NpcTP[npcId].CanUse;
+            var cooldownTime = npcData.NpcTP[npcId].Cooldown;
+            var buyMoney1 = npcData.NpcTP[npcId].Cost;
+            var UseCommand = npcData.NpcTP[npcId].UseCommand;
+            var CommandOnPlayer = npcData.NpcTP[npcId].CommandOnPlayer;
+            var Perms = npcData.NpcTP[npcId].permission;
+            string Command = npcData.NpcTP[npcId].Command;
+            string Arrangements = npcData.NpcTP[npcId].Arrangements;
+            object newpos = null;
+            var bad = &quot;somthing is not right somewhere&quot;;
+            string spawn = npcData.NpcTP[npcId].SpawnFile;            if (!pcdData.pCooldown.ContainsKey(playerId))
+            {
+                pcdData.pCooldown.Add(playerId, new PCDInfo());
+                //SaveData();
+            }            if (!CanUse)
+            {
+                SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;notenabled&quot;, this)));
+                return;
+            }
+            else
+            {
+                if (!permission.UserHasPermission(player.userID.ToString(), Perms))
+                {
+                    SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;noperm&quot;, this)));
+                    return;
+                }
+                if (pcdData.pCooldown[playerId].npcCooldowns.ContainsKey(npcId)) // Check if the player already has a cooldown for this NPC
+                {
+                    var cdTime = pcdData.pCooldown[playerId].npcCooldowns[npcId]; // Get the cooldown time of the NPC
+                    if (cdTime &gt; timeStamp)
+                    {
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;cdTime&quot;, this, player.UserIDString), (int)(cdTime - timeStamp) / 60));
+                        return;
+                    }
+                }
+               
+                if (useRewards)
+                    if (CheckPlayerRP(player, (int)buyMoney1))
+                    {
+                    }
+                if (useEconomics)
+                    if (CheckPlayerMoney(player, (int)buyMoney1))
+                    {
+                    }                   
+                   
+                if (UseCommand == false)
+                {                    pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime; // Store the new cooldown in the players data under the specified NPC
+                    SaveData();
+                    object success = Spawns.Call(&quot;GetRandomSpawn&quot;, spawn);
+                    if (success is Vector3) // Check if the returned type is Vector3
+                    {
+                        Vector3 location = (Vector3)success;
+                        TeleportPlayerPosition1(player, (Vector3)success);
+                    }
+                    else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                }                if (UseCommand == true &amp;&amp; CommandOnPlayer == false)
+                {
+                    pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                    SaveData();                    if (CommandOnPlayer) // Check if this is command on player
+                    {
+                        rust.RunServerCommand($&quot;{Command} {Arrangements}&quot;);
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                    }
+                    else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                }
+                if (UseCommand == true &amp;&amp; CommandOnPlayer == true)
+                {
+                    pcdData.pCooldown[playerId].npcCooldowns[npcId] = (long)timeStamp + cooldownTime;
+                    SaveData();                    if (CommandOnPlayer) // Check if this is command on player
+                    {
+                        rust.RunServerCommand($&quot;{Command} {player.userID} {Arrangements}&quot;);
+                        SendReply(player, string.Format(lang.GetMessage(&quot;title&quot;, this) + lang.GetMessage(&quot;npcCommand&quot;, this)));
+                    }
+                    else PrintError((string)bad); // Otherwise print the error message to console so server owners know there is a problem                }
+            }
+            #endregion
+            }        }    }</pre>{% endraw %}
+                        </div><br /> everything seems to be ok now any more recommendation? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ts3hosting</a>,</span>
+                        <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290121' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2017 at 2:12 PM">Jan 29, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-datafile-cooldowns.23352/#post-290121' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/290121/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

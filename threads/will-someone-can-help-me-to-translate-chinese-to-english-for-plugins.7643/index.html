@@ -1,0 +1,613 @@
+---
+layout: forums
+title: 'Will someone can help me to translate Chinese to English for plugins?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/' | prepend: site.baseurl }}">Will someone can help me to translate Chinese to English for
+            plugins?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kation</a>, <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 9, 2015 at 9:08 PM">Apr 9, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-78204" class="message" data-author="Kation">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kation" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kation</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I writen a wizard for beginner plugins<br /> But my English is poor<br /> Many words I don&#039;t know how to
+                        translate it correctly.<br />
+                        <br /> Here is the general message:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;string, string&gt; message = new Dictionary&lt;string, string&gt;
+        {
+            {&quot;Continue&quot;, &quot;继续，你还需要采集{0}个【{1}】&quot;},    //continue to gather ?? of ?? resource.
+            {&quot;Graduation&quot;, &quot;恭喜您，新手教学已完成&quot;},  //words of graduation from wizard
+            {&quot;Welcome&quot;, &quot;欢迎来到Rust，下面将指引您进行游戏&quot;},  //welcome words
+            {&quot;Skip&quot;, &quot;您已跳过新手教学&quot;}, // show you are skip the wizard
+            {&quot;Tip&quot;, &quot;服务器装有教学插件，回复指令【/wizard】查看当前步骤&quot;},  //tip of say .wizard to see what step currently
+            {&quot;Reloaded&quot;, &quot;教学插件数据重载成功&quot;}, //wizard data reloaded
+            {&quot;Saved&quot;, &quot;教学插件数据保存成功&quot;}//wizard data saved
+        };</pre>{% endraw %}
+                        </div>Here is the wizard steps:<br /> Start is step starting words<br /> End is step ending words<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+//1. Teach beginner to gather wood
+//Start:
+//Teach beginner to user keyboard &quot;1&quot; to use Rock
+//Hold left mouse to gather wood when face to wood
+//If not beginner reply /wizard.skip to skip wizard
+//End:
+//Say something good to beginner
+{&quot;GatherWood&quot;, new WizardStep{
+    Type = WizardType.Gather,
+    Target = &quot;wood&quot;,
+    Count = 500,
+    Start = new string[]{
+        &quot;您的工具栏1是【石头 Rock】，用【石头 Rock】可以【采集资源】，请先去采集【木头 Wood】&quot;,
+        &quot;对着【树木】按住鼠标【左键】不放，可以持续采集&quot;,
+        &quot;如果您不是新手，请回复指令【/wizard.skip】跳过&quot;
+    }, //
+    End = new string[]{
+        &quot;干得漂亮，相信您已经知道如何采集资源了&quot;
+    },
+    NextStep = &quot;GatherStone&quot;
+}}, 
+//2. Teach beginner to gather stone
+//Start:
+//Tell beginner to gather 250 of stone
+//End:
+//Say wood and stone are importans resources
+//Especially building house
+{&quot;GatherStone&quot;, new WizardStep{
+    Type = WizardType.Gather,
+    Target = &quot;stones&quot;,
+    Count = 250,
+    Start = new string[]{
+        &quot;接下来请去采集250个【石头 Stones】&quot;,
+    },
+    End = new string[]{
+        &quot;很好，木头与石头都是重要的基础资源，特别在您建造房子的时候用到&quot;,
+        &quot;后面我们会教导您建造一幢简易房子&quot;
+    },
+    NextStep = &quot;CraftStoneHatchet&quot;
+}},
+//3.Teach beginner to craft Stone Hatchet
+//Start:
+//The step to craft Stone Hatchet
+//End:
+//Tell beginner to gather something to save time when he is crafting
+{&quot;CraftStoneHatchet&quot;, new WizardStep{
+    Type = WizardType.Craft,
+    Target = &quot;stone hatchet&quot;,
+    Start = new string[]{
+        &quot;很好，下面请制造一个【石斧 Stone Hatchet】&quot;,
+        &quot;按【Tab】进入【物品栏】，【右上方】制造物品选择【分类】&quot;,
+        &quot;【石斧】的分类是【TOOL】&quot;,
+        &quot;鼠标左键点击【Stone Hatchet】制作石斧&quot;,
+    },
+    End = new string[]{
+        &quot;在【制造】物体的时候，您可以【继续采集】，这样能节省很多时间&quot;
+    },
+    NextStep = &quot;GetStoneHatchet&quot;
+}},
+//4.Nothing, Just get a Stone Hatchet when carfting finished
+//End:
+//Tell beginner use hatchets to gather woods is better
+{&quot;GetStoneHatchet&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;stone hatchet&quot;,
+    Start = new string[]{
+    },
+    End = new string[]{
+        &quot;很好，你获得了一个【石斧 Stone Hatchet】，用【斧类 Hatchet】工具采集【树木 Wood】会更快&quot;
+    },
+    NextStep = &quot;CraftStonePickAxe&quot;
+}},
+//5.Craft Stone Pick Axe
+//Start:
+//Teach beginner to craft it
+//End:
+//Same with craft Stone Hatchet
+{&quot;CraftStonePickAxe&quot;, new WizardStep{
+    Type = WizardType.Craft,
+    Target = &quot;stone pick axe&quot;,
+    Start = new string[]{
+       &quot;下面请制造一个【石镐 Stone Pick Axe】&quot;,
+       &quot;石镐的分类为【TOOL】&quot;,
+       &quot;鼠标左键点击【Stone Pick Axe】制作石斧&quot;
+    },
+    End = new string[]{
+        &quot;在【制造】物体的时候，您可以【继续采集】，这样能节省很多时间&quot;
+    },
+    NextStep = &quot;GetStonePickAxe&quot;
+}},
+//6.
+//End:
+//Tell beginner use axes to gather stone is better
+//And tools have their durability
+{&quot;GetStonePickAxe&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;stone pick axe&quot;,
+    Start = new string[]{
+    },
+    End = new string[]{
+        &quot;很好，你获得了一个【石镐 Stone Pick Axe】，用【镐类 Axe】工具采集【石头 Stone】会更快&quot;,
+        &quot;请注意，所有物品都拥有【耐久度】，耐久度下降至0后将【不可使用】&quot;
+    },
+    NextStep = &quot;CraftPaper&quot;
+}},
+//7.
+//Start:
+//...
+//End:
+//Gather woods
+{&quot;CraftPaper&quot;, new WizardStep{
+    Type = WizardType.Craft,
+    Target = &quot;paper&quot;,
+    Start = new string[]{
+        &quot;下面请制造一张【纸 Paper】&quot;,
+        &quot;纸的分类为【RESOURCES】&quot;
+    },
+    End = new string[]{
+        &quot;继续采集【木头】，接下来会用到很多&quot;
+    },
+    NextStep = &quot;GetPaper&quot;
+}},
+//8.
+//End:
+//Use paper can craft a Building Plan
+{&quot;GetPaper&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;paper&quot;,
+    Start = new string[]{
+    },
+    End = new string[]{
+        &quot;很好，你获得了一张【纸 Paper】，用纸可以造出建筑设计图&quot;
+    },
+    NextStep = &quot;CraftBuildingPlan&quot;
+}},
+//9.
+//Start:
+//Craft Building Plan
+//End:
+//Continue to gather woods
+{&quot;CraftBuildingPlan&quot;, new WizardStep{
+    Type = WizardType.Craft,
+    Target = &quot;building plan&quot;,
+    Start = new string[]{
+        &quot;下面请制造一张【建筑设计图 Building Plan】&quot;,
+        &quot;建筑设计图的分类为【CONSTRUCTION】&quot;
+    },
+    End = new string[]{
+        &quot;继续采集【木头】，接下来会用到很多&quot;
+    },
+    NextStep = &quot;GetBuildingPlan&quot;
+}},</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+//10.
+//End:
+//Say use Building Plan can create buildings
+{&quot;GetBuildingPlan&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;building plan&quot;,
+    Start = new string[]{
+    },
+    End = new string[]{
+        &quot;很好，你获得了一张【建筑设计图 Building Plan】，用【建筑设计图】可以造出【建筑】&quot;
+    },
+    NextStep = &quot;BuildFoundation&quot;
+}},
+//11.Build Foundation
+//Start:
+//Teach beginner to build a Foundation
+//End:
+//Say every building is base on Foundation
+{&quot;BuildFoundation&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;foundation&quot;,
+    Start = new string[]{
+        &quot;下面请把【建筑设计图】放到【工具栏】，用建筑设计图建造出一个【地基 Foundation】&quot;
+    },
+    End = new string[]{
+        &quot;很好，【地基】是建造建筑的【基础】，所有建筑物都【必须】基于地基【之上】&quot;
+    },
+    NextStep = &quot;BuildWall1&quot;
+}},
+//12.Build Wall
+//Start:
+//How to switch building mode to wall
+{&quot;BuildWall1&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;wall&quot;,
+    Start = new string[]{
+        &quot;使用建筑设计图时按住鼠标【右键】不放&quot;,
+        &quot;【移动】鼠标至圆圈内的选项并【同时】按下鼠标左键&quot;,
+        &quot;可以切换需要建造的物体&quot;,
+        &quot;请切换至【墙 Wall】并在地基上建造【3面墙】&quot;
+    },
+    End = new string[]{
+    },
+    NextStep = &quot;BuildWall2&quot;
+}},
+//13.Build 2st wall
+//Start:
+//build 2nd wall
+{&quot;BuildWall2&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;wall&quot;,
+    Start = new string[]{
+        &quot;请在地基上建造第二面【墙】&quot;
+    },
+    End = new string[]{
+    },
+    NextStep = &quot;BuildWall3&quot;
+}},
+//14.Build 3rd wall
+//Start:
+//build 3rd wall
+//End:
+//Good, wall can keep animals away
+{&quot;BuildWall3&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;wall&quot;,
+    Start = new string[]{
+        &quot;请在地基上建造第三面【墙】&quot;
+    },
+    End = new string[]{
+        &quot;很好，墙壁能够阻止敌人或野兽进入&quot;
+    },
+    NextStep = &quot;BuildDoorway&quot;
+}},
+//15.Build Doorway
+//Start:
+//Please to build doorawy
+{&quot;BuildDoorway&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;doorway&quot;,
+    Start = new string[]{
+        &quot;请在地基上建造【门墙 Doorway】&quot;
+    },
+    End = new string[]{
+    },
+    NextStep = &quot;BuildDoor&quot;
+}},
+//16.Build door
+//Start:
+//Please to build door
+//End
+//Wall and door is done
+//But lost a lock
+{&quot;BuildDoor&quot;, new WizardStep{
+    Type = WizardType.Build,
+    Target = &quot;door&quot;,
+    Start = new string[]{
+        &quot;请在地基上建造【门 Door】&quot;
+    },
+    End = new string[]{
+        &quot;很好，【墙】和【门】都造好了，但【门】还缺个【锁头】&quot;
+    },
+    NextStep = &quot;DeployLock&quot;
+}},
+//17.Deploy Lock
+//Start:
+//System is sending a lock to beginner
+//Use it to door
+//Suggest beginner stay in house when offline and why?
+//End:
+//Lock is done
+{&quot;DeployLock&quot;, new WizardStep{
+    Type = WizardType.Deploy,
+    Target = &quot;lock&quot;,
+    Give = &quot;lock&quot;,
+    GiveAmount = 1,
+    Start = new string[]{
+        &quot;现在系统赠送了您一个【锁头 Lock】&quot;,
+        &quot;请把它用在【门】上&quot;,
+        &quot;建议【离线】前回到自己的【住所】，【离线】后人物会【留在原地】，会受到敌人或野兽的攻击而【死亡】&quot;
+    },
+    End = new string[]{
+        &quot;锁头已装好&quot;
+    },
+    NextStep = &quot;GetKey&quot;
+}},
+//18.Get a key
+//Start:
+//press E to lock to get a key
+//End:
+//Say this key is only to this lock
+//And what lock use for??
+{&quot;GetKey&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;door key&quot;,
+    Start = new string[]{
+        &quot;现在对着【锁头】按【E】获取一把【钥匙 Key】&quot;
+    },
+    End = new string[]{
+        &quot;很好，你获得了这扇门的一把【钥匙 Door Key】&quot;,
+        &quot;只要有这把【钥匙】，你就能开这扇门，也能再通过锁头【配出】另一把钥匙&quot;
+    },
+    NextStep = &quot;UpgradeBuilding&quot;
+}},
+//19.Upgrade building
+//Start:
+//System give a Hammer to beginner
+//Use it to upgrade Foundation
+//How to upgrade?
+//End:
+//Say we used to upgrade Foundation first and why
+//What do we get after upgrade
+//Hammer can fix building, and how to ?
+{&quot;UpgradeBuilding&quot;, new WizardStep{
+    Type = WizardType.Upgrade,
+    Target = &quot;foundation&quot;,
+    Give = &quot;hammer&quot;,
+    GiveAmount = 1,
+    Start = new string[]{
+        &quot;现在系统赠送了你一把【木槌 Hammer】，请使用【木椎 Hammer】对【地基 Foundation】进行【升级】&quot;,
+        &quot;用【木槌】对着建筑物按【右键】，选择【Upgrade to Wood】同时按【左键】&quot;,
+        &quot;【升级】至不同【类型】有不同的【耐久度】，消耗不同的【资源】&quot;
+    },
+    End = new string[]{
+        &quot;【地基】是建筑物的基础，一定要先【升级】它，如果地基被【破坏】，【依赖于】它之上的建筑物也会随之【崩塌】&quot;,
+        &quot;升级建筑物后能够增加建筑物【防御能力】&quot;,
+        &quot;【木槌】不仅能升级建筑物，在建筑物受伤的时候还能通过【左键】敲打建筑物【修复】它&quot;
+    },
+    NextStep = &quot;DrinkWater&quot;
+}},
+//20.Drink Water
+//Start:
+//System give a water and drink it.
+//End:
+//What water used to
+{&quot;DrinkWater&quot;, new WizardStep{
+    Type = WizardType.Use,
+    Target = &quot;small water bottle&quot;,
+    Give = &quot;small water bottle&quot;,
+    GiveAmount = 1,
+    Start = new string[]{
+        &quot;系统赠送了你一瓶【水 Small Water Bottle】，请喝掉它&quot;
+    },
+    End = new string[]{
+        &quot;很好，你喝掉了这瓶【水】&quot;,
+        &quot;【水】能够增加你的【口渴值】，并少量增加【饥饿值】&quot;,
+    },
+    NextStep = &quot;DeployCampFire&quot;
+}},
+//21.Deploy Camp Fire
+//Start:
+//System give a Camp Fire to beginner
+//Use it
+//End:
+//Camp can recover hp
+//Camp will burn player when close to it
+//Hold E to it to open menu
+{&quot;DeployCampFire&quot;, new WizardStep{
+    Type = WizardType.Deploy,
+    Target = &quot;camp fire&quot;,
+    Give = &quot;camp fire&quot;,
+    GiveAmount = 1,
+    Start = new string[]{
+        &quot;系统赠送了你一个【营火 Camp Fire】，请使用它&quot;
+    },
+    End = new string[]{
+        &quot;很好，你使用了【营火】&quot;,
+        &quot;你可以点燃营火，在营火周围可以【防止冻伤】并【恢复生命值】&quot;,
+        &quot;但请离营火【保持距离】，距离太近会被【烧伤】&quot;,
+        &quot;对着营火【长按E】可以打开【物品菜单】&quot;
+    },
+    NextStep = &quot;GetCookedWolfMeat&quot;
+}},
+//22.Cook meat
+//Start:
+//System give two Raw Wolf Meat
+//Take it into campfire
+//raw to cooked by time
+//cooked to burned by time
+//bring it before burned
+//End:
+//get cooked wolf meat
+{&quot;GetCookedWolfMeat&quot;, new WizardStep{
+    Type = WizardType.Get,
+    Target = &quot;cooked wolf meat&quot;,
+    Give = &quot;raw wolf meat&quot;,
+    GiveAmount = 2,
+    Start = new string[]{
+        &quot;现在系统赠送了你两块【生狼肉 Raw Wolf Meat】&quot;,
+        &quot;请打开营火物品栏，把生狼肉放进去，并【点燃 Fire】营火&quot;,
+        &quot;营火点然后一定时间内，生狼肉会【烤熟】，再过一段时间，熟狼肉会【烤焦】&quot;,
+        &quot;请在烤焦之前从营火物品栏内拿出【熟狼肉 Cooked Wolf Meat】&quot;
+    },
+    End = new string[]{
+        &quot;很好，你获得了【熟狼肉 Cooked Wolf Meat】&quot;
+    },
+    NextStep = &quot;EatCookedWolfMeat&quot;
+}},
+//23.Eat meat
+//Start:
+/Eat cooked wolf meat
+//End:
+//what meat used to
+{&quot;EatCookedWolfMeat&quot;, new WizardStep{
+    Type = WizardType.Use,
+    Target = &quot;cooked wolf meat&quot;,
+    Start = new string[]{
+        &quot;现在请吃掉【熟狼肉 Cooked Wolf Meat】&quot;
+    },
+    End = new string[]{
+        &quot;很好，你吃掉了这块【熟狼肉】&quot;,
+        &quot;【食物】能够增加你的少量【口渴值】与大量【饥饿值】&quot;,
+    }
+}},</pre>{% endraw %}
+                        </div>I write something in English<br /> Is anybody can write step words?<br /> If you have any idea to steps, welcome <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kation</a>,</span>
+                        <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 9, 2015 at 9:08 PM">Apr 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/78204/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-78245" class="message" data-author="4seti">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="4seti" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">4seti</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private Dictionary&lt;string, string&gt; message = new Dictionary&lt;string, string&gt;
+        {
+            {&quot;Continue&quot;, &quot;Gathered {0} of {1}, keep going!&quot;},    //continue to gather ?? of ?? resource.
+            {&quot;Graduation&quot;, &quot;You are doing well!&quot;},  //words of graduation from wizard
+            {&quot;Welcome&quot;, &quot;Welcome to the Rust, survivor&quot;},  //welcome words
+            {&quot;Skip&quot;, &quot;Skipping education&quot;}, // show you are skip the wizard
+            {&quot;Tip&quot;, &quot;Write /wizard to see your current task&quot;},  //tip of say .wizard to see what step currently
+            {&quot;Reloaded&quot;, &quot;Education Wizzard reloaded&quot;}, //wizard data reloaded
+            {&quot;Saved&quot;, &quot;Wizzard data saved&quot;}//wizard data saved
+        };</pre>{% endraw %}
+                        </div>Great idea! As soon as i&#039;ll have more time i&#039;ll translate 2nd and 3rd part. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">4seti</a>,</span>
+                        <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/#post-78245' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Apr 9, 2015 at 11:51 PM">Apr 9, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/#post-78245' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/78245/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-78301" class="message" data-author="Kation">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kation" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kation</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="4seti">
+                            <aside>
+                                <div class="attribution type">4seti said: <a href="#post-78245" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>private Dictionary&lt;string, string&gt; message = new Dictionary&lt;string, string&gt;
+        {
+            {&quot;Continue&quot;, &quot;Gathered {0} of {1}, keep going!&quot;},    //continue to gather ?? of ?? resource.
+            {&quot;Graduation&quot;, &quot;You are doing well!&quot;},  //words of graduation from wizard
+            {&quot;Welcome&quot;, &quot;Welcome to the Rust, survivor&quot;},  //welcome words
+            {&quot;Skip&quot;, &quot;Skipping education&quot;}, // show you are skip the wizard
+            {&quot;Tip&quot;, &quot;Write /wizard to see your current task&quot;},  //tip of say .wizard to see what step currently
+            {&quot;Reloaded&quot;, &quot;Education Wizzard reloaded&quot;}, //wizard data reloaded
+            {&quot;Saved&quot;, &quot;Wizzard data saved&quot;}//wizard data saved
+        };</pre>{% endraw %}
+                                        </div>Great idea! As soon as i&#039;ll have more time i&#039;ll translate 2nd and 3rd part.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for your help<br /> I&#039;m upload this plugin then you can test it~ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="BeginnerWizard.cs">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/beginnerwizard-cs.7690/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/beginnerwizard-cs.7690/" target="_blank">BeginnerWizard.cs</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>29.1 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>13</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kation</a>,</span>
+                        <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/#post-78301' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Apr 10, 2015 at 6:32 AM">Apr 10, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/will-someone-can-help-me-to-translate-chinese-to-english-for-plugins.7643/#post-78301' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/78301/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

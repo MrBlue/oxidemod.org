@@ -1,0 +1,768 @@
+---
+layout: forums
+title: 'Understanding link between Rust -&gt; Assembly-CSharp.dll -&gt; OxideMod'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/' | prepend: site.baseurl }}">Understanding link between Rust -&gt; Assembly-CSharp.dll -&gt;
+            OxideMod</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kolyma</a>, <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 24, 2017 at 4:25 AM">Jun 24, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-333461" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I would like to better understand the way in which OxideMod is connected to the Rust game engine.<br />
+                        <br /> From using both OxideMod and OxidePatcher and briefly reviewing their source code, I understand that hooks are added to the Assembly-CSharp that allow some functions
+                        (found by using .Net reflection) to be exposed to OxideMod through what appear to be triggers added as stub code to the original IL.<br />
+                        <br /> My (purposefully) simple questions are:<br />
+                        <br /> 1) Why is it necessary to patch the Assembly-Csharp.dll in the first place? What does it do that is required to have a modding system?<br />
+                        <br /> 2) How is the main OxideMod compiled application actually loaded and executed when the main game engine starts? Is that an additional feature provided when the
+                        Assembly-Csharp.dll is modified by the OxidePatcher?<br />
+                        <br /> I&#039;m not asking about plugin development and already know how to make Oxide C# extensions. I want to learn more about the very initial way in which Oxide interfaces
+                        with Rust to make this whole mod system work.<br />
+                        <br /> A summary answer or pointer to specific areas of the source code would be greatly appreciated. TIA <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 4:25 AM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333461/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333462" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Oxide patches Assembly-CSharp.dll (the game&#039;s main DLL) to add hooks. Hooks are what Oxide calls in plugins
+                        when that code is hit in the game. Hooks also are what make Oxide load. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333462' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 4:30 AM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333462' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333462/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333464" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333462" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hooks are what Oxide calls in plugins when that code is hit in the game.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>To be clear, after patching, the flow is:<br />
+                        <br /> 1) Something happens in game where functions in Assembly-CSharp are invoked<br /> 2) The area of code modified by OxidePatcher hits the hook that was added<br /> 3) #2
+                        calls something in the main OxideMod program with relevant particular variables &amp; return codes<br /> 4) OxideMod then cycles through all the loaded plugins using that hook
+                        (I found this looping process in OxideMod source)<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333462" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hooks also are what make Oxide load.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>So if I wanted to find where &quot;the rubber meets the road,&quot; what is this seminal hook that boots OxideMod? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333464' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 4:43 AM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333464' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333464/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333469" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-333464" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">To be clear, after patching, the flow is:<br />
+                                        <br /> 1) Something happens in game where functions in Assembly-CSharp are invoked<br /> 2) The area of code modified by OxidePatcher hits the hook that was
+                                        added<br /> 3) #2 calls something in the main OxideMod program with relevant particular variables &amp; return codes<br /> 4) OxideMod then cycles through all
+                                        the loaded plugins using that hook (I found this looping process in OxideMod source)<br />
+                                        <br />
+                                        <br /> So if I wanted to find where &quot;the rubber meets the road,&quot; what is this seminal hook that boots OxideMod?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The InitOxide hook is the main hook that tells Oxide to load its basics. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333469' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 5:25 AM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333469' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333469/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333471" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for your help. I&#039;m starting to better understand the flow and connections. Ok, so from the
+                        OxidePatcher, I see this for InitOxide:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>IL_0058: ldstr &quot;Command Line: &quot;
+IL_005d: ldloc.0
+IL_005e: call System.String System.String::Concat(System.String,System.String)
+IL_0063: call System.Void UnityEngine.Debug::Log(System.Object)
+IL_0068: call System.Void Oxide.Core.Interface::Initialize()
+IL_006d: ret</pre>{% endraw %}
+                        </div>Which I can follow to this OxideMod source code:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public static void Initialize()
+        {
+            // Create if not already created
+            if (Oxide != null) return;
+            Oxide = new OxideMod(DebugCallback);
+            Oxide.Load();
+        }</pre>{% endraw %}
+                        </div>Then my next question becomes: How does the Rust game engine know to load the Oxide.Core.dll file so the Oxide.Core.Interface::Initialize() function is available to be
+                        called? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333471' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 5:33 AM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333471' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333471/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333513" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> OK, so after some more testing and digging into things, I can see that inside the Bundles directory of the
+                        compiled OxideMod source code, there are 3 dlls that get copied over to a clean copy of Rust, thereby overwriting some original game server files.<br />
+                        <br /> It appears inside each of these dlls, Assembly-CSharp.dll, Facepunch.Console.dll, and Facepunch.Rcon.dll, there is a reference to Oxide.Core (I&#039;m supposing it means
+                        Oxide.Core.dll, which when loaded, then loads all the other related Oxide.* files)<br />
+                        <br />
+                        <i><b>Assembly-CSharp.dll</b></i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+Assembly-CSharp.dll Assembly-CSharp Facepunch.Console mscorlib System Facepunch.Network Rust.Data Facepunch.System UnityEngine System.Core Rust.Global Facepunch.Steamworks UnityEngine.UI Assembly-CSharp-firstpass Facepunch.Rcon EasyAntiCheat.Server Rust.Workshop Facepunch.UnityEngine ApexAI ApexSerialization Facepunch.Raknet Newtonsoft.Json Ionic.Zip.Reduced LZ4 Oxide.Core kernel32.dll RustNative &lt;Module&gt; ConsoleGen Object All ConsoleSystem Command .ctor Name Parent FullName ServerAdmin Description Variable Func`1 GetOveride Action`1 SetOveride Arg Call ServerUser Saved .cctor Single ToString &lt;All&gt;m__0 CompilerGeneratedAttribute System.Runtime.CompilerServices StringExtensions Facepunch.Extend ToFloat
+</pre>{% endraw %}
+                        </div><b>Does the kernel32.dll part of Oxide.Core.kernel32.dll imply that it&#039;s doing something like telling C# JIT to load the Oxide.Core.dll ?</b><br />
+                        <br /> And there&#039;s another part in there like:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>get_Oxide OxideMod OxideConfig Oxide.Core.Configuration get_Options OxideOptions Modded set_GameTags </pre>{% endraw %}
+                        </div>I suppose this is getting added by the OxidePatcher in the section of Rust.opj file:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>          &quot;Type&quot;: &quot;Modify&quot;,
+          &quot;Hook&quot;: {
+            &quot;InjectionIndex&quot;: 81,
+            &quot;RemoveCount&quot;: 0,
+            &quot;Instructions&quot;: [
+              {
+                &quot;OpCode&quot;: &quot;call&quot;,
+                &quot;OpType&quot;: &quot;Method&quot;,
+                &quot;Operand&quot;: &quot;Oxide.Core|Oxide.Core.Interface|get_Oxide&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;call&quot;,
+                &quot;OpType&quot;: &quot;Method&quot;,
+                &quot;Operand&quot;: &quot;Oxide.Core|Oxide.Core.OxideMod|get_Config&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;call&quot;,
+                &quot;OpType&quot;: &quot;Method&quot;,
+                &quot;Operand&quot;: &quot;Oxide.Core|Oxide.Core.Configuration.OxideConfig|get_Options&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;ldfld&quot;,
+                &quot;OpType&quot;: &quot;Field&quot;,
+                &quot;Operand&quot;: &quot;Oxide.Core|Oxide.Core.Configuration.OxideConfig/OxideOptions|Modded&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;brfalse&quot;,
+                &quot;OpType&quot;: &quot;Instruction&quot;,
+                &quot;Operand&quot;: 81
+              },
+              {
+                &quot;OpCode&quot;: &quot;ldstr&quot;,
+                &quot;OpType&quot;: &quot;String&quot;,
+                &quot;Operand&quot;: &quot;oxide,modded,&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;ldloc_3&quot;,
+                &quot;OpType&quot;: &quot;None&quot;,
+                &quot;Operand&quot;: null
+              },
+              {
+                &quot;OpCode&quot;: &quot;call&quot;,
+                &quot;OpType&quot;: &quot;Method&quot;,
+                &quot;Operand&quot;: &quot;mscorlib|System.String|Concat(System.String, System.String)&quot;
+              },
+              {
+                &quot;OpCode&quot;: &quot;stloc_3&quot;,
+                &quot;OpType&quot;: &quot;None&quot;,
+                &quot;Operand&quot;: null
+              }
+            ],
+            &quot;HookTypeName&quot;: &quot;Modify&quot;,
+            &quot;Name&quot;: &quot;AddGameTags [patch]&quot;,
+            &quot;HookName&quot;: &quot;AddGameTags&quot;,
+            &quot;AssemblyName&quot;: &quot;Assembly-CSharp.dll&quot;,
+            &quot;TypeName&quot;: &quot;ServerMgr&quot;,
+            &quot;Flagged&quot;: false,
+            &quot;Signature&quot;: {
+              &quot;Exposure&quot;: 0,
+              &quot;Name&quot;: &quot;UpdateServerInformation&quot;,
+              &quot;ReturnType&quot;: &quot;System.Void&quot;,
+              &quot;Parameters&quot;: []
+            },
+            &quot;MSILHash&quot;: &quot;e6O83Oz+Tk3hgAGIVetOfWEOqZ87hj0RT3zA9OFNoIM=&quot;,
+            &quot;BaseHookName&quot;: null,
+            &quot;HookCategory&quot;: &quot;_Patches&quot;
+          }
+        },
+</pre>{% endraw %}
+                        </div>However, inside <i><b>Facepunch.Console.dll</b></i>, I also find a reference to Oxide.Core<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Facepunch.Console.dll Facepunch.Console mscorlib System.Core Facepunch.UnityEngine UnityEngine Facepunch.Network Facepunch.System Newtonsoft.Json Facepunch.Input Oxide.Core &lt;Module&gt; ConsoleSystem Object System LastError CurrentArgs OnSendToServer Func`2 HasChanges ClientCanRunAdminCommands Func`1 Dictionary`2 System.Collections.Generic Enumerator KeyValuePair`2 Interface CallHook CommandLine Facepunch GetSwitches GetEnumerator get_Current get_Value String op_Equality get_Key Substring MoveNext IDisposable</pre>{% endraw %}
+                        </div><b>How is this dll patched to add that reference to Oxide.Core? I don&#039;t see that function inside the Rust.opj</b><br />
+                        <br /> Seems there is a similar situation with <i><b>Facepunch.Rcon.dll</b></i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>websocket-sharp UnityEngine Oxide.Core &lt;Module&gt; Listener Object Password Port Address OnMessage Action`3 IPEndPoint System.Net server WebSocketServer WebSocketSharp.Server IPAddress Any TryParse .ctor String Concat Func`1 AddWebSocketService TimeSpan FromSeconds set_WaitTime Start Stop Shutdown get_WebSocketServices WebSocketServiceManager Broadcast BroadcastMessage str IEnumerator`1 System.Collections.Generic</pre>{% endraw %}
+                        </div>So I&#039;m thinking somehow <i><b>Facepunch.Console.dll</b></i> and <i><b>Facepunch.Rcon.dll</b></i> are modified by the OxidePatcher but not using the Rust.opj. I guess
+                        I should dig into the OxidePatcher source code and it&#039;s hard-coded in there.<br />
+                        <br /> But for the <b><i>Assembly-CSharp.dll</i></b> I&#039;m now thinking that the Rust.opj sections (AddGameTags) referring to Oxide.Core are not the way in which the
+                        Oxide.Core.dll is initially loaded, but that happens with the <b>Oxide.Core.kernel32.dll</b> area, which again is patched into the source dll outside of Rust.opj functionality
+                        (also probably hard-coded in the OxidePatcher source).<br />
+                        <br />
+                        <br /> Thanks in advance for any help you can provide. I&#039;d really like to understand exactly how an unpatched Rust game server becomes able to launch OxideMod. After
+                        coming to C# from knowing other languages, I&#039;m finally ready to learn some of the low-level concepts about how all this stuff is linked at the CIL/JIT level. It appears to
+                        me, OxideMod is a great place to learn about that because of the exotic way in which it&#039;s patched into an existing .Net application. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 24, 2017 at 4:50 PM">Jun 24, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333513' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 4:42 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333513' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333513/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333516" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> All of the DLLs we patched are patched using the OxidePatcher, which there are references to in the Rust.opj. The
+                        only loading of Oxide is happening in the Assembly-CSharp.dll, the rest of the DLLs are for hooks for Oxide and plugins to utilize for various functionality.<br />
+                        <br /> The loading happens when the Initialize hook is called, which calls the Oxide.Core.dll as per reference with the injected hook.<br />
+                        <br /> Also, there also is no Oxide.Core.kernel32.dll, not sure where you got that from. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333516' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 4:52 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333516' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333516/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333521" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333516" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Also, there also is no Oxide.Core.kernel32.dll, not sure where you got that from.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you look inside Assembly-CSharp.dll with a text editor, you&#039;ll see Oxide.Core referenced in 2 different areas. The first area has that kernel32.dll. I thought
+                        that was relevant because I&#039;m used to seeing kernel32 used to load dlls at runtime, but I suppose that&#039;s not how C# works. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333521' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 5:12 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333521' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333521/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333526" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-333521" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you look inside Assembly-CSharp.dll with a text editor, you&#039;ll see Oxide.Core referenced in 2 different areas. The first area has that
+                                        kernel32.dll. I thought that was relevant because I&#039;m used to seeing kernel32 used to load dlls at runtime, but I suppose that&#039;s not how C# works.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That wouldn&#039;t be from Oxide. Oxide.Core.Interface::Initialize() is what is used to load the Oxide DLL when that hook is reached. <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333526' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 5:30 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333526' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333526/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333564" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333526" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Oxide.Core.Interface::Initialize() is what is used to load the Oxide DLL when that hook is reached.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Ok, I get that part and could follow the OxideMod source code from there. I&#039;m having a problem understanding how Assembly-CSharp <span
+                            style="text-decoration: underline"><i>knows</i></span> about the Initialize() function in the first place.<br />
+                        <br /> Does C# just automagically look on the file system (including the search path) for Oxide.dll, then see if there is a Core.Interface::Initialize() function in there. Upon
+                        not finding that filename, does it proceed to looking for an Oxide.Core.dll and Interface::Initialize()... and if not, look for Oxide.Core.Interface.dll ?<br />
+                        <br /> I know it&#039;s looking for the Oxide.Core.dll filename because if I rename that file, the Rust game server doesn&#039;t load and I get load errors for Oxide.Core.dll
+                        in the log file. I&#039;ve done this selectively for each patched dll file and seen similar behavior. I also looked inside the OxidePatcher source code and only see references
+                        to &quot;Oxide.Core.dll&quot; when the patcher is loaded and used for regular patching functions. I don&#039;t see how it patches the dll&#039;s to load-in-advance
+                        Oxide.Core.dll<br />
+                        <br /> Apologies for possibly being difficult with my persistence. I&#039;m pretty sure I&#039;m down to just understanding exactly how Assembly-CSharp.dll is able to call
+                        Oxide.Core.Interface::Initialize() when that function is not actually defined in Assembly-CSharp.dll <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333564' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 8:56 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333564' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333564/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333578" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Kolyma">
+                            <aside>
+                                <div class="attribution type">Kolyma said: <a href="#post-333564" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Ok, I get that part and could follow the OxideMod source code from there. I&#039;m having a problem understanding how Assembly-CSharp <span
+                                            style="text-decoration: underline"><i>knows</i></span> about the Initialize() function in the first place.<br />
+                                        <br /> Does C# just automagically look on the file system (including the search path) for Oxide.dll, then see if there is a Core.Interface::Initialize()
+                                        function in there. Upon not finding that filename, does it proceed to looking for an Oxide.Core.dll and Interface::Initialize()... and if not, look for
+                                        Oxide.Core.Interface.dll ?<br />
+                                        <br /> I know it&#039;s looking for the Oxide.Core.dll filename because if I rename that file, the Rust game server doesn&#039;t load and I get load errors for
+                                        Oxide.Core.dll in the log file. I&#039;ve done this selectively for each patched dll file and seen similar behavior. I also looked inside the OxidePatcher
+                                        source code and only see references to &quot;Oxide.Core.dll&quot; when the patcher is loaded and used for regular patching functions. I don&#039;t see how it
+                                        patches the dll&#039;s to load-in-advance Oxide.Core.dll<br />
+                                        <br /> Apologies for possibly being difficult with my persistence. I&#039;m pretty sure I&#039;m down to just understanding exactly how Assembly-CSharp.dll is
+                                        able to call Oxide.Core.Interface::Initialize() when that function is not actually defined in Assembly-CSharp.dll</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It is injected into the DLL, which you can see with the IL code you posted in one of your previous posts. The entire patcher is made to inject code into the DLL so that
+                        the other DLL &quot;knows&quot; about it. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333578' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2017 at 10:07 PM">Jun 24, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333578' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333578/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-333886" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-333578" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It is injected into the DLL, which you can see with the IL code you posted in one of your previous posts. The entire patcher is made to inject
+                                        code into the DLL so that the other DLL &quot;knows&quot; about it. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                                            title="Wink    ;)" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I read through the OxidePatcher source to complete my understanding about how the Assemby-CSharp.dll knows about Oxide.Core.dll.<br />
+                        <br /> The InitOxide hook starts the OxideMod boot, of course:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>{
+          &quot;Type&quot;: &quot;InitOxide&quot;,
+          &quot;Hook&quot;: {
+            &quot;InjectionIndex&quot;: 24,
+            &quot;HookTypeName&quot;: &quot;Initialize Oxide&quot;,
+            &quot;Name&quot;: &quot;InitOxide [internal]&quot;,
+            &quot;HookName&quot;: &quot;InitOxide&quot;,
+            &quot;AssemblyName&quot;: &quot;Assembly-CSharp.dll&quot;,
+            &quot;TypeName&quot;: &quot;Bootstrap&quot;,
+            &quot;Flagged&quot;: false,
+            &quot;Signature&quot;: {
+              &quot;Exposure&quot;: 2,
+              &quot;Name&quot;: &quot;Init_Tier0&quot;,
+              &quot;ReturnType&quot;: &quot;System.Void&quot;,
+              &quot;Parameters&quot;: []
+            },
+            &quot;MSILHash&quot;: &quot;nw3EJ7ZAnzLu09ycwwpomh+opPLDJ3jHxwZUC3xDzNk=&quot;,
+            &quot;BaseHookName&quot;: null,
+            &quot;HookCategory&quot;: &quot;Server&quot;
+          }
+        }</pre>{% endraw %}
+                        </div>While I&#039;m not exactly sure what every little bit of the OxidePatcher source code does, it appears this line in InitOxide.cs and Simple.cs is key to getting the
+                        Oxide.Core.dll reference embedded into the patched Assembly-CSharp.dll<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public override bool ApplyPatch(MethodDefinition original, ILWeaver weaver, AssemblyDefinition oxideassembly, Patcher patcher = null)
+        {
+            MethodDefinition initoxidemethod = oxideassembly.MainModule.Types
+                .Single((t) =&gt; t.FullName == &quot;Oxide.Core.Interface&quot;)
+                .Methods.Single((m) =&gt; m.IsStatic &amp;&amp; m.Name == &quot;Initialize&quot;);
+</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public override bool ApplyPatch(MethodDefinition original, ILWeaver weaver, AssemblyDefinition oxideassembly, Patcher patcher = null)
+        {
+            // Get the call hook method
+            MethodDefinition callhookmethod = oxideassembly.MainModule.Types
+                .Single((t) =&gt; t.FullName == &quot;Oxide.Core.Interface&quot;)
+                .Methods.Single((m) =&gt; m.IsStatic &amp;&amp; m.Name == &quot;CallHook&quot;);
+</pre>{% endraw %}
+                        </div>Later, when the hook is inserted with ILWeaver, I guess Mono.Cecil library with &quot;Module.Import&quot; takes care of adding a reference to Oxide.Core.dll in the
+                        patched Assembly-CSharp.dll<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Instruction firstinjected = weaver.Add(Instruction.Create(OpCodes.Call, weaver.Module.Import(initoxidemethod)));</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>weaver.Add(Instruction.Create(OpCodes.Call, original.Module.Import(callhookmethod)));</pre>{% endraw %}
+                        </div>I&#039;m sure Oxide devs already know all this considering they made the software. I found a few other threads here that kind of asked questions about similar topics but
+                        without complete answers, so I came back to add what I&#039;ve found in case someone needs it.<br />
+                        <br /> That OxidePatcher is really cool software, especially in the way it handles injecting hooks and adjusting any other related addressing in the CIL affected by locations
+                        changed around the injected code. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 26, 2017 at 6:28 AM">Jun 26, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333886' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 26, 2017 at 6:17 AM">Jun 26, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/understanding-link-between-rust-assembly-csharp-dll-oxidemod.26065/#post-333886' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/333886/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

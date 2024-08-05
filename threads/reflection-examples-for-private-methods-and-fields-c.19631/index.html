@@ -1,0 +1,302 @@
+---
+layout: forums
+title: 'Reflection examples for private methods and fields (C#)'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/' | prepend: site.baseurl }}">Reflection examples for private methods and fields (C#)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Caffeine</a>, <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 15, 2016 at 8:31 PM">Jul 15, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-230446" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Since the Oxide API page doesn&#039;t have any examples for C# and they&#039;re actually rather hard to find on
+                        these forums, here are some I found in plugins.<br />
+                        <br /> Get/Setting Private Fields examples<br />
+                        <br /> RemoveTool.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>static FieldInfo buildingPrivlidges;/* get a pointer to the buildingPrivlidges field */
+buildingPrivlidges = typeof(BasePlayer).GetField(&quot;buildingPrivlidges&quot;, (BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic));/* get building privileges for the specified player */
+List&lt;BuildingPrivlidge&gt; playerpriv = buildingPrivlidges.GetValue(player) as List&lt;BuildingPrivlidge&gt;;</pre>{% endraw %}
+                        </div>Clans.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>/* get pointer to the _displayName field */
+FieldInfo displayName = typeof(BasePlayer).GetField(&quot;_displayName&quot;, (BindingFlags.Instance | BindingFlags.NonPublic));/* set the players new name */
+displayName.SetValue(player, stripTag(player.displayName, clan));</pre>{% endraw %}
+                        </div>Calling Private Method example<br />
+                        <br /> Rust.IO<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>/* get a pointer to the UpdateServerInformation method */
+MethodInfo method = typeof(ServerMgr).GetMethod(&quot;UpdateServerInformation&quot;, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod);/* call the private method */
+method.Invoke(SingletonComponent&lt;ServerMgr&gt;.get_Instance(), new object[0]);</pre>{% endraw %}
+                        </div>CopyPaste.cs<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>/* get a pointer to the Clear method */
+private MethodInfo inventoryClear = typeof(ItemContainer).GetMethod(&quot;Clear&quot;, BindingFlags.NonPublic | BindingFlags.Instance);/* call the private method */
+inventoryClear.Invoke(box.inventory, null);</pre>{% endraw %}
+                        </div>So some thing to note are for methods the pointer is defined as MethodInfo and for fields it&#039;s FieldInfo, also note the binding flags, one I didn&#039;t use in the
+                        examples is BindingFlags.Static but i&#039;ve seen it used in code. The rest are used quite a bit. I hope that Wulf can update the API page with these or other examples as
+                        that&#039;d save a lot of time for plugin developers who want to tap into the private stuff. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 15, 2016 at 8:31 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230446/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230450" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The Docs are open source, <a href="http://github.com/oxidemod/docs" target="_blank" class="externalLink">GitHub -
+                            OxideMod/Docs: API documentation for the Oxide mod framework.</a>. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230450' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 15, 2016 at 8:32 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230450' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230450/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230456" class="message" data-author="Caffeine">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Caffeine" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Caffeine</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-230450" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The Docs are open source, <a href="http://github.com/oxidemod/docs" target="_blank" class="externalLink  rel=" nofollow">GitHub - OxideMod/Docs:
+                                            API documentation for the Oxide mod framework.</a>.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s your barbecue I just come for the food <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Caffeine</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230456' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 15, 2016 at 8:38 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230456' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230456/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230457" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Caffeine">
+                            <aside>
+                                <div class="attribution type">Caffeine said: <a href="#post-230456" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s your barbecue I just come for the food <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                                            title="Stick Out Tongue    :p" /></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>They may not make it into those docs, working on new docs. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p"
+                            title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230457' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 15, 2016 at 8:41 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230457' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230457/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230514" class="message" data-author="deer_SWAG">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="deer_SWAG" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">deer_SWAG</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Read MSDN. (<a href="https://msdn.microsoft.com/en-us/library/mt656691.aspx" target="_blank"
+                            class="externalLink  rel=" nofollow">Reflection (C#)</a> &amp; <a href="https://msdn.microsoft.com/en-us/library/f7ykdhsy(v=vs.110).aspx" target="_blank"
+                            class="externalLink  rel=" nofollow">Reflection in the .NET Framework</a>) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">deer_SWAG</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230514' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 15, 2016 at 10:18 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230514' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230514/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-230518" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="deer_SWAG">
+                            <aside>
+                                <div class="attribution type">deer_SWAG said: <a href="#post-230514" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Read MSDN. (<a href="https://msdn.microsoft.com/en-us/library/mt656691.aspx" target="_blank" class="externalLink">Reflection (C#)</a> &amp; <a
+                                            href="https://msdn.microsoft.com/en-us/library/f7ykdhsy(v=vs.110).aspx" target="_blank" class="externalLink">Reflection in the .NET Framework</a>)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The examples he posted here were more of a repository for people to copy/paste. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230518' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 15, 2016 at 10:25 PM">Jul 15, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/reflection-examples-for-private-methods-and-fields-c.19631/#post-230518' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/230518/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

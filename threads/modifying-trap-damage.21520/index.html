@@ -1,0 +1,187 @@
+---
+layout: forums
+title: 'Modifying trap damage?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/modifying-trap-damage.21520/' | prepend: site.baseurl }}">Modifying trap damage?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Absolut</a>, <a href="{{ '/threads/modifying-trap-damage.21520/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 18, 2016 at 4:38 AM">Oct 18, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-259738" class="message" data-author="Absolut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Absolut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Absolut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What is wrong with this? : )<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnTrapSnapped(BaseTrapTrigger trap, GameObject go)
+        {
+            Puts(&quot;Trying&quot;);
+            if (go.GetComponent&lt;BasePlayer&gt;() != null)
+                if (factionData.Players[go.GetComponent&lt;BasePlayer&gt;().userID].faction == factionData.Players[trap.GetComponent&lt;BaseTrapTrigger&gt;()._trap.OwnerID].faction)
+                {
+                    Puts(&quot;Success&quot;);
+                    trap._trap.GetComponent&lt;HitInfo&gt;().damageTypes.ScaleAll(0f);
+                    Puts(&quot;Tried SCaling&quot;);
+                }
+        }</pre>{% endraw %}
+                        </div>I get to Success but fail on changing damage scale. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Absolut</a>,</span>
+                        <a href="{{ '/threads/modifying-trap-damage.21520/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 18, 2016 at 4:38 AM">Oct 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-trap-damage.21520/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/259738/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-259739" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hitinfo wouldn&#039;t be a component of the trap. Check for damage in OnEntityTakeDamage and check if the
+                        initiator is your trap type <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/modifying-trap-damage.21520/#post-259739' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 18, 2016 at 4:50 AM">Oct 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-trap-damage.21520/#post-259739' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/259739/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-259740" class="message" data-author="Absolut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Absolut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Absolut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="k1lly0u">
+                            <aside>
+                                <div class="attribution type">k1lly0u said: <a href="#post-259739" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hitinfo wouldn&#039;t be a component of the trap. Check for damage in OnEntityTakeDamage and check if the initiator is your trap type</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>damn you.. why does it have to be so simple. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Absolut</a>,</span>
+                        <a href="{{ '/threads/modifying-trap-damage.21520/#post-259740' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 18, 2016 at 4:56 AM">Oct 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-trap-damage.21520/#post-259740' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/259740/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-259761" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> To further elaborate on this.<br /> HitInfo is basically just a class to store information to pass on to other
+                        methods, it does nothing on its own. When a entity needs to take damage a new HitInfo is generated with the appropriate information and is sent elsewhere to deal damage.<br />
+                        GetComponent is used to retrieve components of the specified type attached to the game object, that are - or are derived from - a MonoBehaviour, if the type you specify is not
+                        in some form a MonoBehaviour (which HitInfo is not) or ofcourse if the type is not a component of the game object it will just return null <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/modifying-trap-damage.21520/#post-259761' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 18, 2016 at 7:16 AM">Oct 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/modifying-trap-damage.21520/#post-259761' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/259761/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,245 @@
+---
+layout: forums
+title: 'Time Detection Optimization'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/time-detection-optimization.31156/' | prepend: site.baseurl }}">Time Detection Optimization</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Sorrow</a>, <a href="{{ '/threads/time-detection-optimization.31156/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 12, 2018 at 7:47 PM">Jul 12, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-408205" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi,<br />
+                        <br /> I would like to have your opinion on the algorithm I use to detect the time it has in the real day. <br />
+                        <br /> I would have liked to know what you thought about the performance and if it could be improved?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        private void OnTick()
+        {
+            if (!_raidShedules) return;
+            if (IsTimeForRaid() &amp;&amp; !_timeForRaid)
+            {
+                BroadcastMessageHandler(&quot;starthour&quot;);
+                _timeForRaid = true;
+            }
+            else if (!IsTimeForRaid() &amp;&amp; _timeForRaid)
+            {
+                BroadcastMessageHandler(&quot;endhour&quot;);
+                _timeForRaid = false;
+            }
+        }        private bool IsTimeForRaid()
+        {
+            var time = DateTime.Now.TimeOfDay;
+            var dayOfWeek = DateTime.Now.DayOfWeek;
+            var tmpStart = &quot;00:00:00&quot;;
+            var tmpEnd = &quot;24:00:00&quot;;
+            switch (dayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    tmpStart = _configData.Shedules.Monday.Start;
+                    tmpEnd = _configData.Shedules.Monday.End;
+                    break;
+                case DayOfWeek.Tuesday:
+                    tmpStart = _configData.Shedules.Tuesday.Start;
+                    tmpEnd = _configData.Shedules.Tuesday.End;
+                    break;
+                case DayOfWeek.Wednesday:
+                    tmpStart = _configData.Shedules.Wednesday.Start;
+                    tmpEnd = _configData.Shedules.Wednesday.End;
+                    break;
+                case DayOfWeek.Thursday:
+                    tmpStart = _configData.Shedules.Thursday.Start;
+                    tmpEnd = _configData.Shedules.Thursday.End;
+                    break;
+                case DayOfWeek.Friday:
+                    tmpStart = _configData.Shedules.Friday.Start;
+                    tmpEnd = _configData.Shedules.Friday.End;
+                    break;
+                case DayOfWeek.Saturday:
+                    tmpStart = _configData.Shedules.Saturday.Start;
+                    tmpEnd = _configData.Shedules.Saturday.End;
+                    break;
+                case DayOfWeek.Sunday:
+                    tmpStart = _configData.Shedules.Sunday.Start;
+                    tmpEnd = _configData.Shedules.Sunday.End;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            var start = ToTimeSpan(tmpStart);
+            var end = ToTimeSpan(tmpEnd);
+            return start &lt; end ? time &lt; start || time &gt;= end : time &lt; start &amp;&amp; time &gt;= end;
+        }
+</pre>{% endraw %}
+                        </div>Thanks to those who will have an opinion on the question. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/time-detection-optimization.31156/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 12, 2018 at 7:47 PM">Jul 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/time-detection-optimization.31156/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/408205/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-409586" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Maybe try something like this note that you need to implement something that reschedules the tasks at the start
+                        of each week depending on when your server restarts. This is probably not the best way it just shows that you don&#039;t need to check every tick.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnServerInitialized()
+        {
+            ScheduleRaidTimes();
+        }        private void ScheduleRaidTimes()
+        {
+            //Initialize _timeForRaid
+            switch (DateTime.Now.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Monday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Monday.End.Ticks;
+                    break;
+                case DayOfWeek.Tuesday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Tuesday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Tuesday.End.Ticks;
+                    break;
+                case DayOfWeek.Wednesday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Wednesday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Wednesday.End.Ticks;
+                    break;
+                case DayOfWeek.Thursday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Thursday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Thursday.End.Ticks;
+                    break;
+                case DayOfWeek.Friday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Friday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Friday.End.Ticks;
+                    break;
+                case DayOfWeek.Saturday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Saturday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Saturday.End.Ticks;
+                    break;
+                case DayOfWeek.Sunday:
+                    _timeForRaid = DateTime.Now.Ticks &gt; _configData.Shedules.Sunday.Start.Ticks &amp;&amp; DateTime.Now.Ticks &lt; _configData.Shedules.Sunday.End.Ticks;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+           
+            ScheduleAction(_configData.Shedules.Monday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Monday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Tuesday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Tuesday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Wednesday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Wednesday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Thursday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Thursday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Friday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Friday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Saturday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Saturday.End, () =&gt; { _timeForRaid = false; });            ScheduleAction(_configData.Shedules.Sunday.Start, () =&gt; {_timeForRaid = true; });
+            ScheduleAction(_configData.Shedules.Sunday.End, () =&gt; { _timeForRaid = false; });
+           
+            //Schedule an action to call this method at the start of the week
+        }        private void ScheduleAction(DateTime time, Action action)
+        {
+            TimeSpan delta = time - DateTime.Now;            if (delta &gt; TimeSpan.Zero)
+            {
+                timer.Once((float) delta.TotalSeconds, action);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/time-detection-optimization.31156/#post-409586' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2018 at 4:21 AM">Jul 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/time-detection-optimization.31156/#post-409586' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/409586/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-409696" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Oh great I just analyzed what you&#039;re doing and I hadn&#039;t thought about it at all. However I have a
+                        question if I create a cmd to change the time of a day on the fly and I execute the sheduleAction again with the day and start for example, will it overwrite the programmed
+                        action? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/time-detection-optimization.31156/#post-409696' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 25, 2018 at 7:15 PM">Jul 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/time-detection-optimization.31156/#post-409696' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/409696/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

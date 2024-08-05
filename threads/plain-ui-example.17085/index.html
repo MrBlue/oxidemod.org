@@ -1,0 +1,331 @@
+---
+layout: forums
+title: 'Plain UI example?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/plain-ui-example.17085/' | prepend: site.baseurl }}">Plain UI example?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">MisterPixie</a>, <a href="{{ '/threads/plain-ui-example.17085/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 2, 2016 at 5:25 PM">Apr 2, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-192553" class="message" data-author="MisterPixie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MisterPixie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MisterPixie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello I&#039;m looking for a plain UI example, so I can get the grips on how UI works in plugins, so if any one
+                        can make a plugin or know a plugin with plain UI that would be great (C#) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MisterPixie</a>,</span>
+                        <a href="{{ '/threads/plain-ui-example.17085/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Apr 2, 2016 at 5:25 PM">Apr 2,
+                                2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/plain-ui-example.17085/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192553/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192600" class="message" data-author="Nogrod">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nogrod" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nogrod</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> take a look at the helper classes here:<br />
+                        <a href="https://github.com/OxideMod/Oxide/blob/master/Games/Unity/Oxide.Game.Rust/RustCui.cs" target="_blank" class="externalLink  rel=" nofollow">Oxide/RustCui.cs at master ·
+                            OxideMod/Oxide · GitHub</a><br />
+                        <br /> you can use the CuiElementContainer and add CuiPanel, CuiLabel, CuiButton to it or create your own CuiElement with its components (CuiTextComponent, CuiImageComponent,
+                        CuiRawImageComponent, CuiButtonComponent, CuiOutlineComponent, CuiNeedsCursorComponent, CuiRectTransformComponent)<br />
+                        <br /> i&#039;ve a simple test plugin here:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Oxide.Game.Rust.Cui;
+using Oxide.Ext.Example;using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;CuiExample&quot;, &quot;Nogrod&quot;, &quot;0.0.1&quot;)]
+    internal class CuiExample : RustPlugin
+    {
+       
+        private void Init()
+        {
+            Puts(Test.GetValue());
+        }
+        [ChatCommand(&quot;cui&quot;)]
+        private void cmdCui(BasePlayer player, string command, string[] args)
+        {
+            var elements = new CuiElementContainer();
+            var mainName = elements.Add(new CuiPanel
+            {
+                Image =
+                {
+                    Color = &quot;0.1 0.1 0.1 1&quot;
+                },
+                RectTransform =
+                {
+                    AnchorMin = &quot;0.8 0.25&quot;,
+                    AnchorMax = &quot;0.995 0.8&quot;
+                },
+                CursorEnabled = true
+            });
+            var closeButton = new CuiButton
+            {
+                Button =
+                {
+                    Close = mainName,
+                    Color = &quot;0.8 0.8 0.8 0.2&quot;
+                },
+                RectTransform =
+                {
+                    AnchorMin = &quot;0.86 0.92&quot;,
+                    AnchorMax = &quot;0.97 0.98&quot;
+                },
+                Text =
+                {
+                    Text = &quot;X&quot;,
+                    FontSize = 22,
+                    Align = TextAnchor.MiddleCenter
+                }
+            };
+            elements.Add(closeButton, mainName);
+            for (var i = 2; i &lt; 10; i++)
+            {
+                elements.Add(new CuiLabel
+                {
+                    Text =
+                    {
+                        Text = &quot;hallooo&quot; + i,
+                        FontSize = 18,
+                        Align = TextAnchor.MiddleCenter
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = $&quot;0.06 {1 - 0.07*i + 0.006}&quot;,
+                        AnchorMax = $&quot;0.85 {1 - 0.07*(i - 1)}&quot;
+                    }
+                }, mainName);
+                elements.Add(new CuiButton
+                {
+                    Button =
+                    {
+                        Command = &quot;cui&quot; + i,
+                        Color = &quot;0.8 0.8 0.8 0.2&quot;
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = $&quot;0.86 {1 - 0.07*i + 0.006}&quot;,
+                        AnchorMax = $&quot;0.97 {1 - 0.07*(i - 1)}&quot;
+                    },
+                    Text =
+                    {
+                        Text = &quot;+&quot;,
+                        FontSize = 22,
+                        Align = TextAnchor.MiddleCenter
+                    }
+                }, mainName);
+            }
+            CuiHelper.AddUi(player, elements);
+        }
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nogrod</a>,</span>
+                        <a href="{{ '/threads/plain-ui-example.17085/#post-192600' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 2, 2016 at 7:23 PM">Apr 2, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/plain-ui-example.17085/#post-192600' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192600/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-192605" class="message" data-author="MisterPixie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MisterPixie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MisterPixie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nogrod">
+                            <aside>
+                                <div class="attribution type">Nogrod said: <a href="#post-192600" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">take a look at the helper classes here:<br />
+                                        <a href="https://github.com/OxideMod/Oxide/blob/master/Games/Unity/Oxide.Game.Rust/RustCui.cs" target="_blank" class="externalLink  rel="
+                                            nofollow">Oxide/RustCui.cs at master · OxideMod/Oxide · GitHub</a><br />
+                                        <br /> you can use the CuiElementContainer and add CuiPanel, CuiLabel, CuiButton to it or create your own CuiElement with its components (CuiTextComponent,
+                                        CuiImageComponent, CuiRawImageComponent, CuiButtonComponent, CuiOutlineComponent, CuiNeedsCursorComponent, CuiRectTransformComponent)<br />
+                                        <br /> i&#039;ve a simple test plugin here:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using Oxide.Game.Rust.Cui;
+using Oxide.Ext.Example;using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;CuiExample&quot;, &quot;Nogrod&quot;, &quot;0.0.1&quot;)]
+    internal class CuiExample : RustPlugin
+    {
+      
+        private void Init()
+        {
+            Puts(Test.GetValue());
+        }
+        [ChatCommand(&quot;cui&quot;)]
+        private void cmdCui(BasePlayer player, string command, string[] args)
+        {
+            var elements = new CuiElementContainer();
+            var mainName = elements.Add(new CuiPanel
+            {
+                Image =
+                {
+                    Color = &quot;0.1 0.1 0.1 1&quot;
+                },
+                RectTransform =
+                {
+                    AnchorMin = &quot;0.8 0.25&quot;,
+                    AnchorMax = &quot;0.995 0.8&quot;
+                },
+                CursorEnabled = true
+            });
+            var closeButton = new CuiButton
+            {
+                Button =
+                {
+                    Close = mainName,
+                    Color = &quot;0.8 0.8 0.8 0.2&quot;
+                },
+                RectTransform =
+                {
+                    AnchorMin = &quot;0.86 0.92&quot;,
+                    AnchorMax = &quot;0.97 0.98&quot;
+                },
+                Text =
+                {
+                    Text = &quot;X&quot;,
+                    FontSize = 22,
+                    Align = TextAnchor.MiddleCenter
+                }
+            };
+            elements.Add(closeButton, mainName);
+            for (var i = 2; i &lt; 10; i++)
+            {
+                elements.Add(new CuiLabel
+                {
+                    Text =
+                    {
+                        Text = &quot;hallooo&quot; + i,
+                        FontSize = 18,
+                        Align = TextAnchor.MiddleCenter
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = $&quot;0.06 {1 - 0.07*i + 0.006}&quot;,
+                        AnchorMax = $&quot;0.85 {1 - 0.07*(i - 1)}&quot;
+                    }
+                }, mainName);
+                elements.Add(new CuiButton
+                {
+                    Button =
+                    {
+                        Command = &quot;cui&quot; + i,
+                        Color = &quot;0.8 0.8 0.8 0.2&quot;
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = $&quot;0.86 {1 - 0.07*i + 0.006}&quot;,
+                        AnchorMax = $&quot;0.97 {1 - 0.07*(i - 1)}&quot;
+                    },
+                    Text =
+                    {
+                        Text = &quot;+&quot;,
+                        FontSize = 22,
+                        Align = TextAnchor.MiddleCenter
+                    }
+                }, mainName);
+            }
+            CuiHelper.AddUi(player, elements);
+        }
+    }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you soo much, now I know who I need to come to for extra help and advise <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MisterPixie</a>,</span>
+                        <a href="{{ '/threads/plain-ui-example.17085/#post-192605' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 2, 2016 at 8:03 PM">Apr 2, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/plain-ui-example.17085/#post-192605' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/192605/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

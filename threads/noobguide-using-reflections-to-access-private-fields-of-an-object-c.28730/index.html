@@ -1,0 +1,744 @@
+---
+layout: forums
+title: '[NoobGuide] Using Reflections to Access Private Fields of an Object C#'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/' | prepend: site.baseurl }}">[NoobGuide] Using Reflections to Access Private Fields of an
+            Object C#</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">pinkstink</a>, <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Dec 20, 2017 at 2:26 AM">Dec 20, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-374434" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi All,<br />
+                        <br /> Since this took me longer to achieve than I&#039;m comfortable admitting.. Here is a quick guide on how to use reflections to access private fields in C#<br />
+                        <br /> Note from Ryan: Reflection is a <b>very </b>power hungry method. You should try to avoid using it as it can add some noticeable latency to a server.<br /> Experienced
+                        developers <b>will beat you with a stick</b> if they see a reflection in your coding.<br /> Using a Reflection in the way I have outlined in the example is <b>extremely
+                        </b>undesirable. If you feel you cannot achieve what you are trying to do without calling a reflection, think of a way you can heavily limit the amount of times the reflection
+                        is called.<br />
+                        <br /> Please also note, the terminology may not be 100% correct, but this a noobs guide and I have written it in a way to aid in the explanation of the process without the
+                        confusion of unknown terminology.<br />
+                        <br /> In this case I&#039;ll be accessing a private field, namely the lifeStory field located within the BasePlayer class, which is an Object of the PlayerLifeStory
+                        class.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player) as PlayerLifeStory;</pre>{% endraw %}
+                        </div>Above is the end result to access the private field &quot;lifeStory&quot; within the BasePlayer class.<br />
+                        <br /> To break this down into digestible chunks is;<br />
+                        <br /> 1) Declare an object of the class you are retrieving(in this case, PlayerLifeStory)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = ...</pre>{% endraw %}
+                        </div>2) Obtain the typeof BasePlayer as the GetField method resides within this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = typeof(BasePlayer)....</pre>{% endraw %}
+                        </div>3) Utilize the GetField method with the parameters &quot;lifeStory&quot;(being the private field you want to access) and the BindingFlags: BindingFlags.NonPublic &amp;
+                        BindingFlags.Instance(You may have to utilize BindingFlags.Static or BindingFlags.Public accordingly also)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, BindingFlags.Instance | BindingFlags.NonPublic)...</pre>{% endraw %}
+                        </div>4) Utilize the GetValue method which will then associate the Field with an Object(player) of the Type you retrieved in step 2(BasePlayer in this case)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player)</pre>{% endraw %}
+                        </div>5) Cast the result of GetValue to the Class of the of the private field you are trying to access<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PlayerLifeStory lifeStory = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player) as PlayerLifeStory</pre>{% endraw %}
+                        </div>6) Rejoice in your success! You can now utilize the Private Field you were trying to access as if it was a public field. For example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+private object OnPlayerLand(BasePlayer player)
+{
+   PlayerLifeStory lifeStory = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(player) as PlayerLifeStory;
+   if(lifeStory.secondsAlive&lt; 3)
+   {
+      Puts(&quot;Player has been alive for more than 3 seconds&quot;);
+   }
+}
+</pre>{% endraw %}
+                        </div>Now that you know how to access private fields, reference this <a href="http://oxidemod.org/threads/reflection-examples-for-private-methods-and-fields-c.19631/"
+                            class="internalLink"><b>post </b></a>and you will be able to work backwards to access private methods or set values of fields etc. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Dec 20, 2017 at 3:08 AM">Dec 20, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Dec 20, 2017 at 2:26 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374434/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374435" class="message" data-author="iDeath">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iDeath" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iDeath</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You lost me at Hi All <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iDeath</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374435' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 2:29 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374435' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374435/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374436" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="iDeath">
+                            <aside>
+                                <div class="attribution type">iDeath said: <a href="#post-374435" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You lost me at Hi All</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>haha, For the most part, you will be able to copy step 6&#039;s example into a new plugin template and play with it until you understand. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374436' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 2:31 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374436' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374436/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374438" class="message" data-author="Ryan">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Ryan" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Ryan</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Please bare in mind reflection is a very power hungry method. So doing it as frequently as you do is strongly
+                        unreccomended from me. <br />
+                        <br /> That hook is an extremely frequent hook to be called and using reflection everytime it’s called will most likely add some noticeable latency to the server. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Ryan</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374438' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 2:54 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374438' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374438/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374439" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan">
+                            <aside>
+                                <div class="attribution type">Ryan said: <a href="#post-374438" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Please bare in mind reflection is a very power hungry method. So doing it as frequently as you do is strongly unreccomended from me.<br />
+                                        <br /> That hook is an extremely frequent hook to be called and using reflection everytime it’s called will most likely add some noticeable latency to the
+                                        server.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Definitely agree, I&#039;ll edit the post to make this point apparent. I use it after a whole heap of conditional checking and not in that exact way. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374439' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 2:57 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374439' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374439/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374449" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> In this specific case, reflection isn&#039;t needed (though I realize the point of this thread is more than
+                        that). BasePlayer.TimeAlive() should return lifestory.secondsAlive. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374449' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:20 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374449' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374449/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374450" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you do have something you think should be public, just let us know and we will often expose it. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374450' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:21 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374450' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374450/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374451" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-374449" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">In this specific case, reflection isn&#039;t needed (though I realize the point of this thread is more than that). BasePlayer.TimeAlive() should
+                                        return lifestory.secondsAlive.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>100%, Just an example as you stated.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-374450" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you do have something you think should be public, just let us know and we will often expose it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;d love to see the lifeStory become public. It&#039;s a very useful object for statistics tracking. Where should I be posted for requests of this nature? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374451' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:23 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374451' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374451/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374452" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Ryan">
+                            <aside>
+                                <div class="attribution type">Ryan said: <a href="#post-374438" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Please bare in mind reflection is a very power hungry method. So doing it as frequently as you do is strongly unreccomended from me.<br />
+                                        <br /> That hook is an extremely frequent hook to be called and using reflection everytime it’s called will most likely add some noticeable latency to the
+                                        server.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I think the term &quot;very power hungry&quot; is not 100% accurate. Sure, it&#039;s a bit heavier than you&#039;d like, but it isn&#039;t a super large hit.<br />
+                        <br /> I did a benchmark of getting the time alive through lifestory reflection vs BasePlayer.TimeAlive(), ran a loop 1000 times. The reflection one took 0.1428ms, the
+                        non-reflection took 0.0215ms.<br />
+                        <br /> For what it&#039;s worth, I declared the FieldInfo outside of the loop, and was just calling .GetValue each time. I&#039;m sure there is some difference there, but I
+                        think it&#039;s bad practice to be doing GetField every time you want to access it anyway. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374452' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:32 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374452' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374452/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374453" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-374452" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I think the term &quot;very power hungry&quot; is not 100% accurate. Sure, it&#039;s a bit heavier than you&#039;d like, but it isn&#039;t a
+                                        super large hit.<br />
+                                        <br /> I did a benchmark of getting the time alive through lifestory reflection vs BasePlayer.TimeAlive(), ran a loop 1000 times. The reflection one took
+                                        0.1428ms, the non-reflection took 0.0215ms.<br />
+                                        <br /> For what it&#039;s worth, I declared the FieldInfo outside of the loop, and was just calling .GetValue each time. I&#039;m sure there is some difference
+                                        there, but I think it&#039;s bad practice to be doing GetField every time you want to access it anyway.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Out of curiosity, could you repeat the benchmark with the FieldInfo inside? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374453' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:34 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374453' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374453/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374454" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="pinkstink">
+                            <aside>
+                                <div class="attribution type">pinkstink said: <a href="#post-374453" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Out of curiosity, could you repeat the benchmark with the FieldInfo inside?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Quite a bit higher. 2ms compared to 0.1ms.<br />
+                        <br /> Snippet I used for testing (lifeStory fieldinfo not included as it&#039;s outside):<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+var rngPlayer = BasePlayer.activePlayerList.GetRandom();
+            if (rngPlayer != null)
+            {
+                var watch = new Stopwatch();
+                watch.Start();
+                for(int i = 0; i &lt; 1000; i++)
+                {
+                    var life = lifeStory.GetValue(rngPlayer);
+                    var timeAlive = (life as ProtoBuf.PlayerLifeStory)?.secondsAlive;
+                }
+                watch.Stop();
+                PrintWarning(&quot;lifeStory.GetValue x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+                watch.Reset();
+                watch.Start();
+                for (int i = 0; i &lt; 1000; i++) { var timeAlive = rngPlayer.TimeAlive(); }
+                watch.Stop();
+                PrintWarning(&quot;BasePlayer.TimeAlive() x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+                watch.Reset();
+                watch.Start();
+                for (int i = 0; i &lt; 1000; i++)
+                {
+                    var lifeField = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, (BindingFlags.Instance | BindingFlags.NonPublic));
+                    var life = lifeField.GetValue(rngPlayer);
+                    var timeAlive = (life as ProtoBuf.PlayerLifeStory)?.secondsAlive;
+                }
+                watch.Stop();
+                PrintWarning(&quot;lifeField x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+            }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374454' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:39 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374454' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374454/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374455" class="message" data-author="pinkstink">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="pinkstink" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">pinkstink</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Shady757">
+                            <aside>
+                                <div class="attribution type">Shady757 said: <a href="#post-374454" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Quite a bit higher. 2ms compared to 0.1ms.<br />
+                                        <br /> Snippet I used for testing (lifeStory fieldinfo not included as it&#039;s outside):<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+var rngPlayer = BasePlayer.activePlayerList.GetRandom();
+            if (rngPlayer != null)
+            {
+                var watch = new Stopwatch();
+                watch.Start();
+                for(int i = 0; i &lt; 1000; i++)
+                {
+                    var life = lifeStory.GetValue(rngPlayer);
+                    var timeAlive = (life as ProtoBuf.PlayerLifeStory)?.secondsAlive;
+                }
+                watch.Stop();
+                PrintWarning(&quot;lifeStory.GetValue x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+                watch.Reset();
+                watch.Start();
+                for (int i = 0; i &lt; 1000; i++) { var timeAlive = rngPlayer.TimeAlive(); }
+                watch.Stop();
+                PrintWarning(&quot;BasePlayer.TimeAlive() x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+                watch.Reset();
+                watch.Start();
+                for (int i = 0; i &lt; 1000; i++)
+                {
+                    var lifeField = typeof(BasePlayer).GetField(&quot;lifeStory&quot;, (BindingFlags.Instance | BindingFlags.NonPublic));
+                    var life = lifeField.GetValue(rngPlayer);
+                    var timeAlive = (life as ProtoBuf.PlayerLifeStory)?.secondsAlive;
+                }
+                watch.Stop();
+                PrintWarning(&quot;lifeField x1000 took: &quot; + watch.Elapsed.TotalMilliseconds + &quot;ms&quot;);
+            }
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Cheers! I assumed the field info was going to be the culprit to the higher latency. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">pinkstink</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374455' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 4:42 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374455' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374455/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374547" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Reflection is a means to an end in the case of plugin development as you are working with a codebase that
+                        isn&#039;t yours and you sometimes want or need to use the values of private fields/properties or invoke private methods. It all depends on how, where and when you use it.
+                        <br />
+                        <br /> For those interested I can suggest having a look at this: <a href="http://mattwarren.org/2016/12/14/Why-is-Reflection-slow/" target="_blank" class="externalLink  rel="
+                            nofollow">Why is reflection slow?</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374547' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 7:43 PM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374547' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374547/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-374550" class="message" data-author="bazuka5801">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bazuka5801" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bazuka5801</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> If you use private members -&gt; create feature request post <a
+                            href="http://oxidemod.org/forums/feature-suggestions.6/" class="internalLink">Feature Suggestions | Oxide</a><br /> Example: I need public access to private field
+                        BasePlayer.???<br /> And Wulf will add this <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bazuka5801</a>,</span>
+                        <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374550' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Dec 20, 2017 at 8:23 PM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/noobguide-using-reflections-to-access-private-fields-of-an-object-c.28730/#post-374550' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/374550/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

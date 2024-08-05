@@ -1,0 +1,715 @@
+---
+layout: forums
+title: 'Solved - [C#] Sharing variables among different classes'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/' | prepend: site.baseurl }}">[C#] Sharing variables among different
+            classes</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">seanterris</a>, <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 30, 2015 at 2:58 AM">Apr
+                30, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-83565" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello and nice to meet you all, since this is my first post, and, surprisingly, i need your help <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br /> FULL DISCLOSURE(scroll down if too long): i&#039;ve really tried to find a solution for all this myself. that includes google, oxide docs, forums, and other plugin
+                        sources. i hope this thread will help other beginners . ALL PROBLEMS SUMMARIZED IN THE LAST QUOTED CODE. also i have some experience in programming and in debugging, mostly
+                        small tools for solving unusual problems i&#039;ve encountered over the years of using personal computers. that said, i tried really hard to stay way from things like Java and
+                        C#, for many reasons, but mainly i found them too heavy to work with for my needs and disliked the lack of control i had over the execution of my apps. this is the first time i
+                        regretted it, since if i understand correctly many things can only be scripted in C#. we have a private server with a bunch of friends, and we were amazed by the possibilities
+                        oxide gives. we came up with few ideas that would (we believe) make for a fun play while completely twisting core rust concepts. i know it&#039;s doable because i&#039;ve seen
+                        needed pieces of functionality in other plugins. i&#039;m also confident i can script most of them, in fact i already pseudocoded all the basics. the problem is, i&#039;m stuck
+                        at the very beginning because i can get (and wrap my mind) around some C# behaviours. my friends already came up with few amazing structures that are just begging to be
+                        scripted around so they can come to live, yet here i am banging my head:/ <br /> now, here lies my problem:<br /> as far as i understand for the C# plugin to interact with the
+                        user input part of Unity engine, in its RustPlugin derived class one has to nest a MonoBehaviour, like this (and those classes cannot be just &quot;merged&quot; into one,
+                        either because it&#039;s impossible or simply because it doesn&#039;t make sense):<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.Rustusing System;
+using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine; 
+using Rust;using Oxide.Core;
+namespace Oxide.Plugins
+{
+    [Info(&quot;Testcase&quot;, &quot;seant&quot;, 0.01)]
+    class Testcase : RustPlugin
+    {
+        private static FieldInfo serverinput;
+        void Unload()
+        {  
+            var objects = GameObject.FindObjectsOfType(typeof(Testcase));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }
+       
+        class engine_interact : MonoBehaviour
+        {
+            private InputState input;
+            private BasePlayer player;
+           
+            void Awake()
+            {
+                input = serverinput.GetValue(GetComponent&lt;BasePlayer&gt;()) as InputState;
+                player = GetComponent&lt;BasePlayer&gt;();
+                enabled = true;
+            }
+           
+            void Update()
+            {            }        }
+       
+        [ChatCommand(&quot;testcase&quot;)]
+        void test_msg1(BasePlayer player, string command, string[] args)
+        {
+            PrintToChat(player, &quot;working.&quot;);
+        }
+       
+       
+    }
+}</pre>{% endraw %}
+                        </div><br /> first time i&#039;ve run into this problem was when i was customizing the wonderful Telekinesis plugin (big kudos Bombardir!). for debug purposes i wanted to
+                        output some info from inside the MonoBehaviour class to chat - i found out that in C# i have to use PrintToChat() instead of Rust.SendToChat and others (which is strange in
+                        itself, what is the &quot;Using Rust;&quot; clause for then?). but when i tried to use it i got the dreaded error:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">[Warning] C:\SERVICES\ni587293_1\rust\server\serverprofile\oxide\plugins\Testcase.cs(34,5): error CS0038: Cannot access a nonstatic member of
+                                        outer type `Oxide.Plugins.Testcase&#039; via nested type `Oxide.Plugins.Testcase.engine_interact&#039;</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>after some headbanging i&#039;ve decided to initialize new RustPugin() object, and use it to send output to the chat:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.Rustusing System;
+using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine; 
+using Rust;using Oxide.Core;
+namespace Oxide.Plugins
+{
+    [Info(&quot;Testcase&quot;, &quot;seant&quot;, 0.02)]
+    class Testcase : RustPlugin
+    {
+        private static FieldInfo serverinput;
+        void Unload()
+        {  
+            var objects = GameObject.FindObjectsOfType(typeof(Testcase));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }
+       
+        class engine_interact : MonoBehaviour
+        {
+            private InputState input;
+            private BasePlayer player;
+           
+            void Awake()
+            {
+                input = serverinput.GetValue(GetComponent&lt;BasePlayer&gt;()) as InputState;
+                player = GetComponent&lt;BasePlayer&gt;();
+                enabled = true;
+                Testcase chat_gateway = new Testcase(); // how can i print to chat without doing this? while plugin grows over time wouldn't it mean performance hit?
+               
+                //PrintToChat(player, &quot;working 2.&quot;);
+                //this gives CS0038: Cannot access a nonstatic member of outer type `Oxide.Plugins.Testcase' via nested type `Oxide.Plugins.Testcase.engine_interact'
+               
+                //Testcase.PrintToChat(player, &quot;working 2.&quot;);
+                //this will make it fail to compile with [Warning] C:\(...)\Testcase.cs(35,14): error CS0120: An object reference is required to access non-static member `Oxide.Plugins.RustPlugin.PrintToChat(BasePlayer, string, params object[])'
+               
+                chat_gateway.PrintToChat(player, &quot;working2.&quot;);
+                //this works but it doesn't seem like a &quot;proper&quot; solution, PrintToChat() should be accessible somehow already i imagine, but how?
+            }
+           
+            void Update()
+            {            }        }
+       
+        [ChatCommand(&quot;testcase&quot;)]
+        void test_msg1(BasePlayer player, string command, string[] args)
+        {
+            PrintToChat(player, &quot;working.&quot;);
+        }
+       
+       
+    }
+}</pre>{% endraw %}
+                        </div>this worked for stricte debugging purposes, and i left it like that. after adding some more codes to some other plugins, i encountered another instance of the same
+                        problem: from the nested class i couldn&#039;t access its &quot;parent&quot; class variable. no matter if i made the variable private or public, i would get the same errors
+                        about the method not being able to call/access the desired method/variable. when i made it static i was informed i need a new instance of an object to access it. again couple
+                        of hours of my life lost, again gave up with a dirty hack - since making new RustPlugin() wouldn&#039;t work here (the variable would return default value that it initialized
+                        with), i just moved the variable itself and the dependant parts of code inside the nested : MonoBehaviour class. that was it for a while.<br />
+                        <br /> now that our project got more ambitious, i decided we can&#039;t rely on other plugin authors&#039; vision and implementations to manage a heavily customized server like
+                        ours. i started to code an all-in-one toolkit, as i mentioned before i have all the parts needed, parts written in code, parts in my head, but yet again i encountered the same
+                        problem at the very beginning, and decided i can&#039;t just hack around this time, i need to understand WTF is going on. basically, i have a piece of code like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.Rustusing System;
+using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine; 
+using Rust;using Oxide.Core;
+namespace Oxide.Plugins
+{
+    [Info(&quot;Testcase&quot;, &quot;seant&quot;, 0.02)]
+    class Testcase : RustPlugin
+    {
+        private static FieldInfo serverinput;
+       
+        private bool logic_toggle = false;
+       
+        void Unload()
+        {  
+            var objects = GameObject.FindObjectsOfType(typeof(Testcase));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }
+       
+        class engine_interact : MonoBehaviour
+        {
+            private InputState input;
+            private BasePlayer player;
+           
+            void Awake()
+            {
+                input = serverinput.GetValue(GetComponent&lt;BasePlayer&gt;()) as InputState;
+                player = GetComponent&lt;BasePlayer&gt;();
+                enabled = true;            }
+           
+            void Update()
+            {
+            //    int x;
+            //    if(logic_toggle) x = 1;
+            //    else x = 0;
+            //above code gives error CS0038: Cannot access a nonstatic member of outer type...
+            //i noticed it will morke if i make it &quot;private static bool logic_toggle&quot;, but i'm not sure if it's the proper way to do it? seen couple of plugins where every line starts with &quot;public static&quot; :) that doesn't seem like a way to go.
+            }        }
+       
+        [ChatCommand(&quot;testtoggle&quot;)]
+        void toggle(BasePlayer player, string command, string[] args)
+        {
+            logic_toggle = !logic_toggle;
+        }
+       
+        [ChatCommand(&quot;testcase&quot;)]
+        void test_msg1(BasePlayer player, string command, string[] args)
+        {
+            PrintToChat(player, &quot;working.&quot;);
+        }
+       
+       
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 2:58 AM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/83565/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83566" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">SPLITTED IN HALF - LONG POST <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1"
+                            alt=":)" title="Smile    :)" /><br />
+                        <br /> to be honest i was surprised by myself being surprised that this doesn&#039;t work, given all the similar problems i had before. we can only handle chat commands in
+                        &#039;main&#039; RustPlugin class, and we can only handle input in the nested MonoBehaviour class. how in that case can i set a logical state (and other types of var, methods
+                        access if possible), that is accessible and changeable by both chat commands and methods handling user input? for example, for the command &quot;/test&quot; two return two
+                        different results depending on if i look straight up or straight down that very moment?<br />
+                        <br /> finally, when printing to chat i have to spawn new RustPlugin() when in nested MonoBehaviour class. but, to my thinking, there should be an RustPlugin class type object
+                        already somewhere in the memory, created by the oxide when loading the plugin, correct? if so, is there a way to get a &quot;pointer&quot;, or some kind of reference to it AND
+                        access it&#039;s public variables and methods? scarce oxide documentation (pretty understable at this stage of the project, i hope to contribute soon) doesn&#039;t mention
+                        anything like that, i tried to read oxide source but i&#039;m getting lost in there, what&#039;s worse grepping for keywords bring poor to none results surprisingly, so i fear
+                        some of the interesting stuff might sit in the patched assembly dll, if any of the devs is reading and would be so kind to clarify or at least point to the relevant point in
+                        the source code i would be very grateful.<br />
+                        <br /> TO SUMMARIZE:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: Oxide.Ext.Rustusing System;
+using System.Reflection;
+using System.Collections.Generic;
+using Rust; // what does this do if we can't use stuff like Rust.BrodacastChat() and Rust.SendToChat()  etc with C#?
+using UnityEngine; using Oxide.Core;
+namespace Oxide.Plugins
+{
+    [Info(&quot;Testcase&quot;, &quot;seant&quot;, 0.02)]
+    class Testcase : RustPlugin
+    {
+        private static FieldInfo serverinput;
+       
+        private bool logic_toggle; // i want this to be accessible from nested classes!
+       
+        void Unload()
+        {  
+            var objects = GameObject.FindObjectsOfType(typeof(Testcase));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }
+       
+        class engine_interact : MonoBehaviour
+        {
+            private InputState input;
+            private BasePlayer player;
+           
+            void Awake()
+            {
+                input = serverinput.GetValue(GetComponent&lt;BasePlayer&gt;()) as InputState;
+                player = GetComponent&lt;BasePlayer&gt;();
+                enabled = true;
+                Testcase chat_gateway = new Testcase(); // how can i print to chat without doing this? while plugin grows over time wouldn't it mean performance hit?
+               
+                //PrintToChat(player, &quot;working 2.&quot;);
+                //this gives CS0038: Cannot access a nonstatic member of outer type `Oxide.Plugins.Testcase' via nested type `Oxide.Plugins.Testcase.engine_interact'
+               
+                //Testcase.PrintToChat(player, &quot;working 2.&quot;);
+                //this will make it fail to compile with [Warning] C:\(...)\Testcase.cs(35,14): error CS0120: An object reference is required to access non-static member `Oxide.Plugins.RustPlugin.PrintToChat(BasePlayer, string, params object[])'
+               
+                chat_gateway.PrintToChat(player, &quot;working2.&quot;);
+                //this works but it doesn't seem like a &quot;proper&quot; solution, PrintToChat() should be accessible somehow already i imagine, but how?
+            }
+           
+            void Update()
+            {
+            //    int x;
+            //    if(logic_toggle) x = 1;
+            //    else x = 0;
+            //above code gives error CS0038: Cannot access a nonstatic member of outer type...
+            //i noticed it will morke if i make it &quot;private static bool logic_toggle&quot;, but i'm not sure if it's the proper way to do it? seen couple of plugins where every line starts with &quot;public static&quot; :) that doesn't seem like a way to go.
+            }        }
+       
+        [ChatCommand(&quot;testtoggle&quot;)]
+        void toggle(BasePlayer player, string command, string[] args)
+        {
+            logic_toggle = !logic_toggle;
+        }
+       
+        [ChatCommand(&quot;testcase&quot;)]
+        void test_msg1(BasePlayer player, string command, string[] args)
+        {
+            PrintToChat(player, &quot;working.&quot;);
+        }
+       
+       
+    }
+}</pre>{% endraw %}
+                        </div>obviously i am missing something very obvious here. my best bet is i&#039;m trying to do the whole thing upside down, coming from the more traditional languages
+                        background (and being a crap coder, too ;p). i realize i will have to cry myself to sleep after realizing how dumb i have been, after one of you good souls (hopefully) explains
+                        the whole business to me. till then it&#039;s flying around, hunting bears with a rocket launcher for me... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83566' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 2:59 AM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83566' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83566/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83572" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This should work and get you started down the correct path as I don&#039;t have the time tonight to explain
+                        everything you have asked.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Reflection;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;Testcase&quot;, &quot;seant&quot;, 0.02)]
+    class Testcase : RustPlugin
+    {
+        private static FieldInfo serverinput;        void Init()
+        {
+            serverinput = typeof(BasePlayer).GetField(&quot;serverInput&quot;, (BindingFlags.Instance | BindingFlags.NonPublic));
+        }        void Unload()
+        {
+            var objects = GameObject.FindObjectsOfType(typeof(engine_interact));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }        class engine_interact : MonoBehaviour
+        {
+            private InputState input;
+            private BasePlayer player;            void Awake()
+            {
+                player = GetComponent&lt;BasePlayer&gt;();
+                input = serverinput.GetValue(player) as InputState;
+                enabled = true;
+            }            void Update()
+            {
+                if (enabled &amp;&amp; input.IsDown(BUTTON.JUMP))
+                {
+                    player.SendConsoleCommand(&quot;chat.add&quot;, 0, &quot;Hello I Clicked Jump&quot;, 1f);
+                }
+            }        }        [ChatCommand(&quot;testtoggle&quot;)]
+        void toggle(BasePlayer player, string command, string[] args)
+        {
+            engine_interact ei = player.GetComponent&lt;engine_interact&gt;();
+            if (!ei)
+            {
+                ei = player.gameObject.AddComponent&lt;engine_interact&gt;();
+                ei.enabled = true;
+                SendReply(player, &quot;Engine Interact Enabled&quot;);
+            } else
+            {
+                ei.enabled = false;
+                SendReply(player, &quot;Engine Interact Disabled&quot;);            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83572' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 3:37 AM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83572' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83572/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83592" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">engine_interact ei = player.GetComponent&lt;engine_interact&gt;();</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>...<br /> ...<br /> ... thank you.<br />
+                        <br /> EDIT:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void Unload()
+        {
+            var objects = GameObject.FindObjectsOfType(typeof(engine_interact));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }</pre>{% endraw %}
+                        </div>did you mean var objects = GameObject.FindObjectsOfType(typeof(Testcase)); ? or do we destroy engine_interact objects that we might&#039;ve created in our code because
+                        oxide has no control (or knowledge?) of them, but it will handle destroying Testace() objects just fine?<br />
+                        <br /> EDIT2:<br /> also i don&#039;t see &quot;enabled&quot; variable declaration anywhere, did you missed it in engine_interact class or is it some special variable that is
+                        set elsewhere? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Apr 30, 2015 at 4:43 AM">Apr 30, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83592' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 4:22 AM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83592' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83592/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83603" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="seanterris">
+                            <aside>
+                                <div class="attribution type">seanterris said: <a href="#post-83592" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">...<br /> ...<br /> ... thank you.<br />
+                                        <br /> EDIT:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        void Unload()
+        {
+            var objects = GameObject.FindObjectsOfType(typeof(engine_interact));
+            if (objects != null)
+                foreach (var gameObj in objects)
+                    GameObject.Destroy(gameObj);
+        }</pre>{% endraw %}
+                                        </div>did you mean var objects = GameObject.FindObjectsOfType(typeof(Testcase)); ? or do we destroy engine_interact objects that we might&#039;ve created in our
+                                        code because oxide has no control (or knowledge?) of them, but it will handle destroying Testace() objects just fine?<br />
+                                        <br /> EDIT2:<br /> also i don&#039;t see &quot;enabled&quot; variable declaration anywhere, did you missed it in engine_interact class or is it some special
+                                        variable that is set elsewhere?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The enabled = true was in the Awake() method which is executed as soon as the MonoBehaviour is attached to a gameobject, because of that it is redundant to set an enabled
+                        variable to true. If it would be the case that it didn&#039;t need to be enabled from the start you could set enabled = false there. <br />
+                        <br /> The unload code is required to remove all the gameobjects that you created with your plugin when it&#039;s unloaded/reloaded as that is something you need to do
+                        yourself.<br />
+                        <br /> Another thing, I read you were adding the MonoBehaviour class to capture player input, are you planning to capture the input for a few specific players after running a
+                        command or is it supposed to check all players at any given time? If it would be the latter you could have a look at the OnPlayerInput(BasePlayer player, InputState input)
+                        hook. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83603' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 6:14 AM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83603' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83603/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83715" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Mughisi">
+                            <aside>
+                                <div class="attribution type">Mughisi said: <a href="#post-83603" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Another thing, I read you were adding the MonoBehaviour class to capture player input, are you planning to capture the input for a few specific
+                                        players after running a command or is it supposed to check all players at any given time? If it would be the latter you could have a look at the
+                                        OnPlayerInput(BasePlayer player, InputState input) hook.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>not in this plugin. i would like to monitor all players movement in specific conditions for some other plugin, but i&#039;m worried about the performance. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83715' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 7:04 PM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83715' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83715/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83717" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">well you should use FixedUpdate() instead of Update()<br /> you&#039;ll gain 2-3 times performance ^^<br />
+                        <br /> and yes monitor all player movements, if you have a lot of players it might be a big problem at some point. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83717' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 7:19 PM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83717' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83717/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-83861" class="message" data-author="seanterris">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="seanterris" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">seanterris</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Reneb">
+                            <aside>
+                                <div class="attribution type">Reneb said: <a href="#post-83717" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">well you should use FixedUpdate() instead of Update()<br /> you&#039;ll gain 2-3 times performance ^^</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>interesting. unity docs recommend using it when working with rigid bodies. aren&#039;t all &lt;BaseNetworkable&gt;s in rust rigid bodies? does that mean i should use it
+                        for every plugin that handles userinput or manipulates objects positions in game? are there any disadvantages for using FixedUpdate() by default over Update()? (apart from the
+                        obvious one of being executed only on fixed intervals). finally, wouldn&#039;t having many plugins using FixedUpdate() result in a performance hit, since they all execute their
+                        code at the same time (and it&#039;d be the time when the server has already a lot of work i imagine, trying to push out the frame on time?)<br />
+                        <br /> edit: typos <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">seanterris</a>,</span>
+                        <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83861' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2015 at 11:33 PM">Apr 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/c-sharing-variables-among-different-classes.8068/#post-83861' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/83861/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

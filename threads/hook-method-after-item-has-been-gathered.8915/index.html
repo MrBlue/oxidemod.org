@@ -1,0 +1,325 @@
+---
+layout: forums
+title: 'Hook Method after item has been gathered'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/' | prepend: site.baseurl }}">Hook Method after item has been gathered</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">ShadowEvil</a>, <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/' | prepend: site.baseurl }}"><span class="DateTime" title="May 29, 2015 at 8:51 AM">May 29,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-93817" class="message" data-author="ShadowEvil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ShadowEvil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ShadowEvil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Not even sure if this is possible... But I am working on my quests plugin... And I am trying to handle gathering
+                        items for a quest.<br />
+                        <br /> So I can use the &quot;OnGather&quot; but the problem is... When I get to the point of removing the gathered item after the quest has been finished, I come into the
+                        complication of it not actually getting the item since the server hasn&#039;t actually given the item to the player until after &quot;OnGather&quot; has finished.<br />
+                        <br /> So basically I would require &quot;OnGather&quot; hook and &quot;OnFinishedGather&quot; hook... That way I can get real item amount instead of a non updated
+                        amount.<br />
+                        <br /> Unless you have a better way of going about this...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public static int hasPlayerFinishedQuest_Gather(BasePlayer player, BaseEntity entity, Item item)
+        {
+            Notification(player, &quot;Updated Amount: &quot; + (player.inventory.GetAmount(item.info.itemid) + item.amount));
+            AmountGathered += item.amount;
+            Quest myQuest = GetActiveQuest(player);
+            if (myQuest != null)
+            {
+                if (myQuest.qObjective != item.info.shortname) return 0;
+                var cP = (double)AmountGathered / myQuest.qAmount;
+                if (LastPercentChange == 0.00)
+                    LastPercentChange = cP;
+                var lP = LastPercentChange;
+                var rPC = 0.25;
+                double pC = (double)cP - lP;
+                //player.ChatMessage(String.Format(&quot;Amount Gathered: {0} | PercentGathered: {1} | lastPercent: {2} | percentChange: {3}&quot;, AmountGathered, cP, lP, pC));
+                if (pC &gt;= rPC)
+                {
+                    Notification(player, String.Format(&quot;Amount Gathered: &lt;color=aqua&gt;{0} / {1}&lt;/color&gt;&quot;, AmountGathered, myQuest.qAmount));
+                    LastPercentChange = cP;
+                }
+                return hasCompletedQuest(player, item, myQuest);
+            }
+            else
+            {
+                return 0;
+            }
+        }        public static int hasCompletedQuest(BasePlayer player, Item item, Quest myQuest)
+        {
+            string FullItemName = String.Empty;
+            if (AmountGathered &gt;= myQuest.qAmount &amp;&amp; player.inventory.GetAmount(item.info.itemid) + item.amount &gt;= myQuest.qAmount)
+            {
+                if (player.inventory.GetAmount(item.info.itemid) + item.amount &lt; myQuest.qAmount)
+                {
+                    switch (myQuest.qObjective)
+                    {
+                        case &quot;wood&quot;: FullItemName = &quot;Wood&quot;; break;
+                        case &quot;stones&quot;: FullItemName = &quot;Stones&quot;; break;
+                        case &quot;metal_ore&quot;: FullItemName = &quot;Metal Ore&quot;; break;
+                        case &quot;sulfur_ore&quot;: FullItemName = &quot;Sulfur Ore&quot;; break;
+                        case &quot;fat_animal&quot;: FullItemName = &quot;Animal Fat&quot;; break;
+                        case &quot;cloth&quot;: FullItemName = &quot;Cloth&quot;; break;
+                        case &quot;bones&quot;: FullItemName = &quot;Bones&quot;; break;
+                        case &quot;wolfmeat_raw&quot;: FullItemName = &quot;Raw Wolf Meat&quot;; break;
+                        case &quot;bone_fragments&quot;: FullItemName = &quot;Bone Fragments&quot;; break;
+                    }                    if (player.inventory.GetAmount(item.info.itemid) + item.amount &lt; myQuest.qAmount)
+                    {
+                        Notification(player, String.Format(&quot;Insufficent amount of &lt;color=aqua&gt;{0}&lt;/color&gt; to finish quest. Fixing...&quot;, FullItemName));
+                        return 0;
+                    }
+                }
+                RemoveItems(player.inventory, item, item.info.itemid, myQuest.qAmount);
+                Notification(player, String.Format(&quot;Amount Gathered: &lt;color=aqua&gt;{0}&lt;/color&gt;&quot;, myQuest.qAmount));
+                CompletedQuest(myQuest.qName, player);
+                return Convert.ToInt32(myQuest.qReward);
+            }
+            return 0;
+        }        // skillKey = char.ToUpper(skillKey[0]) + skillKey.Substring(1);
+        public static int hasPlayerFinishedQuest_KillAnimal(BasePlayer player, string entityName)
+        {
+            Quest myQuest = GetActiveQuest(player);
+            if (myQuest == null) return 0;
+            if(entityName != myQuest.qObjective) return 0;
+            AmountKilled++;
+            Notification(player, String.Format(&quot;You have killed {0}/{1} &lt;color=aqua&gt;{2}&lt;/color&gt;&quot;, AmountKilled, myQuest.qAmount, char.ToUpper(myQuest.qObjective[0]) + myQuest.qObjective.Substring(1)));
+            if(AmountKilled &gt;= myQuest.qAmount)
+            {
+                CompletedQuest(myQuest.qName, player);
+                return Convert.ToInt32(myQuest.qReward);
+            }
+            return 0;
+        }        public static void RemoveItems(PlayerInventory inventory, Item item, int itemId, int amount)
+        {
+            List&lt;Item&gt; i = new List&lt;Item&gt;();
+            i.Add(item);
+            int GiveBack = Convert.ToInt32(inventory.GetAmount(itemId) + item.amount - amount);
+            int num = 0;
+            num = num + inventory.containerMain.Take(i, itemId, amount);
+            if (amount == num)
+            {
+                return;
+            }
+            num = num + inventory.containerBelt.Take(i, itemId, amount);
+            if (amount == num)
+            {
+                return;
+            }
+            num = num + inventory.containerWear.Take(i, itemId, amount);
+            if (amount == num)
+            {
+                return;
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ShadowEvil</a>,</span>
+                        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 29, 2015 at 8:51 AM">May 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/93817/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-93822" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> How about instead of removing the items gathered, to just not give them and only credit them towards the quest
+                        progress<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>OnGather:
+  Quest active for this resource?
+  No:
+    Resume normal behavior
+  Yes:
+    Required amount &gt; gathered amount?
+    Yes:
+      Update quest progress, don't give any items (set amount to 0)
+    No:
+      Update quest progress, give the remaining items gathered past the objective (set amount to x)</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93822' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 29, 2015 at 9:45 AM">May 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93822' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/93822/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-93936" class="message" data-author="ShadowEvil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ShadowEvil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ShadowEvil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Well the quest is to gather 10,000 wood for the server or whatever... since you are gathering wood for someone
+                        else, makes sense not to keep the wood no? :|<br /> [DOUBLEPOST=1432920112][/DOUBLEPOST]Or do you mean don&#039;t give them the item at all? <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ShadowEvil</a>,</span>
+                        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93936' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 29, 2015 at 6:21 PM">May 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93936' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/93936/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-93973" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="ShadowEvil">
+                            <aside>
+                                <div class="attribution type">ShadowEvil said: <a href="#post-93936" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Well the quest is to gather 10,000 wood for the server or whatever... since you are gathering wood for someone else, makes sense not to keep the
+                                        wood no? :|<br /> [DOUBLEPOST=1432920112][/DOUBLEPOST]Or do you mean don&#039;t give them the item at all?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Exactly, when you are on the quest, the items gathered aren&#039;t given to the user but are instead counted towards the quest objective. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93973' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 29, 2015 at 7:17 PM">May 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-93973' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/93973/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-94021" class="message" data-author="ShadowEvil">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ShadowEvil" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ShadowEvil</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So... If the person abandons the quest give them the items? Sounds decent... Good idea! Thanks! &lt;3 <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ShadowEvil</a>,</span>
+                        <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-94021' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 29, 2015 at 9:13 PM">May 29, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/hook-method-after-item-has-been-gathered.8915/#post-94021' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/94021/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

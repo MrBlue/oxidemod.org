@@ -1,0 +1,140 @@
+---
+layout: forums
+title: 'OnEntityEnter OnEntityLeave'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/onentityenter-onentityleave.6120/' | prepend: site.baseurl }}">OnEntityEnter OnEntityLeave</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Reneb</a>, <a href="{{ '/threads/onentityenter-onentityleave.6120/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 9, 2014 at 6:18 PM">Dec 9, 2014</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-56995" class="message" data-author="Reneb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Reneb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Reneb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Tutorial for the release of the 2 new hooks on friday:<br />
+                        <br /> OnEntityEnter(Assembly-CSharp/TriggerBase triggerbase, Assembly-CSharp/BaseEntity ent)<br /> OnEntityLeave(Assembly-CSharp/TriggerBase triggerbase,
+                        Assembly-CSharp/BaseEntity ent)<br />
+                        <br /> Called when you enter or leave a Zone:<br /> - Radiation (global.TriggerRadiation._type)<br /> - Temperature (global.TriggerTemperature._type)<br /> - BuildingPrivilege
+                        (global.BuildPrivilegeTrigger._type)<br /> - Hurt (like getting hurt by a fire) (global.TriggerHurt._type)<br /> - Water (the sea) (global.WaterLevel._type)<br />
+                        <br /> Entity: can be a Player or an Animal<br />
+                        <br /> exemple usage:<br /> This will show you all the owners of a tool cupboard when you get in range of it.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:OnEntityEnter(triggerbase,entity)
+    if(triggerbase:GetComponent(global.BuildPrivilegeTrigger._type)) then
+        if(entity:GetComponentInParent(global.BasePlayer._type)) then
+            buildingprivilegetrigger = triggerbase:GetComponent(global.BuildPrivilegeTrigger._type)
+            baseplayer = entity:GetComponentInParent(global.BasePlayer._type)
+            toolCupboard = buildingprivilegetrigger.privlidgeEntity
+            authPlayers = rust.UserIDsFromBuildingPrivilege( toolCupboard )
+            if(authPlayers.Length == 0) then
+                rust.SendChatMessage(baseplayer,&quot;You've entered an area owned by no one&quot;)
+                return
+            end
+            rust.SendChatMessage(baseplayer,&quot;SteamID of players owning this Area:&quot;)
+            for i=0, authPlayers.Length - 1 do
+                rust.SendChatMessage(player,authPlayers[i])
+            end
+        end
+    end
+end
+</pre>{% endraw %}
+                        </div>This will show some random message when you enter or leave a radiation zone:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:OnEntityEnter(triggerbase,entity)
+    if(triggerbase:GetComponent(global.TriggerRadiation._type)) then
+        if(entity:GetComponentInParent(global.BasePlayer._type)) then
+            rust.SendChatMessage(entity,&quot;WARNING: Get out of here or you will get radiated&quot;)
+        end
+    end
+end
+function PLUGIN:OnEntityLeave(triggerbase,entity)
+    if(triggerbase:GetComponent(global.TriggerRadiation._type)) then
+        if(entity:GetComponentInParent(global.BasePlayer._type)) then
+            rust.SendChatMessage(entity,&quot;You are now in a safe zone&quot;)
+        end
+    end
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Reneb</a>,</span>
+                        <a href="{{ '/threads/onentityenter-onentityleave.6120/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 9, 2014 at 6:18 PM">Dec 9, 2014</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentityenter-onentityleave.6120/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/56995/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-69738" class="message" data-author="rom3ox">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="rom3ox" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">rom3ox</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good Job <a href="https://oxidemod.org/members/20031/" class="username" data-user="20031, @Reneb">@Reneb</a>,
+                        ¿Could you provide an example for Temperature, Hurt and water types please?<br />
+                        <br /> ¿Could i use water type to remove thirst from a player like they were drinking water?<br /> ¿Could i use temperature type to check if a user is near a fire o
+                        campfire?<br />
+                        <br /> Im starting plugn development and dont understan if the event refers to a zone (radiation or building privilege) or an state like being hurt or temperature changes.
+                        <br />
+                        <br /> Thanks!! Sorry for my bad english. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">rom3ox</a>,</span>
+                        <a href="{{ '/threads/onentityenter-onentityleave.6120/#post-69738' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 24, 2015 at 6:47 PM">Feb 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onentityenter-onentityleave.6120/#post-69738' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/69738/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

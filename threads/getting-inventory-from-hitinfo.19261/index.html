@@ -1,0 +1,270 @@
+---
+layout: forums
+title: 'Getting inventory from hitinfo?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/' | prepend: site.baseurl }}">Getting inventory from hitinfo?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Panday</a>, <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 7, 2016 at 4:27 PM">Jul 7,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-223474" class="message" data-author="Panday">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Panday" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Panday</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hey,<br />
+                        <br /> I was wondering if anyone knows how I would get the inventory of a wooden box when hit with a hammer using the HitInfo.<br /> Here is what I have so far:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using Rust;
+using System.Collections.Generic;
+using System;
+using System.Reflection;
+using System.Data;
+using System.Linq;
+using UnityEngine;
+using Oxide.Core;
+using Oxide.Core.Configuration;
+using Oxide.Core.Logging;
+using Oxide.Core.Plugins;
+namespace Oxide.Plugins
+{
+    [Info(&quot;EasyTransfer&quot;, &quot;Panda&quot;, 1.0)]
+    class EasyTransfer : RustPlugin
+    {
+        void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            if(info.HitEntity.gameObject.name.ToString() == &quot;assets/prefabs/deployable/woodenbox/woodbox_deployed.prefab&quot;)
+            {
+                Puts(&quot;It is a wooden box!&quot;);
+            }
+        }
+    }</pre>{% endraw %}
+                        </div>Not sure how I would go about this, any help would be appreciated.<br /> Thanks <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Panday</a>,</span>
+                        <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 7, 2016 at 4:27 PM">Jul 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/223474/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-223566" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+        void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            var name = info?.HitEntity?.LookupShortPrefabNameWithoutExtension() ?? string.Empty;
+            if (!name.Contains(&quot;woodbox&quot;)) return;
+            var container = info?.HitEntity?.GetComponent&lt;StorageContainer&gt;() ?? null;
+            if (container == null) return;
+          
+        }</pre>{% endraw %}
+                        </div>From there, you can use container.inventory. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223566' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 7, 2016 at 6:43 PM">Jul 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223566' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/223566/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-223572" class="message" data-author="Panday">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Panday" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Panday</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks for the reply, also it doesn&#039;t seem to work, unless I did something wrong heres what I got:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            if (info.HitEntity.GetType().ToString() == &quot;StorageContainer&quot;)
+            {
+                var container = info?.HitEntity?.GetComponent&lt;StorageContainer&gt;() ?? null;
+                if (container == null) return;                SendReply(player, &quot;{0}&quot;, container.inventory);
+            }
+            else
+            {
+                return;
+            }
+        }</pre>{% endraw %}
+                        </div>It justs says &#039;ItemContainer&#039; in the console.<br />
+                        <br /> Also may I ask what does the question marks do when after info? and HitEntity? . <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Panday</a>,</span>
+                        <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223572' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 7, 2016 at 6:55 PM">Jul 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223572' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/223572/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-223590" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Panday">
+                            <aside>
+                                <div class="attribution type">Panday said: <a href="#post-223572" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks for the reply, also it doesn&#039;t seem to work, unless I did something wrong heres what I got:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>void OnHammerHit(BasePlayer player, HitInfo info)
+        {
+            if (info.HitEntity.GetType().ToString() == &quot;StorageContainer&quot;)
+            {
+                var container = info?.HitEntity?.GetComponent&lt;StorageContainer&gt;() ?? null;
+                if (container == null) return;                SendReply(player, &quot;{0}&quot;, container.inventory);
+            }
+            else
+            {
+                return;
+            }
+        }</pre>{% endraw %}
+                                        </div>It justs says &#039;ItemContainer&#039; in the console.<br />
+                                        <br /> Also may I ask what does the question marks do when after info? and HitEntity? .
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>They are null operators, and they default to the value you supply at the end with ?? if it is null. Read more here:<br />
+                        <a href="https://msdn.microsoft.com/en-us/library/ms173224.aspx" target="_blank" class="externalLink  rel=" nofollow">?? Operator (C# Reference)</a><br />
+                        <br />
+                        <br /> As for your code, I assumed you knew what to do once you got the inventory. You&#039;re just sending a reply of the type of inventory to a string. If you&#039;re wanting
+                        to get a list of items, do this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach(var item in container.inventory.itemList)
+{
+SendReply(player, item.info.displayName.english);
+}
+</pre>{% endraw %}
+                        </div>If you wish to modify any of the items in that foreach loop, you&#039;ll have to convert it to a new list/array, like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+foreach(var item in container.inventory.itemlist.ToList())
+{
+//do things
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223590' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 7, 2016 at 7:39 PM">Jul 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-inventory-from-hitinfo.19261/#post-223590' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/223590/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

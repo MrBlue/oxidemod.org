@@ -1,0 +1,202 @@
+---
+layout: forums
+title: 'Lockers, placing items or sets inside?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/' | prepend: site.baseurl }}">Lockers, placing items or sets inside?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Bogus
+            Hawtsauce</a>, <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 1, 2017 at 8:09 PM">Apr 1, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-311907" class="message" data-author="Bogus Hawtsauce">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bogus Hawtsauce" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bogus Hawtsauce</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m having a hard time trying to figure out how to place allowed items inside of a locker.<br />
+                        <br /> background: I have a json array of items created from scanning a locker (itemId, amount, slotId , etc)<br /> I&#039;m just trying to rebuild the locker from this
+                        data.<br />
+                        <br /> ...<br /> Item item = ItemManager.CreateByItemID(itemId, amount, skinid);<br /> item.MoveToContainer(locker.inventory, slotId); // this looks to be ignored.<br />
+                        ...<br />
+                        <br /> I&#039;ve noticed a RPC_Equip function, but not quite sure how to execute it.<br />
+                        <br /> worst case, I can probably populate my personal inventory if I can figure out how to invoke the &quot;swap&quot; button on the container panel <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bogus Hawtsauce</a>,</span>
+                        <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 1, 2017 at 8:09 PM">Apr 1, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/311907/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-312595" class="message" data-author="EnigmaticDragon">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="EnigmaticDragon" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">EnigmaticDragon</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Using a decompiler and by looking at the <i>Locker</i> class I found out that the locker&#039;s inventory item
+                        filter is depending on the bool variable <i>equippingActive</i>. If this variable is true, you can add any item you want to the container, if it is false, you can add no item
+                        at all. Unfortunately this variable is only true while the client message for swapping is processed, and since it has private access, we cannot set it directly.<br />
+                        <br /> However, we can temporarily alter the item filter by changing the inventory&#039;s canAcceptItem function. <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Func&lt;Item, bool&gt; canAcceptItem = locker.inventory.canAcceptItem;
+locker.inventory.canAcceptItem = new Func&lt;Item, bool&gt;((Item i) =&gt; { return true; });Item item = ItemManager.CreateByItemID(itemId, amount, skinid);
+item.MoveToContainer(locker.inventory, slotId); // this shouldn't be ignored anymore now ;)locker.inventory.canAcceptItem = canAcceptItem;</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">EnigmaticDragon</a>,</span>
+                        <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312595' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 5, 2017 at 11:39 PM">Apr 5, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312595' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/312595/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-312629" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="EnigmaticDragon">
+                            <aside>
+                                <div class="attribution type">EnigmaticDragon said: <a href="#post-312595" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Using a decompiler and by looking at the <i>Locker</i> class I found out that the locker&#039;s inventory item filter is depending on the bool
+                                        variable <i>equippingActive</i>. If this variable is true, you can add any item you want to the container, if it is false, you can add no item at all.
+                                        Unfortunately this variable is only true while the client message for swapping is processed, and since it has private access, we cannot set it directly.<br />
+                                        <br /> However, we can temporarily alter the item filter by changing the inventory&#039;s canAcceptItem function.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>Func&lt;Item, bool&gt; canAcceptItem = locker.inventory.canAcceptItem;
+locker.inventory.canAcceptItem = new Func&lt;Item, bool&gt;((Item i) =&gt; { return true; });Item item = ItemManager.CreateByItemID(itemId, amount, skinid);
+item.MoveToContainer(locker.inventory, slotId); // this shouldn't be ignored anymore now ;)locker.inventory.canAcceptItem = canAcceptItem;</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can use reflection to modify the private bool, like so:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+FieldInfo equippingActive = typeof(Locker).GetField(&quot;equippingActive&quot;, (BindingFlags.Instance | BindingFlags.NonPublic));private void SetLockerEquip(Locker locker, bool newVal) =&gt; equippingActive.SetValue(locker, newVal);
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312629' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 6, 2017 at 4:53 AM">Apr 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312629' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/312629/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-312655" class="message" data-author="Bogus Hawtsauce">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Bogus Hawtsauce" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Bogus Hawtsauce</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you both EnigmaticDragon and Shady757 for your assistance on this, This is very promising information that
+                        should let me continue development on my addon! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Bogus Hawtsauce</a>,</span>
+                        <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312655' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 6, 2017 at 11:57 AM">Apr 6, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/lockers-placing-items-or-sets-inside.24748/#post-312655' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/312655/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

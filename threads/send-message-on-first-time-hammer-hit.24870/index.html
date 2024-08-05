@@ -1,0 +1,285 @@
+---
+layout: forums
+title: 'Rust - Send message on first-time hammer hit'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixRed">Rust</span> <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/' | prepend: site.baseurl }}">Send message on first-time hammer hit</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">iShot</a>, <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 10, 2017 at 2:04 PM">Apr 10,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-313475" class="message" data-author="iShot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iShot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iShot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Dear coders,<br />
+                        <br />
+                        <b>Long description:</b><br />
+                        <br /> I&#039;m currently trying to learn a little bit more about writing plugins for Oxide (Rust in particular) but I&#039;ve made very little progress due to lack of time and
+                        lack of extensive tutorials and documentation. Currently I&#039;m trying to figure out how to make a plugin that sends a chat message (SendReply) to a player that repairs one
+                        of his structures with the vanilla hammer for the first time (I think it should trigger on &#039;OnStructureRepair&#039; if I&#039;m not mistaking?). As far as I know it
+                        requires a data file to register if a player already repaired something before.<br />
+                        <br /> However, I can not figure out how to correctly use data files and libraries in Oxide.<br />
+                        <br /> I&#039;ve learned a lot from other plugins and used them as good examples on how to code plugins but I can&#039;t figure this one out. This is why I would love someone
+                        to either explain this to me or write this plugin so I can use it as a textbook example of how to use the things I need.<br />
+                        <br /> Any information or links to tutorials on how to write Oxide plugins would be awesome as well! (Feel free to PM me or drop me a message in this post)<br />
+                        <br />
+                        <b>Short description:<br />
+                        </b><br />
+                        <i>I require a plugin that sends a chat message to a player when he repairs his buildings for the very first time only.</i><br />
+                        <br />
+                        <br /> Thanks in advance,<br />
+                        <br /> iShot <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iShot</a>,</span>
+                        <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 10, 2017 at 2:04 PM">Apr 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/313475/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-313491" class="message" data-author="JoeSheep">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="JoeSheep" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">JoeSheep</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Very simple write up. Get&#039;s the message to send to the player from the language file. Stores a list of
+                        players that have already repaired a structure before in the data file. Adds the player to the list when they repair something for the first time then sends them the message. I
+                        haven&#039;t tested it, but I see no reason it shouldn&#039;t work.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;FirstRepairMessage&quot;, &quot;JoeSheep&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;Simple Plugin For Displaying A Message The First Time A Player Repairs Something.&quot;)]
+    class FirstRepairMessage : RustPlugin
+    {
+        #region Data
+        void SaveData() =&gt; Interface.Oxide.DataFileSystem.WriteObject(&quot;FirstRepairMessageData&quot;, storedData);        void LoadSavedData()
+        {
+            storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;FirstRepairMessageData&quot;);
+            if (storedData == null)
+            {
+                PrintWarning(&quot;FirstRepairMessage's datafile is null. Recreating data file...&quot;);
+                storedData = new StoredData();
+                SaveData();
+                timer.Once(5, () =&gt;
+                {
+                    PrintWarning(&quot;Reloading...&quot;);
+                    ConsoleSystem.Run(ConsoleSystem.Option.Server, &quot;reload FirstRepairMessage&quot;);
+                });
+            }
+        }        class StoredData
+        {
+            public List&lt;ulong&gt; RepairedBefore = new List&lt;ulong&gt;();
+            public StoredData()
+            {
+            }
+        }        StoredData storedData;
+        void OnServerSave() =&gt; SaveData();
+        #endregion        #region Lang
+        void LoadDefaultMessages()
+        {
+            lang.RegisterMessages(new Dictionary&lt;string, string&gt;
+            {
+                {&quot;FirstRepairMessage&quot;, &quot;You've repaired a structure for the first time!&quot; },
+            }, this);
+        }
+        #endregion        #region Init/Unload
+        void OnServerInitialized()
+        {
+            #if !RUST
+            throw new NotSupportedException(&quot;This plugin does not support this game.&quot;);
+            #endif            LoadSavedData();
+            LoadDefaultMessages();
+        }        void Unload() =&gt; SaveData();
+        #endregion        #region Hook
+        void OnStructureRepair(BaseCombatEntity entity, BasePlayer player)
+        {
+            if (!storedData.RepairedBefore.Contains(player.userID))
+            {
+                storedData.RepairedBefore.Add(player.userID);
+                SaveData();
+                SendReply(player, Lang(&quot;FirstRepairMessage&quot;, player.UserIDString));
+            }
+        }
+        #endregion        #region Functions
+        string Lang(string key, string userId = null) =&gt; lang.GetMessage(key, this, userId);
+        #endregion
+    }
+}</pre>{% endraw %}
+                        </div>Also shouldn&#039;t I be able to attach files to thread replies? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">JoeSheep</a>,</span>
+                        <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/#post-313491' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 10, 2017 at 3:06 PM">Apr 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/#post-313491' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/313491/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-313499" class="message" data-author="iShot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="iShot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">iShot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="JoeSheep">
+                            <aside>
+                                <div class="attribution type">JoeSheep said: <a href="#post-313491" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Very simple write up. Get&#039;s the message to send to the player from the language file. Stores a list of players that have already repaired a
+                                        structure before in the data file. Adds the player to the list when they repair something for the first time then sends them the message. I haven&#039;t tested
+                                        it, but I see no reason it shouldn&#039;t work.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>using System;
+using System.Collections.Generic;using Oxide.Core;namespace Oxide.Plugins
+{
+    [Info(&quot;FirstRepairMessage&quot;, &quot;JoeSheep&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;Simple Plugin For Displaying A Message The First Time A Player Repairs Something.&quot;)]
+    class FirstRepairMessage : RustPlugin
+    {
+        #region Data
+        void SaveData() =&gt; Interface.Oxide.DataFileSystem.WriteObject(&quot;FirstRepairMessageData&quot;, storedData);        void LoadSavedData()
+        {
+            storedData = Interface.Oxide.DataFileSystem.ReadObject&lt;StoredData&gt;(&quot;FirstRepairMessageData&quot;);
+            if (storedData == null)
+            {
+                PrintWarning(&quot;FirstRepairMessage's datafile is null. Recreating data file...&quot;);
+                storedData = new StoredData();
+                SaveData();
+                timer.Once(5, () =&gt;
+                {
+                    PrintWarning(&quot;Reloading...&quot;);
+                    ConsoleSystem.Run(ConsoleSystem.Option.Server, &quot;reload FirstRepairMessage&quot;);
+                });
+            }
+        }        class StoredData
+        {
+            public List&lt;ulong&gt; RepairedBefore = new List&lt;ulong&gt;();
+            public StoredData()
+            {
+            }
+        }        StoredData storedData;
+        void OnServerSave() =&gt; SaveData();
+        #endregion        #region Lang
+        void LoadDefaultMessages()
+        {
+            lang.RegisterMessages(new Dictionary&lt;string, string&gt;
+            {
+                {&quot;FirstRepairMessage&quot;, &quot;You've repaired a structure for the first time!&quot; },
+            }, this);
+        }
+        #endregion        #region Init/Unload
+        void OnServerInitialized()
+        {
+            #if !RUST
+            throw new NotSupportedException(&quot;This plugin does not support this game.&quot;);
+            #endif            LoadSavedData();
+            LoadDefaultMessages();
+        }        void Unload() =&gt; SaveData();
+        #endregion        #region Hook
+        void OnStructureRepair(BaseCombatEntity entity, BasePlayer player)
+        {
+            if (!storedData.RepairedBefore.Contains(player.userID))
+            {
+                storedData.RepairedBefore.Add(player.userID);
+                SaveData();
+                SendReply(player, Lang(&quot;FirstRepairMessage&quot;, player.UserIDString));
+            }
+        }
+        #endregion        #region Functions
+        string Lang(string key, string userId = null) =&gt; lang.GetMessage(key, this, userId);
+        #endregion
+    }
+}</pre>{% endraw %}
+                                        </div>Also shouldn&#039;t I be able to attach files to thread replies?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That is a perfect script to learn the basics of language files and data files. Thank you very much for this, it&#039;s a treasure of information! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">iShot</a>,</span>
+                        <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/#post-313499' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 10, 2017 at 3:18 PM">Apr 10, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/send-message-on-first-time-hammer-hit.24870/#post-313499' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/313499/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

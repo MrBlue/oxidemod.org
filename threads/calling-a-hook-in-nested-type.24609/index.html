@@ -1,0 +1,179 @@
+---
+layout: forums
+title: 'Solved - Calling a hook in nested type?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/' | prepend: site.baseurl }}">Calling a hook in nested type?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">bazuka5801</a>, <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 23, 2017 at 2:22 PM">Mar 23,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-309890" class="message" data-author="bazuka5801">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bazuka5801" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bazuka5801</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/1115/" class="username" data-user="1115, @Wulf">@Wulf</a> , Can you add methods(nested type) to handle hook<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// CSPlugin.cs line: 64// Find all hooks in the plugin and any base classes derived from CSPlugin
+var types = new List&lt;Type&gt;();
+var type = GetType();
+types.Add(type);//REPLACE
+    while (type != typeof(CSPlugin)) types.Add(type = type.BaseType);
+//TO
+    while (type != typeof(CSPlugin)) {
+        types.AddRange(type.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Public));
+        types.Add(type = type.BaseType);
+    }
+// END// Add hooks implemented in base classes before user implemented methods
+for (var i = types.Count - 1; i &gt;= 0; i--)
+{
+    foreach (var method in types[i].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance))
+    {
+        var attr = method.GetCustomAttributes(typeof(HookMethodAttribute), true);
+        if (attr.Length &lt; 1) continue;
+        var hookmethod = attr[0] as HookMethodAttribute;
+        AddHookMethod(hookmethod?.Name, method);
+    }</pre>{% endraw %}
+                        </div>[DOUBLEPOST=1490279093][/DOUBLEPOST]Example<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>namespace Oxide.Plugins
+{
+    [Info(&quot;EpicStuff&quot;, &quot;Unknown&quot;, 0.1)]
+    [Description(&quot;Makes epic stuff happen&quot;)]    class EpicStuff : RustPlugin
+    {
+        class Foo
+        {
+            [HookMethod(&quot;OnServerInitialized&quot;)]
+            void OnServerInitialized()
+            {
+                Puts(&quot;It's work!&quot;);
+            }
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bazuka5801</a>,</span>
+                        <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2017 at 2:22 PM">Mar 23, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309890/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309895" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Why would this be needed? It looks like it&#039;d just be unnecessary overhead in most cases. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/#post-309895' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2017 at 2:45 PM">Mar 23, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/#post-309895' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309895/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-309897" class="message" data-author="bazuka5801">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="bazuka5801" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">bazuka5801</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-309895" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Why would this be needed? It looks like it&#039;d just be unnecessary overhead in most cases.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Patterns)<br /> [DOUBLEPOST=1490280406][/DOUBLEPOST]Facade, Decorator, ...<br /> [DOUBLEPOST=1490280598][/DOUBLEPOST]Will you add it on the next update? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">bazuka5801</a>,</span>
+                        <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/#post-309897' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 23, 2017 at 2:46 PM">Mar 23, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/calling-a-hook-in-nested-type.24609/#post-309897' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/309897/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

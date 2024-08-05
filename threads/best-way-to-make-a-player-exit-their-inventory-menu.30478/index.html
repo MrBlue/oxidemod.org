@@ -1,0 +1,120 @@
+---
+layout: forums
+title: 'Solved - Best way to make a player exit their inventory menu'
+breadcrumbs:
+ - "Game Discussion": "/categories/game-discussion.106/"
+ - "Rust Discussion": "/forums/rust-discussion.23/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/' | prepend: site.baseurl }}">Best way to make a player exit
+            their inventory menu</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-discussion.23/' | prepend: site.baseurl }}">Rust Discussion</a>' started by <a class="username"
+            dir="auto">CEbbinghaus</a>, <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="May 4, 2018 at 9:58 AM">May 4, 2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-399043" class="message" data-author="CEbbinghaus">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CEbbinghaus" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CEbbinghaus</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">So far What i have found is that for using the <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.StartSleep()</pre>{% endraw %}
+                        </div> function works best if you dont care about the player beeing asleep. another option is <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.StartWounded(); player.StopWounded();</pre>{% endraw %}
+                        </div> which is a bit jittery and doesnt look as smooth. but Ideal would be something like the <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>player.StopLooting();</pre>{% endraw %}
+                        </div> method but for the inventory <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CEbbinghaus</a>,</span>
+                        <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 4, 2018 at 9:58 AM">May 4, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/399043/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-400249" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <a href="https://oxidemod.org/members/216216/" class="username" data-user="216216, @CEbbinghaus">@CEbbinghaus</a> <br /> more easy than it looks like <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// BasePlayer
+public void SendDeathInformation()
+{
+    base.ClientRPCPlayer(null, this, &quot;OnDied&quot;);
+}</pre>{% endraw %}
+                        </div>the resulting clientside action <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" /><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// BasePlayer
+[BaseEntity.RPC_Client]
+private void OnDied(BaseEntity.RPCMessage msg)
+{
+    UIInventory.Close();
+    MapInterface.SetOpen(false);
+    LocalPlayer.LastDeathTime = Time.realtimeSinceStartup;
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/#post-400249' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="May 12, 2018 at 12:01 PM">May 12, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/best-way-to-make-a-player-exit-their-inventory-menu.30478/#post-400249' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/400249/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

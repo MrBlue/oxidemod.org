@@ -1,0 +1,386 @@
+---
+layout: forums
+title: 'Solved - Unable to load AI, no AI with the specified ID exists'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/' | prepend: site.baseurl }}">Unable to load AI, no AI with the
+            specified ID exists</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">TheRyuzaki</a>, <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Aug 28, 2017 at 3:43 PM">Aug 28, 2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-347643" class="message" data-author="TheRyuzaki">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="TheRyuzaki" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">TheRyuzaki</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'GameWer'.
+Unable to load AI, no AI with the specified ID exists.
+Unable to load the AI: Animal.Action. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'GameWer'.
+Unable to load AI, no AI with the specified ID exists.</pre>{% endraw %}
+                        </div><a href="https://image.prntscr.com/image/D3IbL5AlTM6NpT35KfFKNA.png" target="_blank" class="externalLink  rel="
+                            nofollow">https://image.prntscr.com/image/D3IbL5AlTM6NpT35KfFKNA.png</a><br /> this message has flooding to my game server =( this message dont have to oxide soruce code
+                        =(<br /> My plugin code:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>// Reference: GameWer
+#define STEAM_IS_NOTHAVE_GAMEWERusing System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
+using UnityEngine;namespace Oxide.Plugins
+{
+    [Info(&quot;Game Wer - AntiCheat&quot;, &quot;TheRyuzaki&quot;, &quot;2.0.1&quot;)]
+    public class TheRyuzakiGameWer : RustPlugin
+    {
+        public const string CONST_COMMAND_SESSION_NOT_FOUND = &quot;kick {STEAMID} \&quot;GameWer: Session not found!\&quot;&quot;;
+        public const string CONST_COMMAND_PLAYER_BANNED = &quot;ban {STEAMID} \&quot;GameWer: Player banned!\&quot;&quot;;
+        public const string CONST_ADDRES_GAMEWER_SERVER = &quot;******&quot;;
+       
+        private HashSet&lt;ulong&gt; ListIgnorePlayersPlayers = new HashSet&lt;ulong&gt;();#if STEAM_IS_NOTHAVE_GAMEWER
+        void OnPlayerInit(BasePlayer player)
+        {
+            var token = GameWer.SerializationExtension.Deserialize&lt;GameWer.STEAM_TICKET&gt;(player.net.connection.token);
+            if (token.Token.AppID == 252490)
+                ListIgnorePlayersPlayers.Add(player.userID);
+        }
+#endif        void OnServerInitialized()
+        {
+            for (int i = 0; i &lt; BasePlayer.activePlayerList.Count; ++i)
+                this.OnPlayerInit(BasePlayer.activePlayerList[i]);            timer.Repeat(10f, 0, () =&gt;
+            {
+                string line_steamid = &quot;&quot;;
+                for (int i = 0; i &lt; BasePlayer.activePlayerList.Count; ++i)
+                    if (!ListIgnorePlayersPlayers.Contains(BasePlayer.activePlayerList[i].userID))
+                        line_steamid += BasePlayer.activePlayerList[i].UserIDString + &quot;,&quot;;                webrequest.EnqueueGet(&quot;http://&quot; + CONST_ADDRES_GAMEWER_SERVER + &quot;:8085/?query=getsteamid&amp;steamid=&quot; + line_steamid, (code, response) =&gt; {
+                    if (code == 200)
+                    {
+                        var json = JsonConvert.DeserializeObject&lt;Dictionary&lt;string, string&gt;&gt;(response);
+                        var json_response_line = json[&quot;response&quot;];
+                        var players_lines = json_response_line.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                        for (int i = 0; i &lt; players_lines.Length; ++i)
+                        {
+                            var player_line = players_lines[i].Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (player_line.Length &gt;= 2)
+                            {
+                                switch (player_line[1])
+                                {
+                                    case &quot;player_banned&quot;:
+                                        ConsoleSystem.Run(ConsoleSystem.Option.Server, CONST_COMMAND_PLAYER_BANNED.Replace(&quot;{STEAMID}&quot;, player_line[0], StringComparison.Ordinal));
+                                        break;
+                                    case &quot;session_not_found&quot;:
+                                        ConsoleSystem.Run(ConsoleSystem.Option.Server, CONST_COMMAND_SESSION_NOT_FOUND.Replace(&quot;{STEAMID}&quot;, player_line[0], StringComparison.Ordinal));
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }, this);
+            });
+        }    }
+}
+</pre>{% endraw %}
+                        </div><br /> DLL Code: <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;namespace GameWer
+{
+    public static class SerializationExtension
+    {
+        // Methods
+        public static T Deserialize&lt;T&gt;(this byte[] bytes) where T : struct
+        {
+            try
+            {
+                GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                T local = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+                handle.Free();
+                return local;
+            }
+            catch
+            {
+            }
+            return default(T);
+        }        public static byte[] Serialize&lt;T&gt;(this T structure) where T : struct
+        {
+            byte[] destination = new byte[Marshal.SizeOf(typeof(T))];
+            IntPtr ptr = Marshal.AllocHGlobal(destination.Length);
+            Marshal.StructureToPtr(structure, ptr, true);
+            Marshal.Copy(ptr, destination, 0, destination.Length);
+            Marshal.FreeHGlobal(ptr);
+            return destination;
+        }
+    }[StructLayout(LayoutKind.Sequential, Size = 0xea, Pack = 1)]
+    public struct STEAM_TICKET
+    {
+        public uint Length;
+        public ulong ID;
+        public ulong SteamID;
+        public uint ConnectionTime;
+        public STEAM_SESSION Session;
+        public STEAM_TOKENDATA Token;
+    }
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct STEAM_SESSION
+    {
+        public uint Length;
+        public uint Unknown0x1C;
+        public uint Unknown0x20;
+        public uint Unknown0x24;
+        public uint Unknown0x28;
+        public uint SessionID;
+        public uint ConnectNumber;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct STEAM_TOKENDATA
+    {
+        public int Length;
+        public int Unknown0x38;
+        public int Unknown0x3C;
+        public ulong UserID;
+        public int AppID;
+        public int Unknown0x4C;
+        public byte Unknown0x50;
+        public byte Unknown0x51;
+        public byte Unknown0x52;
+        public byte Unknown0x53;
+        public uint Unknown0x54;
+        public uint StartTime;
+        public uint EndedTime;
+        public byte Unknown0x60;
+        public byte Unknown0x61;
+        public byte Unknown0x62;
+        public byte Unknown0x63;
+        public short Unknown0x64;
+        public short Unknown0x66;
+        public short Unknown0x68;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x80)]
+        public byte[] SHA128;
+    }}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">TheRyuzaki</a>,</span>
+                        <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 28, 2017 at 3:43 PM">Aug 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/347643/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-347680" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It seems like there is a conflicting dependency. Make sure that the extension/dll is targetting the .net 3.5
+                        framework. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-347680' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Aug 28, 2017 at 5:35 PM">Aug 28, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-347680' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/347680/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-351236" class="message" data-author="warhead0">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="warhead0" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">warhead0</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I seem to be having some major issues with animals on my server. They just dont move and dont respond to
+                        anything. Not really sure what has caused it.<br />
+                        <br /> My console is outputting a very large amount of errors. heres a snippet.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Action. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Action. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.
+</pre>{% endraw %}
+                        </div>I&#039;ve tried removing almost every addon from the server, toggling ai and ensuring values are correct and set to true. I tried +nav_disable &quot;false&quot; but with
+                        no luck still<br />
+                        <br /> Any help would be appreciated, I have been trying to figure this out for several hours now and had no luck. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">warhead0</a>,</span>
+                        <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351236' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 18, 2017 at 5:32 AM">Sep 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351236' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/351236/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-351237" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="warhead0">
+                            <aside>
+                                <div class="attribution type">warhead0 said: <a href="#post-351236" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I seem to be having some major issues with animals on my server. They just dont move and dont respond to anything. Not really sure what has
+                                        caused it.<br />
+                                        <br /> My console is outputting a very large amount of errors. heres a snippet.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Action. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Action. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.(13:54:24) | Unable to load AI, no AI with the specified ID exists.(13:54:24) | Unable to load the AI: Animal.Think. Additional details: Could not load type 'System.Runtime.Versioning.TargetFrameworkAttribute' from assembly 'Oxide.Ext.Hive'.
+</pre>{% endraw %}
+                                        </div>I&#039;ve tried removing almost every addon from the server, toggling ai and ensuring values are correct and set to true. I tried +nav_disable
+                                        &quot;false&quot; but with no luck still<br />
+                                        <br /> Any help would be appreciated, I have been trying to figure this out for several hours now and had no luck.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>That appears to be an issue with the extension you are using, not Rust itself. See the &quot;Oxide.Ext.Hive&quot; in the error. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351237' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 18, 2017 at 5:36 AM">Sep 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351237' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/351237/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-351243" class="message" data-author="warhead0">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="warhead0" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">warhead0</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m not sure how to work with Oxide.Ext.Hive<br />
+                        <br /> I was actually finally able to have some success however, I installed C<a href="http://oxidemod.org/plugins/customai.2621/" class="internalLink">ustom A</a>I, and
+                        Radtown Animals for Rust.<br />
+                        <br /> Animals now seem to behaving correctly again, <br />
+                        <br /> However my console does still spit out a load of the same errors every now and then.<br />
+                        <br /> I&#039;m not really sure why its working again, but I&#039;m quite relieved. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">warhead0</a>,</span>
+                        <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351243' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Sep 18, 2017 at 6:42 AM">Sep 18, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/unable-to-load-ai-no-ai-with-the-specified-id-exists.27007/#post-351243' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/351243/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

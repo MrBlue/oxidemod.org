@@ -1,0 +1,484 @@
+---
+layout: forums
+title: 'Solved - Configs &amp; classes or dictionaries, etc.'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/' | prepend: site.baseurl }}">Configs &amp; classes or dictionaries, etc.</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Deicide666ra</a>, <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/' | prepend: site.baseurl }}"><span class="DateTime" title="Jul 30, 2015 at 4:44 AM">Jul 30,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-113757" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This is driving me nuts I&#039;m wasting so much time on this!<br />
+                        <br /> Is there an easy way to save and retrieve a class or say a Dictionary to the config? There&#039;s an example out there that uses
+                        Interface.GetMod().DataFileSystem.WriteObject and Interface.GetMod().DataFileSystem.ReadObject which does that but it saves the config in the Data folder instead of the Config
+                        folder and I don&#039;t really like that, I&#039;d rather just use a &quot;standard&quot; config.<br />
+                        <br /> The config system seems to be saving these objects fine but when it comes back to load them, it doesn&#039;t work. I suppose I have to do a 1231312 character cryptic
+                        cast line to get it to work, but I just can&#039;t get it.<br />
+                        <br /> I did manage to save/load an array of strings like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>string[] c_craftingMultiplierBlacklist;
+c_craftingMultiplierBlacklist = ((IEnumerable)GetConfigValue(&quot;Blacklists&quot;, &quot;craftingMultiplierBlacklist&quot;, new string[] { })).Cast&lt;object&gt;().Select(x =&gt; x.ToString()).ToArray();</pre>{% endraw %}
+                        </div>But I&#039;d really like to be able to save a Dictionary&lt;string, string&gt; or better yet, a Dictionary&lt;string, CustomClass&gt; and be able to reload that
+                        effortlessly in the same way the GetMod().DataFileSystem does, but to the main config file.<br />
+                        <br /> I seen some mods use Newtonsoft to perform some pretty complex manipulations in order to achieve something like this, but it feels way overkill for something that should
+                        be relatively simple.<br />
+                        <br /> For the record, the solution I use now which works but is ugly as dog that&#039;s been hit by a truck is this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var mess= GetConfigValue(&quot;Salvager&quot;, &quot;Salvagers&quot;, c_salvagers);c_salvagers.Clear();
+foreach (var entry in (IEnumerable)mess)
+{
+    var parts = entry.ToString().Trim(new[] { '[', ']' }).Split(',');
+    c_salvagers.Add(parts.First(), parts.Last());
+}
+</pre>{% endraw %}
+                        </div>This is to reload a Dictionary&lt;string, string&gt; and it works well, so long as there are no commas in any of the two values.<br />
+                        <br /> Any help would be appreciated!<br /> [DOUBLEPOST=1438228148][/DOUBLEPOST]Edit: I said &quot;it works&quot; for that last bit of code but actually it doesn&#039;t work so
+                        well. The first time the config is created, &quot;mess&quot; does not have the same format as the second time it&#039;s ran and loaded from disk. I have debug code that
+                        enumerates the contents of the dictionary after the load and if I put stuff as default in the dict, it won&#039;t show on the first run so I&#039;m running on an empty
+                        dictionary despite the fact it saved entries on disk. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 30, 2015 at 4:44 AM">Jul 30, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/113757/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-119749" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Bump! Would really be nice to be able to save/load a full class structure in a config variable... <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-119749' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 13, 2015 at 9:16 PM">Aug 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-119749' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/119749/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-119757" class="message" data-author="baton256">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="baton256" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">baton256</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Vote for this too! Might need to move it oxide feature requests. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">baton256</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-119757' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 13, 2015 at 9:43 PM">Aug 13, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-119757' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/119757/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122788" class="message" data-author="LaserHydra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="LaserHydra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">LaserHydra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Deicide666ra">
+                            <aside>
+                                <div class="attribution type">Deicide666ra said: <a href="#post-119749" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Bump! Would really be nice to be able to save/load a full class structure in a config variable...</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Doesnt that work? I did not try yet. <br /> How are you trying to save it? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">LaserHydra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-122788' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 23, 2015 at 2:55 PM">Aug 23, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-122788' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/122788/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-122982" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">The new WriteObject and ReadObject functions in Config solved this issue. Works great, the new version of
+                        Cornucopia I&#039;ll release soon uses it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-122982' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 24, 2015 at 3:00 AM">Aug 24, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-122982' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/122982/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123856" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Alright I need some lights here! One of the last Oxide update added a WriteObject and ReadObject function to
+                        Config which is very good news. That said, I haven&#039;t seen any examples of how to use this so I went how I could and did it like this:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void LoadConfigValues()
+        {
+            try
+            {
+                g_config = Config.ReadObject&lt;CornuConfig&gt;(Interface.GetMod().InstanceDirectory + &quot;/config/Cornu.json&quot;);
+            }
+            catch
+            {
+                Puts(&quot;New configuration file created.&quot;);
+                g_config = new CornuConfig();
+                Config.WriteObject(g_config, false, Interface.GetMod().InstanceDirectory + &quot;/config/Cornu.json&quot;);
+            }
+        }
+</pre>{% endraw %}
+                        </div>Problem is I&#039;m getting reports of servers that are not using that folder to store configs and this is preventing these servers/hosts from using the plugin properly,
+                        as they cannot load or even create the config.<br />
+                        <br /> I could just add a try/catch and try the other folder that&#039;s been reported, but I have a feeling this &quot;other&quot; folder can be arbitrary. Is there a way to
+                        determine programmatically where the config folder is exactly?<br />
+                        <br /> The only sure way I see of doing this would be to use a standard config in which the config folder would be the only setting, but that seems very sketchy. <br />
+                        <br /> I wish we could save an object as a named setting like any other variable in the config.. that would remove this issue. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123856' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 27, 2015 at 3:30 AM">Aug 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123856' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123856/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123874" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Deicide666ra">
+                            <aside>
+                                <div class="attribution type">Deicide666ra said: <a href="#post-123856" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Alright I need some lights here! One of the last Oxide update added a WriteObject and ReadObject function to Config which is very good news. That
+                                        said, I haven&#039;t seen any examples of how to use this so I went how I could and did it like this:<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        void LoadConfigValues()
+        {
+            try
+            {
+                g_config = Config.ReadObject&lt;CornuConfig&gt;(Interface.GetMod().InstanceDirectory + &quot;/config/Cornu.json&quot;);
+            }
+            catch
+            {
+                Puts(&quot;New configuration file created.&quot;);
+                g_config = new CornuConfig();
+                Config.WriteObject(g_config, false, Interface.GetMod().InstanceDirectory + &quot;/config/Cornu.json&quot;);
+            }
+        }
+</pre>{% endraw %}
+                                        </div>Problem is I&#039;m getting reports of servers that are not using that folder to store configs and this is preventing these servers/hosts from using the
+                                        plugin properly, as they cannot load or even create the config.<br />
+                                        <br /> I could just add a try/catch and try the other folder that&#039;s been reported, but I have a feeling this &quot;other&quot; folder can be arbitrary. Is
+                                        there a way to determine programmatically where the config folder is exactly?<br />
+                                        <br /> The only sure way I see of doing this would be to use a standard config in which the config folder would be the only setting, but that seems very
+                                        sketchy.<br />
+                                        <br /> I wish we could save an object as a named setting like any other variable in the config.. that would remove this issue.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;re overcomplicating simplicity and hard-coding it to the /config/ folder, that&#039;s what the report is. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <br /> Take a look at the example below from the Gather Rewards plugin I am overhauling.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        #region Configuration Defaults        PluginConfig DefaultConfig()
+        {
+            var defaultConfig = new PluginConfig
+            {
+                Settings = new PluginSettings
+                {
+                    ShowMessages = true,
+                    Rewards = new Dictionary&lt;string, int&gt;
+                    {
+                        { PluginRewards.Corpse, 25 },
+                        { PluginRewards.Ore, 25 },
+                        { PluginRewards.Wood, 25 }
+                    }
+                },
+                Messages = new Dictionary&lt;string, string&gt;
+                {
+                    { PluginMessage.ReceivedForGather, &quot;You have received ${0} for gathering {1}.&quot; },
+                    { PluginMessage.ReceivedForKill, &quot;You have received ${0} for killing a {1}.&quot; },
+                    { PluginMessage.ReceivedForLoot, &quot;You have received ${0} for looting {1}.&quot; }
+                }
+            };
+            foreach (GameManifest.PooledString str in GameManifest.Get().pooledStrings)
+            {
+                if (str.str.StartsWith(&quot;assets/bundled/prefabs/autospawn/animals/&quot;))
+                {
+                    var animal = str.str.Substring(str.str.LastIndexOf(&quot;/&quot;) + 1).Replace(&quot;.prefab&quot;, &quot;&quot;);
+                    defaultConfig.Settings.Rewards[UppercaseFirst(animal)] = 25;
+                }
+            }
+            return defaultConfig;
+        }        #endregion        #region Configuration Setup        private bool configChanged;
+        private PluginConfig config;        static class PluginRewards
+        {
+            public const string Corpse = &quot;Corpse&quot;;
+            public const string Ore = &quot;Ore&quot;;
+            public const string Wood = &quot;Wood&quot;;
+        }        static class PluginMessage
+        {
+            public const string ReceivedForGather = &quot;ReceivedForGather&quot;;
+            public const string ReceivedForKill = &quot;ReceivedForKill&quot;;
+            public const string ReceivedForLoot = &quot;ReceivedForLoot&quot;;
+        }        class PluginSettings
+        {
+            public bool ShowMessages { get; set; }
+            public Dictionary&lt;string, int&gt; Rewards { get; set; }
+        }        class PluginConfig
+        {
+            public PluginSettings Settings { get; set; }
+            public Dictionary&lt;string, string&gt; Messages { get; set; }
+        }        protected override void LoadDefaultConfig()
+        {
+            Config.WriteObject(DefaultConfig(), true);
+            PrintWarning(&quot;New configuration file created.&quot;);
+        }        void LoadConfigValues()
+        {
+            config = Config.ReadObject&lt;PluginConfig&gt;();
+            var defaultConfig = DefaultConfig();
+            Merge(config.Messages, defaultConfig.Messages);
+            Merge(config.Settings.Rewards, defaultConfig.Settings.Rewards);            if (!configChanged) return;
+            PrintWarning(&quot;Configuration file updated.&quot;);
+            Config.WriteObject(config);
+        }        void Merge&lt;T1, T2&gt;(IDictionary&lt;T1, T2&gt; current, IDictionary&lt;T1, T2&gt; defaultDict)
+        {
+            foreach (var pair in defaultDict)
+            {
+                if (current.ContainsKey(pair.Key)) continue;
+                current[pair.Key] = pair.Value;
+                configChanged = true;
+            }
+            var oldPairs = current.Keys.Except(defaultDict.Keys).ToList();
+            foreach (var oldPair in oldPairs)
+            {
+                current.Remove(oldPair);
+                configChanged = true;
+            }
+        }        #endregion        void Loaded() =&gt; LoadConfigValues();</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123874' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 27, 2015 at 4:38 AM">Aug 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123874' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123874/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-123886" class="message" data-author="Deicide666ra">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Deicide666ra" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Deicide666ra</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thanks Wulf, never even saw they were optional params my bad! Got it working I&#039;ll post an new version! <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Deicide666ra</a>,</span>
+                        <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123886' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 27, 2015 at 5:34 AM">Aug 27, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/configs-classes-or-dictionaries-etc.10646/#post-123886' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/123886/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

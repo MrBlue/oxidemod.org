@@ -1,0 +1,182 @@
+---
+layout: forums
+title: 'Solved - ForcePlayerPosition, scene loading question'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/' | prepend: site.baseurl }}">ForcePlayerPosition, scene loading
+            question</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">carny666</a>, <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 7, 2016 at 1:03 PM">Jan 7,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-160334" class="message" data-author="carny666">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="carny666" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">carny666</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> While using the ForcePlayerPosition method, when a player is moved, as you probably know, the world around them
+                        is not immediately populated and it takes a few moments to &#039;load&#039;.<br />
+                        <br /> Is there any way to ensure the landscape/building/etc is loaded and displayed before the player appears?<br />
+                        <br /> Can I have their client preemptively load their surroundings before they get there?<br />
+                        <br /> I have read that you may want to have the player sleep to aid in in the visual population but that really depends on how quick the player wakes up.<br />
+                        <br /> is there a way to know when it&#039;s loaded, so that I make force them to remain sleeping or something? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">carny666</a>,</span>
+                        <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 7, 2016 at 1:03 PM">Jan 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/160334/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160510" class="message" data-author="AlienX">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlienX" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlienX</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I know that the m-teleportation plugin gets around this by forcing the player to reload the session data around
+                        them.<br />
+                        <br /> This is it in LUA:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+player:MovePosition(destination);
+    player:ClientRPCPlayer(nil, player, &quot;ForcePositionTo&quot;, destination, nil, nil, nil, nil)
+    player:TransformChanged();
+    player:SetPlayerFlag(global.BasePlayer.PlayerFlags.ReceivingSnapshot, true);
+    player:UpdateNetworkGroup();
+   
+    player:SendNetworkUpdateImmediate(false);
+    player:ClientRPCPlayer(null, player, &quot;StartLoading&quot;, nil, nil, nil, nil, nil);
+    player:SendFullSnapshot();
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlienX</a>,</span>
+                        <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-160510' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 7, 2016 at 10:07 PM">Jan 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-160510' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/160510/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-160584" class="message" data-author="PaiN">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="PaiN" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">PaiN</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Check the WarpSystem somewhere at the end.. you will find what you need for C# <div class="messageTextEndMarker">
+                            &nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">PaiN</a>,</span>
+                        <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-160584' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 7, 2016 at 11:53 PM">Jan 7, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-160584' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/160584/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-161315" class="message" data-author="carny666">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="carny666" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">carny666</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Than you! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">carny666</a>,</span>
+                        <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-161315' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 9, 2016 at 2:10 PM">Jan 9, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/forceplayerposition-scene-loading-question.14307/#post-161315' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/161315/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

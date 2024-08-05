@@ -1,0 +1,1037 @@
+---
+layout: forums
+title: 'Trouble modifying Kits plugin with permissions'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}">Trouble modifying Kits plugin with permissions</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Twistedwheel</a>, <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Apr 21, 2016 at 12:31 AM">Apr 21, 2016</span></a>.
+    </p>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="3" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/trouble-modifying-kits-plugin-with-permissions.17492/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-3' | prepend: site.baseurl }}" class="">3</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-198441" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Recently been modifying our servers plugins so they only work at a certain auth level. I wanted to change it so
+                        it works based on the permission system. I have registered the permissions under &quot;InitializePermissions&quot; and these are the permissions.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    if (!permission.PermissionExists(permissionmodkits.use)) permission.RegisterPermission(permissionmodkits.use, this);
+                    if (!permission.PermissionExists(permissionadminkits.use)) permission.RegisterPermission(permissionadminkits.use, this);
+                    if (!permission.PermissionExists(permissionall.use)) permission.RegisterPermission(permissionall.use, this);</pre>{% endraw %}
+                        </div>I get this error when compiling &quot;The name `permissionadminkits&#039; does not exist in the current context&quot;.<br />
+                        <br /> The line it refers to is this.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>            if ((!hasPermission(player, permissionadminkits.use)) &amp;&amp; (!hasPermission(player, permissionall.use)))</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 21, 2016 at 12:31 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198441/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198443" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> To start with, don&#039;t use the if check with permission.PermissionExists, that is pointless. Only a single
+                        plugin can register a permission, this will only break your plugin if another plugin already has it registered and it won&#039;t tell you that since you are telling it to
+                        ignore registration.<br />
+                        <br /> You also aren&#039;t setting the permission right, it should be a string (assuming modkits.use is the perm you want:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>permission.RegisterPermission(&quot;modkits.use&quot;, this);</pre>{% endraw %}
+                        </div>Keep in mind that your permissions should be prefixed with your plugin&#039;s name, so if you plugin is &quot;MyMod&quot;, the permission should start with
+                        &quot;mymod.&quot; with an end result of something like &quot;mymod.kitsuse&quot; or &quot;mymod.use&quot;. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198443' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:37 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198443' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198443/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198445" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198443" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">To start with, don&#039;t use the if check with permission.PermissionExists, that is pointless. Only a single plugin can register a permission,
+                                        this will only break your plugin if another plugin already has it registered and it won&#039;t tell you that since you are telling it to ignore
+                                        registration.<br />
+                                        <br /> You also aren&#039;t setting the permission right, it should be a string (assuming modkits.use is the perm you want:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>permission.RegisterPermission(&quot;modkits.use&quot;, this);</pre>{% endraw %}
+                                        </div>Keep in mind that your permissions should be prefixed with your plugin&#039;s name, so if you plugin is &quot;MyMod&quot;, the permission should start
+                                        with &quot;mymod.&quot; with an end result of something like &quot;mymod.kitsuse&quot; or &quot;mymod.use&quot;.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It&#039;s more that I want to add the ability to give users permission to use particular functions within the kits plugin rather than having it run on authlevel. So an
+                        example would be that granting modkits.use lets the user use the /kits list command. Tha make sense?<br />
+                        <br /> Really new to C# and Rust coding, but the syntax isn&#039;t too hard as I have done Java before ^_^ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198445' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:40 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198445' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198445/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198446" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198445" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">It&#039;s more that I want to add the ability to give users permission to use particular functions within the kits plugin rather than having it
+                                        run on authlevel. So an example would be that granting modkits.use lets the user use the /kits list command. Tha make sense?<br />
+                                        <br /> Really new to C# and Rust coding, but the syntax isn&#039;t too hard as I have done Java before ^_^</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>If you are trying to grant permissions that another plugin owns, then you&#039;d need to handle it differently, your current method will not work. You can run the console
+                        commands that Oxide provides instead via your plugin. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198446' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:43 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198446' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198446/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198449" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198446" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you are trying to grant permissions that another plugin owns, then you&#039;d need to handle it differently, your current method will not
+                                        work. You can run the console commands that Oxide provides instead via your plugin.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Should&#039;ve mentioned that I am directly editing the &quot;Kits&quot; plugin by &quot;Reneb&quot;. My bad! I just want to make his plugin use the permission system to
+                        grant access to different commands, but I think your previous response might have been more than helpful. So thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198449' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:47 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198449' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198449/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198451" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198449" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Should&#039;ve mentioned that I am directly editing the &quot;Kits&quot; plugin by &quot;Reneb&quot;. My bad! I just want to make his plugin use
+                                        the permission system to grant access to different commands, but I think your previous response might have been more than helpful. So thanks!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You&#039;d need to handle it the way I mentioned in the first reply then, not the 2nd. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198451' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:51 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198451' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198451/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198454" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198451" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;d need to handle it the way I mentioned in the first reply then, not the 2nd.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have done. No errors in that department. I&#039;m getting this now thought, which is a little odd.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(00:56:25) | [Oxide] 00:56 [Error] kits.cs(476,47): error CS0103: The name `NullValueHandling' does not exist in the current context</pre>{% endraw %}
+                        </div>I haven&#039;t really modified anything in that area or to do with that. I&#039;m probably being retarded. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198454' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 12:59 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198454' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198454/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198457" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198454" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I have done. No errors in that department. I&#039;m getting this now thought, which is a little odd.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>(00:56:25) | [Oxide] 00:56 [Error] kits.cs(476,47): error CS0103: The name `NullValueHandling' does not exist in the current context</pre>{% endraw %}
+                                        </div>I haven&#039;t really modified anything in that area or to do with that. I&#039;m probably being retarded.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I&#039;d need to see what you added/changed, I can&#039;t really guess based on that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198457' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 1:07 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198457' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198457/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198459" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Got it down to it now saying<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(01:26:20) | [Oxide] 01:26 [Warning] Missing plugin name prefix 'kits.' for permission 'permissionmodkits.use' (by plugin 'Kits')
+(01:26:20) | [Oxide] 01:26 [Warning] Missing plugin name prefix 'kits.' for permission 'permissionadminkits.use' (by plugin 'Kits')
+(01:26:20) | [Oxide] 01:26 [Warning] Missing plugin name prefix 'kits.' for permission 'permissionall.use' (by plugin 'Kits')</pre>{% endraw %}
+                        </div>Edit: I&#039;m retarded, sorry. I fixed it... What can I say, I&#039;m tired. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 21, 2016 at 1:29 AM">Apr 21, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198459' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 1:13 AM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198459' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198459/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198574" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Had everything working, now getting this error.<br />
+                        <br /> The permissions are being registered here.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void InitializePermissions()
+        {
+            foreach (var kit in storedData.Kits.Values)
+            {
+                if (!string.IsNullOrEmpty(kit.permission) &amp;&amp; !permission.PermissionExists(kit.permission))
+                    permission.RegisterPermission(kit.permission, this);
+                          
+                      
+            }
+          
+        permission.RegisterPermission(&quot;kits.useadminskits&quot;, this);
+        permission.RegisterPermission(&quot;kits.useallkits&quot;, this);            
+        }</pre>{% endraw %}
+                        </div>This is the console error.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(15:08:17) | [RCON][109.154.8.216:64147] oxide.grant user Twisted kits.useadminkits
+(15:08:17) | [Oxide] 15:08 [Info] Permission 'kits.useadminkits' doesn't exist</pre>{% endraw %}
+                        </div><b>Edit: &quot;kits.useallkits&quot; works but the other doesn&#039;t&quot;</b>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 21, 2016 at 3:23 PM">Apr 21, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198574' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 3:11 PM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198574' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198574/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198585" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Long story short. Re-coded the Kits plugin by Reneb for some extra functionality. I&#039;ve made it use Oxide
+                        permissions rather than using authlevel. <br />
+                        <br /> I created two new permissions, &quot;kits.useadminkits&quot; and &quot;kits.useallkits&quot;. The permission for using all kits works, whilst trying to grant myself the
+                        admin kits produces this message.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(15:43:12) | [Oxide] 15:43 [Info] Permission 'kits.useadminkits' doesn't exist</pre>{% endraw %}
+                        </div>If anyone has any ideas what could cause one to work but not the other, that&#039;d be great! Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198585' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 3:58 PM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198585' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198585/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198586" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> You registered &quot;kits.useadminskits&quot;, but you are trying to grant &quot;kits.useadminkits&quot;, notice
+                        the difference? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198586' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 4:08 PM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198586' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198586/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198600" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198586" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You registered &quot;kits.useadminskits&quot;, but you are trying to grant &quot;kits.useadminkits&quot;, notice the difference?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Let&#039;s pretend I didn&#039;t make such a rookie error. Is there a better environment for plugin development in C# for Rust? C# is fairly new to me. Thank you, also.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198600' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 5:17 PM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198600' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198600/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198601" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198600" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Let&#039;s pretend I didn&#039;t make such a rookie error. Is there a better environment for plugin development in C# for Rust? C# is fairly new
+                                        to me. Thank you, also.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Visual Studio 2015 + a local Rust dev server works fine for me. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198601' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 21, 2016 at 5:17 PM">Apr 21, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198601' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198601/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198638" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198601" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Visual Studio 2015 + a local Rust dev server works fine for me.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Nice one. Thank you for that!<br /> [DOUBLEPOST=1461280321,1461262984][/DOUBLEPOST]What do you think would cause this to happen? If I assign myself the
+                        &quot;kits.canuseadminkits&quot; permission I should only be able to see/use &quot;/kit list&quot; and &quot;/kit give&quot; but I can use every command.<br />
+                        <br /> This is the permission check.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        bool hasPermission(BasePlayer player, string permissionName)
+            {
+                   
+            if (player.net.connection.authLevel &gt; 1) return true;
+            return permission.UserHasPermission(player.userID.ToString(), permissionName);
+            }</pre>{% endraw %}
+                        </div>This is an example of one of the permissions I shouldn&#039;t have access to.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>                    case &quot;resetkits&quot;:
+                        if ((!hasPermission(player, &quot;kits.useadminkits&quot;)) &amp; (!hasPermission(player, &quot;kits.useallkits&quot;)))
+                        {
+                            SendReply(player, NoAccess);
+                            return;
+                        }</pre>{% endraw %}
+                        </div>Currently using auth level one on the account with the &quot;kits.canuseadminkits&quot; permission. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198638' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:12 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198638' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198638/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198729" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198638" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Nice one. Thank you for that!<br /> [DOUBLEPOST=1461280321,1461262984][/DOUBLEPOST]What do you think would cause this to happen? If I assign
+                                        myself the &quot;kits.canuseadminkits&quot; permission I should only be able to see/use &quot;/kit list&quot; and &quot;/kit give&quot; but I can use every
+                                        command.<br />
+                                        <br /> This is the permission check.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        bool hasPermission(BasePlayer player, string permissionName)
+            {
+                  
+            if (player.net.connection.authLevel &gt; 1) return true;
+            return permission.UserHasPermission(player.userID.ToString(), permissionName);
+            }</pre>{% endraw %}
+                                        </div>This is an example of one of the permissions I shouldn&#039;t have access to.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>                    case &quot;resetkits&quot;:
+                        if ((!hasPermission(player, &quot;kits.useadminkits&quot;)) &amp; (!hasPermission(player, &quot;kits.useallkits&quot;)))
+                        {
+                            SendReply(player, NoAccess);
+                            return;
+                        }</pre>{% endraw %}
+                                        </div>Currently using auth level one on the account with the &quot;kits.canuseadminkits&quot; permission.
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Try &amp;&amp; instead of &amp; for your permission checks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198729' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:14 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198729' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198729/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198730" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198729" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Try &amp;&amp; instead of &amp; for your permission checks.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Tried that. It&#039;s not having any of it. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198730' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:18 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198730' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198730/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198732" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198730" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Tried that. It&#039;s not having any of it.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Your hasPermission is also allowing allowing any moderator or owner to use it, without even checking the permissions. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:19 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198732' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198732/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198734" class="message" data-author="Twistedwheel">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Twistedwheel" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Twistedwheel</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-198732" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Your hasPermission is also allowing allowing any moderator or owner to use it, without even checking the permissions.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Probably a really straight forward answer to this, but how do I get around that? That section of code is essentially the original Kits permission check. Thanks again for
+                        the help with this. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Twistedwheel</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198734' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:21 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198734' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198734/permalink">#19</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-198735" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Twistedwheel">
+                            <aside>
+                                <div class="attribution type">Twistedwheel said: <a href="#post-198734" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Probably a really straight forward answer to this, but how do I get around that? That section of code is essentially the original Kits permission
+                                        check. Thanks again for the help with this.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Either remove it and don&#039;t do any auth level check, don&#039;t test it using a player with owner/moderator, or tweak it to check for all, not just one. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198735' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Apr 22, 2016 at 12:22 AM">Apr 22, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/#post-198735' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/198735/permalink">#20</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="1" data-range="2" data-start="2" data-end="2" data-last="3" data-sentinel="{{sentinel}}"
+        data-baseurl="threads/trouble-modifying-kits-plugin-with-permissions.17492/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/' | prepend: site.baseurl }}" class="currentPage " rel="start">1</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-2' | prepend: site.baseurl }}" class="">2</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-3' | prepend: site.baseurl }}" class="">3</a>
+            <a href="{{ '/threads/trouble-modifying-kits-plugin-with-permissions.17492/page-2' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

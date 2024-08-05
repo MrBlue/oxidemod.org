@@ -1,0 +1,196 @@
+---
+layout: forums
+title: '[WIP?] total reset/wipe script'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/wip-total-reset-wipe-script.20406/' | prepend: site.baseurl }}">[WIP?] total reset/wipe script</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username" dir="auto">Niemand
+            &lt;3</a>, <a href="{{ '/threads/wip-total-reset-wipe-script.20406/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 19, 2016 at 3:09 AM">Aug 19, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-242763" class="message" data-author="Niemand &lt;3">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Niemand &lt;3" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Niemand &lt;3</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Good day, everyone! Me again!<br />
+                        <br /> I just wrote a script for my server, which autorestarts thanks to <a href="http://oxidemod.org/plugins/gui-announcements.1222/"
+                            class="internalLink">GUIAnnouncements</a>. Sadly, I needed (or wanted) a plugin/script that RESET the whole server after a time of x days... and plugins seem to be
+                        incapable of doing so.<br />
+                        <br /> So now here I release my script for the Autoupdate+Autoreset. I am a beginner when it comes to batch-scripting and everything else), so please be merciful and tell me,
+                        if you find any errors or mistakes. Constructive Critique yäy! &lt;3<br />
+                        <br /> I tried the script and it seemed to work as intended.<br />
+                        <br />
+                        <b>Requirements:</b><br /> - <a href="http://lmgtfy.com/?q=SteamCMD" target="_blank" class="externalLink  rel=" nofollow">SteamCMD</a><br /> - <a
+                            href="http://oxidemod.org/plugins/gui-announcements.1222/" class="internalLink">GUIAnnouncements</a> or some other plugin that supports scheduled restarts.<br />
+                        <br />
+                        <br />
+                        <b>Version 1.00 (19.08.2016):</b><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+::Sets echoes to off. Good if you are in an empty room or a large mountainrange...
+@echo off
+::I honestly do not know what &quot;cls&quot; does:
+cls
+:start
+echo Starting server...::VARIABLES
+    ::as &quot;resetcycle&quot; set the amount of days you want for a wipe. Default is 30 days.
+    SET /A resetcycle=30
+    ::as &quot;restartcycle&quot; set the amount of hours the server runs before it restarts (could be solved better)
+    SET /A restartcycle=6
+    ::unless you are australian (days have a different amount of hours there), you should not change this.
+    SET /A hoursperday=24
+    ::had to set this +1, because the batch writes two lines on creation, I call it feature.
+    SET /A maxlines=(%hoursperday% / %restartcycle%) * %resetcycle%+1
+    ::uncomment the line below and comment the line above for script-testing.
+    ::SET /A maxlines=5
+    SET filename=counter.txt
+    SET scriptseedfile=scriptseed.txt  
+    SET /A startnumber=1
+  
+::STEAMCMD-SETTINGS
+    ::Set to 1 if you have SteamCMD installed!
+    SET steamcmd = 0
+    ::PATH of your Rustserver-installation:
+    SET rustinstallpath = &quot;C:\Server\rust&quot;
+    ::Path for Autoupdate! (Default is a folder in your rust-directory!)
+    SET steamcmdpath=&quot;SteamCMD\steamcmd.exe&quot;
+  
+::VARIABLES FOR THE SERVER!!! CHANGE ACCORDINGLY!!!
+    SET scriptwindowname=&quot;RustServer&quot;
+    SET serverexename=RustDedicated.exe
+    SET /A scriptserverport=28015
+    SET /A scriptrconport=28016
+    ::You should change this.
+    SET scriptrconpwd=&quot;chooseasavepassword!&quot;
+    ::The headerimage of your rustserver. &quot;512x256 .jpg or .png&quot;
+    SET scriptheadimg=&quot;http://echstreme.de/gfx/echstreme-rustserverheaderimg.png&quot;
+    SET /A scriptmaxplayers=42
+    ::Change this to something not trolly. You might want to start with the region+lang for your server, examply: &quot;[EU/UK][ENG]servername.org RUST, noobfriendly, adult only. YEAH BEER!&quot;
+    SET scripthostname=&quot;I was not smart enough to change my servertitle&quot;
+    ::There will be a number on the end of scriptserverident that raises by 1 each reset!
+    SET scriptserverident=server
+    ::This you usually do not want to change without research.
+    SET scriptmap=&quot;Procedural Map&quot;
+    ::Set between 2000 and 6000!
+    SET /A scriptworldsize=2000
+    ::How often your server saves (in seconds)
+    SET /A scriptsaveinterval=300
+    ::Some decayscale of buildings, I guess. 0 means off. You may want to google &quot;decay.scale RUST&quot; to know what to set here.
+    SET scriptdecayscale=0
+    ::Your serverdescription. Change it.
+    SET scriptdescription=&quot;Serverdescription here! Until then: this server is reset by a script that was brought to you by echstreme.designs. :P&quot;
+    ::The url to your serverwebsite. If you leave this like it is, people will be linked to my facebook page.
+    SET scripturl=&quot;https://www.facebook.com/echstreme.designs&quot;
+  ::Check for existing seedfile and, if inexisting, create it.
+    IF NOT Exist %scriptseedfile% SET /A scriptseed=%RANDOM%*114
+    IF NOT Exist %scriptseedfile% (echo %scriptseed%)&gt;%scriptseedfile%
+  
+  
+::create file if not exists and writes the startnumber into the file. TWICE. :(
+    IF NOT Exist %filename% (echo %startnumber%)&gt;%filename%
+::check file for last line and set lastnumber
+    for /f &quot;delims==&quot; %%a in (%filename%) do set /A lastnumber=%%a
+::check amount of lines in file.
+    for /f %%C in ('Find /V /C &quot;&quot; ^&lt; %filename%') do set /A linecount=%%C
+::check amount of lines exceeding the maximum.
+    set /A linecheck = %linecount% %% %maxlines%    if %linecheck% == 0 (
+        GOTO RESET
+    ) ELSE (
+        GOTO NORESET
+    )
+  
+    :RESET
+::raises the lastnumber by 1.
+    SET /A lastnumber=%lastnumber%+1
+::deletes the file
+    del %filename%
+::writes the lastnumber to the file. TWICE. :(
+    (echo %lastnumber%)&gt;%filename%
+::New Seed written to the seedfile.
+    set /A scriptseed=%RANDOM%*114
+    (echo %scriptseed%)&gt;%scriptseedfile%
+    GOTO SERVERSTART  
+    :NORESET
+::writes the lastnumber to the file. Once! (luckily...)
+    (echo %lastnumber%)&gt;&gt;%filename%
+::check seedfile for seed
+    for /f &quot;delims==&quot; %%a in (%scriptseedfile%) do set /A scriptseed=%%a
+    GOTO SERVERSTART
+  
+  
+    :SERVERSTART
+::SERVERUPDATE! NEEDS SteamCMD installed!!!
+    if steamcmd == 1 (
+        start /wait &quot;SteamCMD&quot; %steamcmdpath% +login anonymous +force_install_dir %rustinstallpath% +app_update 258550 +quit
+    ):: ATTENTION!!! THIS IS MIGHT HAVE THINGS INSIDE THAT YOU WANT TO CHANGE!
+    start /wait %scriptwindowname% %serverexename% -batchmode -server.port %scriptserverport% +server.headerimage: %scriptheadimg% +rcon.port %scriptrconport% +rcon.password %scriptrconpwd% +server.maxplayers %scriptmaxplayers% +server.hostname %scripthostname% -server.identity &quot;%scriptserverident%%lastnumber%&quot; +server.level %scriptmap% -server.seed %scriptseed% -server.worldsize %scriptworldsize% +server.saveinterval %scriptsaveinterval% +server.netlog 1 +spawn.max_rate 1 +spawn.max_density 1 +autoupdate +god 1 +decay.scale %scriptdecayscale% +server.description %scriptdescription% +server.url %scripturl% +chat.serverlog 1 -server.netlog 1    echo.
+    echo Restarting server...
+    echo.
+    goto start</pre>{% endraw %}
+                        </div><b><span style="color: #ff0000">BY DOWNLOADING THIS SCRIPT YOU AGREE THAT YOU KNOW WHAT YOU DO (because I do not)! IF ANY HARM (physically and psychologically) COMES TO
+                                YOU, YOUR FAMILY, YOUR PET, YOUR DATA, YOUR COUNTRY, YOUR HARD- AND/OR SOFTWARE IT IS YOUR OWN FAULT!</span></b><br />
+                        <br /> Enjoy! Solbless! Godspeed!<br />
+                        <br />
+                        <i><b>--Glɑumy - Niemɑnd</b></i><br /> (admin of <a href="https://www.facebook.com/notes/echstremedesigns/echstremedesigns-rust/1105046689585986" target="_blank"
+                            class="externalLink  rel=" nofollow">echstreme.designs</a>) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+                <div class="attachedFiles">
+                    <h4 class="attachedFilesHeader">Attached Files:</h4>
+                    <ul class="attachmentList SquareThumbs" data-thumb-height="50" data-thumb-selector="div.thumbnail > a">
+                        <li class="attachment" title="scriptresetclean.zip">
+                            <div class="boxModelFixer primaryContent">
+                                <div class="thumbnail">
+                                    <a href="attachments/scriptresetclean-zip.26737/" target="_blank" class="genericAttachment"></a>
+                                </div>
+                                <div class="attachmentInfo pairsJustified">
+                                    <h6 class="filename"><a href="attachments/scriptresetclean-zip.26737/" target="_blank">scriptresetclean.zip</a></h6>
+                                    <dl>
+                                        <dt>File size:</dt>
+                                        <dd>2.3 KB</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Views:</dt>
+                                        <dd>25</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Niemand &lt;3</a>,</span>
+                        <a href="{{ '/threads/wip-total-reset-wipe-script.20406/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 19, 2016 at 3:09 AM">Aug 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/wip-total-reset-wipe-script.20406/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/242763/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

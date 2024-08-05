@@ -1,0 +1,207 @@
+---
+layout: forums
+title: 'Solved - NRE in my code when trying to grant a permission'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/' | prepend: site.baseurl }}">NRE in my code when trying to grant a
+            permission</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">DylanSMR</a>, <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jul 19, 2016 at 8:56 AM">Jul 19, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-232506" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> So I have the code below and it seems to produce a error upon granting a group a permission. However I cannot
+                        figure out why!<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnGroupPermissionGranted(string name, string perm)
+        {
+            try{
+                foreach(var entry in groupData.perms)
+                {
+                    if(entry == perm)
+                    {
+                        grabPermG(perm, name);
+                    }
+                }
+            }
+            catch(System.Exception){ return; }
+        }        void grabPermG(string perma, string name)
+        {
+            var newperm = perma.Replace(&quot;igather.&quot;, &quot;&quot;);
+            if(groupData.groupD.ContainsKey(newcount))
+            {
+                if(groupData.groupD[newcount].groupName == newperm)
+                {    
+                    List&lt;string&gt; players = new List&lt;string&gt;();
+                    foreach(var sleeper in BasePlayer.sleepingPlayerList)
+                    {
+                        players.Add(sleeper.displayName);
+                    }
+                    foreach(var playera in BasePlayer.activePlayerList)
+                    {
+                        players.Add(playera.displayName);
+                    }
+                        foreach(var entry in permission.GetUsersInGroup(name))
+                        {
+                            foreach(var key in players)
+                            {
+                                if(entry.Contains(key))
+                                {
+                                    object addPlayer = FindPlayerU(key);      
+                                    BasePlayer target = (BasePlayer)addPlayer;                  
+                                    GrantPermission(newcount, target);
+                                    Puts(key+&quot; added.&quot;);
+                                }
+                            }
+                        }
+                    return;
+                }
+                newcount++;
+                grabPerm(perma, name);     
+                return;   
+            }
+            else
+            {
+                if(newcount &lt; groupData.groupD.Count)
+                {
+                    newcount++;
+                    grabPerm(perma, name); 
+                    return;
+                }
+                else
+                {
+                    newcount = 0;
+                    return;
+                }
+            }        
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[Oxide] 02:57 [Error] Failed to call hook 'OnGroupPermissionGranted' on plugin 'IGather v1.0.8' (NullReferenceException: Object reference not set to an instance of an object)
+[Oxide] 02:57 [Debug]   at Oxide.Plugins.IGather.GrantPermission (Int32 newid, .BasePlayer target) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.IGather.grabPerm (System.String perma, System.String name) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.IGather.grabPermG (System.String perma, System.String name) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.IGather.OnGroupPermissionGranted (System.String name, System.String perm) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.IGather.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+[Oxide] 02:57 [Info] Group 'admin' granted permission 'igather.Regular'</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jul 19, 2016 at 8:56 AM">Jul 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/232506/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-232514" class="message" data-author="k1lly0u">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="k1lly0u" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">k1lly0u</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> It&#039;s breaking at the method GrantPermission(Int32 newid, .BasePlayer target) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">k1lly0u</a>,</span>
+                        <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/#post-232514' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 19, 2016 at 9:08 AM">Jul 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/#post-232514' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/232514/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-232515" class="message" data-author="DylanSMR">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="DylanSMR" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">DylanSMR</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Nevermind got it working. Just gotta debug void(GrantPermission) now <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}"
+                            class="mceSmilieSprite mceSmilie7" alt=":p" title="Stick Out Tongue    :p" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">DylanSMR</a>,</span>
+                        <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/#post-232515' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jul 19, 2016 at 9:10 AM">Jul 19, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/nre-in-my-code-when-trying-to-grant-a-permission.19747/#post-232515' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/232515/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

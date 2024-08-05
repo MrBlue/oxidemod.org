@@ -1,0 +1,113 @@
+---
+layout: forums
+title: 'Get enum int in lua?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/get-enum-int-in-lua.7235/' | prepend: site.baseurl }}">Get enum int in lua?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">AlexALX_[rus-ua]</a>, <a href="{{ '/threads/get-enum-int-in-lua.7235/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 11, 2015 at 7:03 PM">Mar 11,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-72418" class="message" data-author="AlexALX_[rus-ua]">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="AlexALX_[rus-ua]" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">AlexALX_[rus-ua]</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello, i have question, is there more &quot;correct&quot; way to get int value from rust enum? For example i need
+                        integer from BuildingGrade.Enum, after some attems i found that tostring returns like &quot;Value: number&quot; so i can keep only numbers like this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local grade = string.match(tostring(buildingblock.grade),&quot;%d+&quot;)</pre>{% endraw %}
+                        </div>It worked fine, and do what i want, but i thing there should be some more correct way of this... Any suggestions? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">AlexALX_[rus-ua]</a>,</span>
+                        <a href="{{ '/threads/get-enum-int-in-lua.7235/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Mar 11, 2015 at 7:03 PM">Mar
+                                11, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-enum-int-in-lua.7235/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/72418/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-73166" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="AlexALX_[rus-ua]">
+                            <aside>
+                                <div class="attribution type">AlexALX_[rus-ua] said: <a href="#post-72418" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Hello, i have question, is there more &quot;correct&quot; way to get int value from rust enum? For example i need integer from
+                                        BuildingGrade.Enum, after some attems i found that tostring returns like &quot;Value: number&quot; so i can keep only numbers like this:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>local grade = string.match(tostring(buildingblock.grade),&quot;%d+&quot;)</pre>{% endraw %}
+                                        </div>It worked fine, and do what i want, but i thing there should be some more correct way of this... Any suggestions?
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The issue with this is that in C# a simple cast to an int would suffice, only problem is that the enums for Lua are tables and all values are considered to be
+                        userdata.<br />
+                        <br /> There are a few different ways on how you can approach this but the way you are doing it will do just fine.<br />
+                        <br /> Another approach would be looping the enum table in OnServerInitialized or something and create your own enum table that (enumtable = { &quot;Twigs&quot; = 0,
+                        &quot;Wood&quot; = 1, ...... }) and just call that when you need to grab a grade (enumtable[buildingblock.grade:ToString()]). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/get-enum-int-in-lua.7235/#post-73166' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 16, 2015 at 5:48 PM">Mar 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/get-enum-int-in-lua.7235/#post-73166' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/73166/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

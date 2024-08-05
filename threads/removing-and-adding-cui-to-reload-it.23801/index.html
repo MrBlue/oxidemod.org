@@ -1,0 +1,530 @@
+---
+layout: forums
+title: 'Removing and adding CUI to reload it?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/' | prepend: site.baseurl }}">Removing and adding CUI to reload it?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">zhulenejsnek</a>, <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/' | prepend: site.baseurl }}"><span class="DateTime" title="Feb 15, 2017 at 4:33 PM">Feb 15,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-297752" class="message" data-author="zhulenejsnek">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="zhulenejsnek" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">zhulenejsnek</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello,<br /> i need first time destroy all players one CUI... Its not problem i do it with:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        private void DestroyGUI()
+        {
+            int size = BasePlayer.activePlayerList.Count;
+            for(int i = 0; i &lt; size; i++)
+            {
+                BasePlayer bp = BasePlayer.activePlayerList[i];
+                CommunityEntity.ServerInstance.ClientRPCEx(new Network.SendInfo(bp.net.connection), null, &quot;DestroyUI&quot;, new Facepunch.ObjectList(&quot;inf&quot;));
+            }
+        } </pre>{% endraw %}
+                        </div>But i send new cui for one player when he respawn:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>       public void showInfoGui(BasePlayer player) {
+         DestroyGUI();
+        
+         var elements = new CuiElementContainer();
+         var inf = elements.Add(new CuiPanel
+            {
+                Image =
+                {
+                    Color = &quot;0.1 0.1 0.1 0.6&quot;
+                },
+                RectTransform =
+                {
+                    AnchorMin = &quot;0.35 0.9&quot;, //Prvni cislo z leva    0.35 0.9
+                    AnchorMax = &quot;0.65 0.99&quot;   //                    0.65 0.99
+                },
+                CursorEnabled = false
+           
+            }, &quot;Hud&quot;, &quot;inf&quot;);                     
+            elements.Add(new CuiLabel
+                {
+                    Text =
+                    {
+                        Text = &quot;SCORRE &quot;,
+                        FontSize = 22,
+                        Align = TextAnchor.MiddleCenter
+                    }
+                }, inf);
+            elements.Add(new CuiLabel
+                {
+                    Text =
+                    {
+                        Text = &quot;0&quot;,
+                        FontSize = 35,
+                        Align = TextAnchor.MiddleCenter,
+                        Color = &quot;0.9 0.1 0 0.9&quot;        //red
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = &quot;0.25 0.01&quot;,
+                        AnchorMax = &quot;0.30 0.99&quot;
+                    }
+                }, inf);            elements.Add(new CuiLabel
+                {
+                    Text =
+                    {
+                        Text = &quot;0&quot;,
+                        FontSize = 35,
+                        Align = TextAnchor.MiddleCenter,
+                        Color = &quot;0.2 0.4 0.8 0.9&quot; //blue
+                    },
+                    RectTransform =
+                    {
+                        AnchorMin = &quot;0.7 0.01&quot;,
+                        AnchorMax = &quot;0.75 0.99&quot;
+                    }
+                }, inf);
+           
+            CuiHelper.AddUi(player, elements);
+      
+      
+       }</pre>{% endraw %}
+                        </div>How this add rework for send this cui all players on server? TY<br /> [DOUBLEPOST=1487177489][/DOUBLEPOST]I try:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    private void ShowGUI() {
+            int size = BasePlayer.activePlayerList.Count;
+            for(int i = 0; i &lt; size; i++)
+            {
+                BasePlayer bp = BasePlayer.activePlayerList[i];
+        Puts(bp.displayName + &quot; showing gui &quot;);
+                showInfoGui(bp);
+            }     
+    }</pre>{% endraw %}
+                        </div>But this show only last player on server :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">zhulenejsnek</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 4:33 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/297752/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297806" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+// Called wheen player wake up
+[HookMethod(&quot;OnPlayerSleepEnded&quot;)]
+void OnPlayerSleepEnded(BasePlayer player)
+{
+    foreach (var pl in BasePlayer.activePlayerList) {
+        CuiHelper.DestroyUi(pl, &quot;You_UI_Name&quot;);
+        showInfoGui(pl);
+    }
+}
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297806' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 7:51 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297806' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297806/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297809" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Andrew Mensky">
+                            <aside>
+                                <div class="attribution type">Andrew Mensky said: <a href="#post-297806" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+// Called wheen player wake up
+[HookMethod(&quot;OnPlayerSleepEnded&quot;)]
+void OnPlayerSleepEnded(BasePlayer player)
+{
+    foreach (var pl in BasePlayer.activePlayerList) {
+        CuiHelper.DestroyUi(pl, &quot;You_UI_Name&quot;);
+        showInfoGui(pl);
+    }
+}
+</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You don&#039;t need the HookMethod attribute. <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297809' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 7:56 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297809' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297809/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297817" class="message" data-author="zhulenejsnek">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="zhulenejsnek" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">zhulenejsnek</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I know, but - thsi is for screen game in plugin for TDM. And when +1 point i need on all clients remove gui and
+                        send new with new score... Destroy on all clients is ok... But sending to all clients new gui not work... This cui show only one player (who last conn to server) <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">zhulenejsnek</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297817' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 8:42 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297817' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297817/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297822" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="zhulenejsnek">
+                            <aside>
+                                <div class="attribution type">zhulenejsnek said: <a href="#post-297817" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I know, but - thsi is for screen game in plugin for TDM. And when +1 point i need on all clients remove gui and send new with new score...
+                                        Destroy on all clients is ok... But sending to all clients new gui not work... This cui show only one player (who last conn to server)</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>may you forgot define name of ui element? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297822' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 8:57 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297822' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297822/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297843" class="message" data-author="zhulenejsnek">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="zhulenejsnek" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">zhulenejsnek</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> What? What name of element?? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">zhulenejsnek</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297843' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 9:33 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297843' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297843/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297848" class="message" data-author="Andrew Mensky">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Andrew Mensky" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Andrew Mensky</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="zhulenejsnek">
+                            <aside>
+                                <div class="attribution type">zhulenejsnek said: <a href="#post-297843" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">What? What name of element??</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I was wrong, all right with ui names and parents.<br />
+                        <br /> Try this<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+// Called wheen player wake up
+void OnPlayerSleepEnded(BasePlayer player)
+{
+    foreach (var pl in BasePlayer.activePlayerList) {
+        CuiHelper.DestroyUi(pl, &quot;inf&quot;);
+        showInfoGui(pl);
+    }
+}
+</pre>{% endraw %}
+                        </div>and remove calling <b>DestroyGUI()</b> from showInfoGui <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Andrew Mensky</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297848' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 9:55 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297848' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297848/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-297852" class="message" data-author="zhulenejsnek">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="zhulenejsnek" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">zhulenejsnek</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Ok i try it tomorrow, im in bed now. Thank you.<br /> I have next one question if i can - can i disable change
+                        wears?<br /> On spawn i give in wear inventory blue or red tshirt, but i need block it (now from red team can loot blue shirt, its bad <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" />) <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">zhulenejsnek</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297852' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 15, 2017 at 10:07 PM">Feb 15, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-297852' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/297852/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-298059" class="message" data-author="zhulenejsnek">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="zhulenejsnek" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">zhulenejsnek</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Andrew Mensky">
+                            <aside>
+                                <div class="attribution type">Andrew Mensky said: <a href="#post-297848" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I was wrong, all right with ui names and parents.<br />
+                                        <br /> Try this<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>
+// Called wheen player wake up
+void OnPlayerSleepEnded(BasePlayer player)
+{
+    foreach (var pl in BasePlayer.activePlayerList) {
+        CuiHelper.DestroyUi(pl, &quot;inf&quot;);
+        showInfoGui(pl);
+    }
+}
+</pre>{% endraw %}
+                                        </div>and remove calling <b>DestroyGUI()</b> from showInfoGui
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Work fine... Thank you <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">zhulenejsnek</a>,</span>
+                        <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-298059' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 16, 2017 at 1:47 PM">Feb 16, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/removing-and-adding-cui-to-reload-it.23801/#post-298059' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/298059/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,261 @@
+---
+layout: forums
+title: 'Datatables'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/datatables.6568/' | prepend: site.baseurl }}">Datatables</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CriticalmAss</a>, <a href="{{ '/threads/datatables.6568/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 25, 2015 at 3:46 PM">Jan 25, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-62259" class="message" data-author="CriticalmAss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CriticalmAss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CriticalmAss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey folks, quick question. Well, maybe not that quick.<br />
+                        <br /> I&#039;m trying to setup tables and write a file when a player connects. I can create teh file with no problem but if I throw an if then in to only create default fields
+                        if a STEAMID = nil, it just skips over the if. If I pull out the if then, it just creates the default values whether the field is &lt; default value or not.<br />
+                        <br /> In general I&#039;m trying to do the following 2 things.<br /> 1. Load the data if it exists<br /> 2. Load default values of 0 for deaths if the STEAMID does not
+                        exist<br /> 3. Do not overwrite values if they already exist.<br />
+                        <br /> Thanks for any help you can offer.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:Init()
+    self.table = datafile.GetDataTable(&quot;deaths&quot;)
+  
+endfunction PLUGIN:OnPlayerConnected(packet)
+    self.table = datafile.GetDataTable(&quot;deaths&quot;)
+    if not packet then
+        return
+    end
+    if not packet.connection then
+        return
+    end
+    local STEAMID = rust.UserIDFromConnection(packet.connection)
+    self.table.Players = self.table.Players or {}
+    if (self.table.Players[STEAMID] == nil) then
+        local deaths = 0
+        self.table.Players[STEAMID] = self.table.Players[STEAMID] or {
+            [&quot;Username&quot;] = packet.connection.username,
+            [&quot;Deaths&quot;] = deaths
+        }
+    end
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CriticalmAss</a>,</span>
+                        <a href="{{ '/threads/datatables.6568/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Jan 25, 2015 at 3:46 PM">Jan 25,
+                                2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datatables.6568/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/62259/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-62260" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Try this<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>function PLUGIN:Init()
+    self.table = datafile.GetDataTable(&quot;deaths&quot;) or {}
+endfunction PLUGIN:OnPlayerConnected(packet)
+    if not packet then
+        return
+    end
+    if not packet.connection then
+        return
+    end
+    local STEAMID = rust.UserIDFromConnection(packet.connection)
+    self.table.Players = self.table.Players or {}
+    if (self.table.Players[STEAMID] == nil) then
+        local deaths = 0
+        self.table.Players[STEAMID] = {
+            [&quot;Username&quot;] = packet.connection.username,
+            [&quot;Deaths&quot;] = deaths
+        }
+    end
+    datafile.SaveDataTable(&quot;deaths&quot;)
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/datatables.6568/#post-62260' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2015 at 4:07 PM">Jan 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datatables.6568/#post-62260' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/62260/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-62261" class="message" data-author="CriticalmAss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CriticalmAss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CriticalmAss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If you edit the deaths data table and put a 1 in for deaths, on the next user connect, it still erases that data
+                        and puts the default 0 back in the file. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CriticalmAss</a>,</span>
+                        <a href="{{ '/threads/datatables.6568/#post-62261' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2015 at 4:21 PM">Jan 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datatables.6568/#post-62261' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/62261/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-62284" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CriticalmAss">
+                            <aside>
+                                <div class="attribution type">CriticalmAss said: <a href="#post-62261" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">If you edit the deaths data table and put a 1 in for deaths, on the next user connect, it still erases that data and puts the default 0 back in
+                                        the file.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Of course it does.<br /> The plugin doesnt know when you edit the file because its read when the server init and then the plugin works with the data loaded from that. If
+                        you edit the data manually in the file the plugin still uses the data in the ram.<br /> If you edit the file manually and then reload the plugin it should recognize the change
+                        because its loading the file again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/datatables.6568/#post-62284' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2015 at 6:26 PM">Jan 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datatables.6568/#post-62284' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/62284/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-62293" class="message" data-author="CriticalmAss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CriticalmAss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CriticalmAss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ugg...<br />
+                        <br /> Thanks for slapping my brain. So obvious too. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CriticalmAss</a>,</span>
+                        <a href="{{ '/threads/datatables.6568/#post-62293' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2015 at 7:28 PM">Jan 25, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/datatables.6568/#post-62293' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/62293/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

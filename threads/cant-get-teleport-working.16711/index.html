@@ -1,0 +1,187 @@
+---
+layout: forums
+title: 'Can&#039;t get teleport working'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/cant-get-teleport-working.16711/' | prepend: site.baseurl }}">Can&#039;t get teleport working</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">不是很会玩</a>, <a href="{{ '/threads/cant-get-teleport-working.16711/' | prepend: site.baseurl }}"><span class="DateTime" title="Mar 17, 2016 at 5:16 AM">Mar 17, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-188049" class="message" data-author="不是很会玩">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="不是很会玩" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">不是很会玩</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnPlayerRespawn(PlayerSession session)
+  {
+            Teleport(session,new Vector3(187,177,990));
+            hurt.SendChatMessage(session,session.Name+&quot;:Respawn!&quot;);
+   }void Teleport(PlayerSession player, Vector3 location)
+{
+                    hurt.SendChatMessage(player,&quot;Teleport&quot;);
+                    GameObject playerEntity = player.WorldPlayerEntity;
+                    playerEntity.transform.position = location;
+  }</pre>{% endraw %}
+                        </div>why dont working?<br /> help me How can Working? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 17, 2016 at 4:48 PM">Mar 17, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">不是很会玩</a>,</span>
+                        <a href="{{ '/threads/cant-get-teleport-working.16711/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 17, 2016 at 5:16 AM">Mar 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-get-teleport-working.16711/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188049/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188063" class="message" data-author="Noviets">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Noviets" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Noviets</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Firstly, the Respawn isn&#039;t the best place to transform location, as it will teleport the player anyway, so
+                        unless you add a delay it&#039;s not going to work.<br />
+                        <br /> As for your transform. There&#039;s no need to get the GameObject of a GameObject. Use WorldPlayerEntity from the PlayerSession (Thats the player gameObject) to make
+                        things simple.<br /> Example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>    void Teleport(PlayerSession player, Vector3 location)
+     {
+       hurt.SendChatMessage(player,&quot;Teleport&quot;);
+       player.WorldPlayerEntity.transform.position = location;
+     }</pre>{% endraw %}
+                        </div><br /> A much easier way to do this, which I recommend. Is to just use the hook OnFindSpawnPoint and return the Vector3.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        object OnFindSpawnPoint()
+        {
+            return new Vector3(187f, 177f, 990f);
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Mar 17, 2016 at 7:16 AM">Mar 17, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Noviets</a>,</span>
+                        <a href="{{ '/threads/cant-get-teleport-working.16711/#post-188063' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 17, 2016 at 6:50 AM">Mar 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-get-teleport-working.16711/#post-188063' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188063/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-188353" class="message" data-author="不是很会玩">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="不是很会玩" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">不是很会玩</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Noviets">
+                            <aside>
+                                <div class="attribution type">Noviets said: <a href="#post-188063" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Firstly, the Respawn isn&#039;t the best place to transform location, as it will teleport the player anyway, so unless you add a delay it&#039;s
+                                        not going to work.<br />
+                                        <br /> As for your transform. There&#039;s no need to get the GameObject of a GameObject. Use WorldPlayerEntity from the PlayerSession (Thats the player
+                                        gameObject) to make things simple.<br /> Example:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>    void Teleport(PlayerSession player, Vector3 location)
+     {
+       hurt.SendChatMessage(player,&quot;Teleport&quot;);
+       player.WorldPlayerEntity.transform.position = location;
+     }</pre>{% endraw %}
+                                        </div><br /> A much easier way to do this, which I recommend. Is to just use the hook OnFindSpawnPoint and return the Vector3.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        object OnFindSpawnPoint()
+        {
+            return new Vector3(187f, 177f, 990f);
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>thanks you so must,is&#039;s working! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">不是很会玩</a>,</span>
+                        <a href="{{ '/threads/cant-get-teleport-working.16711/#post-188353' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 18, 2016 at 4:43 AM">Mar 18, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-get-teleport-working.16711/#post-188353' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/188353/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

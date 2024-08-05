@@ -1,0 +1,358 @@
+---
+layout: forums
+title: 'Rust Legacy - Structure build lock'
+breadcrumbs:
+ - "Plugin Requests": "/forums/plugin-requests.10/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Rust Legacy</span> <a href="{{ '/threads/structure-build-lock.14535/' | prepend: site.baseurl }}">Structure build lock</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/plugin-requests.10/' | prepend: site.baseurl }}">Plugin Requests</a>' started by <a class="username"
+            dir="auto">kiko</a>, <a href="{{ '/threads/structure-build-lock.14535/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 12, 2016 at 8:28 PM">Jan 12, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-162659" class="message" data-author="kiko">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="kiko" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">kiko</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> hello<br /> it&#039;s possible to upgrade this plugin to oxide 2<br /> thank for your answerd<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>PLUGIN.Title = &quot;Structure build lock&quot;
+PLUGIN.Description = &quot;Block anyone from building on your structure&quot;
+PLUGIN.Author = &quot;Reneb&quot;
+PLUGIN.Version = &quot;1.0&quot;local AllStructures = util.GetStaticPropertyGetter( Rust.StructureMaster, &quot;AllStructures&quot;)
+local getStructureMasterOwnerId = util.GetFieldGetter(Rust.StructureMaster, &quot;ownerID&quot;, true)function PLUGIN:Init()
+  
+   local b, res = config.Read( &quot;structures-lock&quot; )
+   self.Config = res or {}
+   if (not b) then
+     self:LoadDefaultConfig()
+     if (res) then config.Save( &quot;structures-lock&quot; ) end
+   end
+   if(self.Config.Version ~= 1.0) then
+     print(&quot;Structure Build Lock: Old Config version detected, loading default configs&quot;)
+     self:LoadDefaultConfig()
+     config.Save( &quot;structures-lock&quot; )
+   end
+   self.LockFile = util.GetDatafile( &quot;structures-lock&quot; )
+  local txt = self.LockFile:GetText()
+  if (txt ~= &quot;&quot;) then
+  self.Lock = json.decode( txt )
+  else
+  self.Lock = {}
+  end
+end
+function PLUGIN:postInit()
+   self:AddChatCommand(&quot;lock&quot;, self.cmdLock)
+end
+function PLUGIN:cmdLock(netuser,cmd,args)
+   local userID = rust.GetUserID(netuser)
+   if(not self.Lock[userID]) then
+     self.Lock[userID] = true
+     rust.SendChatToUser(netuser, self.Config.chatname, &quot;Your buildings are now locked, no one will be able to build on them&quot;)
+    
+   else
+     self.Lock[userID] = false
+     rust.SendChatToUser(netuser, self.Config.chatname, &quot;Your buildings are now unlocked, anyone can build on them&quot;)
+   end
+   self:Save()
+end
+function PLUGIN:Save()
+   self.LockFile:SetText( json.encode( self.Lock ) )
+   self.LockFile:Save()
+end
+function PLUGIN:GetStructureOwnerID(structure)
+  return getStructureMasterOwnerId(structure)
+endfunction PLUGIN:LoadDefaultConfig()
+   self.Config.chatname = &quot;Lock&quot;
+   self.Config.Version = 1.0
+   self.Config.NotifyUser = true
+endfunction PLUGIN:TwoDDistance(p1, p2)
+  return math.sqrt(math.pow(p1.x - p2.x,2) + math.pow(p1.z - p2.z,2))
+endfunction PLUGIN:SendToUserByPos(pos,msg)
+   for _, netuser in pairs( rust.GetAllNetUsers() ) do
+     if(netuser.playerClient) then
+       if(self:TwoDDistance(pos,netuser.playerClient.lastKnownPosition) &lt; 10) then
+         rust.SendChatToUser(netuser, self.Config.chatname, msg)
+       end
+     end
+   end
+end
+function PLUGIN:FindStructure(pos)
+   for i=0, AllStructures().Count-1 do
+     local master = AllStructures()
+     if(master) then
+       local comp = master:GetComponentFromPositionWorld(pos)
+       if(comp ~= nil) then
+         return master, comp
+       end
+     end
+   end  
+   return false
+endlocal NetCullRemove = util.FindOverloadedMethod(Rust.NetCull._type, &quot;Destroy&quot;, bf.public_static, {UnityEngine.GameObject})
+function RemoveObject(object)
+   local objs = util.ArrayFromTable(cs.gettype(&quot;System.Object&quot;), {object})
+   cs.convertandsetonarray( objs, 0, object , UnityEngine.GameObject._type )
+   NetCullRemove:Invoke(nil, objs)
+end
+function PLUGIN:CheckIfCanOrRemove(pos)
+   local master, structure = self:FindStructure(pos)
+   if(not master) then error(&quot;couldn't find the new structure&quot;) return end
+   local masterid = self:GetStructureOwnerID(master)
+   if(not masterid) then error(&quot;couldn't find the masterid of a structure&quot;) return end
+   if(self.Lock[tostring(masterid)]) then
+     RemoveObject(structure.GameObject)
+     if(self.Config.NotifyUser) then
+       self:SendToUserByPos(pos, &quot;This building is locked, use /lock to activate/deactivate building on your structures only&quot;)
+     end
+   end
+end
+function PLUGIN:OnPlaceStructure(structure,pos)
+   if(string.find(structure.name, &quot;Stairs&quot;) or string.find(structure.name, &quot;Pillar&quot;) or string.find(structure.name, &quot;Foundation&quot;)) then
+     timer.Once(0.2, function() self:CheckIfCanOrRemove(pos) end)
+   end
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jan 12, 2016 at 8:33 PM">Jan 12, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">kiko</a>,</span>
+                        <a href="{{ '/threads/structure-build-lock.14535/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 12, 2016 at 8:28 PM">Jan 12, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/structure-build-lock.14535/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/162659/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-173293" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Please keep plugin requests to one per thread, and also check the existing requests. If you want a plugin from
+                        another game ported, just link the plugin, no need to copy the entire code here. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/structure-build-lock.14535/#post-173293' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 5, 2016 at 7:47 PM">Feb 5, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/structure-build-lock.14535/#post-173293' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/173293/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-187845" class="message" data-author="Gute">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Gute" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Gute</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Put as resolved &#039;-&#039; <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Gute</a>,</span>
+                        <a href="{{ '/threads/structure-build-lock.14535/#post-187845' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Mar 16, 2016 at 3:09 PM">Mar 16, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/structure-build-lock.14535/#post-187845' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/187845/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-319814" class="message" data-author="RobertPraha">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RobertPraha" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RobertPraha</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Would it be possible to leave this plugin compatible with oxide 2.0?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>LUGIN.Title = &quot;Structure build lock&quot;
+PLUGIN.Description = &quot;Block anyone from building on your structure&quot;
+PLUGIN.Author = &quot;Reneb&quot;
+PLUGIN.Version = &quot;1.0&quot;local AllStructures = util.GetStaticPropertyGetter( Rust.StructureMaster, &quot;AllStructures&quot;)
+local getStructureMasterOwnerId = util.GetFieldGetter(Rust.StructureMaster, &quot;ownerID&quot;, true)function PLUGIN:Init()
+ 
+   local b, res = config.Read( &quot;structures-lock&quot; )
+   self.Config = res or {}
+   if (not b) then
+     self:LoadDefaultConfig()
+     if (res) then config.Save( &quot;structures-lock&quot; ) end
+   end
+   if(self.Config.Version ~= 1.0) then
+     print(&quot;Structure Build Lock: Old Config version detected, loading default configs&quot;)
+     self:LoadDefaultConfig()
+     config.Save( &quot;structures-lock&quot; )
+   end
+   self.LockFile = util.GetDatafile( &quot;structures-lock&quot; )
+  local txt = self.LockFile:GetText()
+  if (txt ~= &quot;&quot;) then
+  self.Lock = json.decode( txt )
+  else
+  self.Lock = {}
+  end
+end
+function PLUGIN:postInit()
+   self:AddChatCommand(&quot;lock&quot;, self.cmdLock)
+end
+function PLUGIN:cmdLock(netuser,cmd,args)
+   local userID = rust.GetUserID(netuser)
+   if(not self.Lock[userID]) then
+     self.Lock[userID] = true
+     rust.SendChatToUser(netuser, self.Config.chatname, &quot;Your buildings are now locked, no one will be able to build on them&quot;)
+   
+   else
+     self.Lock[userID] = false
+     rust.SendChatToUser(netuser, self.Config.chatname, &quot;Your buildings are now unlocked, anyone can build on them&quot;)
+   end
+   self:Save()
+end
+function PLUGIN:Save()
+   self.LockFile:SetText( json.encode( self.Lock ) )
+   self.LockFile:Save()
+end
+function PLUGIN:GetStructureOwnerID(structure)
+  return getStructureMasterOwnerId(structure)
+endfunction PLUGIN:LoadDefaultConfig()
+   self.Config.chatname = &quot;Lock&quot;
+   self.Config.Version = 1.0
+   self.Config.NotifyUser = true
+endfunction PLUGIN:TwoDDistance(p1, p2)
+  return math.sqrt(math.pow(p1.x - p2.x,2) + math.pow(p1.z - p2.z,2))
+endfunction PLUGIN:SendToUserByPos(pos,msg)
+   for _, netuser in pairs( rust.GetAllNetUsers() ) do
+     if(netuser.playerClient) then
+       if(self:TwoDDistance(pos,netuser.playerClient.lastKnownPosition) &lt; 10) then
+         rust.SendChatToUser(netuser, self.Config.chatname, msg)
+       end
+     end
+   end
+end
+function PLUGIN:FindStructure(pos)
+   for i=0, AllStructures().Count-1 do
+     local master = AllStructures()
+     if(master) then
+       local comp = master:GetComponentFromPositionWorld(pos)
+       if(comp ~= nil) then
+         return master, comp
+       end
+     end
+   end 
+   return false
+endlocal NetCullRemove = util.FindOverloadedMethod(Rust.NetCull._type, &quot;Destroy&quot;, bf.public_static, {UnityEngine.GameObject})
+function RemoveObject(object)
+   local objs = util.ArrayFromTable(cs.gettype(&quot;System.Object&quot;), {object})
+   cs.convertandsetonarray( objs, 0, object , UnityEngine.GameObject._type )
+   NetCullRemove:Invoke(nil, objs)
+end
+function PLUGIN:CheckIfCanOrRemove(pos)
+   local master, structure = self:FindStructure(pos)
+   if(not master) then error(&quot;couldn't find the new structure&quot;) return end
+   local masterid = self:GetStructureOwnerID(master)
+   if(not masterid) then error(&quot;couldn't find the masterid of a structure&quot;) return end
+   if(self.Lock[tostring(masterid)]) then
+     RemoveObject(structure.GameObject)
+     if(self.Config.NotifyUser) then
+       self:SendToUserByPos(pos, &quot;This building is locked, use /lock to activate/deactivate building on your structures only&quot;)
+     end
+   end
+end
+function PLUGIN:OnPlaceStructure(structure,pos)
+   if(string.find(structure.name, &quot;Stairs&quot;) or string.find(structure.name, &quot;Pillar&quot;) or string.find(structure.name, &quot;Foundation&quot;)) then
+     timer.Once(0.2, function() self:CheckIfCanOrRemove(pos) end)
+   end
+end</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RobertPraha</a>,</span>
+                        <a href="{{ '/threads/structure-build-lock.14535/#post-319814' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 30, 2017 at 6:36 PM">Apr 30, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/structure-build-lock.14535/#post-319814' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/319814/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

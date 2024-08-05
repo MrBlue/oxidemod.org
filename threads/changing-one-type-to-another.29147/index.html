@@ -1,0 +1,239 @@
+---
+layout: forums
+title: 'Changing one type to another?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/changing-one-type-to-another.29147/' | prepend: site.baseurl }}">Changing one type to another?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Abnormal Zombie</a>, <a href="{{ '/threads/changing-one-type-to-another.29147/' | prepend: site.baseurl }}"><span class="DateTime" title="Jan 22, 2018 at 11:16 PM">Jan 22,
+                2018</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-381412" class="message" data-author="Abnormal Zombie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Abnormal Zombie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Abnormal Zombie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I&#039;m creating a classes plugin and I want a collection containing all the types of classes to be created at
+                        run time, using classes created within the plugin class itself. The only problem is I don&#039;t know how to change a Type to what the Type represents.<br />
+                        <br /> For example:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class myPlugin : RustPlugin
+{
+    class CLASS{}
+    class Fighter : CLASS{}
+    class Runner : CLASS{}    List&lt;List&lt;object&gt;&gt; classList = new List&lt;List&lt;object&gt;&gt;();    void OnInit()
+    {
+        foreach(Type type in typeof(myPlugin).GetNestedTypes())
+        {
+            if(type.BaseType == typeof(CLASS)) classList.Add(List&lt;type&gt;);// PROBLEM HERE
+        }
+    }
+}</pre>{% endraw %}
+                        </div>I&#039;ve changed the OnInit() section to show you want I want it to do:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>class myPlugin : RustPlugin
+{
+    class CLASS{}
+    class Fighter : CLASS{}
+    class Runner : CLASS{}    List&lt;List&lt;object&gt;&gt; classList = new List&lt;List&lt;object&gt;&gt;();    void OnInit()
+    {
+        classList.Add(List&lt;Fighter&gt;);
+        classList.Add(List&lt;Runner&gt;);
+    }
+}</pre>{% endraw %}
+                        </div>When I&#039;m adding to the list, how do I represent the &quot;type&quot; as the actual type it represents? This should be easy, but I can&#039;t find an answer anywhere.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jan 23, 2018 at 5:26 PM">Jan 23, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Abnormal Zombie</a>,</span>
+                        <a href="{{ '/threads/changing-one-type-to-another.29147/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 22, 2018 at 11:16 PM">Jan 22, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-one-type-to-another.29147/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381412/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-381458" class="message" data-author="SemiDemented">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="SemiDemented" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">SemiDemented</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You&#039;re thinking about it a bit wrong. I don&#039;t know exactly what you&#039;re doing, but if you want to
+                        create a list of *new derived* classes of CLASS, then the parent `List&lt;T&gt;` would be of type CLASS, and you can easily instantiate new derived types. Something like this
+                        will work:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+    public class TestClass : RustPlugin
+    {
+        public class Player
+        {
+          
+        }        public class Fighter : Player
+        {
+          
+        }        public class Runner : Player
+        {
+          
+        }        List&lt;List&lt;Player&gt;&gt; classList = new List&lt;List&lt;Player&gt;&gt;();        void OnInit()
+        {
+            classList.Add(new List&lt;Player&gt;
+            {
+                new Fighter(),
+                new Fighter()
+            });            classList.Add(new List&lt;Player&gt;
+            {
+                new Runner(),
+                new Runner()
+            });
+        }
+    }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">SemiDemented</a>,</span>
+                        <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381458' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 23, 2018 at 10:41 AM">Jan 23, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381458' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381458/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-381530" class="message" data-author="Abnormal Zombie">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Abnormal Zombie" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Abnormal Zombie</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="SemiDemented">
+                            <aside>
+                                <div class="attribution type">SemiDemented said: <a href="#post-381458" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You&#039;re thinking about it a bit wrong. I don&#039;t know exactly what you&#039;re doing, but if you want to create a list of *new derived*
+                                        classes of CLASS, then the parent `List&lt;T&gt;` would be of type CLASS, and you can easily instantiate new derived types.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks for the reply SemiDemented. What I&#039;m actually trying to do is dynamically create a proper collection of class types of derives class CLASS, just to save me
+                        time and space. I could explicitly write out each type of class I want to add to the collection, but I&#039;d prefer for them to be found automatically after I add them via
+                        OnInit(). In other words whenever I add a new class, such as &quot;class Lumberjack : CLASS&quot;, I&#039;d want the list to automatically contain it upon loading. This
+                        isn&#039;t something essential, but rather something which would let me change less code when adding said classes. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Abnormal Zombie</a>,</span>
+                        <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381530' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 23, 2018 at 5:24 PM">Jan 23, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381530' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381530/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-381537" class="message" data-author="ignignokt84">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="ignignokt84" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">ignignokt84</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">If you&#039;re looking to add objects to a type-specific list, then it might be easier to use a structure like
+                        <i>Dictionary&lt;Type, List&lt;CLASS&gt;&gt;</i> instead of nested Lists. Then just use some custom access methods to handle type association and list instantiation in that
+                        Dictionary... <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">ignignokt84</a>,</span>
+                        <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381537' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 23, 2018 at 6:04 PM">Jan 23, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/changing-one-type-to-another.29147/#post-381537' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381537/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

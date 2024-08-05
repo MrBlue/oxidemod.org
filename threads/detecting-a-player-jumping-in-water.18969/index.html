@@ -1,0 +1,137 @@
+---
+layout: forums
+title: 'Detecting a player jumping in water'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/' | prepend: site.baseurl }}">Detecting a player jumping in water</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Scarsz</a>, <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 25, 2016 at 10:59 PM">Jun 25,
+                2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-219309" class="message" data-author="Scarsz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Scarsz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Scarsz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Title, sounded simple, OnEntityEnter on <a href="http://docs.oxidemod.org/rust/#onentityenter" target="_blank"
+                            class="externalLink  rel=" nofollow">Oxide API for Rust</a> doesn&#039;t fire when I jump in the water so that&#039;s not viable I guess, any suggestions?<br />
+                        <br /> I know I could have a periodic foreach loop through all active players and check their .IsSwimming() but it&#039;d be nice if this could be handled through an event <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 25, 2016 at 11:06 PM">Jun 25, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Scarsz</a>,</span>
+                        <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2016 at 10:59 PM">Jun 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/219309/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219316" class="message" data-author="sqroot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="sqroot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">sqroot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">This is a bit difficult, because the server doesn&#039;t really fire an event by itself, so Oxide would need to
+                        add an extra check to the &quot;UpdateModelStateFromTick&quot; method (or similar). <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">sqroot</a>,</span>
+                        <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/#post-219316' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 25, 2016 at 11:36 PM">Jun 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/#post-219316' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219316/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219319" class="message" data-author="Scarsz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Scarsz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Scarsz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I can settle for <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private void OnPlayerInput(BasePlayer player, InputState input)
+{
+    if (!player.IsSwimming()) return;
+    ForcePlayerPosition(player, defaultSpawnPoint);
+}</pre>{% endraw %}
+                        </div>if this isn&#039;t doable, doesn&#039;t seem like it makes any hit in performance <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Scarsz</a>,</span>
+                        <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/#post-219319' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 26, 2016 at 12:01 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/detecting-a-player-jumping-in-water.18969/#post-219319' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219319/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

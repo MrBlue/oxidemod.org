@@ -1,0 +1,239 @@
+---
+layout: forums
+title: 'Solved - Check for existing oxide permission'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/check-for-existing-oxide-permission.9639/' | prepend: site.baseurl }}">Check for existing oxide permission</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">d3nnib</a>, <a href="{{ '/threads/check-for-existing-oxide-permission.9639/' | prepend: site.baseurl }}"><span class="DateTime" title="Jun 22, 2015 at 8:13 AM">Jun 22,
+                2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-101653" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi guys, I have a strange problem (a minor one).<br />
+                        <br /> I&#039;m trying to check the existence of an oxide permission, if it doesn&#039;t exist the plugin (c#) should create it.<br /> I looked at various C# plugin and I
+                        managed to register the permission with no problems.<br />
+                        <br /> The strange thing is, even if I copied the &quot;check if permission exists and, if not, register it&quot; part from another c# plugin (I believe it was GodMode) the
+                        code works only in part:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (!permission.PermissionExists(&quot;CanControlLanterns&quot;))  
+{
+ permission.RegisterPermission(&quot;CanControlLanterns&quot;, this);
+}</pre>{% endraw %}
+                        </div>I&#039;m executing the code through the Init() hook, but the permission check always returns false. It&#039;s not a big deal because returning always false result in
+                        always registering the permission (functionally speaking the pluging is good, the permission works as it should).<br />
+                        <br /> I was only wondering why I am not able to have true returned from PermissionExists.<br />
+                        <br /> Am I missing something in the way oxide permissions work?<br />
+                        <br /> Thanks all! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/check-for-existing-oxide-permission.9639/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2015 at 8:13 AM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-for-existing-oxide-permission.9639/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/101653/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101698" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Interesting. Just made some tests and can confirm. permission.PermissionExists() always returns false after reload
+                        but true after the permission is registered.<br />
+                        <br /> My testcase:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+function PLUGIN:Init()
+    self:RegisterPermission()
+end
+function PLUGIN:RegisterPermission()
+    print(tostring(permission.PermissionExists(&quot;testperm&quot;)))
+    if not permission.PermissionExists(&quot;testperm&quot;) then
+        permission.RegisterPermission(&quot;testperm&quot;, self.Object)
+    end
+    print(tostring(permission.PermissionExists(&quot;testperm&quot;)))
+end</pre>{% endraw %}
+                        </div><img src="proxy.php?image=http%3A%2F%2Fi.gyazo.com%2F127ade8025033c428a995c1c3558d70e.png&amp;hash=a9ea7848e8db1f926157bad376faaea5" class="bbCodeImage LbImage"
+                            alt="[&#x200B;IMG]" data-url="http://i.gyazo.com/127ade8025033c428a995c1c3558d70e.png" /><br /> [DOUBLEPOST=1434975051][/DOUBLEPOST]After some more testing I believe
+                        permissions are unloaded as soon as the owner plugin gets unloaded.<br /> If there is no plugin running that registered the permission, PermissionExists() will always be false
+                        even if the permission im checking for is used by users or groups.<br />
+                        <br /> Seems like the PermissionExists() function is more like a IsPermissionRegistered() check. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 22, 2015 at 1:08 PM">Jun 22, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101698' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2015 at 12:50 PM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101698' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/101698/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101708" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi Domestos, thank you! <br /> I see, so, since this is my very first experience with c# developing, what&#039;s
+                        the best way, according to you, to register my custom permission at init? <br />
+                        <br /> Simply use:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>permission.RegisterPermission(&quot;CanControlLanterns&quot;, this);</pre>{% endraw %}
+                        </div>without any particular control? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101708' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2015 at 1:32 PM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101708' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/101708/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101721" class="message" data-author="Domestos">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Domestos" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Domestos</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You can simply use the code you posted in your first post. If some other plugin is running using the same
+                        permission as your plugin the PermissionExists() function should be true so your plugin doesnt register it again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Domestos</a>,</span>
+                        <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101721' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2015 at 2:25 PM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101721' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/101721/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101723" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Perfect! Thank you very much! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101723' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jun 22, 2015 at 2:32 PM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/check-for-existing-oxide-permission.9639/#post-101723' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/101723/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

@@ -1,0 +1,125 @@
+---
+layout: forums
+title: 'Request - OnItemSkinned hook (Rust)'
+breadcrumbs:
+ - "Feature Suggestions": "/forums/feature-suggestions.6/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixOrange">Request</span> <a href="{{ '/threads/onitemskinned-hook-rust.28728/' | prepend: site.baseurl }}">OnItemSkinned hook (Rust)</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/feature-suggestions.6/' | prepend: site.baseurl }}">Feature Suggestions</a>' started by <a class="username"
+            dir="auto">GoDANKorGoHOME</a>, <a href="{{ '/threads/onitemskinned-hook-rust.28728/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 20, 2017 at 12:14 AM">Dec 20,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-374410" class="message" data-author="GoDANKorGoHOME">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GoDANKorGoHOME" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GoDANKorGoHOME</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Request for an OnItemSkinned hook. Something like the following:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[global::BaseEntity.RPC_Server]
+   public void ChangeSkin(global::BaseEntity.RPCMessage msg)
+   {
+       if (UnityEngine.Time.realtimeSinceStartup &lt; this.nextSkinChangeTime)
+       {
+           return;
+       }
+       global::BasePlayer player = msg.player;
+       int num = msg.read.Int32();
+       global::Item slot = this.inventory.GetSlot(0);
+       if (slot == null)
+       {
+           return;
+       }
+       if (num != 0 &amp;&amp; !player.blueprints.steamInventory.HasItem(num))
+       {
+           this.debugprint(&quot;RepairBench.ChangeSkin player does not have item :&quot; + num + &quot;:&quot;);
+           return;
+       }
+object obj = Interface.CallHook(&quot;OnItemSkinned &quot;, new object[]
+       {
+           player,
+           num
+       });
+       if (obj is ulong)
+       {
+           num = (ulong)obj;
+}
+else if (obj != null) return;
+       ulong num2 = 0uL;
+       Facepunch.Steamworks.Inventory.Definition definition = Rust.Global.SteamServer.Inventory.FindDefinition(num);
+       if (definition != null)
+       {
+           num2 = definition.GetProperty&lt;ulong&gt;(&quot;workshopdownload&quot;);
+           string property = definition.GetProperty&lt;string&gt;(&quot;itemshortname&quot;);
+           if (num != 0 &amp;&amp; property != slot.info.shortname &amp;&amp; property != slot.info.name)
+           {
+               return;
+           }
+       }
+       if (num2 == 0uL)
+       {
+           num2 = (ulong)((long)num);
+       }
+       if (num2 == slot.skin)
+       {
+           this.debugprint(string.Concat(new object[]
+           {
+               &quot;RepairBench.ChangeSkin cannot apply same skin twice : &quot;,
+               num2,
+               &quot;: &quot;,
+               slot.skin
+           }));
+           return;
+       }
+       this.nextSkinChangeTime = UnityEngine.Time.realtimeSinceStartup + 0.75f;
+       slot.skin = num2;
+       slot.MarkDirty();
+       global::BaseEntity heldEntity = slot.GetHeldEntity();
+       if (heldEntity != null)
+       {
+           heldEntity.skinID = num2;
+           heldEntity.SendNetworkUpdate(global::BasePlayer.NetworkQueue.Update);
+       }
+       if (this.skinchangeEffect.isValid)
+       {
+           global::Effect.server.Run(this.skinchangeEffect.resourcePath, this, 0u, new Vector3(0f, 1.5f, 0f), Vector3.zero, null, false);
+       }
+   }</pre>{% endraw %}
+                        </div>Written up by a friend so it may have mistakes. General idea is to allow a plugin to set a custom skin value and it would reskin as well as prevent reskinning by
+                        returning anything other than a ulong/null. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GoDANKorGoHOME</a>,</span>
+                        <a href="{{ '/threads/onitemskinned-hook-rust.28728/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 20, 2017 at 12:14 AM">Dec 20, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/onitemskinned-hook-rust.28728/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/374410/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

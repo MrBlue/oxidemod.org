@@ -1,0 +1,1058 @@
+---
+layout: forums
+title: 'DiscordMessages | Page 9'
+breadcrumbs:
+ - "Plugin Support": "/forums/plugin-support.31/"
+---
+<div class="resourceInfo">
+    <div class="resourceImage">
+        <img src="https://avatars0.githubusercontent.com/u/14957982?v=4" alt="" class="resourceIcon" />
+    </div>
+    <div class="resourceDesc">
+        <h1><a href="{{ '/threads/discordmessages.25639/' | prepend: site.baseurl }}">DiscordMessages</a></h1>
+        <p class="tagLine muted">Moved</p>
+        <p class="downloadCount">Total Downloads: 1,769 - First Release: <span class="DateTime" title="May 26, 2017 at 8:23 PM">May 26, 2017</span> - Last Update: <span class="DateTime"
+                title="Feb 6, 2018 at 3:11 AM">Feb 6, 2018</span>
+        </p>
+        <div class="rating">
+            <div class="rating">
+                <dl>
+                    <dt class="prompt muted"></dt>
+                    <dd>
+                        <span class="ratings">
+                            <span class="star"></span>
+                        </span>
+                        <span class="RatingValue"><span class="Number" itemprop="average">5</span>/<span itemprop="best">5</span>,</span>
+                        <span class="Hint">16 likes</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="resourceTabs">
+    <ul class="tabs">
+        <li class="resourceTabDescription ">
+            <a href="plugins/discordmessages.2486/">Overview</a>
+        </li>
+        <li class="resourceTabUpdates ">
+            <a href="plugins/discordmessages.2486/updates">Updates (30)</a>
+        </li>
+        <li class="resourceTabHistory ">
+            <a href="plugins/discordmessages.2486/history">Version History</a>
+        </li>
+    </ul>
+</div>
+<div class="pageNavLinkGroup">
+    <div class="linkGroup SelectionCountContainer">
+    </div>
+    <div class="PageNav" data-page="9" data-range="2" data-start="7" data-end="11" data-last="12" data-sentinel="{{sentinel}}" data-baseurl="threads/discordmessages.25639/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/discordmessages.25639/page-8' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/discordmessages.25639/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/discordmessages.25639/page-7' | prepend: site.baseurl }}" class="">7</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-8' | prepend: site.baseurl }}" class="">8</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-9' | prepend: site.baseurl }}" class="currentPage ">9</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-10' | prepend: site.baseurl }}" class="">10</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-11' | prepend: site.baseurl }}" class="">11</a>
+                </span></span> <a class="PageNavNext hidden">&rarr;</a>
+            <a href="{{ '/threads/discordmessages.25639/page-12' | prepend: site.baseurl }}" class="">12</a>
+            <a href="{{ '/threads/discordmessages.25639/page-10' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-381827" class="message" data-author="Sorrow">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Sorrow" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Sorrow</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hi ROGU3,<br />
+                        <br /> Add this before line 386 :<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>private object OnServerMessage(string message, string name)
+{
+      if (!ChatEnabled)
+      {
+            return null;
+      }
+      HandleMessage(name, message);
+      return null;
+}</pre>{% endraw %}
+                        </div>And if you want not displaying give add this in condition :<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>if (!ChatEnabled || (message.Contains(&quot;gave&quot;) &amp;&amp; name == &quot;SERVER&quot;))</pre>{% endraw %}
+                        </div>My #region PlayerChat<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>#region PlayerChatprivate object OnServerMessage(string message, string name)
+{
+    if (!ChatEnabled || (message.Contains(&quot;gave&quot;) &amp;&amp; name == &quot;SERVER&quot;))
+    {
+        return null;
+    }
+        HandleMessage(name, message);
+        return null;
+}
+private object OnUserChat(IPlayer player, string message)
+{
+    if (!ChatEnabled)
+    {
+        return null;
+    }
+    HandleMessage(player.Name, message);
+    return null;
+}
+private void HandleMessage(string name, string message)
+{
+    string discordMessage = GetLang(&quot;PlayerChatFormat&quot;, null, name, message);
+    discordMessage = String.Concat(&quot;`&quot;, DateTime.Now.ToString(&quot;HH:mm&quot;), &quot;` &quot;, discordMessage);
+    FancyMessage dmessage = new FancyMessage(discordMessage, ChatTTS, null);
+    var payload = dmessage.toJSON();
+    Request(ChatURL, payload);
+}
+#endregion</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jan 25, 2018 at 8:21 AM">Jan 25, 2018</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Sorrow</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-381827' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 25, 2018 at 8:02 AM">Jan 25, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-381827' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/381827/permalink">#161</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-382732" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Slut updated <a href="http://oxidemod.org/plugins/discordmessages.2486/" class="internalLink">DiscordMessages</a>
+                        with a new update entry:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/discordmessages.2486/update?update=15599" class="internalLink">1.7.3</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <ul>
+                                            <li>Removed Action callbacks.</li>
+                                            <li>Internal error message if API message failed to send.</li>
+                                            <li>API_SendFancyMessage changes.<ul>
+                                                    <li>Fields is now the 3rd arg (previously 4th)</li>
+                                                    <li>Color field is now the 4th arg (previously 3rd) and is now optional.</li>
+                                                </ul>
+                                            </li>
+                                            <li>Added reason to mute messages. (BetterChatMute Update)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-382732' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2018 at 6:26 AM">Jan 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-382732' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/382732/permalink">#162</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-382740" class="message" data-author="GreenRazerz">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="GreenRazerz" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">GreenRazerz</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">download link broken? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">GreenRazerz</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-382740' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2018 at 7:58 AM">Jan 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-382740' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/382740/permalink">#163</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-382742" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Slut updated <a href="http://oxidemod.org/plugins/discordmessages.2486/" class="internalLink">DiscordMessages</a>
+                        with a new update entry:<br />
+                        <br />
+                        <a href="http://oxidemod.org/plugins/discordmessages.2486/update?update=15600" class="internalLink">1.7.4</a><br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote">
+                            <aside>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <ul>
+                                            <li>Fix broken download link</li>
+                                        </ul>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-382742' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 29, 2018 at 8:03 AM">Jan 29, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-382742' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/382742/permalink">#164</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383193" class="message" data-author="HoldenRiot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HoldenRiot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HoldenRiot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Awesome got it working great! One question, how can I remove or reset the # of &quot;Times Reported&quot; ? After
+                        some testing and setup one has a few to many xD haha <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HoldenRiot</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383193' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Jan 31, 2018 at 8:14 PM">Jan 31, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383193' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383193/permalink">#165</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383250" class="message" data-author="t-wez">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="t-wez" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">t-wez</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="HoldenRiot">
+                            <aside>
+                                <div class="attribution type">HoldenRiot said: <a href="#post-383193" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Awesome got it working great! One question, how can I remove or reset the # of &quot;Times Reported&quot; ? After some testing and setup one has
+                                        a few to many xD haha</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>You can either delete the DiscordMessages data file in serverdirectory/<b>oxide/data/DiscordMessages.json</b> and reload the plugin or restart server,<br />
+                        <br /> or go through the DiscordMessages data file and delete the users stat/change the <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre> &quot;reports&quot;: 26,</pre>{% endraw %}
+                        </div> to <b>0</b>. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">t-wez</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383250' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 1:46 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383250' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383250/permalink">#166</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383258" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="t-wez">
+                            <aside>
+                                <div class="attribution type">t-wez said: <a href="#post-383250" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can either delete the DiscordMessages data file in serverdirectory/<b>oxide/data/DiscordMessages.json</b> and reload the plugin or restart
+                                        server,<br />
+                                        <br /> or go through the DiscordMessages data file and delete the users stat/change the <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre> &quot;reports&quot;: 26,</pre>{% endraw %}
+                                        </div> to <b>0</b>.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Unload first then make changes. I&#039;ll probably add a command to deal with that. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383258' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 2:12 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383258' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383258/permalink">#167</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383271" class="message" data-author="Inkss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Inkss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Inkss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">so it worked once where it alerts another role in the discord when a report is made but now its not working
+                        anymore. ive tried resetting it back to the role i want but it still wont work. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Inkss</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383271' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 3:26 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383271' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383271/permalink">#168</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383272" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Inkss">
+                            <aside>
+                                <div class="attribution type">Inkss said: <a href="#post-383271" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">so it worked once where it alerts another role in the discord when a report is made but now its not working anymore. ive tried resetting it back
+                                        to the role i want but it still wont work.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Can you copy the config option and paste it here please? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383272' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 3:27 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383272' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383272/permalink">#169</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383274" class="message" data-author="Inkss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Inkss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Inkss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Slut">
+                            <aside>
+                                <div class="attribution type">Slut said: <a href="#post-383272" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Can you copy the config option and paste it here please?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&quot;Reports - Alert Channel&quot;: true,
+  &quot;Reports - Alert Role&quot;: &quot;&lt;@&amp;407079602486378517&gt;&quot;,</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Inkss</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383274' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 3:32 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383274' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383274/permalink">#170</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383290" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Inkss">
+                            <aside>
+                                <div class="attribution type">Inkss said: <a href="#post-383274" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>&quot;Reports - Alert Channel&quot;: true,
+  &quot;Reports - Alert Role&quot;: &quot;&lt;@&amp;407079602486378517&gt;&quot;,</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Can you screenshot what it does? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383290' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 4:44 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383290' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383290/permalink">#171</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383298" class="message" data-author="Inkss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Inkss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Inkss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Slut">
+                            <aside>
+                                <div class="attribution type">Slut said: <a href="#post-383290" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Can you screenshot what it does?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div><a href="https://image.prntscr.com/image/gqVxNNbXQla7ZTPxMbHRNg.png" target="_blank" class="externalLink  rel="
+                            nofollow">https://image.prntscr.com/image/gqVxNNbXQla7ZTPxMbHRNg.png</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Inkss</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383298' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 1, 2018 at 5:51 AM">Feb 1, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383298' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383298/permalink">#172</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383484" class="message" data-author="HoldenRiot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HoldenRiot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HoldenRiot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="t-wez">
+                            <aside>
+                                <div class="attribution type">t-wez said: <a href="#post-383250" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">You can either delete the DiscordMessages data file in serverdirectory/<b>oxide/data/DiscordMessages.json</b> and reload the plugin or restart
+                                        server,<br />
+                                        <br /> or go through the DiscordMessages data file and delete the users stat/change the <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre> &quot;reports&quot;: 26,</pre>{% endraw %}
+                                        </div> to <b>0</b>.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thank you much!<br /> [DOUBLEPOST=1517540235][/DOUBLEPOST]Currently using the built in DiscordMessages /report system. Has anyone had any luck with PlayerReport GUI
+                        plugin and it posting to Discord? It seems when I tried that plugin all I would get was the @here notification with no report information. If someone has had luck with this and
+                        or know how to get that working with Discord please PM me! Thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HoldenRiot</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383484' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 2:55 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383484' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383484/permalink">#173</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383505" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Inkss">
+                            <aside>
+                                <div class="attribution type">Inkss said: <a href="#post-383298" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote"><a href="https://image.prntscr.com/image/gqVxNNbXQla7ZTPxMbHRNg.png" target="_blank" class="externalLink  rel="
+                                            nofollow">https://image.prntscr.com/image/gqVxNNbXQla7ZTPxMbHRNg.png</a></div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Then you must be using an old version because @here is not referenced in the plugin at all.<br /> [DOUBLEPOST=1517551599][/DOUBLEPOST] <div
+                            class="bbCodeBlock bbCodeQuote" data-author="HoldenRiot">
+                            <aside>
+                                <div class="attribution type">HoldenRiot said: <a href="#post-383484" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thank you much!<br /> [DOUBLEPOST=1517540235][/DOUBLEPOST]Currently using the built in DiscordMessages /report system. Has anyone had any luck
+                                        with PlayerReport GUI plugin and it posting to Discord? It seems when I tried that plugin all I would get was the @here notification with no report information.
+                                        If someone has had luck with this and or know how to get that working with Discord please PM me! Thanks!</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I have notified the plugin developer. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383505' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 6:03 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383505' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383505/permalink">#174</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383506" class="message" data-author="HoldenRiot">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="HoldenRiot" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">HoldenRiot</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Slut">
+                            <aside>
+                                <div class="attribution type">Slut said: <a href="#post-383505" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Then you must be using an old version because @here is not referenced in the plugin at all.<br /> [DOUBLEPOST=1517551599][/DOUBLEPOST]<br /> I
+                                        have notified the plugin developer.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Fantastic! Thanks!! Awesome plugin btw! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">HoldenRiot</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383506' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 6:08 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383506' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383506/permalink">#175</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383508" class="message" data-author="Lopol_Pol">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Lopol_Pol" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Lopol_Pol</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Web request callback raised an exception (NullReferenceException: Object reference not set to an instance of an
+                        object)<br /> at Oxide.Plugins.DiscordMessages+&lt;Request&gt;c__AnonStorey0.&lt;&gt;m__1 (Int32 code, System.String response) [0x00000] in &lt;filename unknown&gt;:0<br /> at
+                        Oxide.Core.Libraries.WebRequests+WebRequest.&lt;OnComplete&gt;b__42_0 () [0x00000] in &lt;filename unknown&gt;:0 <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Lopol_Pol</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383508' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 6:17 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383508' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383508/permalink">#176</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383509" class="message" data-author="Slut">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Slut" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Slut</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Lopol_Pol">
+                            <aside>
+                                <div class="attribution type">Lopol_Pol said: <a href="#post-383508" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Web request callback raised an exception (NullReferenceException: Object reference not set to an instance of an object)<br /> at
+                                        Oxide.Plugins.DiscordMessages+&lt;Request&gt;c__AnonStorey0.&lt;&gt;m__1 (Int32 code, System.String response) [0x00000] in &lt;filename unknown&gt;:0<br /> at
+                                        Oxide.Core.Libraries.WebRequests+WebRequest.&lt;OnComplete&gt;b__42_0 () [0x00000] in &lt;filename unknown&gt;:0</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Do you know what lead up to that? Anything you were trying to send? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Slut</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383509' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 6:23 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383509' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383509/permalink">#177</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383511" class="message" data-author="Lopol_Pol">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Lopol_Pol" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Lopol_Pol</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Slut">
+                            <aside>
+                                <div class="attribution type">Slut said: <a href="#post-383509" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Do you know what lead up to that? Anything you were trying to send?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It appeared after /mute <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Lopol_Pol</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383511' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 6:34 AM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383511' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383511/permalink">#178</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383556" class="message" data-author="RESiSTANCE 2">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="RESiSTANCE 2" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">RESiSTANCE 2</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">im getting the same thing <a href="https://oxidemod.org/members/215364/" class="username"
+                            data-user="215364, @Lopol_Pol">@Lopol_Pol</a> after using /mute<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(00:23:57) | Web request callback raised an exception (NullReferenceException: Object reference not set to an instance of an object)
+  at Oxide.Plugins.DiscordMessages+&lt;Request&gt;c__AnonStorey0.&lt;&gt;m__1 (Int32 code, System.String response) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Libraries.WebRequests+WebRequest.&lt;OnComplete&gt;b__42_0 () [0x00000] in &lt;filename unknown&gt;:0</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">RESiSTANCE 2</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383556' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 1:25 PM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383556' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383556/permalink">#179</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-383626" class="message" data-author="Inkss">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Inkss" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Inkss</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Slut">
+                            <aside>
+                                <div class="attribution type">Slut said: <a href="#post-383505" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Then you must be using an old version because @here is not referenced in the plugin at all.<br /> [DOUBLEPOST=1517551599][/DOUBLEPOST]<br /> I
+                                        have notified the plugin developer.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>i usually update the plugin as soon as its released but ill double check Thanks! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Inkss</a>,</span>
+                        <a href="{{ '/threads/discordmessages.25639/page-9#post-383626' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Feb 2, 2018 at 7:21 PM">Feb 2, 2018</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/discordmessages.25639/page-9#post-383626' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/383626/permalink">#180</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
+<div class="pageNavLinkGroup">
+    <div class="PageNav" data-page="9" data-range="2" data-start="7" data-end="11" data-last="12" data-sentinel="{{sentinel}}" data-baseurl="threads/discordmessages.25639/page-{{sentinel}}">
+        <nav>
+            <a href="{{ '/threads/discordmessages.25639/page-8' | prepend: site.baseurl }}" class="text">&lt; Prev</a>
+            <a href="{{ '/threads/discordmessages.25639/' | prepend: site.baseurl }}" class="" rel="start">1</a>
+            <a class="PageNavPrev ">&larr;</a> <span class="scrollable"><span class="items">
+                    <a href="{{ '/threads/discordmessages.25639/page-7' | prepend: site.baseurl }}" class="">7</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-8' | prepend: site.baseurl }}" class="">8</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-9' | prepend: site.baseurl }}" class="currentPage ">9</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-10' | prepend: site.baseurl }}" class="">10</a>
+                    <a href="{{ '/threads/discordmessages.25639/page-11' | prepend: site.baseurl }}" class="">11</a>
+                </span></span> <a class="PageNavNext hidden">&rarr;</a>
+            <a href="{{ '/threads/discordmessages.25639/page-12' | prepend: site.baseurl }}" class="">12</a>
+            <a href="{{ '/threads/discordmessages.25639/page-10' | prepend: site.baseurl }}" class="text">Next &gt;</a>
+        </nav>
+    </div>
+</div>

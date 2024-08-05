@@ -1,0 +1,1040 @@
+---
+layout: forums
+title: 'Can&#039;t track destroyed buildings with .prefab but walls, foundations work'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/' | prepend: site.baseurl }}">Can&#039;t track destroyed buildings with .prefab but walls,
+            foundations work</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Nathaira</a>, <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 24, 2016 at 9:58 AM">Jun 24, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-218732" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I try to fix an abandoned plugin, which works to nearly 70%. But it has some critical problems and I solved some
+                        issues, but one big is open.<br />
+                        <br /> It&#039;s the Rust plugin &quot;stats&quot; and it captures which structures get build or destroyed. If anyone is raiding someone, I can see who, when, what and on which
+                        coordinates has destroyed a wall.<br /> So this work:<br /> - wall, foundation, pillar, floor, u shaped stairs, floor triangle, window, doorway, steps, and so on<br />
+                        <br /> This doesn&#039;t work since Facepunch reorganized the whole prefab story. Since then it can&#039;t track things like:<br /> sign.small.wood.prefab<br />
+                        barricate.concrete.prefab<br /> door.hinged.metal.prefab<br />
+                        <br /> Thats no building stuff, that are deployables. I think thats the problem. But on the other side, how can I track all there stuff with the &quot;placements&quot;
+                        menu?<br />
+                        <br /> Here is some C# stuff:<br />
+                        <br /> Thats the stuff which tracks the whole placement components. It work with &quot;component&quot; things...<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityBuilt(Planner planner, GameObject component) {
+            Vector3 pos = planner.ownerPlayer.GetEstimatedWorldPosition();
+            string name = component.ToBaseEntity().LookupShortPrefabName();
+            if(component.ToBaseEntity() is BuildingBlock) {
+                name = ((BuildingBlock)component.ToBaseEntity()).blockDefinition.info.name.english;
+            }
+            executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, planner.ownerPlayer.userID, name, pos.x, pos.y, pos.z, getTime());
+        }</pre>{% endraw %}
+                        </div>This is the part which look if a building, an animal or player get &quot;destroyed&quot;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo) {
+            if(entity.lastAttacker != null &amp;&amp; entity.lastAttacker is BasePlayer) {
+                Vector3 pos = entity.lastAttacker.GetEstimatedWorldPosition();
+                if(entity is BuildingBlock) {
+                    executeQuery(&quot;INSERT INTO player_destroy_building (player, building, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, ((BuildingBlock)entity).blockDefinition.info.name.english, pos.x, pos.y, pos.z, getTime());
+                } else if(entity is BaseNPC) {
+                    executeQuery(&quot;INSERT INTO player_animal_kill (player, animal, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, UppercaseFirst(entity.LookupShortPrefabName()), pos.x, pos.y, pos.z, getTime());
+                } else if(entity is BasePlayer &amp;&amp; entity != entity.lastAttacker) {
+                    executeQuery(&quot;INSERT INTO player_kill (killer, victim, pos_x, pos_y, pos_z, weapon, date) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, ((BasePlayer)entity).userID, pos.x, pos.y, pos.z, ((BasePlayer)entity.lastAttacker).GetActiveItem().info.displayName.english, getTime());
+                }
+            }            if(entity is BasePlayer) {
+                Vector3 pos = entity.GetEstimatedWorldPosition();
+                string cause = entity.lastDamage.ToString();
+                executeQuery(&quot;INSERT INTO player_death (player, cause, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity).userID, cause, pos.x, pos.y, pos.z, getTime());
+            }
+        }</pre>{% endraw %}
+                        </div>I think I must rewrite some stuff here and can&#039;t track OnEntityDeath with this 3 cases. The building part must be ripped off and get it&#039;s own querry where I can
+                        check for components?<br />
+                        <br /> I have nearly zero experience in oxide api or coding stuff. Some little fixes are okay, but here I get mad. I tried some things like change the querry so it checks for
+                        components, but OnEntityDeath has no components like OnEntityBuild or I&#039;m to dump to understand.<br />
+                        <br /> Please help me and thank you for reading<br /> Nathaira <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 24, 2016 at 9:58 AM">Jun 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/218732/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-218875" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just some update.<br />
+                        <br /> I and a friend of me tested a lot of stuff and we didn&#039;t know if and how we can check if an entity like a door or campfire get destroyed used by the hook
+                        OnEntityDeath. Some people in other threads in this board used this hook for tracking if a storage box or a tool cupboard is destroyed. So it is possible?<br /> Maybe it&#039;s
+                        better for debugging that I did not sent it directly as SQL querry, but to the console as oxide notification. How can I do that?<br />
+                        <br /> Thanks Nathi <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 25, 2016 at 4:53 PM">Jun 25, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-218875' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 24, 2016 at 3:57 PM">Jun 24, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-218875' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/218875/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219247" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nathaira">
+                            <aside>
+                                <div class="attribution type">Nathaira said: <a href="#post-218875" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Just some update.<br />
+                                        <br /> I and a friend of me tested a lot of stuff and we didn&#039;t know if and how we can check if an entity like a door or campfire get destroyed used by the
+                                        hook OnEntityDeath. Some people in other threads in this board used this hook for tracking if a storage box or a tool cupboard is destroyed. So it is
+                                        possible?<br /> Maybe it&#039;s better for debugging that I did not sent it directly as SQL querry, but to the console as oxide notification. How can I do
+                                        that?<br />
+                                        <br /> Thanks Nathi</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityTakeDamage(BaseCombatEntity entity, HitInfo info)
+        {
+            if (entity is BuildingBlock || entity is SimpleBuildingBlock || entity is StabilityEntity || entity is Door || entity is StorageContainer || entity is SleepingBag || entity is BaseOven || entity is AutoTurret || entity is BuildingPrivlidge || entity is Signage || entity is Barricade || entity is BaseResourceExtractor)
+            {
+                ...
+            }         
+         
+        }        void OnEntityDeath(BaseCombatEntity entity, HitInfo info)
+        {
+            if (entity is BuildingBlock || entity is SimpleBuildingBlock || entity is StabilityEntity || entity is Door || entity is StorageContainer || entity is SleepingBag || entity is BaseOven || entity is AutoTurret || entity is BuildingPrivlidge || entity is Signage || entity is Barricade || entity is BaseResourceExtractor)
+            {
+                ...
+            }         
+         
+        }</pre>{% endraw %}
+                        </div>...and so on <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /> you check for each type directly if it matches
+                        the type...this should help you to find a solution to detect doors and so on. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219247' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 25, 2016 at 6:24 PM">Jun 25, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219247' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219247/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219401" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hey Fuji<br /> Thanks for your help and post. I blast some sleeping bag, storage box, campfire, door and wood
+                        window and got this:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(10:51:18) | [Oxide] 10:51 [Error] Failed to call hook 'OnEntityDeath' on plugin 'stats v1.5.2' (InvalidCastException: Cannot cast from source type to destination type.)
+(10:51:18) | [Oxide] 10:51 [Debug]   at Oxide.Plugins.Stats.OnEntityDeath (.BaseCombatEntity entity, .HitInfo hitInfo) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Stats.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+(10:51:19) | [Oxide] 10:51 [Warning] Calling 'OnEntityDeath' on 'stats v1.5.2' took 503ms
+(10:51:19) | [Oxide] 10:51 [Error] Failed to call hook 'OnEntityDeath' on plugin 'stats v1.5.2' (InvalidCastException: Cannot cast from source type to destination type.)
+(10:51:20) | [Oxide] 10:51 [Debug]   at Oxide.Plugins.Stats.OnEntityDeath (.BaseCombatEntity entity, .HitInfo hitInfo) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Stats.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+(10:51:20) | [Oxide] 10:51 [Warning] Calling 'OnEntityDeath' on 'stats v1.5.2' took 714ms
+(10:51:22) | [Oxide] 10:51 [Error] Failed to call hook 'OnEntityDeath' on plugin 'stats v1.5.2' (InvalidCastException: Cannot cast from source type to destination type.)
+(10:51:22) | [Oxide] 10:51 [Debug]   at Oxide.Plugins.Stats.OnEntityDeath (.BaseCombatEntity entity, .HitInfo hitInfo) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Stats.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+(10:51:23) | [Oxide] 10:51 [Warning] Calling 'OnEntityDeath' on 'stats v1.5.2' took 504ms
+(10:51:35) | [Oxide] 10:52 [Error] Failed to call hook 'OnEntityDeath' on plugin 'stats v1.5.2' (InvalidCastException: Cannot cast from source type to destination type.)
+(10:51:35) | [Oxide] 10:52 [Debug]   at Oxide.Plugins.Stats.OnEntityDeath (.BaseCombatEntity entity, .HitInfo hitInfo) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.Stats.DirectCallHook (System.String name, System.Object&amp; ret, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Plugins.CSharpPlugin.InvokeMethod (HookMethod method, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.CSPlugin.OnCallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+  at Oxide.Core.Plugins.Plugin.CallHook (System.String name, System.Object[] args) [0x00000] in &lt;filename unknown&gt;:0
+(10:51:36) | [Oxide] 10:52 [Warning] Calling 'OnEntityDeath' on 'stats v1.5.2' took 590ms</pre>{% endraw %}
+                        </div>Ans that&#039;s the void<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        void OnEntityDeath(BaseCombatEntity entity, HitInfo hitInfo) {
+            if(entity.lastAttacker != null &amp;&amp; entity.lastAttacker is BasePlayer) {
+                Vector3 pos = entity.lastAttacker.GetEstimatedWorldPosition();
+                if(entity is BuildingBlock || entity is SimpleBuildingBlock || entity is StabilityEntity || entity is Door || entity is StorageContainer || entity is SleepingBag || entity is BaseOven || entity is AutoTurret || entity is BuildingPrivlidge || entity is Signage || entity is Barricade || entity is BaseResourceExtractor) {
+                    executeQuery(&quot;INSERT INTO player_destroy_building (player, building, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, ((BuildingBlock)entity).blockDefinition.info.name.english, pos.x, pos.y, pos.z, getTime());
+                } else if(entity is BaseNPC) {
+                    executeQuery(&quot;INSERT INTO player_animal_kill (player, animal, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, UppercaseFirst(entity.LookupShortPrefabName()), pos.x, pos.y, pos.z, getTime());
+                } else if(entity is BasePlayer &amp;&amp; entity != entity.lastAttacker) {
+                    executeQuery(&quot;INSERT INTO player_kill (killer, victim, pos_x, pos_y, pos_z, weapon, date) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity.lastAttacker).userID, ((BasePlayer)entity).userID, pos.x, pos.y, pos.z, ((BasePlayer)entity.lastAttacker).GetActiveItem().info.displayName.english, getTime());
+                }
+            }            if(entity is BasePlayer) {
+                Vector3 pos = entity.GetEstimatedWorldPosition();
+                string cause = entity.lastDamage.ToString();
+                executeQuery(&quot;INSERT INTO player_death (player, cause, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, ((BasePlayer)entity).userID, cause, pos.x, pos.y, pos.z, getTime());
+            }
+        }</pre>{% endraw %}
+                        </div>I have no idea what I can do, it&#039;s frustrating <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie3" alt=":(" title="Frown    :(" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219401' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 10:06 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219401' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219401/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219402" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Try it instead of &quot;((BasePlayer)entity.lastAttacker).userID&quot; with &quot;(entity.lastAttacker as
+                        BasePlayer).userID&quot;.<br />
+                        <br /> in one Line you have only &quot;((BasePlayer)entity).userID&quot;, which would then be &quot;(entity as BasePlayer).userID&quot;, but i would mean, there&#039;s the
+                        &quot;lastAtttacker &quot;missing too, or? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219402' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 10:19 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219402' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219402/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219411" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">I tested the new idea, but it&#039;s the same exception error. It seams that the output of the whole entity is
+                        this-and-that is some wired for the plugin?<br /> The last if with player_death can&#039;t be lastAttacker, because that thing tracks why a player died (by animal, illness,
+                        fall damage, and so on). So no player interaction is the cause. That will be tracked by player_kill, shot by this-and-that, that means pvp action. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219411' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 11:04 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219411' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219411/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219413" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You should then check, which one is generating &quot;InvalidCastException: Cannot cast from source type to
+                        destination type.&quot; This means, you try to convert any type to another with a not supported/ not inbuilt conversion. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219413' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 11:11 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219413' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219413/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219421" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Sorry but that&#039;s the point where I&#039;ve no idea what you mean. How can I do that? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219421' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 11:50 AM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219421' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219421/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219479" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Are you alrady familiar with NET assembly browsers and decompilers?<br /> Like Ilspy?<br />
+                        <a href="http://ilspy.net/" target="_blank" class="externalLink  rel=" nofollow"><span style="color: #0000ff">ILSpy</span></a><br /> This would be needed to explain it on this
+                        example to give you the knowledge to find alone what you need for an idea <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)"
+                            title="Wink    ;)" />
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219479' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 4:39 PM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219479' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219479/permalink">#9</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219489" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Not really, I&#039;ve no idea of what kind of stuff you are talking ^^&#039;&#039; sorry but I never wrote a
+                        plugin or ripped it off and changed some things. I fixed obsolete hooks and deleted unnecessary code, but that&#039;s all. I think my problem is for the moment unsolveable,
+                        because I&#039;ve no idea and it&#039;s for over 7 months unmaintained on oxide, which means the plugin is dead. :/ <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219489' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 4:51 PM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219489' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219489/permalink">#10</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219530" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nathaira">
+                            <aside>
+                                <div class="attribution type">Nathaira said: <a href="#post-219489" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Not really, I&#039;ve no idea of what kind of stuff you are talking ^^&#039;&#039; sorry but I never wrote a plugin or ripped it off and changed
+                                        some things. I fixed obsolete hooks and deleted unnecessary code, but that&#039;s all. I think my problem is for the moment unsolveable, because I&#039;ve no
+                                        idea and it&#039;s for over 7 months unmaintained on oxide, which means the plugin is dead. :/</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>How&#039;s the name/link of this one?<br />
+                        <br /> EDIT: found it &gt; <a href="http://oxidemod.org/plugins/stats-top-and-rewards.810/" class="internalLink">Stats, Top and Rewards for Rust | Oxide</a><br /> Looks like a
+                        lot of work and prerequisites <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <br /> Is&#039;nt something like Rank-ME not capable enough for your needs? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Jun 26, 2016 at 7:53 PM">Jun 26, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219530' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 7:37 PM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219530' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219530/permalink">#11</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219542" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">No it&#039;s so much older... it&#039;s this one: <a href="http://oxidemod.org/threads/stats-unmaintained.9849/"
+                            class="internalLink">Stats [Unmaintained] | Oxide</a><br /> At one of the last pages is the latest version, the modified version of me where I fixed the hooks. <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219542' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 8:28 PM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219542' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219542/permalink">#12</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-219543" class="message" data-author="FuJiCuRa">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="FuJiCuRa" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">FuJiCuRa</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Perhaps you should start Request for someone who is interested to take this over? <div
+                            class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">FuJiCuRa</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219543' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jun 26, 2016 at 8:32 PM">Jun 26, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-219543' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/219543/permalink">#13</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-231638" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yes maybe...<br />
+                        <br /> With the new update series some core network things had changed.<br /> Can someone help me?<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(18:52:56) | [Oxide] 18:52 [Error] stats plugin failed to compile!
+(18:52:56) | [Oxide] 18:52 [Error] stats.cs(484,30): error CS1061: Type `BaseNetworkable' does not contain a definition for `LookupShortPrefabName' and no extension method `LookupShortPrefabName' of type `BaseNetworkable' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                        </div>It&#039;s this part:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>        public EntityCount() {
+            foreach(BaseNetworkable e in BaseNetworkable.serverEntities.All()) {
+                if(e is BaseNPC) {
+                    switch(((BaseNPC)e).LookupShortPrefabName()) {
+                        case &quot;horse.prefab&quot;:
+                            horses++;
+                            break;
+                        case &quot;bear.prefab&quot;:
+                            bears++;
+                            break;
+                        case &quot;wolf.prefab&quot;:
+                            wolves++;
+                            break;
+                        case &quot;chicken.prefab&quot;:
+                            chickens++;
+                            break;
+                        case &quot;boar.prefab&quot;:
+                            boars++;
+                            break;
+                        case &quot;stag.prefab&quot;:
+                            stags++;
+                            break;
+                    }
+                } else if(e is BaseResource) {
+                    switch(((BaseResource)e).LookupShortPrefabName()) {
+                        case &quot;stone-ore.prefab&quot;:
+                            stone_ore++;
+                            break;
+                        case &quot;sulfur-ore.prefab&quot;:
+                            sulfur_ore++;
+                            break;
+                        case &quot;metal-ore.prefab&quot;:
+                            metal_ore++;
+                            break;
+                    }
+                } else if(e is TreeEntity) {
+                    trees++;
+                } else if(e is PlantEntity) {
+                    switch(e.LookupShortPrefabName()) {
+                        case &quot;pumpkin.entity.prefab&quot;:
+                            pumpkins++;
+                            break;
+                        case &quot;corn.entity.prefab&quot;:
+                            corn++;
+                            break;
+                    }
+                } else if(e is CollectibleEntity) {
+                    switch(e.LookupShortPrefabName()) {
+                        case &quot;stone-1.prefab&quot;:
+                            groundStone++;
+                            break;
+                        case &quot;metalore-2.prefab&quot;:
+                            groundMetal++;
+                            break;
+                        case &quot;sulfurore-3.prefab&quot;:
+                            groundSulfur++;
+                            break;
+                        case &quot;hemp.prefab&quot;:
+                            groundHemp++;
+                            break;
+                        case &quot;wood.prefab&quot;:
+                            groundWood++;
+                            break;
+                        case &quot;mushroom-cluster-1.prefab&quot;:
+                        case &quot;mushroom-cluster-2.prefab&quot;:
+                        case &quot;mushroom-cluster-3.prefab&quot;:
+                        case &quot;mushroom-cluster-4.prefab&quot;:
+                        case &quot;mushroom-cluster-5.prefab&quot;:
+                        case &quot;mushroom-cluster-6.prefab&quot;:
+                            groundMushroom++;
+                            break;
+                    }
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231638' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2016 at 5:55 PM">Jul 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231638' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/231638/permalink">#14</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-231695" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nathaira">
+                            <aside>
+                                <div class="attribution type">Nathaira said: <a href="#post-231638" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Yes maybe...<br />
+                                        <br /> With the new update series some core network things had changed.<br /> Can someone help me?<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>(18:52:56) | [Oxide] 18:52 [Error] stats plugin failed to compile!
+(18:52:56) | [Oxide] 18:52 [Error] stats.cs(484,30): error CS1061: Type `BaseNetworkable' does not contain a definition for `LookupShortPrefabName' and no extension method `LookupShortPrefabName' of type `BaseNetworkable' could be found. Are you missing an assembly reference?</pre>{% endraw %}
+                                        </div>It&#039;s this part:<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>        public EntityCount() {
+            foreach(BaseNetworkable e in BaseNetworkable.serverEntities.All()) {
+                if(e is BaseNPC) {
+                    switch(((BaseNPC)e).LookupShortPrefabName()) {
+                        case &quot;horse.prefab&quot;:
+                            horses++;
+                            break;
+                        case &quot;bear.prefab&quot;:
+                            bears++;
+                            break;
+                        case &quot;wolf.prefab&quot;:
+                            wolves++;
+                            break;
+                        case &quot;chicken.prefab&quot;:
+                            chickens++;
+                            break;
+                        case &quot;boar.prefab&quot;:
+                            boars++;
+                            break;
+                        case &quot;stag.prefab&quot;:
+                            stags++;
+                            break;
+                    }
+                } else if(e is BaseResource) {
+                    switch(((BaseResource)e).LookupShortPrefabName()) {
+                        case &quot;stone-ore.prefab&quot;:
+                            stone_ore++;
+                            break;
+                        case &quot;sulfur-ore.prefab&quot;:
+                            sulfur_ore++;
+                            break;
+                        case &quot;metal-ore.prefab&quot;:
+                            metal_ore++;
+                            break;
+                    }
+                } else if(e is TreeEntity) {
+                    trees++;
+                } else if(e is PlantEntity) {
+                    switch(e.LookupShortPrefabName()) {
+                        case &quot;pumpkin.entity.prefab&quot;:
+                            pumpkins++;
+                            break;
+                        case &quot;corn.entity.prefab&quot;:
+                            corn++;
+                            break;
+                    }
+                } else if(e is CollectibleEntity) {
+                    switch(e.LookupShortPrefabName()) {
+                        case &quot;stone-1.prefab&quot;:
+                            groundStone++;
+                            break;
+                        case &quot;metalore-2.prefab&quot;:
+                            groundMetal++;
+                            break;
+                        case &quot;sulfurore-3.prefab&quot;:
+                            groundSulfur++;
+                            break;
+                        case &quot;hemp.prefab&quot;:
+                            groundHemp++;
+                            break;
+                        case &quot;wood.prefab&quot;:
+                            groundWood++;
+                            break;
+                        case &quot;mushroom-cluster-1.prefab&quot;:
+                        case &quot;mushroom-cluster-2.prefab&quot;:
+                        case &quot;mushroom-cluster-3.prefab&quot;:
+                        case &quot;mushroom-cluster-4.prefab&quot;:
+                        case &quot;mushroom-cluster-5.prefab&quot;:
+                        case &quot;mushroom-cluster-6.prefab&quot;:
+                            groundMushroom++;
+                            break;
+                    }
+                }
+            }
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Replace LookupShortPrefabName() with ShortPrefabName, this was changed in the Rust update last week. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231695' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2016 at 8:16 PM">Jul 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231695' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/231695/permalink">#15</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-231699" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Thank you so much, but there is more broken, it&#039;ll not compile.<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>(21:19:56) | [Oxide] 21:19 [Error] stats plugin failed to compile!
+(21:19:56) | [Oxide] 21:19 [Error] stats.cs(391,143): error CS1061: Type `Planner' does not contain a definition for `ownerPlayer' and no extension method `ownerPlayer' of type `Planner' could be found. Are you missing an assembly reference?        void OnEntityBuilt(Planner planner, GameObject component) {
+            Vector3 pos = planner.ownerPlayer.GetEstimatedWorldPosition();
+            string name = component.ToBaseEntity().ShortPrefabName;
+            if(component.ToBaseEntity() is BuildingBlock) {
+                name = ((BuildingBlock)component.ToBaseEntity()).blockDefinition.info.name.english;
+            }
+            executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, planner.ownerPlayer.userID, name, pos.x, pos.y, pos.z, getTime());
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231699' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2016 at 8:22 PM">Jul 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231699' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/231699/permalink">#16</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-231701" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Nathaira">
+                            <aside>
+                                <div class="attribution type">Nathaira said: <a href="#post-231699" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thank you so much, but there is more broken, it&#039;ll not compile.<br />
+                                        <br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>(21:19:56) | [Oxide] 21:19 [Error] stats plugin failed to compile!
+(21:19:56) | [Oxide] 21:19 [Error] stats.cs(391,143): error CS1061: Type `Planner' does not contain a definition for `ownerPlayer' and no extension method `ownerPlayer' of type `Planner' could be found. Are you missing an assembly reference?        void OnEntityBuilt(Planner planner, GameObject component) {
+            Vector3 pos = planner.ownerPlayer.GetEstimatedWorldPosition();
+            string name = component.ToBaseEntity().ShortPrefabName;
+            if(component.ToBaseEntity() is BuildingBlock) {
+                name = ((BuildingBlock)component.ToBaseEntity()).blockDefinition.info.name.english;
+            }
+            executeQuery(&quot;INSERT INTO player_place_building (player, building, pos_x, pos_y, pos_z, date) VALUES (?, ?, ?, ?, ?, ?)&quot;, planner.ownerPlayer.userID, name, pos.x, pos.y, pos.z, getTime());
+        }</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Same thing, ownerPlayer replaced with GetOwnerPlayer() per Rust update the other day. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231701' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2016 at 8:25 PM">Jul 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231701' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/231701/permalink">#17</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-231706" class="message" data-author="Nathaira">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Nathaira" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Nathaira</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">You&#039;re my hero :3<br /> Thank you Wulf <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Nathaira</a>,</span>
+                        <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231706' | prepend: site.baseurl }}" title="Permalink"
+                            class="datePermalink"><span class="DateTime" title="Jul 17, 2016 at 8:32 PM">Jul 17, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/cant-track-destroyed-buildings-with-prefab-but-walls-foundations-work.18925/#post-231706' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/231706/permalink">#18</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

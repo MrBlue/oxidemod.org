@@ -1,0 +1,299 @@
+---
+layout: forums
+title: 'Help with porting a plugin'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/help-with-porting-a-plugin.13441/' | prepend: site.baseurl }}">Help with porting a plugin</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">denalb</a>, <a href="{{ '/threads/help-with-porting-a-plugin.13441/' | prepend: site.baseurl }}"><span class="DateTime" title="Dec 15, 2015 at 7:26 PM">Dec 15, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-151536" class="message" data-author="denalb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="denalb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">denalb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hello all,<br />
+                        <br /> I&#039;ve been desperate to try and get a Kick/Ban plugin working in Hurtworld. I&#039;m super new to any kind of programming language, but I&#039;ve been working for
+                        the past day in porting KickBan from Rust Legacy to Hurtworld. I&#039;ve got it to the point that I can do everything in chat, except have the commands actually execute.
+                        I&#039;m not sure how to even ask this, but does anyone know how to take this small line of code and get it to execute the Hurtworld Kick and Ban commands?<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void cmdKick(string userid, string name, string reason)
+        {
+            cachedUser = rust.FindPlayer(userid);
+            if (cachedUser != null)
+            {
+                cachedUser.Kick(NetError.Facepunch_Kick_RCON, true);
+            }
+        }
+        void cmdBan(string userid, string name = &quot;Unknown&quot;, string reason = &quot;Unkown&quot;)
+        {
+            ulong playerid;
+            if (!ulong.TryParse(userid, out playerid))
+            {
+                return;
+            }          
+            cachedUser = rust.FindPlayer(userid);
+            if (cachedUser != null)
+            {
+                cachedUser.Kick(NetError.ConnectionBanned, true);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">denalb</a>,</span>
+                        <a href="{{ '/threads/help-with-porting-a-plugin.13441/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 15, 2015 at 7:26 PM">Dec 15, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-porting-a-plugin.13441/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/151536/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-151681" class="message" data-author="Мизантроп">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Мизантроп" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Мизантроп</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+PlayerIdentity getPlayerFromUid(string uid)
+        {
+            var identityMap = GameManager.Instance.GetIdentityMap();
+            var identity = identityMap.FirstOrDefault(x =&gt; string.Equals(x.Value.SteamId.m_SteamID.ToString().ToLower(), uid.ToLower())).Value;
+            return identity;
+        }
+void cmdKick(string userid, string name, string reason)
+        {
+cachedUser = getPlayerFromUid(userid);
+if (cachedUser != null)
+            {
+                                GameManager instance = Singleton&lt;GameManager&gt;.Instance;
+                                if (instance == null) return;
+                                instance.KickPlayer(cachedUser.SteamId.m_SteamID.ToString(), reason);
+            }
+        }
+void cmdBan(string userid, string name = &quot;Unknown&quot;, string reason = &quot;Unkown&quot;)
+        {
+ulong playerid;
+if (!ulong.TryParse(userid, out playerid))
+            {
+return;
+            }        
+cachedUser = getPlayerFromUid(userid);
+if (cachedUser != null)
+            {
+                        ConsoleManager.Instance?.ExecuteCommand(&quot;ban &quot;+userid);
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Мизантроп</a>,</span>
+                        <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151681' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2015 at 5:44 AM">Dec 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151681' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/151681/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-151683" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Мизантроп">
+                            <aside>
+                                <div class="attribution type">Мизантроп said: <a href="#post-151681" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">-snip-</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>A lot of that is unnecessary. Here are some suggestions:<br />
+                        <ul>
+                            <li>The PlayerIdentity already provides the NetworkPlayer via ConnectedNetworkPlayer.Value, so I&#039;d remove getPlayerFromUid.</li>
+                            <li>You can get the GameManager instance with just GameManager.Instance, the Singleton is not required.</li>
+                            <li>The Steam ID is available with SteamId along, the m_SteamID is not needed.<br />
+                            </li>
+                            <li>You could handle the kicking and command execution via Oxide&#039;s Covalence API as well.</li>
+                        </ul>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151683' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2015 at 5:50 AM">Dec 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151683' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/151683/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-151840" class="message" data-author="denalb">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="denalb" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">denalb</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Мизантроп">
+                            <aside>
+                                <div class="attribution type">Мизантроп said: <a href="#post-151681" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">-snipped-</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>I really appreciate you taking the time to help me with this. This has enabled me to get a working plugin that allows me to use oxide permissions to allow my moderators
+                        to kick and ban in the server without having full admin access to the server. This has saved me a lot of worry with giving players the ability to moderate without me being
+                        fully involved 24/7.<br /> [DOUBLEPOST=1450290864][/DOUBLEPOST]My code is complete garbage and I&#039;m sure there is a lot that can be cleaned up (I had never touched
+                        programming before trying to port this plugin), but it is functioning as expected. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">denalb</a>,</span>
+                        <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151840' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2015 at 6:33 PM">Dec 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151840' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/151840/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-151849" class="message" data-author="Hatemail">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Hatemail" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Hatemail</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="denalb">
+                            <aside>
+                                <div class="attribution type">denalb said: <a href="#post-151840" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I really appreciate you taking the time to help me with this. This has enabled me to get a working plugin that allows me to use oxide permissions
+                                        to allow my moderators to kick and ban in the server without having full admin access to the server. This has saved me a lot of worry with giving players the
+                                        ability to moderate without me being fully involved 24/7.<br /> [DOUBLEPOST=1450290864][/DOUBLEPOST]My code is complete garbage and I&#039;m sure there is a lot
+                                        that can be cleaned up (I had never touched programming before trying to port this plugin), but it is functioning as expected.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>It works though right? That is what matters to you. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Hatemail</a>,</span>
+                        <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151849' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Dec 16, 2015 at 7:02 PM">Dec 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/help-with-porting-a-plugin.13441/#post-151849' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/151849/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

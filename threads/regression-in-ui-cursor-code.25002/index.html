@@ -1,0 +1,281 @@
+---
+layout: forums
+title: 'Solved - Regression in UI cursor code'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/regression-in-ui-cursor-code.25002/' | prepend: site.baseurl }}">Regression in UI cursor code</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">windowmaker</a>, <a href="{{ '/threads/regression-in-ui-cursor-code.25002/' | prepend: site.baseurl }}"><span class="DateTime" title="Apr 17, 2017 at 5:06 AM">Apr 17,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-316073" class="message" data-author="windowmaker">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="windowmaker" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">windowmaker</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi All,<br />
+                        <br /> In my private mod I have a cursor UI with tabs where I was originally having issues with the cursor resetting to the middle each time the UI was re-rendered. I fixed
+                        this by using rendering logic such that only a a subcontainer (referencing the main one as parent) is re-rendered. This rendering logic gave me the desired behavior where the
+                        cursor is untouched when the subpanel is re-rendered.<br />
+                        <br /> After I reinstalled Oxide on my server and now it appears the cursor resets every time I render the sub-container.<br />
+                        <br /> Is anyone else experiencing this? Is this a bug in the Cui code, or Oxide?<br />
+                        <br /> Thanks<br />
+                        <br /> This is a code snippet:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>public static void CreateWPUI(OnlinePlayer onlinePlayer, string page = &quot;info&quot;)
+            {
+                ...                CuiElementContainer mainWindow;
+                if (onlinePlayer.WPMainUI == null)
+                {
+                    DestroyWPUI(onlinePlayer);
+                    mainWindow = CreateElementContainer(WPUI_Name, UIColors[&quot;dark&quot;], MainMin, MainMax, true);
+                    onlinePlayer.WPMainUI = mainWindow;                    CreatePanel(ref mainWindow, WPUI_Name, UIColors[&quot;headerbg&quot;], &quot;0.01 0.81&quot;, &quot;0.99 0.96&quot;);
+                    //CreateLabel(ref contentsContainer, WPUI_Contents, string.Empty, headerButton1, 25, ns(button1x1, headerMinY), ns(button1x2, headerMaxY));                    CreateButton(ref mainWindow, WPUI_Name, UIColors[&quot;transparentgrey&quot;], headerButton1, 25, ns(button1x1, headerMinY), ns(button1x2, headerMaxY), &quot;WPUI_Control info&quot;);
+                    CreateButton(ref mainWindow, WPUI_Name, UIColors[&quot;transparentgrey&quot;], headerButton2, 25, ns(button2x1, headerMinY), ns(button2x2, headerMaxY), &quot;WPUI_Control events&quot;);
+                    CreateButton(ref mainWindow, WPUI_Name, UIColors[&quot;transparentgrey&quot;], headerButton3, 25, ns(button3x1, headerMinY), ns(button3x2, headerMaxY), &quot;WPUI_Control currencymenu&quot;);
+                    CreateButton(ref mainWindow, WPUI_Name, UIColors[&quot;transparentgrey&quot;], headerButton4, 25, ns(button4x1, headerMinY), ns(button4x2, headerMaxY), &quot;WPUI_Control shop&quot;);                    CreateButton(ref mainWindow, WPUI_Name, UIColors[&quot;grey2&quot;], &quot;X&quot;, 14, &quot;0.95 0.961&quot;, ns(headerMaxX, 0.99f), &quot;WPUI_Control closeui&quot;);                    CuiHelper.AddUi(onlinePlayer.Player, mainWindow);
+                }
+                else
+                {
+                    mainWindow = onlinePlayer.WPMainUI;
+                }                CuiElementContainer mainSectionContainer = CreateElementContainer(WPUI_Contents, UIColors[&quot;mainsection&quot;], &quot;0.01 0.15&quot;, &quot;0.99 0.81&quot;, true, WPUI_Name);                string message = &quot;Test message!&quot;;
+                switch (page)
+                {
+                    case &quot;info&quot;:
+                        SetInfoSection(mainSectionContainer, WPUI_Contents);
+                        break;
+                    case &quot;events&quot;:
+                        SetEventsSection(mainSectionContainer, WPUI_Contents, onlinePlayer);
+                        break;
+                    case &quot;currencymenu&quot;:
+                    case &quot;shop&quot;:
+                        message = &quot;Currency &amp; Shop coming soon!&quot;;
+                        message = $&quot;&lt;color=#C4FF00&gt;{message}&lt;/color&gt;&quot;;
+                        CreateLabel(ref mainSectionContainer, WPUI_Contents, string.Empty, message, 16, &quot;0.01 0.20&quot;, ns(0.99f, headerMinY - 0.01f));
+                        //CreateLabel(ref mainSectionContainer, WPUI_Contents, string.Empty, message, 16, &quot;0.01 0.20&quot;, ns(0.99f, headerMinY - 0.01f));
+                        break;
+                    default:
+                        break;
+                }                CuiHelper.DestroyUi(onlinePlayer.Player, WPUI_Contents);
+                CuiHelper.AddUi(onlinePlayer.Player, mainSectionContainer);
+            }public static void DestroyWPUI(OnlinePlayer onlinePlayer)
+            {
+                onlinePlayer.Player.ConsoleMessage(&quot;Destroying/recreating UI.&quot;); // to assist debugging                onlinePlayer.WPMainUI = null;
+                CuiHelper.DestroyUi(onlinePlayer.Player, WPUI_Contents);
+                CuiHelper.DestroyUi(onlinePlayer.Player, WPUI_Name);
+            }public class OnlinePlayer
+        {
+            public BasePlayer Player;
+            ..
+            public CuiElementContainer WPMainUI = null;
+            ..            public void OnDisconnect()
+            {
+                try
+                {
+                    Interface.Oxide.LogInfo(&quot;Destroying online player {0}.&quot;, Player.displayName);
+                    ..
+                    WPUI.DestroyWPUI(this);
+                    ..
+                }
+                catch (Exception ex)
+                {
+                    Interface.Oxide.LogInfo(ex.ToString());
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Apr 17, 2017 at 5:24 AM">Apr 17, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">windowmaker</a>,</span>
+                        <a href="{{ '/threads/regression-in-ui-cursor-code.25002/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 17, 2017 at 5:06 AM">Apr 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/regression-in-ui-cursor-code.25002/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/316073/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316076" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> The CUI is provided by Rust, so it would be an issue with it generally. <div class="messageTextEndMarker">&nbsp;
+                        </div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316076' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 17, 2017 at 5:24 AM">Apr 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316076' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/316076/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316097" class="message" data-author="windowmaker">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="windowmaker" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">windowmaker</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I think Rust devs had a JIRA page or something for reporting bugs. Do you know if there&#039;s a special way to
+                        report mod-related bugs? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">windowmaker</a>,</span>
+                        <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316097' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 17, 2017 at 7:29 AM">Apr 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316097' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/316097/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-316164" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="windowmaker">
+                            <aside>
+                                <div class="attribution type">windowmaker said: <a href="#post-316097" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">I think Rust devs had a JIRA page or something for reporting bugs. Do you know if there&#039;s a special way to report mod-related bugs?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The CUI is provided by Rust, so it&#039;d be the same place for reporting. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316164' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 17, 2017 at 2:23 PM">Apr 17, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-316164' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/316164/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-317864" class="message" data-author="windowmaker">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="windowmaker" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">windowmaker</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> This has been fixed in the latest patch. Thanks. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">windowmaker</a>,</span>
+                        <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-317864' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Apr 23, 2017 at 8:15 AM">Apr 23, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/regression-in-ui-cursor-code.25002/#post-317864' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/317864/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

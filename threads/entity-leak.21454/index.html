@@ -1,0 +1,310 @@
+---
+layout: forums
+title: 'Entity Leak'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/entity-leak.21454/' | prepend: site.baseurl }}">Entity Leak</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">CombatTag</a>, <a href="{{ '/threads/entity-leak.21454/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 14, 2016 at 12:19 AM">Oct 14, 2016</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-258726" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> On my server players were having issues with a long receiving data screen. After a lot of debugging I found that
+                        long receiving data screens only happened when you teleported to an arena near 0, 0, 0 on the map. I then used <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Resources.FindObjectsOfTypeAll&lt;BaseEntity&gt;()</pre>{% endraw %}
+                        </div> to loop through all the BaseEntities on the map and checked if the location was 0, 0, 0 and found there was about 90,000 entities at that location. I made this solution
+                        that runs every minute to cleanup those entities.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>getInstance().timer.Repeat(60, 0, () =&gt;
+                {
+                    var i = 0;                    var foundEntities = Resources.FindObjectsOfTypeAll&lt;BaseEntity&gt;();                    foreach (var currentObject in foundEntities)
+                    {
+                        if (currentObject.ToString().Contains(&quot;[0]&quot;)) continue; //Don't kill RPC items                        if (!(currentObject is HeldEntity) &amp;&amp; !(currentObject is ProjectileWeaponMod)) continue; //The only entities that I found at 0, 0, 0 were HeldEntities and ProjectileWeaponMods so filter the reset out.
+                        if (currentObject.GetParentEntity() != null) continue; // In the case that someone is holding the weapon or it's an attachment on a gun do not delete it. TODO: Do not delete attachments in player's inventory.                        currentObject.Kill();
+                        i++;
+                    }                    Puts(&quot;Killed &quot; + i + &quot; of &quot; + foundEntities.Length);
+                });</pre>{% endraw %}
+                        </div>This works for the most part, but if a player has an attachment in their inventory (not attached to a weapon) it will be destroyed when this code runs and when they
+                        attach the attachment to their gun, the attachment will not work. My idea to prevent these entities from being destroyed would be to check if the parent of the Item is null
+                        because when the item is removed from a container the parent of the item is set to null guaranteeing that the item is not in someones inventory.<br />
+                        <br />
+                        <b>Relevant code in Item</b><br /> The method I would call to check if the parent is null.<br />
+                        <img src="proxy.php?image=https%3A%2F%2Fi.gyazo.com%2Fa1b52abbc44da8c47d751ec303ccfcf7.png&amp;hash=c4910bafd3c79eba7cdce38f0a5d8a60" class="bbCodeImage LbImage"
+                            alt="[&#x200B;IMG]" data-url="https://i.gyazo.com/a1b52abbc44da8c47d751ec303ccfcf7.png" /><br /> When an item is removed from a container you can see that the parent is set
+                        to null.<br />
+                        <img src="proxy.php?image=https%3A%2F%2Fi.gyazo.com%2F8d9994ba6b1009b38d924d4efc28c7a9.png&amp;hash=b7b3c0377b73f33d87d76438081c8935" class="bbCodeImage LbImage"
+                            alt="[&#x200B;IMG]" data-url="https://i.gyazo.com/8d9994ba6b1009b38d924d4efc28c7a9.png" /><br />
+                        <br /> The problem is that a ProjectileItemMod doesn&#039;t extend an Item so I can&#039;t cast it to an Item and I don&#039;t know how to find the Item that is associated with
+                        the ProjectileItemMod to check if it&#039;s actually in someone&#039;s inventory or not. It should be noted that when I checked for all object that were an instance of an Item
+                        everything in my inventory was found except for the attachments. The only way that I see the attachments in my inventory is if I check for ProjectileItemMods which is mixed in
+                        with items that should be deleted at 0, 0, 0. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Oct 14, 2016 at 12:31 AM">Oct 14, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/entity-leak.21454/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime" title="Oct 14, 2016 at 12:19 AM">Oct 14,
+                                2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/entity-leak.21454/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258726/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-258731" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Sounds like <a href="http://oxidemod.org/threads/a-lot-of-players-stuck-on-receiving-data.18708/"
+                            class="internalLink">A lot of players stuck on receiving data | Oxide</a> again. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/entity-leak.21454/#post-258731' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2016 at 12:27 AM">Oct 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/entity-leak.21454/#post-258731' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258731/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-258747" class="message" data-author="CombatTag">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="CombatTag" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">CombatTag</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-258731" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sounds like <a href="http://oxidemod.org/threads/a-lot-of-players-stuck-on-receiving-data.18708/" class="internalLink">A lot of players stuck on
+                                            receiving data | Oxide</a> again.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>There is someone in that thread trying to do something similar, but the way they are doing it doesn&#039;t delete the HeldEntities. Do you have any idea how I could
+                        determine what Item goes with each ProjectileWeaponMod? <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">CombatTag</a>,</span>
+                        <a href="{{ '/threads/entity-leak.21454/#post-258747' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2016 at 1:59 AM">Oct 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/entity-leak.21454/#post-258747' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258747/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-258781" class="message" data-author="Shady757">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Shady757" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Shady757</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-258731" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Sounds like <a href="http://oxidemod.org/threads/a-lot-of-players-stuck-on-receiving-data.18708/" class="internalLink">A lot of players stuck on
+                                            receiving data | Oxide</a> again.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Because it is, and the outcome is probably going to be the same;<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeQuote" data-author="CombatTag">
+                            <aside>
+                                <div class="attribution type">CombatTag said: <a href="#post-258747" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">There is someone in that thread trying to do something similar, but the way they are doing it doesn&#039;t delete the HeldEntities. Do you have
+                                        any idea how I could determine what Item goes with each ProjectileWeaponMod?</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>What you&#039;re going to find is that it causes more issues than it&#039;s most likely worth. Back when I tested it (albeit a fair bit of time ago) it not only messed up
+                        attachments, and third person view models, but it also made code locks disappear.<br />
+                        <br /> I&#039;m not sure if your check for &quot;RPC items&quot; stops some of the things I mentioned above, but after some time you&#039;ll probably still find more
+                        issues.<br />
+                        <br /> Facepunch claimed to have fixed it a while back, though it doesn&#039;t seem to be fully fixed or maybe even at all.<br />
+                        <br /> While this code isn&#039;t exactly optimal or even clean, it does work:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+BaseProjectile FindModParent(ProjectileWeaponMod weaponMod)
+        {
+            if (weaponMod == null) return null;
+            for(int i = 0; i &lt; BasePlayer.activePlayerList.Count; i++)
+            {
+                var player = BasePlayer.activePlayerList[i];
+                var allItems = player.inventory.AllItems();
+                if (allItems.Length &lt; 1) continue;
+                for(int j = 0; j &lt; allItems.Length; j++)
+                {
+                    var item = allItems[j];
+                    var proj = item?.GetHeldEntity()?.GetComponent&lt;BaseProjectile&gt;() ?? null;
+                    if (proj == null) continue;
+                    var contents = item.contents?.itemList ?? null;
+                    if (contents == null || contents.Count &lt; 1) continue;
+                    for(int k = 0; k &lt; contents.Count; k++)
+                    {
+                        var mod = contents[k];
+                        var projMod = mod?.GetHeldEntity()?.GetComponent&lt;ProjectileWeaponMod&gt;() ?? null;
+                        if (projMod != null) return proj;
+                    }
+                }
+            }
+            for(int i = 0; i &lt; BasePlayer.sleepingPlayerList.Count; i++)
+            {
+                var player = BasePlayer.sleepingPlayerList[i];
+                var allItems = player.inventory.AllItems();
+                if (allItems.Length &lt; 1) continue;
+                for (int j = 0; j &lt; allItems.Length; j++)
+                {
+                    var item = allItems[j];
+                    var proj = item?.GetHeldEntity()?.GetComponent&lt;BaseProjectile&gt;() ?? null;
+                    if (proj == null) continue;
+                    var contents = item.contents?.itemList ?? null;
+                    if (contents == null || contents.Count &lt; 1) continue;
+                    for (int k = 0; k &lt; contents.Count; k++)
+                    {
+                        var mod = contents[k];
+                        var projMod = mod?.GetHeldEntity()?.GetComponent&lt;ProjectileWeaponMod&gt;() ?? null;
+                        if (projMod != null) return proj;
+                    }
+                }
+            }
+            var boxes = GameObject.FindObjectsOfType&lt;StorageContainer&gt;();
+            for(int i = 0; i &lt; boxes.Length; i++)
+            {
+                var box = boxes[i];
+                var allItems = box?.inventory?.itemList ?? null;
+                if (allItems == null || allItems.Count &lt; 1) continue;
+                for (int j = 0; j &lt; allItems.Count; j++)
+                {
+                    var item = allItems[j];
+                    var proj = item?.GetHeldEntity()?.GetComponent&lt;BaseProjectile&gt;() ?? null;
+                    if (proj == null) continue;
+                    var contents = item.contents?.itemList ?? null;
+                    if (contents == null || contents.Count &lt; 1) continue;
+                    for (int k = 0; k &lt; contents.Count; k++)
+                    {
+                        var mod = contents[k];
+                        var projMod = mod?.GetHeldEntity()?.GetComponent&lt;ProjectileWeaponMod&gt;() ?? null;
+                        if (projMod != null) return proj;
+                    }
+                }
+            }
+            return null;
+        }</pre>{% endraw %}
+                        </div>Hopefully you can modify this to your needs, but I really do think you&#039;re messing with something that&#039;s better left untouched. <img
+                            src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie2" alt=";)" title="Wink    ;)" /><br />
+                        <br /> EDIT: Also, I just realized you&#039;re probably just wanting to check if the mod is used or not, like a simple bool, but you can of course modify the above code to do
+                        just that, I assume.<br />
+                        <br /> EDIT 2: It&#039;s also worth noting that FindObjectsOfType is very slow, I&#039;d recommend using it on server init, and then putting it into a list, then when something
+                        is spawned add to the list, and when it dies, remove it from the list. It&#039;s what I do when I want to optimize something that needs to find all the objects of that type.
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Oct 14, 2016 at 7:07 AM">Oct 14, 2016</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Shady757</a>,</span>
+                        <a href="{{ '/threads/entity-leak.21454/#post-258781' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 14, 2016 at 6:55 AM">Oct 14, 2016</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/entity-leak.21454/#post-258781' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/258781/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

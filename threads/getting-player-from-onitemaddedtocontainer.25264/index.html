@@ -1,0 +1,203 @@
+---
+layout: forums
+title: 'Getting player from OnItemAddedToContainer?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/' | prepend: site.baseurl }}">Getting player from OnItemAddedToContainer?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Rebajas</a>, <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/' | prepend: site.baseurl }}"><span class="DateTime" title="May 3, 2017 at 3:41 PM">May 3,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-320554" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I&#039;m trying to get either the player or location details when someone loots a pumpjack or quarry. Is this
+                        possible, I&#039;d have thought it&#039;d be pretty easy. But so far I&#039;ve drawn a blank.<br />
+                        <br /> Thanks in advance,<br />
+                        <br />
+                        <br /> T. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 3:41 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/320554/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320563" class="message" data-author="serezhadelaet">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="serezhadelaet" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">serezhadelaet</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>void OnLootEntity(BasePlayer player, BaseEntity entity) {
+   if (entity.parentEntity.Get(true)?.GetComponent&lt;MiningQuarry&gt;() != null)
+      Puts($&quot;{player.displayName} looting {entity.parentEntity.Get(true).ShortPrefabName}&quot;);
+}</pre>{% endraw %}
+                        </div> for examle like that.<br /> upd: Bad idea. Wait, I&#039;ll try something better <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)"
+                            title="Smile    :)" /><br /> upd: Never mind, use this <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        upd: Okay, next example will be faster, but requied some list of shortNames from needed entities<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>List&lt;string&gt; neededShortNames = new List&lt;string&gt; {
+   &quot;fuelstorage&quot;,
+   &quot;hopperoutput&quot;
+};
+void OnLootEntity(BasePlayer player, BaseEntity entity) {
+   var st = entity.GetComponent&lt;StorageContainer&gt;();
+   if (neededShortNames.Contains(st?.inventory.entityOwner.ShortPrefabName)) {
+      Puts($&quot;{player.displayName} looting {st.inventory.entityOwner.ShortPrefabName} at {entity.transform.position}&quot;);
+   }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="May 3, 2017 at 5:05 PM">May 3, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">serezhadelaet</a>,</span>
+                        <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320563' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 4:10 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320563' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320563/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320580" class="message" data-author="Rebajas">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Rebajas" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Rebajas</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thanks, will this only trigger when an item is actually removed/added - or is this triggered upon viewing the
+                        LootContainer?<br />
+                        <br /> T. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Rebajas</a>,</span>
+                        <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320580' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 5:18 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320580' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320580/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-320606" class="message" data-author="serezhadelaet">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="serezhadelaet" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">serezhadelaet</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Rebajas">
+                            <aside>
+                                <div class="attribution type">Rebajas said: <a href="#post-320580" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">Thanks, will this only trigger when an item is actually removed/added - or is this triggered upon viewing the LootContainer?<br />
+                                        <br /> T.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>&quot;Called when the player starts looting an entity&quot; <a href="http://docs.oxidemod.org/rust/#onlootentity" target="_blank" class="externalLink  rel="
+                            nofollow">Oxide API for Rust</a>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">serezhadelaet</a>,</span>
+                        <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320606' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="May 3, 2017 at 6:04 PM">May 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/getting-player-from-onitemaddedtocontainer.25264/#post-320606' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/320606/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

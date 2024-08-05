@@ -1,0 +1,605 @@
+---
+layout: forums
+title: 'Accessing SteamClient.BuildId on Rust server?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/' | prepend: site.baseurl }}">Accessing SteamClient.BuildId on Rust server?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">Kolyma</a>, <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/' | prepend: site.baseurl }}"><span class="DateTime" title="Oct 2, 2017 at 2:03 AM">Oct 2,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-353721" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Can someone help me determine the Steam build id version of a running Rust dedicated server from C#? I suppose
+                        this can be done by checking the local `steamapps\appmanifest_xxxxxx` file, but I like to see if that number can be determined through some kind of code without file-level
+                        parsing.<br />
+                        <br /> I know the AppId and BuildId exist somewhere when the server is running because I can find them through WinDbg. Using JustDecompile on Rust.Global.dll shows BuildId
+                        declared in Rust.Global.SteamClient as a Client type.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Rust.Global.dllnamespace Rust
+{
+    public static class Global
+    {
+        ...        public static Client SteamClient
+        {
+            get;
+            set;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Facepunch.Steamworks.dllnamespace Facepunch.Steamworks
+{
+    public class Client : BaseSteamworks, IDisposable
+    {
+        ...
+   
+        public int BuildId
+        {
+            get;
+            private set;
+        }
+    }
+}</pre>{% endraw %}
+                        </div>There appears to be a SingletonComponent defined in Assembly-CSharp.dll for SteamClient<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>Assembly-CSharp.dllpublic class SteamClient : SingletonComponent&lt;SteamClient&gt;
+{
+    public SteamClient()
+    {
+    }
+}</pre>{% endraw %}
+                        </div>But I can&#039;t figure out how to get the value of SteamClient.BuildId . I&#039;m working with an OxideMod extension so I&#039;m outside of the sandboxing. I&#039;ve
+                        used non-OxideMod objects and methods from other core areas of Rust dlls elsewhere, so I&#039;m sure this must be possible. When I try code like below, I get an error
+                        &quot;object reference not set to an instance of an object&quot;<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>int x1 = (int) SteamClient.Instance.GetInstanceField(&quot;BuildId&quot;);</pre>{% endraw %}
+                        </div>I&#039;ve got to be close, because I can do this and it compiles/runs fine (of course without being able to get BuildId)<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SteamClient b1 = SteamClient.Instance;</pre>{% endraw %}
+                        </div>TIA <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 2, 2017 at 2:28 AM">Oct 2, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Oct 2, 2017 at 2:03 AM">Oct 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/353721/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-353763" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">The Steamworks library is actually used for both the game clients and the server which is why you have the code
+                        available for Facepunch.Steamworks.Client and Facepunch.Steamworks.Server. However these two are never initialized together. On a server an instance will be created of
+                        Facepunch.Steamworks.Server while the clients will have an instance of Facepunch.Steamworks.Client which is why you are running into a NullReferenceException.<br />
+                        <br /> Some debug output:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>SteamClient: null
+SteamServer: Facepunch.Steamworks.Server
+ &lt;Query&gt;k__BackingField: Facepunch.Steamworks.ServerQuery
+         server: Facepunch.Steamworks.Server
+                 &lt;Query&gt;k__BackingField: Facepunch.Steamworks.ServerQuery
+                 &lt;Stats&gt;k__BackingField: Facepunch.Steamworks.ServerStats
+                 &lt;Auth&gt;k__BackingField: Facepunch.Steamworks.ServerAuth
+                 _dedicatedServer: True
+                 _maxplayers: 10
+                 _botcount: 0
+                 _mapname: Procedural Map
+                 _modDir: rust
+                 _product: 252490
+                 _gameDescription: Rust
+                 _serverName: Mughisi's Playground
+                 _passworded: False
+                 _gametags: mp10,cp0,qp0,v2017,h4bcc25f1,stok,born1505842473
+                 KeyValue: System.Collections.Generic.Dictionary`2[System.String,System.String]
+                 native: Facepunch.Steamworks.Interop.NativeInterface
+ &lt;Stats&gt;k__BackingField: Facepunch.Steamworks.ServerStats
+         server: Facepunch.Steamworks.Server
+                 &lt;Query&gt;k__BackingField: Facepunch.Steamworks.ServerQuery
+                 &lt;Stats&gt;k__BackingField: Facepunch.Steamworks.ServerStats
+                 &lt;Auth&gt;k__BackingField: Facepunch.Steamworks.ServerAuth
+                 _dedicatedServer: True
+                 _maxplayers: 10
+                 _botcount: 0
+                 _mapname: Procedural Map
+                 _modDir: rust
+                 _product: 252490
+                 _gameDescription: Rust
+                 _serverName: Mughisi's Playground
+                 _passworded: False
+                 _gametags: mp10,cp0,qp0,v2017,h4bcc25f1,stok,born1505842473
+                 KeyValue: System.Collections.Generic.Dictionary`2[System.String,System.String]
+                 native: Facepunch.Steamworks.Interop.NativeInterface
+ &lt;Auth&gt;k__BackingField: Facepunch.Steamworks.ServerAuth
+         server: Facepunch.Steamworks.Server
+                 &lt;Query&gt;k__BackingField: Facepunch.Steamworks.ServerQuery
+                 &lt;Stats&gt;k__BackingField: Facepunch.Steamworks.ServerStats
+                 &lt;Auth&gt;k__BackingField: Facepunch.Steamworks.ServerAuth
+                 _dedicatedServer: True
+                 _maxplayers: 10
+                 _botcount: 0
+                 _mapname: Procedural Map
+                 _modDir: rust
+                 _product: 252490
+                 _gameDescription: Rust
+                 _serverName: Mughisi's Playground
+                 _passworded: False
+                 _gametags: mp10,cp0,qp0,v2017,h4bcc25f1,stok,born1505842473
+                 KeyValue: System.Collections.Generic.Dictionary`2[System.String,System.String]
+                 native: Facepunch.Steamworks.Interop.NativeInterface
+         OnAuthChange: System.Action`3[System.UInt64,System.UInt64,Facepunch.Steamworks.ServerAuth+Status]
+ _dedicatedServer: True
+ _maxplayers: 10
+ _botcount: 0
+ _mapname: Procedural Map
+         length: 14
+         start_char: P
+ _modDir: rust
+         length: 4
+         start_char: r
+ _product: 252490
+         length: 6
+         start_char: 2
+ _gameDescription: Rust
+         length: 4
+         start_char: R
+ _serverName: Mughisi's Playground
+         length: 20
+         start_char: M
+ _passworded: False
+ _gametags: mp10,cp0,qp0,v2017,h4bcc25f1,stok,born1505842473
+         length: 48
+         start_char: m
+ KeyValue: System.Collections.Generic.Dictionary`2[System.String,System.String]
+         table: Array[37]
+                  0
+                  28
+                  27
+                  0
+                  0
+                  25
+                  0
+                  26
+                  0
+                  24
+                  22
+                  0
+                  11
+                  12
+                  13
+                  17
+                  15
+                  16
+                  23
+                  2
+                  3
+                  20
+                  5
+                  6
+                  7
+                  8
+                  9
+                  18
+                  0
+                  0
+                  0
+                  0
+                  0
+                  0
+                  0
+                  21
+                  29
+         linkSlots: Array[37]
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+                      System.Collections.Generic.Link
+         keySlots: Array[37]
+                     description_0
+                     description_01
+                     description_02
+                     description_03
+                     description_04
+                     description_05
+                     description_06
+                     description_07
+                     description_08
+                     description_09
+                     description_10
+                     description_11
+                     description_12
+                     description_13
+                     description_14
+                     description_15
+                     hash
+                     world.seed
+                     world.size
+                     pve
+                     headerimage
+                     url
+                     uptime
+                     gc_mb
+                     gc_cl
+                     fps
+                     fps_avg
+                     ent_cnt
+                     build
+         valueSlots: Array[37]
+                       Powered by Oxide
+                       4bcc25f1
+                       1265
+                       1000
+                       False
+                       http://oxidemod.org
+                       1839
+                       103
+                       57
+                       228
+                       262.28
+                       842
+                       23033
+         touchedSlots: 29
+         emptySlot: -1
+         count: 29
+         threshold: 33
+         hcp: System.Collections.Generic.GenericEqualityComparer`1[System.String]
+         serialization_info: 
+                 length: 4
+                 start_char: n
+         generation: 374
+ native: Facepunch.Steamworks.Interop.NativeInterface
+         api: SteamNative.SteamApi
+                 platform: SteamNative.Platform+Win64
+         client: SteamNative.SteamClient
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         user: SteamNative.SteamUser
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         apps: SteamNative.SteamApps
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         applist: SteamNative.SteamAppList
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         friends: SteamNative.SteamFriends
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         servers: SteamNative.SteamMatchmakingServers
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         matchmaking: SteamNative.SteamMatchmaking
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         inventory: SteamNative.SteamInventory
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         networking: SteamNative.SteamNetworking
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         userstats: SteamNative.SteamUserStats
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         utils: SteamNative.SteamUtils
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         screenshots: SteamNative.SteamScreenshots
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         http: SteamNative.SteamHTTP
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         ugc: SteamNative.SteamUGC
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         gameServer: SteamNative.SteamGameServer
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         gameServerStats: SteamNative.SteamGameServerStats
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         remoteStorage: SteamNative.SteamRemoteStorage
+                 platform: SteamNative.Platform+Win64
+                 steamworks: Facepunch.Steamworks.Server
+         isServer: True
+         hUser: SteamNative.HSteamUser
+         hPipe: SteamNative.HSteamPipep
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353763' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 2, 2017 at 12:14 PM">Oct 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353763' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/353763/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-353768" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">OK that&#039;s helpful. What tool did you use to pull that info?<br />
+                        <br /> The reason why I was chasing it from the SteamClient point of view is because that&#039;s where the actual BuildId is defined. I was thinking the Rust server is a Steam
+                        client during some early phase of Server boot and then also brought up the SteamServer at some point later.<br />
+                        <br />
+                        <a href="https://github.com/Facepunch/Facepunch.Steamworks" target="_blank" class="externalLink  rel=" nofollow">GitHub - Facepunch/Facepunch.Steamworks: Another fucking c#
+                            Steamworks implementation</a><br />
+                        <br /> I believe inside the SteamServer structure, there&#039;s no BuildId. Again, I know it exists because I can find the AppId and BuildId current release values inside
+                        Windows Server memory by using a search from WinDbg when the Rust server is running. While they&#039;re not labeled as such, the values appear in hex very close to each other
+                        in only one place in RAM so I&#039;m confident that&#039;s what it is. <i>There has to be some way to get those values programmically through code</i>.<br />
+                        <br /> Let me see if I can track down where SteamServer is defined. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353768' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 2, 2017 at 12:47 PM">Oct 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353768' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/353768/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-353810" class="message" data-author="Mughisi">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Mughisi" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Mughisi</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">The SteamClient is only created during the launch of the actual game client, if you&#039;d open up
+                        Assembly-CSharp.dll from the client files you will notice some differences including SteamClient in Assembly-CSharp.dll to have an actual implementation and not an empty class
+                        like in the server version of the file.<br />
+                        <br /> The debug output that I showed in my previous post was just grabbed through a plugin dumping all the fields and their values through reflection of the
+                        Facepunch.Steamworks.SteamServer instance. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Mughisi</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353810' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 2, 2017 at 8:05 PM">Oct 2, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353810' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/353810/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-353825" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Ugh, I&#039;ve gotten soo close, right up to being able to call the function that returns BuildId and then I get
+                        an indecipherable (to me) error.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>var server_instance = Facepunch.Steamworks.Server.Instance;var server_native = server_instance.GetType().GetField(&quot;native&quot;, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+var server_native_instance = server_native.GetValue(server_instance);var server_native_apps = server_native_instance.GetType().GetField(&quot;apps&quot;, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+var server_native_apps_instance = server_native_apps.GetValue(server_native_instance);MethodInfo server_native_apps_method = server_native_apps_instance.GetType().GetMethod(&quot;GetAppBuildId&quot;);
+var bld = server_native_apps_method.Invoke(server_native_apps_instance, null);
+</pre>{% endraw %}
+                        </div>Which works all the way to the last line (where I can actually assign a local to the return value of the function providing the Steam BuildId, and I get this error on the
+                        Rust server console:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>steamengine.cpp (2029) : Assertion Failed: Narrowing inPtr to toClass returned NULL.</pre>{% endraw %}
+                        </div><i>I know I&#039;m close</i>. I also verified the idea by running an older version Rust server install and checked with WinDbg. Like before, the AppId (258550) was in RAM
+                        nearby to the BuildId for that older server version.<br />
+                        <br /> [Update]<br /> Even trying this creates the same error message:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+[DllImport(&quot;steam_api64.dll&quot;, CharSet = CharSet.None, ExactSpelling = false)]
+  internal static extern int SteamAPI_ISteamApps_GetAppBuildId(IntPtr ISteamApps);var server_native_apps_platform = server_native_apps_instance.GetType().GetField(&quot;platform&quot;, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+var server_native_apps_platform_instance = server_native_apps_platform.GetValue(server_native_apps_instance);var server_native_apps_platform_ptr = server_native_apps_platform_instance.GetType().GetField(&quot;_ptr&quot;, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+var server_native_apps_platform_ptr_instance = server_native_apps_platform_ptr.GetValue(server_native_apps_platform_instance);int b_id = SteamAPI_ISteamApps_GetAppBuildId((IntPtr)server_native_apps_platform_ptr_instance);</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate">Last edited by a moderator: <span class="DateTime" title="Oct 3, 2017 at 3:55 AM">Oct 3, 2017</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353825' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 3, 2017 at 1:40 AM">Oct 3, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-353825' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/353825/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-359029" class="message" data-author="Kolyma">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Kolyma" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Kolyma</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Just to post a follow-up to this, ultimately I had to run a file-based process to pull the installed
+                        <b>buildid</b> from parsing the file <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>C:\Rust\Server\rustds\steamapps\appmanifest_258550.acf</pre>{% endraw %}
+                        </div>
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>&quot;SizeOnDisk&quot;     &quot;5803549654&quot;
+&quot;buildid&quot;        &quot;2217183&quot;
+&quot;LastOwner&quot;      &quot;76561200052722720&quot;</pre>{% endraw %}
+                        </div>I&#039;m not satisfied with that solution for a number of reasons. If anyone ever figures out how to find it through function calls to the running instance of Rust
+                        server/ Steam API, please post the answer here. Thanks <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Kolyma</a>,</span>
+                        <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-359029' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Oct 21, 2017 at 5:53 PM">Oct 21, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/accessing-steamclient-buildid-on-rust-server.27350/#post-359029' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/359029/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

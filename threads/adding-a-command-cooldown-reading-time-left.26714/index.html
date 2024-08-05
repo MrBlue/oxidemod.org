@@ -1,0 +1,130 @@
+---
+layout: forums
+title: 'Adding a command cooldown, reading time left?'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Hurtworld Development": "/forums/hurtworld-development.86/"
+---
+<div class="titleBar">
+    <h1>
+        <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/' | prepend: site.baseurl }}">Adding a command cooldown, reading time left?</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/hurtworld-development.86/' | prepend: site.baseurl }}">Hurtworld Development</a>' started by <a class="username"
+            dir="auto">MonkeY12</a>, <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/' | prepend: site.baseurl }}"><span class="DateTime" title="Aug 7, 2017 at 1:37 PM">Aug 7,
+                2017</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-343175" class="message" data-author="MonkeY12">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="MonkeY12" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">MonkeY12</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Hello,<br />
+                        <br /> I use this system cooldown and I have a few questions.<br /> 1. What happens with the time of cooldown if the server is crash/off. Is it reset then?<br /> 2. Is it
+                        possible to read how much time is left?<br />
+                        <br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>using System.Collections.Generic; //Using directive containing the HashSet classnamespace Oxide.Plugins //Namespace where plugins must go
+{
+    [Info(&quot;TestPlugin&quot;, &quot;JoeSheep&quot;, &quot;1.0.0&quot;)]
+    [Description(&quot;A Test Plugin.&quot;)]
+    class TestPlugin : RustPlugin
+    {
+        HashSet&lt;ulong&gt; Cooldowns = new HashSet&lt;ulong&gt;(); //Create our list to store the players currently in cooldown
+        const string Perm = &quot;TestPlugin.test&quot;; //Create the permission        void OnServerInitialized()
+        {
+            permission.RegisterPermission(Perm, this); //Register the permission when the server initializes
+        }        [ChatCommand(&quot;test&quot;)] //Create the chat command to do the following
+        void cmdTestCommand(BasePlayer player, string cmd)
+        {
+            if (permission.UserHasPermission(player.UserIDString, Perm)) //Check if the player has the permission &quot;Perm&quot;
+            {
+                if (!Cooldowns.Contains(player.userID)) //Check if the player is listed in the HashSet &quot;Cooldowns&quot;, if not continue
+                {
+                    Cooldowns.Add(player.userID); //Add the player to the Cooldowns HashSet so they cannot run the command again until removed
+                    timer.Once(10, () =&gt; Cooldowns.Remove(player.userID)); //Create and start a timer for 10 seconds, when it expires remove the player from the Cooldowns HashSet
+                    SendReply(player, &quot;Test command.&quot;); //Send a chat message to the player saying &quot;Test command.&quot;
+                }
+                else
+                    SendReply(player, &quot;Cooldown in effect.&quot;); //If the player is in the Cooldowns HashSet send this chat message to them
+            }
+            else
+                SendReply(player, &quot;You do not have permission to run this command&quot;); //If the player doesn't have the permission Perm then send this chat message to them
+        }
+    }
+}</pre>{% endraw %}
+                        </div>^^<br /> I rewrite this code to Hurtworld <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie8" alt=":D" title="Big Grin    :D" /><br />
+                        <br />
+                        <br /> Sorry for my English <img src="{{ '/assets/styles/default/xenforo/clear.png' | prepend: site.baseurl }}" class="mceSmilieSprite mceSmilie1" alt=":)" title="Smile    :)" /><br />
+                        <br />
+                        <br /> Regards <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">MonkeY12</a>,</span>
+                        <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2017 at 1:37 PM">Aug 7, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/' | prepend: site.baseurl }}" title="Permalink" class="item muted postNumber hashPermalink OverlayTrigger"
+                        data-href="posts/343175/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-343199" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">Yes, the time would be reset unless you store it in a datafile or database. No, you cannot really read how much
+                        time is left with a timer unless you store that somewhere as well. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/#post-343199' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span class="DateTime"
+                                title="Aug 7, 2017 at 4:36 PM">Aug 7, 2017</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/adding-a-command-cooldown-reading-time-left.26714/#post-343199' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/343199/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>

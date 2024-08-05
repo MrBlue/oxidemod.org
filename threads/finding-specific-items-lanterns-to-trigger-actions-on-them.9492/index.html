@@ -1,0 +1,437 @@
+---
+layout: forums
+title: 'Solved - Finding specific items (lanterns) to trigger actions on them'
+breadcrumbs:
+ - "Plugin Development": "/forums/plugin-development.105/"
+ - "Rust Development": "/forums/rust-development.4/"
+---
+<div class="titleBar">
+    <h1>
+        <span class="prefix prefixGreen">Solved</span> <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/' | prepend: site.baseurl }}">Finding specific items
+            (lanterns) to trigger actions on them</a>
+    </h1>
+    <p id="pageDescription" class="muted">Discussion in '<a href="{{ '/forums/rust-development.4/' | prepend: site.baseurl }}">Rust Development</a>' started by <a class="username"
+            dir="auto">d3nnib</a>, <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/' | prepend: site.baseurl }}"><span class="DateTime"
+                title="Jun 16, 2015 at 12:59 PM">Jun 16, 2015</span></a>.
+    </p>
+</div>
+<ol class="messageList" id="messageList">
+    <li id="post-99792" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Hi guys, I would like to ask for some help for a plugin I’m working on: I was looking for a plugin that could
+                        turn on and off lanterns placed by players at a certain game time. So I looked into oxide archive and I found the R-lantern plugin by Reneb that turns on and off lanterns when
+                        a player enters a cupboard radius. I don’t really like it to work like that, I would like to have all lanterns (or all the lanterns placed by players who activate a specific
+                        plugin command maybe) to be turned on at night time and off at daytime.<br />
+                        <br /> So I tried to modify the plugin by Reneb eliminating stuff for the calculation of radius and player zone and I finally made it.<br />
+                        <br /> The plugin checks the time onTick and if it&#039;s the first time for night or for morning it activates / deactivates all server lanterns.<br />
+                        <br /> This is made using <i>FindObjectsOfTypeAll</i><br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>UnityEngine.Object.FindObjectsOfTypeAll(global.BaseEntity._type)</pre>{% endraw %}
+                        </div>And then looping through all entities looking for lanterns, here’s the code<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>local function switchAllLanterns(light)
+  allWorldItems = UnityEngine.Object.FindObjectsOfTypeAll(global.BaseEntity._type)  for i=0, allWorldItems.Length-1 do
+      if tostring(allWorldItems[i]):find(&quot;lantern&quot;) then
+          allWorldItems[i]:SetFlag(global[&quot;BaseEntity+Flags&quot;].On, light)
+      end
+  end
+end</pre>{% endraw %}
+                        </div>Now I’m not very ok with the results for two reasons<br />
+                        <br /> 1- I would like to rewrite it in C# (at the moment it’s in LUA since I started modifying Reneb code)<br /> 2- I would like to achieve a better way to find lanterns (if
+                        possible) since looping through all entities takes from 1s to, sometimes, 4s<br />
+                        <br /> So, is there a better way to look for specific items such as lanterns and how can I write it down in C#?<br />
+                        <br /> Thank you very much! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 16, 2015 at 5:08 PM">Jun 16, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 16, 2015 at 12:59 PM">Jun 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99792/permalink">#1</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-99871" class="message" data-author="lederp ツ">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="lederp ツ" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">lederp ツ</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Example C# code that you could use:<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>[ChatCommand(&quot;lanterns&quot;)]
+        void chatCommand_Lanterns(BasePlayer player, string command, string[] args)
+        {
+            List&lt;BaseOven&gt; ovens = Component.FindObjectsOfType&lt;BaseOven&gt;().ToList();
+            foreach (BaseOven oven in ovens)
+            {
+                if (oven.LookupShortPrefabName() == &quot;lantern_deployed&quot;)
+                {
+                    //Do lantern stuff?
+                    oven.SetFlag(BaseEntity.Flags.On, true); //Turn lantern on
+                }
+            }
+        }</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 16, 2015 at 5:43 PM">Jun 16, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">lederp ツ</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-99871' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 16, 2015 at 5:34 PM">Jun 16, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-99871' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99871/permalink">#2</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-99890" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> Thank you very much Lederp, I&#039;ll give it a try asap!<br /> [DOUBLEPOST=1434616142,1434476311][/DOUBLEPOST]It
+                        seems to be working very well! I&#039;m not 100% sure if my c# rewrite is completely ok beacuse I&#039;ve got some problems with my server and I couldn&#039;t fully test it
+                        with day/night cycle yesterday.<br /> Anyway, calling your code with chat command turns lanterns on and off perfectly (passing true or false to SetFlag), thank you very much!
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-99890' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 18, 2015 at 9:29 AM">Jun 18, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-99890' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/99890/permalink">#3</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-101652" class="message" data-author="d3nnib">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="d3nnib" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">d3nnib</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> After last oxide update, with day/night cycle turned back to normal, and some days of testing I can say my C#
+                        rewrite does its job veeerrryyyy well!<br />
+                        <br /> Thanks Lederp! <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="editDate"> Last edited by a moderator: <span class="DateTime" title="Jun 22, 2015 at 11:18 AM">Jun 22, 2015</span>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">d3nnib</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-101652' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Jun 22, 2015 at 7:49 AM">Jun 22, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-101652' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/101652/permalink">#4</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-141742" class="message" data-author="Quicken">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Quicken" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Quicken</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> it seems all the mods that turn lanterns on are now broken with this update. Does anyone know what changed? I
+                        have take a look at the code and I have looped through the deployable &quot;ovens&quot; on my server and I see lantern.deployed.prefab yet turning them on like Lederp shows
+                        above does not seem to work anymore. <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Quicken</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141742' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 6, 2015 at 10:43 PM">Nov 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141742' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/141742/permalink">#5</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-141743" class="message staff" data-author="Wulf">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Wulf" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto" itemprop="name">Wulf</a>
+                    <em class="userBanner bannerRed wrapped" itemprop="title"><span class="before"></span><strong>Community Admin</strong><span class="after"></span></em>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Quicken">
+                            <aside>
+                                <div class="attribution type">Quicken said: <a href="#post-141742" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">it seems all the mods that turn lanterns on are now broken with this update. Does anyone know what changed? I have take a look at the code and I
+                                        have looped through the deployable &quot;ovens&quot; on my server and I see lantern.deployed.prefab yet turning them on like Lederp shows above does not seem to
+                                        work anymore.</div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>The prefab was renamed. You&#039;d need to change it to the correct one, though not sure if all are needed below.<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>assets/prefabs/deployable/jack o lantern/jackolantern.angry.item.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.angry.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.angry.worldmodel.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.item.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.worldmodel.prefab</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Wulf</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141743' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 6, 2015 at 10:45 PM">Nov 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141743' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/141743/permalink">#6</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-141744" class="message" data-author="Quicken">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="Quicken" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">Quicken</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml">
+                        <div class="bbCodeBlock bbCodeQuote" data-author="Wulf">
+                            <aside>
+                                <div class="attribution type">Wulf said: <a href="#post-141743" class="AttributionLink">&uarr;</a>
+                                </div>
+                                <blockquote class="quoteContainer">
+                                    <div class="quote">The prefab was renamed. You&#039;d need to change it to the correct one, though not sure if all are needed below.<br />
+                                        <div class="bbCodeBlock bbCodeCode">
+                                            <div class="type">Code:</div>
+                                            {% raw %}<pre>assets/prefabs/deployable/jack o lantern/jackolantern.angry.item.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.angry.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.angry.worldmodel.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.item.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.prefab
+assets/prefabs/deployable/jack o lantern/jackolantern.happy.worldmodel.prefab</pre>{% endraw %}
+                                        </div>
+                                    </div>
+                                    <div class="quoteExpand">Click to expand...</div>
+                                </blockquote>
+                            </aside>
+                        </div>Thanks Wulf, two questions:<br /> 1. how do I get a list of current prefabs? is there a mod like the Itemlist.cs mod? <br /> 2. what is the lantern prefab name? that is
+                        the one I want to get working.<br />
+                        <br /> once I get it fixed in NightLantern.cs I will rev and publish it so others can get it.<br /> [DOUBLEPOST=1446855485][/DOUBLEPOST]I made changes and the lanterns still do
+                        not turn on:<br />
+                        <br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+void OnItemDeployed(Deployer deployer, BaseEntity deployedEntity)
+        {
+            bool status = false;
+            double currentTime = TOD_Sky.Instance.Cycle.Hour;
+           
+            //myPuts(&quot;deployedEntity.LookupShortPrefabName() : &quot; + deployedEntity.LookupShortPrefabName());
+           
+            if (deployedEntity.LookupShortPrefabName() == &quot;lantern.deployed.prefab&quot;
+                || deployedEntity.LookupShortPrefabName() == &quot;jackolantern.happy.prefab&quot;
+                || deployedEntity.LookupShortPrefabName() == &quot;jackolantern.angry.prefab&quot;
+                || deployedEntity.LookupShortPrefabName() == &quot;campfire.deployed.prefab&quot;    )
+            {
+               
+                if ( currentTime &lt; sunriseHour &amp;&amp; isAutoTurnLanternsEnabled || currentTime &gt;= sunsetHour &amp;&amp; isAutoTurnLanternsEnabled )
+                    {
+                        status = true;
+                    }
+               
+                deployedEntity.SetFlag(BaseEntity.Flags.On, status);
+            }
+        }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">Quicken</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141744' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 6, 2015 at 10:49 PM">Nov 6, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141744' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/141744/permalink">#7</a>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="post-141930" class="message" data-author="║Kiwi║ 凸 (◣_◢) 凸">
+        <div class="messageUserInfo">
+            <div class="messageUserBlock">
+                <div class="avatarHolder">
+                    <span class="helper"></span>
+                    <a class="avatar Avm" data-avatarhtml="true"><img src="{{ '/assets/styles/oxide/logo.og.png' | prepend: site.baseurl }}" width="96" height="96" alt="║Kiwi║ 凸 (◣_◢) 凸" /></a>
+                </div>
+                <h3 class="userText">
+                    <a class="username" dir="auto">║Kiwi║ 凸 (◣_◢) 凸</a>
+                </h3>
+                <span class="arrow"></span>
+            </div>
+        </div>
+        <div class="messageInfo primaryContent">
+            <div class="messageContent">
+                <article>
+                    <blockquote class="messageText SelectQuoteContainer ugc baseHtml"> I know this is not the best way to do it but in the mean time just use<br />
+                        <div class="bbCodeBlock bbCodeCode">
+                            <div class="type">Code:</div>
+                            {% raw %}<pre>
+if (Convert.ToString(oven.LookupShortPrefabName()).Contains(&quot;lantern&quot;))
+    {
+       oven.SetFlag(BaseEntity.Flags.On, status);
+    }
+</pre>{% endraw %}
+                        </div>
+                        <div class="messageTextEndMarker">&nbsp;</div>
+                    </blockquote>
+                </article>
+            </div>
+            <div class="messageMeta ToggleTriggerAnchor">
+                <div class="privateControls">
+                    <span class="item muted">
+                        <span class="authorEnd"><a class="username author" dir="auto">║Kiwi║ 凸 (◣_◢) 凸</a>,</span>
+                        <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141930' | prepend: site.baseurl }}" title="Permalink" class="datePermalink"><span
+                                class="DateTime" title="Nov 7, 2015 at 1:32 PM">Nov 7, 2015</span></a>
+                    </span>
+                </div>
+                <div class="publicControls">
+                    <a href="{{ '/threads/finding-specific-items-lanterns-to-trigger-actions-on-them.9492/#post-141930' | prepend: site.baseurl }}" title="Permalink"
+                        class="item muted postNumber hashPermalink OverlayTrigger" data-href="posts/141930/permalink">#8</a>
+                </div>
+            </div>
+        </div>
+    </li>
+</ol>
